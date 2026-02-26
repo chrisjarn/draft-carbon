@@ -1,0 +1,3 @@
+{
+  "extends": "@carbon-wfp/config/tsconfig.base.json"
+}
