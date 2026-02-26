@@ -1,16 +1,16 @@
-import { createServer }          from 'node:http';
+import { createServer }            from 'node:http';
 import { readFileSync, existsSync } from 'node:fs';
-import { join, extname, dirname } from 'node:path';
-import { fileURLToPath }          from 'node:url';
-import { URL }                    from 'node:url';
+import { join, extname, dirname }  from 'node:path';
+import { fileURLToPath }           from 'node:url';
+import { URL }                     from 'node:url';
 import 'dotenv/config';
 
-import { initDb }          from './database.js';
-import { auth }            from './auth.js';
+import { initDb }           from './database.js';
+import { auth }             from './auth.js';
 import { carbonitesRoutes } from './routes/carbonites.js';
-import { budgetsRoutes }   from './routes/budgets.js';
-import { entitiesRoutes }  from './routes/entities.js';
-import { hiringRoutes }    from './routes/hiring.js';
+import { budgetsRoutes }    from './routes/budgets.js';
+import { entitiesRoutes }   from './routes/entities.js';
+import { hiringRoutes }     from './routes/hiring.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PORT = process.env.PORT || 3000;
@@ -24,8 +24,7 @@ const MIME = {
   '.ico':  'image/x-icon',
 };
 
-// ── Auth middleware ───────────────────────────────────────────────────────────
-// Returns the session object or null. Rejects with 401 if required=true.
+// ── Auth helper ───────────────────────────────────────────────────────────────
 async function getSession(req, res, required = true) {
   try {
     const session = await auth.api.getSession({
@@ -48,19 +47,9 @@ async function getSession(req, res, required = true) {
   }
 }
 
-// ── RBAC helper ───────────────────────────────────────────────────────────────
-// Roles: admin > practice_manager > sl_lead | state_manager > readonly
-const ROLE_RANK = {
-  admin:            100,
-  practice_manager:  80,
-  sl_lead:           50,
-  state_manager:     50,
-  readonly:          10,
-};
-
+const ROLE_RANK = { admin: 100, practice_manager: 80, sl_lead: 50, state_manager: 50, readonly: 10 };
 function hasRole(session, minRole) {
-  const userRole = session?.user?.role || 'readonly';
-  return (ROLE_RANK[userRole] ?? 0) >= (ROLE_RANK[minRole] ?? 0);
+  return (ROLE_RANK[session?.user?.role] ?? 0) >= (ROLE_RANK[minRole] ?? 0);
 }
 
 // ── Server ────────────────────────────────────────────────────────────────────
@@ -75,19 +64,24 @@ const server = createServer(async (req, res) => {
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   if (req.method === 'OPTIONS') { res.writeHead(204); return res.end(); }
 
-  // ── Better Auth handles all /api/auth/* routes ──────────────────────────
+  // ── Health check — public, used by Railway ───────────────────────────────
+  if (p === '/health') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    return res.end(JSON.stringify({ status: 'ok' }));
+  }
+
+  // ── Better Auth — handles all /api/auth/* routes ─────────────────────────
   if (p.startsWith('/api/auth')) {
     const response = await auth.handler(req);
     res.writeHead(response.status, Object.fromEntries(response.headers));
     return res.end(await response.text());
   }
 
-  // ── Protected API routes ─────────────────────────────────────────────────
+  // ── Protected API routes ──────────────────────────────────────────────────
   if (p.startsWith('/api/')) {
     const session = await getSession(req, res, true);
-    if (!session) return; // already sent 401
+    if (!session) return; // 401 already sent
 
-    // Write operations require at least sl_lead
     const isWrite = ['POST', 'PATCH', 'DELETE'].includes(req.method);
     if (isWrite && !hasRole(session, 'sl_lead')) {
       res.writeHead(403, { 'Content-Type': 'application/json' });
@@ -128,7 +122,7 @@ const server = createServer(async (req, res) => {
 async function start() {
   await initDb();
   server.listen(PORT, () => {
-    console.log(`Carbon Planner running at http://localhost:${PORT}`);
+    console.log(`Carbon Planner running on port ${PORT}`);
   });
 }
 
