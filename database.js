@@ -1,28 +1,43 @@
-// database.js — PostgreSQL via pg Pool
-// Replaces node:sqlite / DatabaseSync
-
 import pg from 'pg';
 import 'dotenv/config';
 
 const { Pool } = pg;
 
-// Railway injects DATABASE_URL automatically when you add a Postgres plugin.
-// For local dev, add DATABASE_URL=postgres://... to your .env file.
+// ── Diagnose missing DATABASE_URL immediately ─────────────────────────────────
+if (!process.env.DATABASE_URL) {
+  console.error('❌ DATABASE_URL is not set!');
+  console.error('   In Railway: go to your app service → Variables tab');
+  console.error('   → Add Variable Reference → select Postgres → DATABASE_URL');
+  console.error('');
+  console.error('   All current env vars:', Object.keys(process.env).filter(k =>
+    ['DATABASE', 'POSTGRES', 'PG', 'RAILWAY', 'NODE', 'PORT', 'BETTER'].some(p => k.startsWith(p))
+  ));
+  process.exit(1);
+}
+
+console.log('✅ DATABASE_URL found:', process.env.DATABASE_URL.replace(/:\/\/.*@/, '://***@'));
+
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: process.env.NODE_ENV === 'production'
-    ? { rejectUnauthorized: false }   // Railway uses self-signed certs
+    ? { rejectUnauthorized: false }
     : false,
   max: 10,
   idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 5000,
+  connectionTimeoutMillis: 10000,
 });
 
 pool.on('error', (err) => {
-  console.error('Unexpected PostgreSQL pool error:', err.message);
+  console.error('PostgreSQL pool error:', err.message);
 });
 
-export const db = { query: (text, params) => pool.query(text, params) };
+export const db = {
+  query:    (text, params) => pool.query(text, params),
+  queryOne: async (text, params) => {
+    const result = await pool.query(text, params);
+    return result.rows[0] ?? null;
+  },
+};
 
 export async function initDb() {
   await pool.query(`
@@ -141,26 +156,63 @@ export async function initDb() {
       "createdAt"  TIMESTAMPTZ DEFAULT NOW(),
       "updatedAt"  TIMESTAMPTZ DEFAULT NOW()
     );
-
-    CREATE OR REPLACE FUNCTION update_updated_at()
-    RETURNS TRIGGER AS $$
-    BEGIN NEW.updated_at = NOW(); RETURN NEW; END;
-    $$ LANGUAGE plpgsql;
-
-    DO $$ BEGIN
-      IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'carbonites_updated_at') THEN
-        CREATE TRIGGER carbonites_updated_at
-          BEFORE UPDATE ON carbonites
-          FOR EACH ROW EXECUTE FUNCTION update_updated_at();
-      END IF;
-      IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'hiring_updated_at') THEN
-        CREATE TRIGGER hiring_updated_at
-          BEFORE UPDATE ON hiring_needs
-          FOR EACH ROW EXECUTE FUNCTION update_updated_at();
-      END IF;
-    END $$;
   `);
-  console.log('PostgreSQL schema ready');
+  console.log('✅ Database schema ready');
 }
 
 export default pool;
+
+// ── Additional tables added for salary brackets + WFP persistence ─────────
+// Appended to initDb() via separate call in server.js boot
+export async function initExtendedDb() {
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS salary_brackets (
+      id          TEXT PRIMARY KEY,
+      div         TEXT NOT NULL,
+      sl          TEXT NOT NULL,
+      prog        TEXT,
+      role        TEXT NOT NULL,
+      nsw         JSONB NOT NULL DEFAULT '{}',
+      qld         JSONB NOT NULL DEFAULT '{}',
+      sa          JSONB NOT NULL DEFAULT '{}',
+      vic         JSONB NOT NULL DEFAULT '{}',
+      wa          JSONB NOT NULL DEFAULT '{}',
+      bands       JSONB NOT NULL DEFAULT '[]',
+      updated_at  TIMESTAMPTZ DEFAULT NOW()
+    );
+
+    CREATE TABLE IF NOT EXISTS wfp_staff_meta (
+      cb_id          TEXT PRIMARY KEY,
+      billing_target NUMERIC,
+      perf_rating    TEXT,
+      promo_flag     BOOLEAN DEFAULT FALSE,
+      promo_eta      TEXT,
+      staff_role     TEXT,
+      billing_actual NUMERIC,
+      updated_at     TIMESTAMPTZ DEFAULT NOW()
+    );
+
+    CREATE TABLE IF NOT EXISTS wfp_entity_settings (
+      ent_id             TEXT PRIMARY KEY,
+      billing_multiplier NUMERIC DEFAULT 3.5,
+      fy                 TEXT DEFAULT 'FY25-26',
+      updated_at         TIMESTAMPTZ DEFAULT NOW()
+    );
+
+    CREATE TABLE IF NOT EXISTS wfp_revenue (
+      ent_id     TEXT NOT NULL,
+      fy         TEXT NOT NULL,
+      target     NUMERIC DEFAULT 0,
+      actual     NUMERIC DEFAULT 0,
+      updated_at TIMESTAMPTZ DEFAULT NOW(),
+      PRIMARY KEY (ent_id, fy)
+    );
+
+    CREATE TABLE IF NOT EXISTS app_settings (
+      key        TEXT PRIMARY KEY,
+      value      JSONB NOT NULL,
+      updated_at TIMESTAMPTZ DEFAULT NOW()
+    );
+  `);
+  console.log('✅ Extended schema ready');
+}
