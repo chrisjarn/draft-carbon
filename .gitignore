@@ -4,3 +4,6 @@ db/
 *.db
 *.db-shm
 *.db-wal
+.tldr/
+.tldrignore
+carbon-workforce-planner-v58-standalone.html

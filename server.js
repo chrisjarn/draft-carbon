@@ -5,8 +5,9 @@ import { fileURLToPath }           from 'node:url';
 import { URL }                     from 'node:url';
 import 'dotenv/config';
 
-import { initDb }           from './database.js';
+import { initDb, initExtendedDb } from './database.js';
 import { auth }             from './auth.js';
+import { toNodeHandler }    from 'better-auth/node';
 import { carbonitesRoutes } from './routes/carbonites.js';
 import { budgetsRoutes }    from './routes/budgets.js';
 import { entitiesRoutes }   from './routes/entities.js';
@@ -72,9 +73,7 @@ const server = createServer(async (req, res) => {
 
   // ── Better Auth — handles all /api/auth/* routes ─────────────────────────
   if (p.startsWith('/api/auth')) {
-    const response = await auth.handler(req);
-    res.writeHead(response.status, Object.fromEntries(response.headers));
-    return res.end(await response.text());
+    return toNodeHandler(auth)(req, res);
   }
 
   // ── Protected API routes ──────────────────────────────────────────────────
@@ -121,6 +120,7 @@ const server = createServer(async (req, res) => {
 // ── Boot ──────────────────────────────────────────────────────────────────────
 async function start() {
   await initDb();
+  await initExtendedDb();
   server.listen(PORT, () => {
     console.log(`Carbon Planner running on port ${PORT}`);
   });

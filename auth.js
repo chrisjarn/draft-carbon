@@ -10,10 +10,7 @@ const pool = new Pool({
 });
 
 export const auth = betterAuth({
-  database: {
-    type: 'pg',
-    pool,
-  },
+  database: pool,
 
   // Email + password sign-in
   emailAndPassword: {
