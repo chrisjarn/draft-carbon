@@ -1,4 +1,5 @@
 import { protectedProcedure, publicProcedure, router } from "../index";
+import { adminRouter } from "./admin";
 import { carbonitesRouter } from "./carbonites";
 import { entitiesRouter } from "./entities";
 import { hiringRouter } from "./hiring";
@@ -22,5 +23,6 @@ export const appRouter = router({
   podBudgets: podBudgetsRouter,
   hiring: hiringRouter,
   wfp: wfpRouter,
+  admin: adminRouter,
 });
 export type AppRouter = typeof appRouter;
