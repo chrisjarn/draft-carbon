@@ -50,7 +50,7 @@ tmp
 temp
 
 # Legacy
-db/
+/db/
 *.db
 *.db-shm
 *.db-wal
