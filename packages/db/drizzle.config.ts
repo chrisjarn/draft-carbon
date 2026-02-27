@@ -1,4 +1,8 @@
+import dotenv from "dotenv";
+import path from "node:path";
 import { defineConfig } from "drizzle-kit";
+
+dotenv.config({ path: path.resolve(process.cwd(), "../../.env") });
 
 if (!process.env["DATABASE_URL"]) {
 	throw new Error(
