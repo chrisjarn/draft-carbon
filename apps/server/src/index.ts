@@ -36,4 +36,7 @@ app.get("/", (c) => {
   return c.text("OK");
 });
 
-export default app;
+export default {
+  fetch: app.fetch,
+  port: Number(process.env.PORT) || 3000,
+};
