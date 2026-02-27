@@ -3,8 +3,8 @@ builder = "nixpacks"
 buildCommand = "bun install --frozen-lockfile && bunx turbo build --filter=server..."
 
 [deploy]
-startCommand = "bun run apps/server/dist/index.mjs"
+startCommand = "bun --cwd packages/db run db:push && bun run apps/server/dist/index.mjs"
 healthcheckPath = "/"
-healthcheckTimeout = 30
+healthcheckTimeout = 60
 restartPolicyType = "on_failure"
 restartPolicyMaxRetries = 3
