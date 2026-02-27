@@ -1,8 +1,11 @@
 import { protectedProcedure, publicProcedure, router } from "../index";
-import { carboniteRouter } from "./carbonite";
-import { dashboardRouter } from "./dashboard";
+import { adminRouter } from "./admin";
+import { carbonitesRouter } from "./carbonites";
+import { entitiesRouter } from "./entities";
 import { hiringRouter } from "./hiring";
+import { podBudgetsRouter } from "./pod-budgets";
 import { todoRouter } from "./todo";
+import { wfpRouter } from "./wfp";
 
 export const appRouter = router({
   healthCheck: publicProcedure.query(() => {
@@ -15,8 +18,11 @@ export const appRouter = router({
     };
   }),
   todo: todoRouter,
-  dashboard: dashboardRouter,
-  carbonite: carboniteRouter,
+  carbonites: carbonitesRouter,
+  entities: entitiesRouter,
+  podBudgets: podBudgetsRouter,
   hiring: hiringRouter,
+  wfp: wfpRouter,
+  admin: adminRouter,
 });
 export type AppRouter = typeof appRouter;

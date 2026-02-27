@@ -1,0 +1,3 @@
+# Tell Nixpacks to use the Bun provider explicitly.
+# The Bun version is read from "packageManager" in the root package.json.
+providers = ["bun"]

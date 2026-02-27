@@ -1,11 +1,4 @@
-import path from "node:path";
-import { config } from "dotenv";
 import { defineConfig } from "drizzle-kit";
-
-// drizzle-kit transpiles to CJS, so import.meta is unavailable.
-// Use process.cwd() which is packages/db when run via turbo.
-config({ path: path.resolve(process.cwd(), "../../apps/server/.env") });
-config();
 
 if (!process.env["DATABASE_URL"]) {
 	throw new Error(
@@ -14,7 +7,17 @@ if (!process.env["DATABASE_URL"]) {
 }
 
 export default defineConfig({
-	schema: "./src/schema/index.ts",
+	schema: [
+		"./src/schema/auth.ts",
+		"./src/schema/todo.ts",
+		"./src/schema/carbonites.ts",
+		"./src/schema/entities.ts",
+		"./src/schema/pod-budgets.ts",
+		"./src/schema/hiring-needs.ts",
+		"./src/schema/salary-brackets.ts",
+		"./src/schema/wfp.ts",
+		"./src/schema/app-settings.ts",
+	],
 	out: "./drizzle",
 	dialect: "postgresql",
 	dbCredentials: {

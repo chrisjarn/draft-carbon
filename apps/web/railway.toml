@@ -1,0 +1,17 @@
+# Frontend static service
+# In Railway: set this service's Root Directory to blank (repo root),
+# then override Build Command and Start Command from this file.
+#
+# Required env vars for this service:
+#   VITE_SERVER_URL = https://<your-server-service>.railway.app
+
+[build]
+builder = "nixpacks"
+buildCommand = "bun install --frozen-lockfile && bunx turbo build --filter=web..."
+
+[deploy]
+startCommand = "bunx serve apps/web/dist --listen tcp://0.0.0.0:$PORT"
+healthcheckPath = "/"
+healthcheckTimeout = 30
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 3

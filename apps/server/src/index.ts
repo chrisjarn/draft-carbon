@@ -36,7 +36,4 @@ app.get("/", (c) => {
   return c.text("OK");
 });
 
-export default {
-  fetch: app.fetch,
-  port: 3040,
-};
+export default app;
