@@ -1,7 +1,7 @@
 import { db } from "@carbon-wfp/db";
 import { user } from "@carbon-wfp/db/schema/auth";
 import { TRPCError } from "@trpc/server";
-import { asc, eq, ne } from "drizzle-orm";
+import { asc, eq } from "drizzle-orm";
 import z from "zod";
 
 import { protectedProcedure, router } from "../index";

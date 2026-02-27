@@ -1,6 +1,6 @@
 [build]
 builder = "nixpacks"
-buildCommand = "bun install --frozen-lockfile && bunx turbo build --filter=server..."
+buildCommand = "bun install --frozen-lockfile && bunx turbo build"
 
 [deploy]
 startCommand = "bun --cwd packages/db run db:push && bun run apps/server/dist/index.mjs"

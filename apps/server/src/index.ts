@@ -6,6 +6,8 @@ import { trpcServer } from "@hono/trpc-server";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
+import { serveStatic } from "hono/bun";
+import path from "node:path";
 
 const app = new Hono();
 
@@ -32,8 +34,14 @@ app.use(
   }),
 );
 
-app.get("/", (c) => {
-  return c.text("OK");
-});
+// Serve frontend static files
+const distPath = path.resolve(import.meta.dir, "../../web/dist");
+
+app.use(
+  "/assets/*",
+  serveStatic({ root: distPath, rewriteRequestPath: (p) => p }),
+);
+
+app.get("*", serveStatic({ root: distPath, path: "/index.html" }));
 
 export default app;

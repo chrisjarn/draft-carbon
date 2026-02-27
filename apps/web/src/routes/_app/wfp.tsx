@@ -261,14 +261,14 @@ function WfpPage() {
 
       {/* Filters */}
       <div className="flex items-center gap-2 border-b border-border px-6 py-3">
-        <Select value={filterSl || "__all__"} onValueChange={(v) => setFilterSl(v === "__all__" ? "" : v)}>
+        <Select value={filterSl || "__all__"} onValueChange={(v) => setFilterSl(v === "__all__" ? "" : v ?? "")}>
           <SelectTrigger className="h-8 w-40 text-xs"><SelectValue placeholder="All SLs" /></SelectTrigger>
           <SelectContent>
             <SelectItem value="__all__">All Service Lines</SelectItem>
             {unique(allStaff, "sl").map((v) => <SelectItem key={v} value={v}>{v}</SelectItem>)}
           </SelectContent>
         </Select>
-        <Select value={filterOffice || "__all__"} onValueChange={(v) => setFilterOffice(v === "__all__" ? "" : v)}>
+        <Select value={filterOffice || "__all__"} onValueChange={(v) => setFilterOffice(v === "__all__" ? "" : v ?? "")}>
           <SelectTrigger className="h-8 w-36 text-xs"><SelectValue placeholder="All Offices" /></SelectTrigger>
           <SelectContent>
             <SelectItem value="__all__">All Offices</SelectItem>
@@ -331,7 +331,7 @@ function WfpPage() {
                   </TableCell>
                   <TableCell>
                     <span className={`text-xs font-medium tabular-nums ${Number(s.meta?.billingActual) >= Number(s.meta?.billingTarget) && s.meta?.billingTarget ? "text-green-400" : ""}`}>
-                      {pct(s.meta?.billingActual, s.meta?.billingTarget)}
+                      {pct(s.meta?.billingActual ?? null, s.meta?.billingTarget ?? null)}
                     </span>
                   </TableCell>
                   <TableCell><PerfBadge rating={s.meta?.perfRating} /></TableCell>
