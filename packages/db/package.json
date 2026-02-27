@@ -1,0 +1,29 @@
+{
+	"name": "@carbon-wfp/db",
+	"type": "module",
+	"exports": {
+		".": {
+			"default": "./src/index.ts"
+		},
+		"./*": {
+			"default": "./src/*.ts"
+		}
+	},
+	"scripts": {
+		"db:push": "drizzle-kit push",
+		"db:studio": "drizzle-kit studio",
+		"db:generate": "drizzle-kit generate",
+		"db:migrate": "drizzle-kit migrate"
+	},
+	"dependencies": {
+		"@carbon-wfp/env": "workspace:*",
+		"dotenv": "catalog:",
+		"drizzle-orm": "catalog:",
+		"postgres": "^3.4.5"
+	},
+	"devDependencies": {
+		"@carbon-wfp/config": "workspace:*",
+		"drizzle-kit": "^0.31.0",
+		"typescript": "catalog:"
+	}
+}
