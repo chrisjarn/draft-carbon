@@ -4,6 +4,7 @@ import { entitiesRouter } from "./entities";
 import { hiringRouter } from "./hiring";
 import { podBudgetsRouter } from "./pod-budgets";
 import { todoRouter } from "./todo";
+import { wfpRouter } from "./wfp";
 
 export const appRouter = router({
   healthCheck: publicProcedure.query(() => {
@@ -20,5 +21,6 @@ export const appRouter = router({
   entities: entitiesRouter,
   podBudgets: podBudgetsRouter,
   hiring: hiringRouter,
+  wfp: wfpRouter,
 });
 export type AppRouter = typeof appRouter;
