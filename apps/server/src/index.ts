@@ -22,7 +22,14 @@ app.use(
   }),
 );
 
-app.on(["POST", "GET"], "/api/auth/*", (c) => auth.handler(c.req.raw));
+app.on(["POST", "GET"], "/api/auth/*", async (c) => {
+  try {
+    return await auth.handler(c.req.raw);
+  } catch (e) {
+    console.error("Auth error:", e);
+    return c.json({ error: "Internal auth error" }, 500);
+  }
+});
 
 app.use(
   "/trpc/*",
