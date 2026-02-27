@@ -1,5 +1,7 @@
 import { protectedProcedure, publicProcedure, router } from "../index";
 import { carbonitesRouter } from "./carbonites";
+import { entitiesRouter } from "./entities";
+import { podBudgetsRouter } from "./pod-budgets";
 import { todoRouter } from "./todo";
 
 export const appRouter = router({
@@ -14,5 +16,7 @@ export const appRouter = router({
   }),
   todo: todoRouter,
   carbonites: carbonitesRouter,
+  entities: entitiesRouter,
+  podBudgets: podBudgetsRouter,
 });
 export type AppRouter = typeof appRouter;
