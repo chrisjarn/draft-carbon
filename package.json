@@ -31,6 +31,7 @@
     "db:studio": "turbo -F @carbon-wfp/db db:studio",
     "db:generate": "turbo -F @carbon-wfp/db db:generate",
     "db:migrate": "turbo -F @carbon-wfp/db db:migrate",
+    "db:seed": "turbo -F @carbon-wfp/db seed",
     "check": "biome check --write ."
   },
   "dependencies": {

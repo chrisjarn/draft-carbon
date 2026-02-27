@@ -2,9 +2,9 @@ import path from "node:path";
 import { config } from "dotenv";
 import { defineConfig } from "drizzle-kit";
 
-// Load env from apps/server/.env when running from packages/db via turbo
-config({ path: path.resolve(import.meta.dirname, "../../apps/server/.env") });
-// Also try CWD fallback (root .env if someone has one)
+// drizzle-kit transpiles to CJS, so import.meta is unavailable.
+// Use process.cwd() which is packages/db when run via turbo.
+config({ path: path.resolve(process.cwd(), "../../apps/server/.env") });
 config();
 
 if (!process.env["DATABASE_URL"]) {

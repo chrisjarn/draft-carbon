@@ -42,6 +42,12 @@ function StatCard({
 
 function DashboardPage() {
 	const health = useQuery(trpc.healthCheck.queryOptions());
+	const stats = useQuery(trpc.dashboard.stats.queryOptions());
+
+	const carboniteCount = stats.data?.totalCarbonites ?? 0;
+	const officeCount = stats.data?.offices ?? 0;
+	const openRoles = stats.data?.openRoles ?? 0;
+	const entityCount = stats.data?.totalEntities ?? 0;
 
 	return (
 		<div className="flex flex-col gap-6 p-6">
@@ -63,13 +69,13 @@ function DashboardPage() {
 							Carbonite Workforce Overview
 						</div>
 						<div className="mt-1 text-xs text-white/40">
-							FY 2025–26 · 5 States · 18 offices · 6 service lines
+							FY 2025–26 · 5 States · {officeCount} offices · 6 service lines
 						</div>
 					</div>
 					<div className="flex items-center gap-5">
 						<div className="text-center">
 							<div className="text-2xl font-extrabold leading-none tracking-tight text-white">
-								—
+								{stats.isLoading ? "…" : carboniteCount}
 							</div>
 							<div className="mt-1 text-[9.5px] font-bold uppercase tracking-widest text-white/40">
 								Carbonites
@@ -78,7 +84,7 @@ function DashboardPage() {
 						<div className="h-8 w-px bg-white/10" />
 						<div className="text-center">
 							<div className="text-2xl font-extrabold leading-none tracking-tight text-white">
-								—
+								{stats.isLoading ? "…" : officeCount}
 							</div>
 							<div className="mt-1 text-[9.5px] font-bold uppercase tracking-widest text-white/40">
 								Offices
@@ -87,10 +93,10 @@ function DashboardPage() {
 						<div className="h-8 w-px bg-white/10" />
 						<div className="text-center">
 							<div className="text-2xl font-extrabold leading-none tracking-tight text-white">
-								—
+								{stats.isLoading ? "…" : entityCount}
 							</div>
 							<div className="mt-1 text-[9.5px] font-bold uppercase tracking-widest text-white/40">
-								Service Lines
+								Entities
 							</div>
 						</div>
 					</div>
@@ -99,10 +105,10 @@ function DashboardPage() {
 
 			{/* KPI strip */}
 			<div className="grid grid-cols-4 gap-3">
-				<StatCard label="Total Carbonites" value="—" icon={Users} />
-				<StatCard label="Offices" value="—" icon={Building2} />
-				<StatCard label="Open Roles" value="—" icon={Briefcase} />
-				<StatCard label="Over Budget Pods" value="—" icon={BarChart3} />
+				<StatCard label="Total Carbonites" value={carboniteCount} icon={Users} loading={stats.isLoading} />
+				<StatCard label="Offices" value={officeCount} icon={Building2} loading={stats.isLoading} />
+				<StatCard label="Open Roles" value={openRoles} icon={Briefcase} loading={stats.isLoading} />
+				<StatCard label="Entities" value={entityCount} icon={BarChart3} loading={stats.isLoading} />
 			</div>
 
 			{/* API status */}

@@ -1,0 +1,491 @@
+import { db } from "./src/index.js";
+import {
+	carbonites,
+	entities,
+	hiringNeeds,
+	salaryBrackets,
+} from "./src/schema/index.js";
+
+// ── Entities (24 records) ───────────────────────────────────────────────────
+
+const ENTITIES = [
+	// WA
+	{
+		id: "ent-op1",
+		biz: "CABC Osborne Park",
+		tan: "Carbon Accountants & Business Consultants",
+		partners: [
+			"Clinton Gibson",
+			"James McNaught",
+			"Nathan Hood",
+			"Dom Papaluca",
+			"Wayne French",
+		],
+		officeId: "osborne-park",
+		state: "wa",
+		phone: "(08) 9446 8588",
+		address: "24 Hasler Road, Osborne Park WA 6017",
+		email: "info@carbongroup.com.au",
+		sl: ["acc", "rd", "ins"],
+	},
+	{
+		id: "ent-op2",
+		biz: "CABC Osborne Park 2 (Kensington)",
+		tan: "CABC Osborne Park 2",
+		partners: ["Wayne French"],
+		officeId: "osborne-park",
+		state: "wa",
+		phone: "(08) 9446 8588",
+		address: "24 Hasler Road, Osborne Park WA 6017",
+		email: "accounting@carbongroup.com.au",
+		sl: ["acc"],
+	},
+	{
+		id: "ent-cbk",
+		biz: "CBK Osborne Park",
+		tan: "Carbon Bookkeeping",
+		partners: ["Marc Wiriadisastra", "Dale Ettridge"],
+		officeId: "osborne-park",
+		state: "wa",
+		phone: "(08) 9446 8588",
+		address: "24 Hasler Road, Osborne Park WA 6017",
+		email: "bookkeeping@carbongroup.com.au",
+		sl: ["bkcfo", "fin", "wm"],
+	},
+	{
+		id: "ent-fda",
+		biz: "Forrestdale",
+		tan: "Carbon Parish",
+		partners: ["Jason Parish"],
+		officeId: "osborne-park",
+		state: "wa",
+		phone: "(08) 6391 2100",
+		address: "4/15 Alex Wood Dr, Forrestdale WA 6112",
+		email: "forrestdale@carbongroup.com.au",
+		sl: ["bkcfo"],
+	},
+	{
+		id: "ent-sv",
+		biz: "Swan Valley (Ellenbrook)",
+		tan: "Carbon Accountants Swan Valley",
+		partners: ["Michelle Maynard", "Steve Wai", "Todd Zani"],
+		officeId: "swan-valley",
+		state: "wa",
+		phone: "(08) 6296 7788",
+		address: "40 Ellen Stirling Parade, Ellenbrook WA 6069",
+		email: "swanvalley@carbongroup.com.au",
+		sl: ["acc"],
+	},
+	{
+		id: "ent-way",
+		biz: "Waypoint Corporate",
+		tan: "Waypoint Corporate",
+		partners: ["Marc Wiriadisastra", "Dale Ettridge"],
+		officeId: "osborne-park",
+		state: "wa",
+		phone: "(08) 9446 8588",
+		address: "24 Hasler Road, Osborne Park WA 6017",
+		email: "waypoint@carbongroup.com.au",
+		sl: ["bkcfo"],
+	},
+	// NSW
+	{
+		id: "ent-syd",
+		biz: "Sydney / Surry Hills",
+		tan: "CBK NSW",
+		partners: ["Wellington Takakura"],
+		officeId: "parramatta",
+		state: "nsw",
+		phone: "(02) 8218 2126",
+		address: "Upper Ground Floor, 55 Brisbane St, Surry Hills NSW 2010",
+		email: "sydney@carbongroup.com.au",
+		sl: ["bkcfo"],
+	},
+	{
+		id: "ent-stl",
+		biz: "St Leonards",
+		tan: null,
+		partners: [
+			"Wellington Takakura",
+			"Marc Wiriadisastra",
+			"Dale Ettridge",
+		],
+		officeId: "st-leonards",
+		state: "nsw",
+		phone: "(02) 9437 1785",
+		address: "C106/11 Chandos Street, St Leonards NSW 2065",
+		email: "cbknsw@carbongroup.com.au",
+		sl: ["bkcfo"],
+	},
+	{
+		id: "ent-par",
+		biz: "Parramatta",
+		tan: null,
+		partners: [],
+		officeId: "parramatta",
+		state: "nsw",
+		phone: null,
+		address: "Suite 501, Level 5/55 Phillip Street, Parramatta NSW 2150",
+		email: null,
+		sl: ["bkcfo"],
+	},
+	// VIC
+	{
+		id: "ent-morn",
+		biz: "Mornington Peninsula",
+		tan: "Carbon Kapovic",
+		partners: ["Kate Kapovic"],
+		officeId: "mornington",
+		state: "vic",
+		phone: "0415 091 609",
+		address: "Suite 3b, 72 Blamey Place, Mornington VIC 3931",
+		email: "Kate.k@carbongroup.com.au",
+		sl: ["bkcfo"],
+	},
+	{
+		id: "ent-mtwav",
+		biz: "Mount Waverley",
+		tan: "CABC Mount Waverley",
+		partners: ["Igor Hnatko"],
+		officeId: "mount-waverley",
+		state: "vic",
+		phone: "(03) 9887 8751",
+		address: "631 High Street Road, Mount Waverley VIC 3149",
+		email: "mtwaverley@carbongroup.com.au",
+		sl: ["acc"],
+	},
+	{
+		id: "ent-mon",
+		biz: "Monash",
+		tan: "Carbon Gardiner",
+		partners: ["Allison Gardiner", "Maree Hornsby"],
+		officeId: "monash",
+		state: "vic",
+		phone: "(03) 8582 2051",
+		address: "Level 2 Unit 18, 15 Ricketts Rd, Mt Waverley VIC 3149",
+		email: "monash@carbongroup.com.au",
+		sl: ["bkcfo"],
+	},
+	{
+		id: "ent-els",
+		biz: "Elsternwick",
+		tan: "CABC St Kilda",
+		partners: ["Mike Haberfield", "George Kapiniaris", "Les Silpert"],
+		officeId: "elsternwick",
+		state: "vic",
+		phone: "(03) 9523 6500",
+		address: "Suite 2/469 Glen Huntly Road, Elsternwick VIC 3185",
+		email: "elsternwick@carbongroup.com.au",
+		sl: ["acc", "wm"],
+	},
+	// QLD
+	{
+		id: "ent-bne",
+		biz: "Brisbane",
+		tan: "CABC Brisbane",
+		partners: ["Anthony McPhee", "Gail Rogerson", "Samara Badgery"],
+		officeId: "brisbane",
+		state: "qld",
+		phone: "(07) 3910 6200",
+		address: "Level 8, 2 King Street, Fortitude Valley QLD 4006",
+		email: "fortitudevalley@carbongroup.com.au",
+		sl: ["acc", "bkcfo", "wm"],
+	},
+	{
+		id: "ent-bun",
+		biz: "Bundaberg",
+		tan: "CABC Bundaberg",
+		partners: ["Anthony McPhee", "Jesse Williamson"],
+		officeId: "bundaberg",
+		state: "qld",
+		phone: "(07) 4153 3444",
+		address: "4/290 Bourbong Street, Bundaberg West QLD 4670",
+		email: "bundaberg@carbongroup.com.au",
+		sl: ["acc", "bkcfo"],
+	},
+	{
+		id: "ent-gym",
+		biz: "Gympie",
+		tan: "CABC Gympie",
+		partners: ["Anthony McPhee", "Inga Jarick", "Shaun Ward"],
+		officeId: "gympie",
+		state: "qld",
+		phone: "(07) 5482 1533",
+		address: "28 Excelsior Road, Gympie QLD 4570",
+		email: "gympie@carbongroup.com.au",
+		sl: ["acc"],
+	},
+	{
+		id: "ent-frc",
+		biz: "Fraser Coast",
+		tan: "CABC Bundaberg",
+		partners: ["Jesse Williamson", "Anthony McPhee"],
+		officeId: "fraser-coast",
+		state: "qld",
+		phone: "(07) 4184 9900",
+		address: "Unit 25, 58-60 Torquay Rd, Pialba QLD 4655",
+		email: "frasercoast@carbongroup.com.au",
+		sl: ["acc"],
+	},
+	{
+		id: "ent-ips",
+		biz: "Ipswich",
+		tan: "CABC Ipswich",
+		partners: [
+			"Maria Kelly",
+			"Vicki Yorston",
+			"David Martin",
+			"Neil Harding",
+		],
+		officeId: "ipswich",
+		state: "qld",
+		phone: "(07) 3812 2233",
+		address: "221 Brisbane Street, Ipswich QLD 4305",
+		email: "ipswich@carbongroup.com.au",
+		sl: ["acc"],
+	},
+	{
+		id: "ent-too",
+		biz: "Toowoomba",
+		tan: "Carbon Toowoomba Pty Ltd",
+		partners: ["Bob Noye"],
+		officeId: "toowoomba",
+		state: "qld",
+		phone: "(07) 4638 8022",
+		address: "208 Herries Street, Toowoomba QLD 4350",
+		email: "toowoomba@carbongroup.com.au",
+		sl: ["acc", "bkcfo"],
+	},
+	// SA
+	{
+		id: "ent-adl",
+		biz: "Adelaide",
+		tan: "CABC Adelaide",
+		partners: ["David Block"],
+		officeId: "adelaide",
+		state: "sa",
+		phone: "(08) 8359 2299",
+		address: "61-63 Carrington Street, Adelaide SA 5000",
+		email: "adelaide@carbongroup.com.au",
+		sl: ["acc", "wm"],
+	},
+	{
+		id: "ent-gaw",
+		biz: "Gawler",
+		tan: "Carbon Symes",
+		partners: ["Peter Caddy", "Hans Van Heuven"],
+		officeId: "gawler",
+		state: "sa",
+		phone: "(08) 8522 2633",
+		address: "27 Twelfth Street, Gawler South SA 5118",
+		email: "symes@carbongroup.com.au",
+		sl: ["acc"],
+	},
+	{
+		id: "ent-pfd",
+		biz: "Parafield",
+		tan: "CABC Adelaide",
+		partners: ["David Block", "Fiona Crook", "Sharyn Duck"],
+		officeId: "parafield",
+		state: "sa",
+		phone: "(08) 8250 0035",
+		address: "Parafield Airport, 9 Dakota Dr, Parafield SA 5106",
+		email: "parafield@carbongroup.com.au",
+		sl: ["acc"],
+	},
+	{
+		id: "ent-bar",
+		biz: "Barossa",
+		tan: null,
+		partners: ["Anthony Puliatti"],
+		officeId: "barossa",
+		state: "sa",
+		phone: null,
+		address: "82A Murray Street, Tanunda SA 5352",
+		email: "barossa@carbongroup.com.au",
+		sl: ["acc"],
+	},
+] satisfies (typeof entities.$inferInsert)[];
+
+// ── Carbonites (40 staff records) ───────────────────────────────────────────
+
+const CARBONITES = [
+	// NSW - Parramatta / St Leonards
+	{ id: "c01", name: "Lena M.", role: "Director", seniority: 7, state: "nsw", office: "parramatta", location: null, sl: "bkcfo", sg: "bkcfo-cfo", type: "FT" as const, salary: 185000, pod: "NSW CFO Pod", entity: "ent-par", isPartner: true, reportsTo: null, hours: null },
+	{ id: "c02", name: "David K.", role: "Senior Client Manager", seniority: 5, state: "nsw", office: "parramatta", location: "Working remotely", sl: "bkcfo", sg: "bkcfo-cfo", type: "FT" as const, salary: 112000, pod: "NSW CFO Pod", entity: "ent-par", isPartner: false, reportsTo: "c01", hours: null },
+	{ id: "c03", name: "Ryan C.", role: "Bookkeeper", seniority: 2, state: "nsw", office: "parramatta", location: null, sl: "bkcfo", sg: "bkcfo-bk", type: "PT" as const, salary: 68000, pod: "NSW BKK Pod", entity: "ent-par", isPartner: false, reportsTo: "c04", hours: 25 },
+	{ id: "c04", name: "Jessica T.", role: "Senior Bookkeeper", seniority: 3, state: "nsw", office: "parramatta", location: null, sl: "bkcfo", sg: "bkcfo-bk", type: "FT" as const, salary: 82000, pod: "NSW BKK Pod", entity: "ent-par", isPartner: false, reportsTo: null, hours: null },
+	{ id: "c05", name: "Wei L.", role: "Payroll Specialist", seniority: 2, state: "nsw", office: "st-leonards", location: null, sl: "bkcfo", sg: "bkcfo-pay", type: "FT" as const, salary: 72000, pod: "NSW Pay Pod", entity: "ent-stl", isPartner: false, reportsTo: null, hours: null },
+	// VIC - Elsternwick
+	{ id: "c10", name: "Michelle M.", role: "Associate Director", seniority: 8, state: "vic", office: "elsternwick", location: null, sl: "acc", sg: "acc-main", type: "FT" as const, salary: 165000, pod: "Elst Acc Pod", entity: "ent-els", isPartner: true, reportsTo: null, hours: null },
+	{ id: "c11", name: "James M.", role: "Senior Accountant", seniority: 4, state: "vic", office: "elsternwick", location: null, sl: "acc", sg: "acc-main", type: "FT" as const, salary: 95000, pod: "Elst Acc Pod", entity: "ent-els", isPartner: false, reportsTo: "c10", hours: null },
+	{ id: "c12", name: "Sophie R.", role: "Accountant", seniority: 3, state: "vic", office: "elsternwick", location: null, sl: "acc", sg: "acc-main", type: "FT" as const, salary: 72000, pod: "Elst Acc Pod", entity: "ent-els", isPartner: false, reportsTo: "c10", hours: null },
+	{ id: "c13", name: "Marc W.", role: "Director (WEA)", seniority: 4, state: "vic", office: "elsternwick", location: null, sl: "wm", sg: null, type: "FT" as const, salary: 185000, pod: "Elst Wealth", entity: "ent-els", isPartner: true, reportsTo: null, hours: null },
+	{ id: "c14", name: "Priya M.", role: "Senior Financial Planner", seniority: 2, state: "vic", office: "elsternwick", location: null, sl: "wm", sg: null, type: "FT" as const, salary: 110000, pod: "Elst Wealth", entity: "ent-els", isPartner: false, reportsTo: "c13", hours: null },
+	// VIC - Monash
+	{ id: "c20", name: "Allison G.", role: "Senior Manager (BKK)", seniority: 6, state: "vic", office: "monash", location: null, sl: "bkcfo", sg: "bkcfo-bk", type: "PT" as const, salary: 125000, pod: "Monash Pod", entity: "ent-mon", isPartner: false, reportsTo: null, hours: 30 },
+	{ id: "c21", name: "Tom K.", role: "Senior Bookkeeper", seniority: 3, state: "vic", office: "monash", location: null, sl: "bkcfo", sg: "bkcfo-bk", type: "FT" as const, salary: 82000, pod: "Monash Pod", entity: "ent-mon", isPartner: false, reportsTo: "c20", hours: null },
+	{ id: "c22", name: "Anika P.", role: "Payroll Manager", seniority: 4, state: "vic", office: "monash", location: null, sl: "bkcfo", sg: "bkcfo-pay", type: "FT" as const, salary: 95000, pod: "Monash Pay", entity: "ent-mon", isPartner: false, reportsTo: null, hours: null },
+	// VIC - Mornington
+	{ id: "c25", name: "Sam P.", role: "Client Manager (BKK)", seniority: 4, state: "vic", office: "mornington", location: "Mount Waverley", sl: "bkcfo", sg: "bkcfo-bk", type: "FT" as const, salary: 92000, pod: "Mornington Pod", entity: "ent-morn", isPartner: false, reportsTo: null, hours: null },
+	{ id: "c26", name: "Grace H.", role: "Bookkeeper", seniority: 2, state: "vic", office: "mornington", location: null, sl: "bkcfo", sg: "bkcfo-bk", type: "PT" as const, salary: 64000, pod: "Mornington Pod", entity: "ent-morn", isPartner: false, reportsTo: "c25", hours: 24 },
+	// VIC - Mount Waverley
+	{ id: "c30", name: "David L.", role: "Client Manager (ACC)", seniority: 5, state: "vic", office: "mount-waverley", location: null, sl: "acc", sg: "acc-main", type: "FT" as const, salary: 108000, pod: "Mt Waverley Pod", entity: "ent-mtwav", isPartner: false, reportsTo: null, hours: null },
+	{ id: "c31", name: "Kelly B.", role: "Senior Accountant", seniority: 4, state: "vic", office: "mount-waverley", location: null, sl: "acc", sg: "acc-main", type: "FT" as const, salary: 92000, pod: "Mt Waverley Pod", entity: "ent-mtwav", isPartner: false, reportsTo: "c30", hours: null },
+	// QLD - Brisbane
+	{ id: "c40", name: "Hayden R.", role: "Associate Director", seniority: 8, state: "qld", office: "brisbane", location: null, sl: "acc", sg: "acc-main", type: "FT" as const, salary: 158000, pod: "Bris Acc Pod", entity: "ent-bne", isPartner: true, reportsTo: null, hours: null },
+	{ id: "c41", name: "Sarah M.", role: "Senior Accountant", seniority: 4, state: "qld", office: "brisbane", location: null, sl: "acc", sg: "acc-main", type: "FT" as const, salary: 94000, pod: "Bris Acc Pod", entity: "ent-bne", isPartner: false, reportsTo: "c40", hours: null },
+	{ id: "c42", name: "James T.", role: "Accountant", seniority: 3, state: "qld", office: "brisbane", location: null, sl: "acc", sg: "acc-main", type: "FT" as const, salary: 70000, pod: "Bris Acc Pod", entity: "ent-bne", isPartner: false, reportsTo: "c40", hours: null },
+	{ id: "c43", name: "Crystal V.", role: "Director (WEA)", seniority: 4, state: "qld", office: "brisbane", location: null, sl: "wm", sg: null, type: "FT" as const, salary: 175000, pod: "Bris Wealth", entity: "ent-bne", isPartner: true, reportsTo: null, hours: null },
+	{ id: "c44", name: "Amy K.", role: "Senior Bookkeeper", seniority: 3, state: "qld", office: "brisbane", location: null, sl: "bkcfo", sg: "bkcfo-bk", type: "FT" as const, salary: 82000, pod: "Bris BKK Pod", entity: "ent-bne", isPartner: false, reportsTo: "c45", hours: null },
+	{ id: "c45", name: "Scott D.", role: "Senior Manager (BKK)", seniority: 6, state: "qld", office: "brisbane", location: null, sl: "bkcfo", sg: "bkcfo-bk", type: "FT" as const, salary: 135000, pod: "Bris BKK Pod", entity: "ent-bne", isPartner: false, reportsTo: null, hours: null },
+	// QLD - Toowoomba / Bundaberg
+	{ id: "c50", name: "Bob N.", role: "Senior Manager (ACC)", seniority: 7, state: "qld", office: "toowoomba", location: null, sl: "acc", sg: "acc-main", type: "FT" as const, salary: 128000, pod: "Toowoomba Pod", entity: "ent-too", isPartner: false, reportsTo: null, hours: null },
+	{ id: "c51", name: "Kate J.", role: "Accountant", seniority: 3, state: "qld", office: "toowoomba", location: null, sl: "acc", sg: "acc-main", type: "PT" as const, salary: 65000, pod: "Toowoomba Pod", entity: "ent-too", isPartner: false, reportsTo: "c50", hours: 20 },
+	{ id: "c52", name: "Amy L.", role: "Bookkeeper", seniority: 2, state: "qld", office: "bundaberg", location: "Working remotely", sl: "bkcfo", sg: "bkcfo-bk", type: "PT" as const, salary: 64000, pod: "QLD BKK Pod", entity: "ent-bun", isPartner: false, reportsTo: null, hours: 24 },
+	// WA - Osborne Park
+	{ id: "c60", name: "Todd Z.", role: "Associate Director", seniority: 8, state: "wa", office: "osborne-park", location: null, sl: "acc", sg: "acc-main", type: "FT" as const, salary: 155000, pod: "WA Acc Pod", entity: "ent-op1", isPartner: true, reportsTo: null, hours: null },
+	{ id: "c61", name: "Chris W.", role: "Senior Accountant", seniority: 4, state: "wa", office: "osborne-park", location: null, sl: "acc", sg: "acc-main", type: "FT" as const, salary: 92000, pod: "WA Acc Pod", entity: "ent-op1", isPartner: false, reportsTo: "c60", hours: null },
+	{ id: "c62", name: "Priya S.", role: "SMSF Manager", seniority: 1, state: "wa", office: "osborne-park", location: null, sl: "acc", sg: "acc-smsf", type: "FT" as const, salary: 102000, pod: "WA SMSF Pod", entity: "ent-op1", isPartner: false, reportsTo: null, hours: null },
+	{ id: "c63", name: "Luke M.", role: "SMSF Manager", seniority: 1, state: "wa", office: "osborne-park", location: "Swan Valley", sl: "acc", sg: "acc-smsf", type: "FT" as const, salary: 98000, pod: "WA SMSF Pod", entity: "ent-op1", isPartner: false, reportsTo: "c62", hours: null },
+	{ id: "c64", name: "Kristen K.", role: "Senior Bookkeeper", seniority: 3, state: "wa", office: "osborne-park", location: null, sl: "bkcfo", sg: "bkcfo-bk", type: "PT" as const, salary: 78000, pod: "WA BKK Pod", entity: "ent-cbk", isPartner: false, reportsTo: null, hours: 28 },
+	{ id: "c65", name: "Grant T.", role: "Senior Manager (BKK)", seniority: 6, state: "wa", office: "osborne-park", location: null, sl: "rd", sg: null, type: "FT" as const, salary: 145000, pod: "WA R&D Pod", entity: "ent-op1", isPartner: false, reportsTo: null, hours: null },
+	{ id: "c66", name: "Ben A.", role: "Loan Administrator", seniority: 1, state: "wa", office: "osborne-park", location: null, sl: "fin", sg: null, type: "FT" as const, salary: 65000, pod: "WA Finance Pod", entity: "ent-cbk", isPartner: false, reportsTo: "c67", hours: null },
+	{ id: "c67", name: "Luke F.", role: "Senior Financial Planner", seniority: 2, state: "wa", office: "osborne-park", location: null, sl: "fin", sg: null, type: "FT" as const, salary: 110000, pod: "WA Finance Pod", entity: "ent-cbk", isPartner: false, reportsTo: null, hours: null },
+	{ id: "c68", name: "Nicole B.", role: "Financial Planner", seniority: 1, state: "wa", office: "osborne-park", location: null, sl: "wm", sg: null, type: "FT" as const, salary: 118000, pod: "WA Wealth Pod", entity: "ent-cbk", isPartner: false, reportsTo: null, hours: null },
+	{ id: "c69", name: "Dan R.", role: "Account Manager (INS)", seniority: 3, state: "wa", office: "osborne-park", location: null, sl: "ins", sg: null, type: "FT" as const, salary: 92000, pod: "WA Ins Pod", entity: "ent-op1", isPartner: false, reportsTo: null, hours: null },
+	{ id: "c70", name: "Mei C.", role: "Broker Assistant (INS)", seniority: 1, state: "wa", office: "osborne-park", location: null, sl: "ins", sg: null, type: "PT" as const, salary: 58000, pod: "WA Ins Pod", entity: "ent-op1", isPartner: false, reportsTo: "c69", hours: 16 },
+	// SA - Adelaide
+	{ id: "c80", name: "David W.", role: "Associate Director", seniority: 8, state: "sa", office: "adelaide", location: null, sl: "acc", sg: "acc-main", type: "FT" as const, salary: 165000, pod: "Adel Acc Pod", entity: "ent-adl", isPartner: true, reportsTo: null, hours: null },
+	{ id: "c81", name: "Don B.", role: "Senior Manager (ACC)", seniority: 7, state: "sa", office: "adelaide", location: "Barossa", sl: "acc", sg: "acc-main", type: "FT" as const, salary: 138000, pod: "Adel Acc Pod", entity: "ent-adl", isPartner: false, reportsTo: "c80", hours: null },
+	{ id: "c82", name: "Zara K.", role: "Senior Accountant", seniority: 4, state: "sa", office: "adelaide", location: null, sl: "acc", sg: "acc-main", type: "FT" as const, salary: 92000, pod: "Adel Acc Pod", entity: "ent-adl", isPartner: false, reportsTo: "c81", hours: null },
+	{ id: "c83", name: "Gail R.", role: "Financial Planning Manager", seniority: 3, state: "sa", office: "adelaide", location: null, sl: "wm", sg: null, type: "FT" as const, salary: 128000, pod: "Adel Wealth", entity: "ent-adl", isPartner: false, reportsTo: null, hours: null },
+	{ id: "c84", name: "Nia J.", role: "Client Services Officer", seniority: 2, state: "sa", office: "adelaide", location: null, sl: "wm", sg: null, type: "PT" as const, salary: 68000, pod: "Adel Wealth", entity: "ent-adl", isPartner: false, reportsTo: "c83", hours: null },
+] satisfies (typeof carbonites.$inferInsert)[];
+
+// ── Hiring Needs (12 records) ───────────────────────────────────────────────
+
+const HIRING_NEEDS = [
+	{ id: "h01", role: "Senior CFO Advisor", sl: "bkcfo", sg: "bkcfo-cfo", state: "vic", office: "elsternwick", location: "Elsternwick", positions: 2, type: "succession", priority: "urgent", status: "active", salaryMin: 130000, salaryMax: 170000, targetStart: "2025-10-01", approvedBy: "Nathan Hood", notes: "Two partners exiting end of FY. Cover until promoted internally.", closedHow: null, closedDate: null, closedName: null },
+	{ id: "h02", role: "Financial Planner", sl: "wm", sg: null, state: "wa", office: "osborne-park", location: "Osborne Park", positions: 1, type: "growth", priority: "urgent", status: "active", salaryMin: 110000, salaryMax: 145000, targetStart: "2025-09-15", approvedBy: "Nathan Hood", notes: "Pipeline growth. Existing team at 94% utilisation.", closedHow: null, closedDate: null, closedName: null },
+	{ id: "h03", role: "R&D Grants Specialist", sl: "rd", sg: null, state: "vic", office: "monash", location: "Monash", positions: 1, type: "new-capability", priority: "urgent", status: "active", salaryMin: 95000, salaryMax: 125000, targetStart: "2025-10-01", approvedBy: "Nathan Hood", notes: "Sole specialist is a single-point-of-failure. Need depth.", closedHow: null, closedDate: null, closedName: null },
+	{ id: "h04", role: "SMSF Administrator", sl: "acc", sg: "acc-smsf", state: "qld", office: "brisbane", location: "Brisbane", positions: 1, type: "growth", priority: "urgent", status: "active", salaryMin: 75000, salaryMax: 95000, targetStart: "2025-09-01", approvedBy: "Anthony McPhee", notes: "SMSF load at 137%. Client deliverables at risk.", closedHow: null, closedDate: null, closedName: null },
+	{ id: "h05", role: "Payroll Officer", sl: "bkcfo", sg: "bkcfo-pay", state: "sa", office: "adelaide", location: "Adelaide", positions: 1, type: "growth", priority: "high", status: "offer", salaryMin: 65000, salaryMax: 80000, targetStart: "2025-09-01", approvedBy: "David Block", notes: "Growing payroll client base SA. Offer extended — awaiting acceptance.", closedHow: null, closedDate: null, closedName: null },
+	{ id: "h06", role: "Senior Accountant", sl: "acc", sg: "acc-main", state: "qld", office: "ipswich", location: "Ipswich", positions: 2, type: "growth", priority: "high", status: "active", salaryMin: 85000, salaryMax: 110000, targetStart: "2025-11-01", approvedBy: "Maria Kelly", notes: "Entity expansion post-acquisition. Two roles approved.", closedHow: null, closedDate: null, closedName: null },
+	{ id: "h07", role: "Bookkeeper", sl: "bkcfo", sg: "bkcfo-bk", state: "nsw", office: "parramatta", location: "Parramatta", positions: 1, type: "backfill", priority: "high", status: "open", salaryMin: 60000, salaryMax: 78000, targetStart: "2025-10-15", approvedBy: "Wellington Takakura", notes: "Replacement headcount. Previous person resigned.", closedHow: null, closedDate: null, closedName: null },
+	{ id: "h08", role: "Insurance Advisor", sl: "ins", sg: null, state: "wa", office: "osborne-park", location: "Osborne Park", positions: 1, type: "new-capability", priority: "planned", status: "open", salaryMin: 90000, salaryMax: 120000, targetStart: "2026-01-15", approvedBy: "Nathan Hood", notes: "Planned Q3 FY2026. Tied to new insurance product rollout.", closedHow: null, closedDate: null, closedName: null },
+	{ id: "h09", role: "Finance Broker", sl: "fin", sg: null, state: "qld", office: "brisbane", location: "Brisbane", positions: 1, type: "new-capability", priority: "planned", status: "open", salaryMin: 85000, salaryMax: 115000, targetStart: "2026-02-01", approvedBy: "Anthony McPhee", notes: "New lending product launch. Budget conditional on Q2 revenue.", closedHow: null, closedDate: null, closedName: null },
+	{ id: "h10", role: "Associate Accountant", sl: "acc", sg: "acc-main", state: "sa", office: "gawler", location: "Gawler", positions: 1, type: "growth", priority: "planned", status: "open", salaryMin: 58000, salaryMax: 72000, targetStart: "2026-03-01", approvedBy: "Peter Caddy", notes: "Graduate pipeline initiative. University partnership hire.", closedHow: null, closedDate: null, closedName: null },
+	{ id: "h11", role: "Senior Bookkeeper", sl: "bkcfo", sg: "bkcfo-bk", state: "vic", office: "elsternwick", location: "Elsternwick", positions: 1, type: "backfill", priority: "high", status: "closed", salaryMin: 85000, salaryMax: 105000, targetStart: "2025-07-01", approvedBy: "Mike Haberfield", notes: "Filled internally — Tom promoted from Accountant role.", closedHow: "internal", closedDate: "2025-07-14", closedName: "Tom K." },
+	{ id: "h12", role: "Financial Planner", sl: "wm", sg: null, state: "qld", office: "brisbane", location: "Brisbane", positions: 1, type: "growth", priority: "high", status: "closed", salaryMin: 95000, salaryMax: 130000, targetStart: "2025-06-01", approvedBy: "Blair Milne", notes: "Filled via recruiter referral.", closedHow: "referral", closedDate: "2025-06-22", closedName: "Amy S." },
+] satisfies (typeof hiringNeeds.$inferInsert)[];
+
+// ── Salary Brackets (43 records) ────────────────────────────────────────────
+// The legacy data uses {m: [min,max]|null, r: [min,max]} per state and an
+// array of band objects. These don't match the Drizzle TypeScript types
+// (SalaryRange / string[]) but the underlying json columns accept any shape.
+// We store as-is and cast to bypass strict typing.
+
+const SALARY_BRACKETS_RAW = [
+	{div:"Accounting",sl:"acc",prog:"1",role:"Undergraduate Accountant",nsw:{m:null,r:[43,45]},qld:{m:[33,40],r:[32,50]},sa:{m:[32,37],r:[32,43]},vic:{m:[32,43],r:[33,40]},wa:{m:[33,40],r:[35,45]},bands:[{perf:"1 & 2",label:"Low-Mid",nsw:{m:null,r:[43,43]},qld:{m:[33,36],r:[32,40]},sa:{m:[32,34],r:[32,37]},vic:{m:[32,37],r:[33,36]},wa:{m:[33,36],r:[35,39]}},{perf:"3",label:"Mid",nsw:{m:null,r:[44,44]},qld:{m:[36,36],r:[41,41]},sa:{m:[34,34],r:[38,38]},vic:{m:[38,38],r:[36,36]},wa:{m:[36,36],r:[40,40]}},{perf:"4 & 5",label:"Mid-High",nsw:{m:null,r:[45,45]},qld:{m:[37,40],r:[42,50]},sa:{m:[35,37],r:[38,43]},vic:{m:[38,43],r:[37,40]},wa:{m:[37,40],r:[41,45]}}]},
+	{div:"Accounting",sl:"acc",prog:"2",role:"Graduate Accountant",nsw:{m:null,r:[43,65]},qld:{m:[33,36],r:[35,60]},sa:{m:[35,60],r:[40,60]},vic:{m:[40,60],r:[43,60]},wa:{m:[35,60],r:[35,60]},bands:[{perf:"1 & 2",label:"Low-Mid",nsw:{m:null,r:[43,53]},qld:{m:[33,34],r:[35,47]},sa:{m:[35,47],r:[40,49]},vic:{m:[40,49],r:[43,51]},wa:{m:[35,47],r:[35,47]}},{perf:"3",label:"Mid",nsw:{m:null,r:[54,54]},qld:{m:[34,34],r:[48,48]},sa:{m:[48,48],r:[50,50]},vic:{m:[50,50],r:[52,52]},wa:{m:[48,48],r:[48,48]}},{perf:"4 & 5",label:"Mid-High",nsw:{m:null,r:[55,65]},qld:{m:[35,36],r:[48,60]},sa:{m:[48,60],r:[51,60]},vic:{m:[51,60],r:[52,60]},wa:{m:[48,60],r:[48,60]}}]},
+	{div:"Accounting",sl:"acc",prog:"3",role:"Accountant",nsw:{m:null,r:[65,75]},qld:{m:[48,62],r:[65,80]},sa:{m:[60,80],r:[70,87]},vic:{m:[70,87],r:[65,88]},wa:{m:[60,85],r:[65,90]},bands:[{perf:"1 & 2",label:"Low-Mid",nsw:{m:null,r:[65,69]},qld:{m:[48,54],r:[65,72]},sa:{m:[60,69],r:[70,78]},vic:{m:[70,78],r:[65,76]},wa:{m:[60,72],r:[65,77]}},{perf:"3",label:"Mid",nsw:{m:null,r:[70,70]},qld:{m:[55,55],r:[72,72]},sa:{m:[70,70],r:[78,78]},vic:{m:[78,78],r:[76,76]},wa:{m:[72,72],r:[78,78]}},{perf:"4 & 5",label:"Mid-High",nsw:{m:null,r:[71,75]},qld:{m:[56,62],r:[73,80]},sa:{m:[71,80],r:[79,87]},vic:{m:[79,87],r:[77,88]},wa:{m:[73,85],r:[78,90]}}]},
+	{div:"Accounting",sl:"acc",prog:"4",role:"Senior Accountant",nsw:{m:null,r:[71,97]},qld:{m:[63,71],r:[75,85]},sa:{m:[80,95],r:[80,93]},vic:{m:[80,93],r:[77,93]},wa:{m:[75,95],r:[85,105]},bands:[{perf:"1 & 2",label:"Low-Mid",nsw:{m:null,r:[71,83]},qld:{m:[63,66],r:[75,79]},sa:{m:[80,87],r:[80,86]},vic:{m:[80,86],r:[77,84]},wa:{m:[75,84],r:[85,94]}},{perf:"3",label:"Mid",nsw:{m:null,r:[84,84]},qld:{m:[67,67],r:[80,80]},sa:{m:[88,88],r:[86,86]},vic:{m:[86,86],r:[85,85]},wa:{m:[85,85],r:[95,95]}},{perf:"4 & 5",label:"Mid-High",nsw:{m:null,r:[85,-3]},qld:{m:[68,71],r:[81,85]},sa:{m:[88,95],r:[87,93]},vic:{m:[87,93],r:[86,93]},wa:{m:[86,95],r:[96,105]}}]},
+	{div:"Accounting",sl:"acc",prog:"5",role:"Client Manager / Tax Manager (ACC)",nsw:{m:null,r:[79,109]},qld:{m:[71,102],r:[80,125]},sa:{m:[80,110],r:[85,110]},vic:{m:[85,110],r:[90,102]},wa:{m:[80,100],r:[95,125]},bands:[{perf:"1 & 2",label:"Low-Mid",nsw:{m:null,r:[79,92]},qld:{m:[71,86],r:[80,102]},sa:{m:[80,94],r:[85,97]},vic:{m:[85,97],r:[90,95]},wa:{m:[80,89],r:[95,109]}},{perf:"3",label:"Mid",nsw:{m:null,r:[93,93]},qld:{m:[86,86],r:[102,102]},sa:{m:[95,95],r:[98,98]},vic:{m:[98,98],r:[96,96]},wa:{m:[90,90],r:[110,110]}},{perf:"4 & 5",label:"Mid-High",nsw:{m:null,r:[94,109]},qld:{m:[87,102],r:[103,125]},sa:{m:[96,110],r:[98,110]},vic:{m:[98,110],r:[97,102]},wa:{m:[91,100],r:[111,125]}}]},
+	{div:"Accounting",sl:"acc",prog:"6",role:"Senior Auditor",nsw:null,qld:{m:null,r:[80,105]},sa:null,vic:null,wa:{m:null,r:[70,95]},bands:[{perf:"1 & 2",label:"Low-Mid",nsw:null,qld:{m:null,r:[80,92]},sa:null,vic:null,wa:{m:null,r:[70,82]}},{perf:"3",label:"Mid",nsw:null,qld:{m:null,r:[92,92]},sa:null,vic:null,wa:{m:null,r:[82,82]}},{perf:"4 & 5",label:"Mid-High",nsw:null,qld:{m:null,r:[93,5]},sa:null,vic:null,wa:{m:null,r:[83,95]}}]},
+	{div:"Accounting",sl:"acc",prog:"7",role:"Senior Manager (ACC)",nsw:{m:null,r:[110,140]},qld:{m:[107,123],r:[120,145]},sa:{m:[95,135],r:[115,145]},vic:{m:[115,145],r:[82,140]},wa:{m:[100,120],r:[115,135]},bands:[{perf:"1 & 2",label:"Low-Mid",nsw:{m:null,r:[110,124]},qld:{m:[107,114],r:[120,132]},sa:{m:[95,114],r:[115,129]},vic:{m:[115,129],r:[82,110]},wa:{m:[100,109],r:[115,124]}},{perf:"3",label:"Mid",nsw:{m:null,r:[125,125]},qld:{m:[115,115],r:[132,132]},sa:{m:[115,115],r:[130,130]},vic:{m:[130,130],r:[111,111]},wa:{m:[110,110],r:[125,125]}},{perf:"4 & 5",label:"Mid-High",nsw:{m:null,r:[126,140]},qld:{m:[116,123],r:[133,145]},sa:{m:[116,135],r:[131,145]},vic:{m:[131,145],r:[112,140]},wa:{m:[111,120],r:[126,145]}}]},
+	{div:"Accounting",sl:"acc",prog:"8",role:"Associate Director",nsw:{m:null,r:[145,160]},qld:{m:[125,135],r:[140,155]},sa:{m:[130,150],r:[135,155]},vic:{m:[135,155],r:[115,140]},wa:{m:[120,130],r:[130,145]},bands:[{perf:"1 & 2",label:"Low-Mid",nsw:{m:null,r:[145,152]},qld:{m:[125,129],r:[140,137]},sa:{m:[130,139],r:[135,144]},vic:{m:[135,144],r:[115,127]},wa:{m:[120,124],r:[130,137]}},{perf:"3",label:"Mid",nsw:{m:null,r:[152,152]},qld:{m:[130,130],r:[148,148]},sa:{m:[140,140],r:[145,145]},vic:{m:[145,145],r:[128,128]},wa:{m:[125,125],r:[138,138]}},{perf:"4 & 5",label:"Mid-High",nsw:{m:null,r:[153,160]},qld:{m:[131,135],r:[138,155]},sa:{m:[141,150],r:[146,155]},vic:{m:[146,155],r:[128,140]},wa:{m:[126,130],r:[138,145]}}]},
+	{div:"Accounting (Super)",sl:"acc",prog:"1",role:"SMSF Manager",nsw:null,qld:null,sa:null,vic:null,wa:{m:null,r:[115,135]},bands:[{perf:"1 & 2",label:"Low-Mid",nsw:null,qld:null,sa:null,vic:null,wa:{m:null,r:[115,124]}},{perf:"3",label:"Mid",nsw:null,qld:null,sa:null,vic:null,wa:{m:null,r:[125,125]}},{perf:"4 & 5",label:"Mid-High",nsw:null,qld:null,sa:null,vic:null,wa:{m:null,r:[126,135]}}]},
+	{div:"Accounting admin",sl:"acc",prog:"1",role:"Team Administrator",nsw:{m:null,r:[60,75]},qld:{m:[50,65],r:[55,65]},sa:{m:[45,55],r:[50,65]},vic:{m:[50,65],r:[55,65]},wa:{m:[50,60],r:[55,75]},bands:[{perf:"1 & 2",label:"Low-Mid",nsw:{m:null,r:[60,67]},qld:{m:[50,57],r:[55,59]},sa:{m:[45,49],r:[50,57]},vic:{m:[50,57],r:[55,59]},wa:{m:[50,54],r:[55,64]}},{perf:"3",label:"Mid",nsw:{m:null,r:[68,68]},qld:{m:[58,58],r:[60,60]},sa:{m:[50,50],r:[58,58]},vic:{m:[58,58],r:[60,60]},wa:{m:[55,55],r:[65,65]}},{perf:"4 & 5",label:"Mid-High",nsw:{m:null,r:[68,75]},qld:{m:[58,65],r:[61,65]},sa:{m:[51,55],r:[58,65]},vic:{m:[58,65],r:[61,65]},wa:{m:[56,60],r:[66,75]}}]},
+	{div:"Accounting admin",sl:"acc",prog:"2",role:"Senior Team Administrator",nsw:{m:null,r:[70,80]},qld:{m:[60,70],r:[60,75]},sa:{m:[50,70],r:[55,75]},vic:{m:[55,75],r:[65,75]},wa:{m:[60,70],r:[70,80]},bands:[{perf:"1 & 2",label:"Low-Mid",nsw:{m:null,r:[70,74]},qld:{m:[60,64],r:[60,67]},sa:{m:[50,59],r:[55,64]},vic:{m:[55,64],r:[65,69]},wa:{m:[60,64],r:[70,74]}},{perf:"3",label:"Mid",nsw:{m:null,r:[75,75]},qld:{m:[65,65],r:[68,68]},sa:{m:[60,60],r:[65,65]},vic:{m:[65,65],r:[70,70]},wa:{m:[65,65],r:[75,75]}},{perf:"4 & 5",label:"Mid-High",nsw:{m:null,r:[76,79]},qld:{m:[66,70],r:[68,75]},sa:{m:[61,70],r:[66,75]},vic:{m:[66,75],r:[71,75]},wa:{m:[66,70],r:[76,79]}}]},
+	{div:"Accounting admin",sl:"acc",prog:"3",role:"Practice Manager (ACC)",nsw:{m:null,r:[75,105]},qld:{m:[72,85],r:[75,95]},sa:{m:[62,77],r:[77,95]},vic:{m:[77,95],r:[62,87]},wa:{m:[70,85],r:[85,135]},bands:[{perf:"1 & 2",label:"Low-Mid",nsw:{m:null,r:[75,89]},qld:{m:[72,78],r:[75,84]},sa:{m:[62,69],r:[77,85]},vic:{m:[77,85],r:[62,74]},wa:{m:[70,77],r:[85,109]}},{perf:"3",label:"Mid",nsw:{m:null,r:[90,90]},qld:{m:[78,78],r:[85,85]},sa:{m:[70,70],r:[86,86]},vic:{m:[86,86],r:[74,74]},wa:{m:[78,78],r:[110,110]}},{perf:"4 & 5",label:"Mid-High",nsw:{m:null,r:[91,105]},qld:{m:[79,85],r:[86,95]},sa:{m:[70,77],r:[87,95]},vic:{m:[87,95],r:[75,87]},wa:{m:[78,85],r:[111,135]}}]},
+	{div:"Administration - general",sl:"admin",prog:"1",role:"Receptionist",nsw:{m:null,r:[45,60]},qld:{m:[45,60],r:[45,60]},sa:{m:[40,55],r:[40,50]},vic:{m:[40,50],r:[40,50]},wa:{m:[40,50],r:[40,60]},bands:[{perf:"1 & 2",label:"Low-Mid",nsw:{m:null,r:[45,52]},qld:{m:[45,52],r:[45,52]},sa:{m:[40,47],r:[40,44]},vic:{m:[40,44],r:[40,44]},wa:{m:[40,44],r:[40,49]}},{perf:"3",label:"Mid",nsw:{m:null,r:[52,52]},qld:{m:[52,52],r:[52,52]},sa:{m:[48,48],r:[45,45]},vic:{m:[45,45],r:[45,45]},wa:{m:[45,45],r:[50,50]}},{perf:"4 & 5",label:"Mid-High",nsw:{m:null,r:[53,60]},qld:{m:[53,60],r:[53,60]},sa:{m:[48,55],r:[46,50]},vic:{m:[46,50],r:[46,50]},wa:{m:[46,50],r:[51,60]}}]},
+	{div:"Administration - general",sl:"admin",prog:"1",role:"Administration Assistant",nsw:{m:null,r:[40,55]},qld:{m:[40,55],r:[40,55]},sa:{m:[40,50],r:[40,55]},vic:{m:[40,55],r:[35,55]},wa:{m:[35,55],r:[40,55]},bands:[{perf:"1 & 2",label:"Low-Mid",nsw:{m:null,r:[40,47]},qld:{m:[40,47],r:[40,47]},sa:{m:[40,44],r:[40,47]},vic:{m:[40,47],r:[35,44]},wa:{m:[45,45],r:[40,47]}},{perf:"3",label:"Mid",nsw:{m:null,r:[48,48]},qld:{m:[48,48],r:[48,48]},sa:{m:[45,45],r:[48,48]},vic:{m:[48,48],r:[45,45]},wa:{m:[46,55],r:[48,48]}},{perf:"4 & 5",label:"Mid-High",nsw:{m:null,r:[48,55]},qld:{m:[48,55],r:[48,55]},sa:{m:[46,50],r:[48,55]},vic:{m:[48,55],r:[46,55]},wa:{m:null,r:[48,55]}}]},
+	{div:"Administration - general",sl:"admin",prog:"2",role:"Office Administrator",nsw:{m:null,r:[45,55]},qld:{m:[45,50],r:[45,55]},sa:{m:[40,50],r:[45,50]},vic:{m:[45,50],r:[45,55]},wa:{m:[45,55],r:[45,55]},bands:[{perf:"1 & 2",label:"Low-Mid",nsw:{m:null,r:[45,49]},qld:{m:[45,47],r:[45,49]},sa:{m:[40,44],r:[45,47]},vic:{m:[45,47],r:[45,49]},wa:{m:[45,49],r:[45,49]}},{perf:"3",label:"Mid",nsw:{m:null,r:[50,50]},qld:{m:[48,48],r:[50,50]},sa:{m:[45,45],r:[48,48]},vic:{m:[48,48],r:[50,50]},wa:{m:[50,50],r:[50,50]}},{perf:"4 & 5",label:"Mid-High",nsw:{m:null,r:[51,55]},qld:{m:[48,50],r:[51,55]},sa:{m:[46,50],r:[48,50]},vic:{m:[48,50],r:[51,55]},wa:{m:[51,55],r:[51,55]}}]},
+	{div:"Administration - general",sl:"admin",prog:"3",role:"Senior Office Administrator",nsw:{m:null,r:[50,60]},qld:{m:[50,55],r:[50,60]},sa:{m:[45,55],r:[50,60]},vic:{m:[50,60],r:[55,60]},wa:{m:[55,60],r:[55,60]},bands:[{perf:"1 & 2",label:"Low-Mid",nsw:{m:null,r:[50,54]},qld:{m:[50,52],r:[50,54]},sa:{m:[45,49],r:[50,54]},vic:{m:[50,54],r:[55,57]},wa:{m:[55,57],r:[55,57]}},{perf:"3",label:"Mid",nsw:{m:null,r:[55,55]},qld:{m:[52,52],r:[55,55]},sa:{m:[50,50],r:[55,55]},vic:{m:[55,55],r:[58,58]},wa:{m:[58,58],r:[58,58]}},{perf:"4 & 5",label:"Mid-High",nsw:{m:null,r:[56,60]},qld:{m:[53,55],r:[56,60]},sa:{m:[51,55],r:[56,60]},vic:{m:[56,60],r:[58,60]},wa:{m:[58,60],r:[58,60]}}]},
+	{div:"Administration - general",sl:"admin",prog:"4",role:"Office Manager",nsw:{m:null,r:[75,95]},qld:{m:[65,85],r:[60,75]},sa:{m:[50,70],r:[60,75]},vic:{m:[60,75],r:[70,85]},wa:{m:[70,85],r:[65,95]},bands:[{perf:"1 & 2",label:"Low-Mid",nsw:{m:null,r:[75,84]},qld:{m:[65,74],r:[60,67]},sa:{m:[50,59],r:[60,67]},vic:{m:[60,67],r:[70,77]},wa:{m:[70,77],r:[65,79]}},{perf:"3",label:"Mid",nsw:{m:null,r:[85,85]},qld:{m:[75,75],r:[68,68]},sa:{m:[60,60],r:[68,68]},vic:{m:[68,68],r:[78,78]},wa:{m:[78,78],r:[80,80]}},{perf:"4 & 5",label:"Mid-High",nsw:{m:null,r:[86,95]},qld:{m:[76,85],r:[68,75]},sa:{m:[61,70],r:[68,75]},vic:{m:[68,75],r:[78,85]},wa:{m:[78,85],r:[81,95]}}]},
+	{div:"Administration - personal",sl:"admin",prog:"1",role:"Personal Assistant",nsw:{m:null,r:[75,95]},qld:{m:[60,70],r:[55,65]},sa:{m:[55,65],r:[60,70]},vic:{m:[60,70],r:[65,75]},wa:{m:[65,75],r:[65,95]},bands:[{perf:"1 & 2",label:"Low-Mid",nsw:{m:null,r:[75,84]},qld:{m:[60,64],r:[55,59]},sa:{m:[55,59],r:[60,64]},vic:{m:[60,64],r:[65,69]},wa:{m:[65,69],r:[65,79]}},{perf:"3",label:"Mid",nsw:{m:null,r:[85,85]},qld:{m:[65,65],r:[60,60]},sa:{m:[60,60],r:[65,65]},vic:{m:[65,65],r:[70,70]},wa:{m:[70,70],r:[80,80]}},{perf:"4 & 5",label:"Mid-High",nsw:{m:null,r:[86,95]},qld:{m:[66,70],r:[61,65]},sa:{m:[61,65],r:[66,70]},vic:{m:[66,70],r:[71,75]},wa:{m:[71,75],r:[81,95]}}]},
+	{div:"Administration - personal",sl:"admin",prog:"2",role:"Executive Assistant",nsw:{m:null,r:[70,110]},qld:{m:[70,95],r:[60,70]},sa:{m:[60,70],r:[60,80]},vic:{m:[60,80],r:[75,105]},wa:{m:[75,105],r:[65,105]},bands:[{perf:"1 & 2",label:"Low-Mid",nsw:{m:null,r:[70,89]},qld:{m:[70,82],r:[60,64]},sa:{m:[60,64],r:[60,69]},vic:{m:[60,69],r:[75,89]},wa:{m:[75,89],r:[65,84]}},{perf:"3",label:"Mid",nsw:{m:null,r:[90,90]},qld:{m:[82,82],r:[65,65]},sa:{m:[65,65],r:[70,70]},vic:{m:[70,70],r:[90,90]},wa:{m:[90,90],r:[85,85]}},{perf:"4 & 5",label:"Mid-High",nsw:{m:null,r:[91,110]},qld:{m:[83,95],r:[66,70]},sa:{m:[66,70],r:[71,80]},vic:{m:[71,80],r:[91,105]},wa:{m:[91,105],r:[86,105]}}]},
+	{div:"Bookkeeping & CFO Services",sl:"bkcfo",prog:"1",role:"Client Success Specialist (BKK)",nsw:{m:null,r:[70,90]},qld:{m:[70,90],r:[60,80]},sa:{m:[60,80],r:[60,80]},vic:{m:[60,80],r:[60,80]},wa:{m:[60,80],r:[70,90]},bands:[{perf:"1 & 2",label:"Low-Mid",nsw:{m:null,r:[70,79]},qld:{m:[70,79],r:[60,69]},sa:{m:[60,69],r:[60,69]},vic:{m:[60,69],r:[60,69]},wa:{m:[60,69],r:[70,79]}},{perf:"3",label:"Mid",nsw:{m:null,r:[80,80]},qld:{m:[80,80],r:[70,70]},sa:{m:[70,70],r:[70,70]},vic:{m:[70,70],r:[70,70]},wa:{m:[70,70],r:[80,80]}},{perf:"4 & 5",label:"Mid-High",nsw:{m:null,r:[81,90]},qld:{m:[81,90],r:[71,80]},sa:{m:[71,80],r:[71,80]},vic:{m:[71,80],r:[71,80]},wa:{m:[71,80],r:[81,90]}}]},
+	{div:"Bookkeeping & CFO Services",sl:"bkcfo",prog:"1",role:"Junior Bookkeeper",nsw:{m:null,r:[40,55]},qld:{m:[40,55],r:[40,55]},sa:{m:[40,55],r:[40,55]},vic:{m:[40,55],r:[40,55]},wa:{m:[40,55],r:[40,55]},bands:[{perf:"1 & 2",label:"Low-Mid",nsw:{m:null,r:[40,47]},qld:{m:[40,47],r:[40,47]},sa:{m:[40,47],r:[40,47]},vic:{m:[40,47],r:[40,47]},wa:{m:[40,47],r:[40,47]}},{perf:"3",label:"Mid",nsw:{m:null,r:[48,48]},qld:{m:[48,48],r:[48,48]},sa:{m:[48,48],r:[48,48]},vic:{m:[48,48],r:[48,48]},wa:{m:[48,48],r:[48,48]}},{perf:"4 & 5",label:"Mid-High",nsw:{m:null,r:[48,55]},qld:{m:[48,55],r:[48,55]},sa:{m:[48,55],r:[48,55]},vic:{m:[48,55],r:[48,55]},wa:{m:[48,55],r:[48,55]}}]},
+	{div:"Bookkeeping & CFO Services",sl:"bkcfo",prog:"2",role:"Bookkeeper",nsw:{m:null,r:[60,75]},qld:{m:[60,75],r:[55,70]},sa:{m:[40,65],r:[60,70]},vic:{m:[60,70],r:[55,70]},wa:{m:[40,55],r:[65,85]},bands:[{perf:"1 & 2",label:"Low-Mid",nsw:{m:null,r:[60,67]},qld:{m:[60,67],r:[55,62]},sa:{m:[40,52],r:[60,64]},vic:{m:[60,64],r:[55,62]},wa:{m:[40,47],r:[65,74]}},{perf:"3",label:"Mid",nsw:{m:null,r:[68,68]},qld:{m:[68,68],r:[62,62]},sa:{m:[52,52],r:[65,65]},vic:{m:[65,65],r:[62,62]},wa:{m:[48,48],r:[75,75]}},{perf:"4 & 5",label:"Mid-High",nsw:{m:null,r:[68,75]},qld:{m:[68,75],r:[61,70]},sa:{m:[53,65],r:[66,70]},vic:{m:[66,70],r:[61,70]},wa:{m:[48,55],r:[76,85]}}]},
+	{div:"Bookkeeping & CFO Services",sl:"bkcfo",prog:"3",role:"Senior Bookkeeper",nsw:{m:null,r:[75,85]},qld:{m:[75,85],r:[60,75]},sa:{m:[55,70],r:[65,80]},vic:{m:[65,80],r:[70,85]},wa:{m:[55,75],r:[75,95]},bands:[{perf:"1 & 2",label:"Low-Mid",nsw:{m:null,r:[75,79]},qld:{m:[75,79],r:[60,67]},sa:{m:[55,62],r:[65,72]},vic:{m:[65,72],r:[70,77]},wa:{m:[55,64],r:[75,84]}},{perf:"3",label:"Mid",nsw:{m:null,r:[80,80]},qld:{m:[80,80],r:[68,68]},sa:{m:[62,62],r:[72,72]},vic:{m:[72,72],r:[78,78]},wa:{m:[65,65],r:[85,85]}},{perf:"4 & 5",label:"Mid-High",nsw:{m:null,r:[81,85]},qld:{m:[81,85],r:[68,75]},sa:{m:[63,70],r:[73,80]},vic:{m:[73,80],r:[78,85]},wa:{m:[66,75],r:[86,95]}}]},
+	{div:"Bookkeeping & CFO Services",sl:"bkcfo",prog:"4",role:"Client Manager (BKK)",nsw:{m:null,r:[80,90]},qld:{m:[80,90],r:[70,80]},sa:{m:[65,75],r:[75,85]},vic:{m:[75,85],r:[80,90]},wa:{m:[80,90],r:[90,100]},bands:[{perf:"1 & 2",label:"Low-Mid",nsw:{m:null,r:[80,84]},qld:{m:[80,84],r:[70,74]},sa:{m:[65,69],r:[75,79]},vic:{m:[75,79],r:[80,84]},wa:{m:[80,84],r:[90,94]}},{perf:"3",label:"Mid",nsw:{m:null,r:[85,85]},qld:{m:[85,85],r:[75,75]},sa:{m:[70,70],r:[80,80]},vic:{m:[80,80],r:[85,85]},wa:{m:[85,85],r:[95,95]}},{perf:"4 & 5",label:"Mid-High",nsw:{m:null,r:[86,90]},qld:{m:[86,90],r:[76,80]},sa:{m:[71,75],r:[81,85]},vic:{m:[81,85],r:[86,90]},wa:{m:[86,90],r:[96,100]}}]},
+	{div:"Bookkeeping & CFO Services",sl:"bkcfo",prog:"5",role:"Senior Client Manager (BKK)",nsw:{m:null,r:[90,100]},qld:{m:[90,100],r:[80,100]},sa:{m:[75,95],r:[80,95]},vic:{m:[80,95],r:[85,95]},wa:{m:[85,95],r:[95,105]},bands:[{perf:"1 & 2",label:"Low-Mid",nsw:{m:null,r:[90,94]},qld:{m:[90,94],r:[80,89]},sa:{m:[75,84],r:[80,87]},vic:{m:[80,87],r:[85,89]},wa:{m:[85,89],r:[95,99]}},{perf:"3",label:"Mid",nsw:{m:null,r:[95,95]},qld:{m:[95,95],r:[90,90]},sa:{m:[85,85],r:[88,88]},vic:{m:[88,88],r:[90,90]},wa:{m:[90,90],r:[100,100]}},{perf:"4 & 5",label:"Mid-High",nsw:{m:null,r:[96,100]},qld:{m:[96,100],r:[91,100]},sa:{m:[86,95],r:[88,95]},vic:{m:[88,95],r:[91,95]},wa:{m:[91,95],r:[101,105]}}]},
+	{div:"Bookkeeping & CFO Services",sl:"bkcfo",prog:"6",role:"Senior Manager (BKK)",nsw:{m:null,r:[95,135]},qld:{m:[95,135],r:[100,145]},sa:{m:[95,140],r:[100,145]},vic:{m:[100,145],r:[90,135]},wa:{m:[90,135],r:[105,145]},bands:[{perf:"1 & 2",label:"Low-Mid",nsw:{m:null,r:[95,114]},qld:{m:[95,114],r:[100,122]},sa:{m:[95,117],r:[100,122]},vic:{m:[100,122],r:[90,112]},wa:{m:[90,112],r:[105,124]}},{perf:"3",label:"Mid",nsw:{m:null,r:[115,115]},qld:{m:[115,115],r:[122,122]},sa:{m:[118,118],r:[122,122]},vic:{m:[122,122],r:[112,112]},wa:{m:[112,112],r:[125,125]}},{perf:"4 & 5",label:"Mid-High",nsw:{m:null,r:[116,135]},qld:{m:[116,135],r:[123,145]},sa:{m:[118,140],r:[123,145]},vic:{m:[123,145],r:[113,135]},wa:{m:[113,135],r:[126,145]}}]},
+	{div:"Bookkeeping & CFO Services",sl:"bkcfo",prog:"7",role:"Director",nsw:{m:null,r:[165,185]},qld:{m:[165,185],r:[135,150]},sa:{m:[130,145],r:[125,145]},vic:{m:[125,145],r:[160,180]},wa:{m:[160,180],r:[135,155]},bands:[{perf:"1 & 2",label:"Low-Mid",nsw:{m:null,r:[165,174]},qld:{m:[165,174],r:[135,142]},sa:{m:[130,137],r:[125,134]},vic:{m:[125,134],r:[160,169]},wa:{m:[160,169],r:[135,144]}},{perf:"3",label:"Mid",nsw:{m:null,r:[175,175]},qld:{m:[175,175],r:[142,142]},sa:{m:[138,138],r:[135,135]},vic:{m:[135,135],r:[170,170]},wa:{m:[170,170],r:[145,145]}},{perf:"4 & 5",label:"Mid-High",nsw:{m:null,r:[176,185]},qld:{m:[176,185],r:[143,150]},sa:{m:[138,145],r:[136,145]},vic:{m:[136,145],r:[171,180]},wa:{m:[171,180],r:[146,155]}}]},
+	{div:"Bookkeeping & CFO Services - Payroll",sl:"bkcfo",prog:"1",role:"Payroll Assistant",nsw:{m:null,r:[60,70]},qld:{m:[60,70],r:[60,70]},sa:{m:[55,65],r:[60,70]},vic:{m:[60,70],r:[60,70]},wa:{m:[50,65],r:[60,80]},bands:[{perf:"1 & 2",label:"Low-Mid",nsw:{m:null,r:[60,64]},qld:{m:[60,64],r:[60,64]},sa:{m:[55,59],r:[60,64]},vic:{m:[60,64],r:[60,64]},wa:{m:[50,57],r:[60,69]}},{perf:"3",label:"Mid",nsw:{m:null,r:[65,65]},qld:{m:[65,65],r:[65,65]},sa:{m:[60,60],r:[65,65]},vic:{m:[65,65],r:[65,65]},wa:{m:[58,58],r:[70,70]}},{perf:"4 & 5",label:"Mid-High",nsw:{m:null,r:[66,70]},qld:{m:[66,70],r:[66,70]},sa:{m:[61,65],r:[66,70]},vic:{m:[66,70],r:[66,70]},wa:{m:[58,65],r:[71,80]}}]},
+	{div:"Bookkeeping & CFO Services - Payroll",sl:"bkcfo",prog:"2",role:"Payroll Specialist",nsw:{m:null,r:[70,85]},qld:{m:[70,85],r:[75,85]},sa:{m:[60,75],r:[75,85]},vic:{m:[75,85],r:[65,80]},wa:{m:[65,80],r:[70,105]},bands:[{perf:"1 & 2",label:"Low-Mid",nsw:{m:null,r:[70,77]},qld:{m:[70,77],r:[75,79]},sa:{m:[60,67],r:[75,79]},vic:{m:[75,79],r:[65,72]},wa:{m:[65,72],r:[70,87]}},{perf:"3",label:"Mid",nsw:{m:null,r:[78,78]},qld:{m:[78,78],r:[80,80]},sa:{m:[68,68],r:[80,80]},vic:{m:[80,80],r:[72,72]},wa:{m:[72,72],r:[88,88]}},{perf:"4 & 5",label:"Mid-High",nsw:{m:null,r:[78,85]},qld:{m:[78,85],r:[81,85]},sa:{m:[68,75],r:[81,85]},vic:{m:[81,85],r:[73,80]},wa:{m:[73,80],r:[88,105]}}]},
+	{div:"Bookkeeping & CFO Services - Payroll",sl:"bkcfo",prog:"3",role:"Senior Payroll Officer",nsw:{m:null,r:[70,85]},qld:{m:[70,85],r:[75,85]},sa:{m:[60,75],r:[75,85]},vic:{m:[75,85],r:[65,80]},wa:{m:[55,75],r:[70,105]},bands:[{perf:"1 & 2",label:"Low-Mid",nsw:{m:null,r:[70,77]},qld:{m:[70,77],r:[75,79]},sa:{m:[60,67],r:[75,79]},vic:{m:[75,79],r:[65,72]},wa:{m:[55,72],r:[70,87]}},{perf:"3",label:"Mid",nsw:{m:null,r:[78,78]},qld:{m:[78,78],r:[80,80]},sa:{m:[68,68],r:[80,80]},vic:{m:[80,80],r:[72,72]},wa:{m:[72,72],r:[88,88]}},{perf:"4 & 5",label:"Mid-High",nsw:{m:null,r:[78,85]},qld:{m:[78,85],r:[81,85]},sa:{m:[68,75],r:[81,85]},vic:{m:[81,85],r:[73,70]},wa:{m:[73,75],r:[88,105]}}]},
+	{div:"Bookkeeping & CFO Services - Payroll",sl:"bkcfo",prog:"4",role:"Payroll Manager",nsw:{m:null,r:[95,120]},qld:{m:[85,105],r:[95,115]},sa:{m:[70,90],r:[80,105]},vic:{m:[80,105],r:[75,100]},wa:{m:[70,95],r:[85,115]},bands:[{perf:"1 & 2",label:"Low-Mid",nsw:{m:null,r:[95,107]},qld:{m:[85,94],r:[95,104]},sa:{m:[70,79],r:[80,92]},vic:{m:[80,92],r:[75,87]},wa:{m:[70,82],r:[85,104]}},{perf:"3",label:"Mid",nsw:{m:null,r:[108,108]},qld:{m:[95,95],r:[105,105]},sa:{m:[80,80],r:[92,92]},vic:{m:[92,92],r:[88,88]},wa:{m:[82,82],r:[105,105]}},{perf:"4 & 5",label:"Mid-High",nsw:{m:null,r:[108,120]},qld:{m:[96,105],r:[106,115]},sa:{m:[81,90],r:[93,105]},vic:{m:[93,105],r:[88,100]},wa:{m:[83,95],r:[106,115]}}]},
+	{div:"Wealth",sl:"wm",prog:"1",role:"Client Services Assistant",nsw:{m:null,r:[40,50]},qld:{m:[40,50],r:[40,50]},sa:{m:[40,50],r:[40,50]},vic:{m:[40,50],r:[40,50]},wa:{m:[40,50],r:[40,50]},bands:[{perf:"1 & 2",label:"Low-Mid",nsw:{m:null,r:[40,44]},qld:{m:[40,44],r:[40,44]},sa:{m:[40,44],r:[40,44]},vic:{m:[40,44],r:[40,44]},wa:{m:[40,44],r:[40,44]}},{perf:"3",label:"Mid",nsw:{m:null,r:[45,45]},qld:{m:[45,45],r:[45,45]},sa:{m:[45,45],r:[45,45]},vic:{m:[45,45],r:[45,45]},wa:{m:[45,45],r:[45,45]}},{perf:"4 & 5",label:"Mid-High",nsw:{m:null,r:[46,50]},qld:{m:[46,50],r:[46,50]},sa:{m:[46,50],r:[46,50]},vic:{m:[46,50],r:[46,50]},wa:{m:[46,50],r:[46,50]}}]},
+	{div:"Wealth",sl:"wm",prog:"2",role:"Client Services Officer",nsw:{m:null,r:[45,65]},qld:{m:[45,65],r:[45,65]},sa:{m:[40,50],r:[45,65]},vic:{m:[45,65],r:[45,65]},wa:{m:[45,65],r:[45,65]},bands:[{perf:"1 & 2",label:"Low-Mid",nsw:{m:null,r:[45,54]},qld:{m:[45,54],r:[45,54]},sa:{m:[40,44],r:[45,54]},vic:{m:[45,54],r:[45,54]},wa:{m:[45,54],r:[45,54]}},{perf:"3",label:"Mid",nsw:{m:null,r:[55,55]},qld:{m:[55,55],r:[55,55]},sa:{m:[45,45],r:[55,55]},vic:{m:[55,55],r:[55,55]},wa:{m:[55,55],r:[55,55]}},{perf:"4 & 5",label:"Mid-High",nsw:{m:null,r:[56,65]},qld:{m:[56,65],r:[56,65]},sa:{m:[46,50],r:[56,65]},vic:{m:[56,65],r:[56,65]},wa:{m:[56,65],r:[56,65]}}]},
+	{div:"Wealth",sl:"wm",prog:"3",role:"Client Services Manager",nsw:{m:null,r:[65,85]},qld:{m:[65,85],r:[65,85]},sa:{m:[50,70],r:[65,85]},vic:{m:[65,85],r:[65,85]},wa:{m:[65,85],r:[65,85]},bands:[{perf:"1 & 2",label:"Low-Mid",nsw:{m:null,r:[65,74]},qld:{m:[65,74],r:[65,74]},sa:{m:[50,59],r:[65,74]},vic:{m:[65,74],r:[65,74]},wa:{m:[65,74],r:[65,74]}},{perf:"3",label:"Mid",nsw:{m:null,r:[75,75]},qld:{m:[75,75],r:[75,75]},sa:{m:[60,60],r:[75,75]},vic:{m:[75,75],r:[75,75]},wa:{m:[75,75],r:[75,75]}},{perf:"4 & 5",label:"Mid-High",nsw:{m:null,r:[76,85]},qld:{m:[76,85],r:[76,85]},sa:{m:[61,70],r:[76,85]},vic:{m:[76,85],r:[76,85]},wa:{m:[76,85],r:[76,85]}}]},
+	{div:"Wealth",sl:"wm",prog:"1",role:"Paraplanner",nsw:{m:null,r:[65,85]},qld:{m:[65,85],r:[55,75]},sa:{m:[55,75],r:[55,65]},vic:{m:[55,65],r:[60,80]},wa:{m:[60,80],r:[65,95]},bands:[{perf:"1 & 2",label:"Low-Mid",nsw:{m:null,r:[65,74]},qld:{m:[65,74],r:[55,64]},sa:{m:[55,64],r:[55,59]},vic:{m:[55,59],r:[60,69]},wa:{m:[60,69],r:[65,79]}},{perf:"3",label:"Mid",nsw:{m:null,r:[75,75]},qld:{m:[75,75],r:[65,65]},sa:{m:[65,65],r:[60,60]},vic:{m:[60,60],r:[70,70]},wa:{m:[70,70],r:[80,80]}},{perf:"4 & 5",label:"Mid-High",nsw:{m:null,r:[76,85]},qld:{m:[76,85],r:[66,75]},sa:{m:[66,75],r:[61,65]},vic:{m:[61,65],r:[71,80]},wa:{m:[71,80],r:[81,95]}}]},
+	{div:"Wealth",sl:"wm",prog:"1",role:"Financial Planner",nsw:{m:null,r:[80,125]},qld:{m:[80,125],r:[75,115]},sa:{m:[75,115],r:[67,100]},vic:{m:[67,100],r:[75,115]},wa:{m:[75,115],r:[85,110]},bands:[{perf:"1 & 2",label:"Low-Mid",nsw:{m:null,r:[80,102]},qld:{m:[80,102],r:[75,97]},sa:{m:[75,97],r:[67,83]},vic:{m:[67,83],r:[75,97]},wa:{m:[75,97],r:[85,97]}},{perf:"3",label:"Mid",nsw:{m:null,r:[102,102]},qld:{m:[102,102],r:[98,98]},sa:{m:[98,98],r:[84,84]},vic:{m:[84,84],r:[98,98]},wa:{m:[98,98],r:[98,98]}},{perf:"4 & 5",label:"Mid-High",nsw:{m:null,r:[103,125]},qld:{m:[103,125],r:[98,115]},sa:{m:[98,115],r:[84,100]},vic:{m:[84,100],r:[98,115]},wa:{m:[98,115],r:[98,110]}}]},
+	{div:"Wealth",sl:"wm",prog:"2",role:"Senior Financial Planner",nsw:{m:null,r:[125,165]},qld:{m:[125,165],r:[90,125]},sa:{m:[90,125],r:[80,115]},vic:{m:[80,115],r:[95,145]},wa:{m:[95,145],r:[115,145]},bands:[{perf:"1 & 2",label:"Low-Mid",nsw:{m:null,r:[125,144]},qld:{m:[125,144],r:[90,107]},sa:{m:[90,107],r:[80,97]},vic:{m:[80,97],r:[95,119]},wa:{m:[95,119],r:[115,129]}},{perf:"3",label:"Mid",nsw:{m:null,r:[145,145]},qld:{m:[145,145],r:[108,108]},sa:{m:[108,108],r:[98,98]},vic:{m:[98,98],r:[120,120]},wa:{m:[120,120],r:[130,130]}},{perf:"4 & 5",label:"Mid-High",nsw:{m:null,r:[146,165]},qld:{m:[146,165],r:[108,125]},sa:{m:[108,125],r:[98,115]},vic:{m:[98,115],r:[121,145]},wa:{m:[121,145],r:[131,145]}}]},
+	{div:"Wealth",sl:"wm",prog:"3",role:"Financial Planning Manager",nsw:{m:null,r:[135,185]},qld:{m:[135,185],r:[107,150]},sa:{m:[107,150],r:[97,123]},vic:{m:[97,123],r:[110,165]},wa:{m:[110,165],r:[110,145]},bands:[{perf:"1 & 2",label:"Low-Mid",nsw:{m:null,r:[135,159]},qld:{m:[135,159],r:[107,128]},sa:{m:[107,128],r:[97,109]},vic:{m:[97,109],r:[110,137]},wa:{m:[110,137],r:[110,127]}},{perf:"3",label:"Mid",nsw:{m:null,r:[160,160]},qld:{m:[160,160],r:[128,128]},sa:{m:[128,128],r:[110,110]},vic:{m:[110,110],r:[138,138]},wa:{m:[138,138],r:[128,128]}},{perf:"4 & 5",label:"Mid-High",nsw:{m:null,r:[161,185]},qld:{m:[161,185],r:[129,150]},sa:{m:[129,150],r:[111,123]},vic:{m:[111,123],r:[138,165]},wa:{m:[138,165],r:[128,145]}}]},
+	{div:"Wealth",sl:"wm",prog:"4",role:"Director (WEA)",nsw:{m:null,r:[185,265]},qld:{m:[185,265],r:[169,220]},sa:{m:[169,220],r:[130,165]},vic:{m:[130,165],r:[189,250]},wa:{m:[189,250],r:[155,205]},bands:[{perf:"1 & 2",label:"Low-Mid",nsw:{m:null,r:[185,224]},qld:{m:[185,224],r:[169,194]},sa:{m:[169,194],r:[130,147]},vic:{m:[130,147],r:[189,219]},wa:{m:[189,219],r:[155,179]}},{perf:"3",label:"Mid",nsw:{m:null,r:[225,225]},qld:{m:[225,225],r:[194,194]},sa:{m:[194,194],r:[148,148]},vic:{m:[148,148],r:[220,220]},wa:{m:[220,220],r:[180,180]}},{perf:"4 & 5",label:"Mid-High",nsw:{m:null,r:[226,265]},qld:{m:[226,265],r:[195,220]},sa:{m:[195,220],r:[148,165]},vic:{m:[148,165],r:[220,250]},wa:{m:[220,250],r:[181,205]}}]},
+	{div:"Finance",sl:"fin",prog:"1",role:"Loan Administrator",nsw:{m:null,r:[50,85]},qld:{m:[50,85],r:[40,65]},sa:{m:[40,65],r:[40,55]},vic:{m:[40,55],r:[50,70]},wa:{m:[50,70],r:[50,65]},bands:[{perf:"1 & 2",label:"Low-Mid",nsw:{m:null,r:[50,67]},qld:{m:[50,67],r:[40,52]},sa:{m:[40,52],r:[40,47]},vic:{m:[40,47],r:[50,59]},wa:{m:[50,59],r:[50,57]}},{perf:"3",label:"Mid",nsw:{m:null,r:[68,68]},qld:{m:[68,68],r:[52,52]},sa:{m:[52,52],r:[48,48]},vic:{m:[48,48],r:[60,60]},wa:{m:[60,60],r:[58,58]}},{perf:"4 & 5",label:"Mid-High",nsw:{m:null,r:[68,85]},qld:{m:[68,85],r:[53,65]},sa:{m:[53,65],r:[48,55]},vic:{m:[48,55],r:[61,70]},wa:{m:[61,70],r:[58,65]}}]},
+	{div:"Insurance",sl:"ins",prog:"1",role:"Broker Assistant (INS)",nsw:{m:null,r:[50,70]},qld:{m:[50,70],r:[45,60]},sa:{m:[45,60],r:[45,55]},vic:{m:[45,55],r:[50,65]},wa:{m:[50,65],r:[45,55]},bands:[{perf:"1 & 2",label:"Low-Mid",nsw:{m:null,r:[50,59]},qld:{m:[50,59],r:[45,52]},sa:{m:[45,52],r:[45,49]},vic:{m:[45,49],r:[50,57]},wa:{m:[50,57],r:[45,49]}},{perf:"3",label:"Mid",nsw:{m:null,r:[60,60]},qld:{m:[60,60],r:[52,52]},sa:{m:[52,52],r:[50,50]},vic:{m:[50,50],r:[58,58]},wa:{m:[58,58],r:[50,50]}},{perf:"4 & 5",label:"Mid-High",nsw:{m:null,r:[61,70]},qld:{m:[61,70],r:[53,60]},sa:{m:[53,60],r:[51,55]},vic:{m:[51,55],r:[58,65]},wa:{m:[58,65],r:[51,55]}}]},
+	{div:"Insurance",sl:"ins",prog:"2",role:"Assistant Client Manager (INS)",nsw:{m:null,r:[65,95]},qld:{m:[65,95],r:[55,70]},sa:{m:[55,70],r:[52,60]},vic:{m:[52,60],r:[57,95]},wa:{m:[57,95],r:[52,65]},bands:[{perf:"1 & 2",label:"Low-Mid",nsw:{m:null,r:[65,79]},qld:{m:[65,79],r:[55,62]},sa:{m:[55,62],r:[50,54]},vic:{m:[50,54],r:[57,75]},wa:{m:[57,75],r:[52,58]}},{perf:"3",label:"Mid",nsw:{m:null,r:[80,80]},qld:{m:[80,80],r:[62,62]},sa:{m:[62,62],r:[55,55]},vic:{m:[55,55],r:[76,76]},wa:{m:[76,76],r:[58,58]}},{perf:"4 & 5",label:"Mid-High",nsw:{m:null,r:[81,95]},qld:{m:[81,95],r:[61,70]},sa:{m:[61,70],r:[56,60]},vic:{m:[56,60],r:[77,95]},wa:{m:[77,95],r:[59,65]}}]},
+	{div:"Insurance",sl:"ins",prog:"3",role:"Account Manager (INS)",nsw:{m:null,r:[85,145]},qld:{m:[85,145],r:[82,100]},sa:{m:[82,100],r:[75,100]},vic:{m:[75,100],r:[75,125]},wa:{m:[75,125],r:[72,85]},bands:[{perf:"1 & 2",label:"Low-Mid",nsw:{m:null,r:[85,114]},qld:{m:[85,114],r:[82,90]},sa:{m:[82,90],r:[75,87]},vic:{m:[75,87],r:[75,99]},wa:{m:[75,99],r:[72,78]}},{perf:"3",label:"Mid",nsw:{m:null,r:[115,115]},qld:{m:[115,115],r:[91,91]},sa:{m:[91,91],r:[88,88]},vic:{m:[88,88],r:[100,100]},wa:{m:[100,100],r:[78,78]}},{perf:"4 & 5",label:"Mid-High",nsw:{m:null,r:[116,145]},qld:{m:[116,145],r:[92,100]},sa:{m:[92,100],r:[88,100]},vic:{m:[88,100],r:[101,125]},wa:{m:[101,125],r:[79,85]}}]},
+];
+
+// Generate unique IDs for salary brackets (sl+prog is not unique across divisions)
+const SALARY_BRACKETS = SALARY_BRACKETS_RAW.map((b, i) => ({
+	id: `sb-${b.sl}-${b.prog}-${i}`,
+	div: b.div,
+	sl: b.sl,
+	prog: b.prog,
+	role: b.role,
+	// Cast to bypass strict TS types — json columns accept any shape
+	nsw: (b.nsw ?? {}) as never,
+	qld: (b.qld ?? {}) as never,
+	sa: (b.sa ?? {}) as never,
+	vic: (b.vic ?? {}) as never,
+	wa: (b.wa ?? {}) as never,
+	bands: b.bands as never,
+}));
+
+// ── Seed ────────────────────────────────────────────────────────────────────
+
+async function seed() {
+	console.log("Seeding database...\n");
+
+	// 1. Entities
+	const entResult = await db
+		.insert(entities)
+		.values(ENTITIES)
+		.onConflictDoNothing();
+	console.log(`  entities: ${entResult.count} inserted (${ENTITIES.length} total)`);
+
+	// 2. Carbonites
+	const cbResult = await db
+		.insert(carbonites)
+		.values(CARBONITES)
+		.onConflictDoNothing();
+	console.log(`  carbonites: ${cbResult.count} inserted (${CARBONITES.length} total)`);
+
+	// 3. Hiring needs
+	const hnResult = await db
+		.insert(hiringNeeds)
+		.values(HIRING_NEEDS)
+		.onConflictDoNothing();
+	console.log(`  hiring_needs: ${hnResult.count} inserted (${HIRING_NEEDS.length} total)`);
+
+	// 4. Salary brackets
+	const sbResult = await db
+		.insert(salaryBrackets)
+		.values(SALARY_BRACKETS)
+		.onConflictDoNothing();
+	console.log(`  salary_brackets: ${sbResult.count} inserted (${SALARY_BRACKETS.length} total)`);
+
+	console.log("\nSeed complete.");
+	process.exit(0);
+}
+
+seed().catch((err) => {
+	console.error("Seed failed:", err);
+	process.exit(1);
+});

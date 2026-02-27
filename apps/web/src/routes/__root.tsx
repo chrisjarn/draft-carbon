@@ -33,7 +33,7 @@ function RootComponent() {
 			<HeadContent />
 			<ThemeProvider
 				attribute="class"
-				defaultTheme="dark"
+				forcedTheme="light"
 				disableTransitionOnChange
 				storageKey="carbon-wfp-theme"
 			>
