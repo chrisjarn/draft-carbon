@@ -1,5 +1,5 @@
 import { carbonites, db, entities, hiringNeeds } from "@carbon-wfp/db";
-import { count, sql } from "drizzle-orm";
+import { and, count, lt, ne, sql } from "drizzle-orm";
 
 import { protectedProcedure, router } from "../index";
 
@@ -133,7 +133,10 @@ export const dashboardRouter = router({
 			})
 			.from(hiringNeeds)
 			.where(
-				sql`${hiringNeeds.status} != 'closed' AND ${hiringNeeds.createdAt} < ${ninetyDaysAgo}`,
+				and(
+					ne(hiringNeeds.status, "closed"),
+					lt(hiringNeeds.createdAt, ninetyDaysAgo),
+				),
 			);
 
 		const alerts: {

@@ -1,8 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import type { ColumnDef } from "@tanstack/react-table";
 import { Briefcase, Pencil, Plus, RotateCcw, Trash2, X } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
+import { DataTable } from "@/components/shared/data-table";
 import { DetailRow, DetailSection } from "@/components/shared/detail-display";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -29,14 +31,6 @@ import {
 	SheetHeader,
 	SheetTitle,
 } from "@/components/ui/sheet";
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from "@/components/ui/table";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { authClient } from "@/lib/auth-client";
@@ -724,6 +718,98 @@ function HiringPage() {
 		return acc;
 	}, {});
 
+	const columns = useMemo<ColumnDef<HiringNeed, unknown>[]>(() => {
+		const base: ColumnDef<HiringNeed, unknown>[] = [
+			{
+				accessorKey: "role",
+				header: "Role",
+				cell: ({ row }) => (
+					<span className="font-medium text-sm">{row.getValue("role")}</span>
+				),
+			},
+			{
+				accessorKey: "sl",
+				header: "SL",
+				cell: ({ row }) => (
+					<span className="text-xs">
+						{(row.getValue("sl") as string) ?? "—"}
+					</span>
+				),
+			},
+			{
+				accessorKey: "state",
+				header: "State",
+				cell: ({ row }) => (
+					<span className="text-xs">
+						{(row.getValue("state") as string) ?? "—"}
+					</span>
+				),
+			},
+			{
+				accessorKey: "office",
+				header: "Office",
+				cell: ({ row }) => (
+					<span className="text-xs">
+						{(row.getValue("office") as string) ?? "—"}
+					</span>
+				),
+			},
+			{
+				accessorKey: "positions",
+				header: "Pos.",
+				cell: ({ row }) => (
+					<span className="text-xs tabular-nums">
+						{(row.getValue("positions") as number) ?? 1}
+					</span>
+				),
+			},
+			{
+				accessorKey: "type",
+				header: "Type",
+				cell: ({ row }) => <TypeBadge type={row.getValue("type")} />,
+			},
+			{
+				accessorKey: "priority",
+				header: "Priority",
+				cell: ({ row }) => (
+					<PriorityBadge priority={row.getValue("priority")} />
+				),
+			},
+			{
+				accessorKey: "targetStart",
+				header: "Target Start",
+				cell: ({ row }) => (
+					<span className="text-xs">
+						{(row.getValue("targetStart") as string) ?? "—"}
+					</span>
+				),
+			},
+			{
+				id: "salary",
+				header: "Salary",
+				cell: ({ row }) => (
+					<span className="text-xs">
+						{salaryRange(row.original.salaryMin, row.original.salaryMax)}
+					</span>
+				),
+			},
+		];
+
+		if (tab === "closed") {
+			base.push({
+				accessorKey: "closedHow",
+				header: "Closed How",
+				cell: ({ row }) => (
+					<Badge variant="outline" className="text-[10px] capitalize">
+						{(row.getValue("closedHow") as string) ?? "—"}
+					</Badge>
+				),
+			});
+		}
+
+		return base;
+	}, [tab]);
+
 	return (
 		<div className="flex h-full flex-col">
 			{/* Header */}
@@ -782,7 +868,7 @@ function HiringPage() {
 			</div>
 
 			{/* Table */}
-			<div className="flex-1 overflow-auto">
+			<div className="flex-1 overflow-auto px-6 py-4">
 				{query.isPending ? (
 					<div className="flex h-40 items-center justify-center text-muted-foreground text-xs">
 						Loading…
@@ -793,63 +879,14 @@ function HiringPage() {
 						No {tab} roles
 					</div>
 				) : (
-					<Table>
-						<TableHeader>
-							<TableRow>
-								<TableHead className="w-[200px]">Role</TableHead>
-								<TableHead>SL</TableHead>
-								<TableHead>State</TableHead>
-								<TableHead>Office</TableHead>
-								<TableHead>Pos.</TableHead>
-								<TableHead>Type</TableHead>
-								<TableHead>Priority</TableHead>
-								<TableHead>Target Start</TableHead>
-								<TableHead>Salary</TableHead>
-								{tab === "closed" && <TableHead>Closed How</TableHead>}
-							</TableRow>
-						</TableHeader>
-						<TableBody>
-							{rows.map((row) => (
-								<TableRow
-									key={row.id}
-									className="cursor-pointer"
-									onClick={() => setSelected(row)}
-								>
-									<TableCell className="font-medium text-sm">
-										{row.role}
-									</TableCell>
-									<TableCell className="text-xs">{row.sl ?? "—"}</TableCell>
-									<TableCell className="text-xs">{row.state ?? "—"}</TableCell>
-									<TableCell className="text-xs">{row.office ?? "—"}</TableCell>
-									<TableCell className="text-xs tabular-nums">
-										{row.positions ?? 1}
-									</TableCell>
-									<TableCell>
-										<TypeBadge type={row.type} />
-									</TableCell>
-									<TableCell>
-										<PriorityBadge priority={row.priority} />
-									</TableCell>
-									<TableCell className="text-xs">
-										{row.targetStart ?? "—"}
-									</TableCell>
-									<TableCell className="text-xs">
-										{salaryRange(row.salaryMin, row.salaryMax)}
-									</TableCell>
-									{tab === "closed" && (
-										<TableCell>
-											<Badge
-												variant="outline"
-												className="text-[10px] capitalize"
-											>
-												{row.closedHow ?? "—"}
-											</Badge>
-										</TableCell>
-									)}
-								</TableRow>
-							))}
-						</TableBody>
-					</Table>
+					<DataTable
+						columns={columns}
+						data={rows}
+						pageSize={10}
+						searchPlaceholder="Search roles..."
+						onRowClick={setSelected}
+						emptyMessage={`No ${tab} roles`}
+					/>
 				)}
 			</div>
 

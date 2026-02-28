@@ -1,6 +1,8 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 
-import { AppSidebar } from "@/components/app-sidebar";
+import { AppSidebar } from "@/components/sidebar-02/app-sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { authClient } from "@/lib/auth-client";
 
 export const Route = createFileRoute("/_app")({
@@ -16,11 +18,15 @@ export const Route = createFileRoute("/_app")({
 
 function AppLayout() {
 	return (
-		<div className="flex h-svh overflow-hidden">
-			<AppSidebar />
-			<main className="flex min-w-0 flex-1 flex-col overflow-auto">
-				<Outlet />
-			</main>
-		</div>
+		<TooltipProvider>
+			<SidebarProvider>
+				<div className="relative flex h-dvh w-full">
+					<AppSidebar />
+					<SidebarInset className="flex flex-col overflow-auto">
+						<Outlet />
+					</SidebarInset>
+				</div>
+			</SidebarProvider>
+		</TooltipProvider>
 	);
 }

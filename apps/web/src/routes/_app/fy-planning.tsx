@@ -448,7 +448,9 @@ function CsvImportDialog({
 				<Textarea
 					value={csvText}
 					onChange={(e) => setCsvText(e.target.value)}
-					placeholder={"nsw,parramatta,Acc & Tax,150000\nvic,elsternwick,BKK,120000"}
+					placeholder={
+						"nsw,parramatta,Acc & Tax,150000\nvic,elsternwick,BKK,120000"
+					}
 					className="min-h-24 font-mono text-xs"
 				/>
 
@@ -507,10 +509,7 @@ function CsvImportDialog({
 
 // -- CSV Export ----------------------------------------------------------------
 
-function exportRevenueCsv(
-	rows: EntityWithRevenue[],
-	fy: string,
-) {
+function exportRevenueCsv(rows: EntityWithRevenue[], fy: string) {
 	const header = "entity,state,target,actual,variance,attainment%";
 	const lines = rows.map((r) => {
 		const target = r.revenue?.target ?? "";
@@ -574,8 +573,7 @@ function buildComparison(
 			const key = `${c.state}|${c.office}|${c.podName}`;
 			const p = priorMap.get(key);
 			const priorBudget = p?.budget ?? null;
-			const yoyChange =
-				priorBudget !== null ? c.budget - priorBudget : null;
+			const yoyChange = priorBudget !== null ? c.budget - priorBudget : null;
 			const yoyPct =
 				priorBudget !== null && priorBudget !== 0
 					? Math.round(((c.budget - priorBudget) / priorBudget) * 100)
@@ -635,18 +633,14 @@ function PodComparisonTable({ priorFy }: { priorFy: string }) {
 						<TableHead>Office</TableHead>
 						<TableHead>Pod</TableHead>
 						<TableHead className="text-right">Current Budget</TableHead>
-						<TableHead className="text-right">
-							Prior Year ({priorFy})
-						</TableHead>
+						<TableHead className="text-right">Prior Year ({priorFy})</TableHead>
 						<TableHead className="text-right">YoY Change</TableHead>
 						<TableHead className="text-right">YoY %</TableHead>
 					</TableRow>
 				</TableHeader>
 				<TableBody>
 					{comparison.map((r) => (
-						<TableRow
-							key={`${r.state}-${r.office}-${r.podName}`}
-						>
+						<TableRow key={`${r.state}-${r.office}-${r.podName}`}>
 							<TableCell>{r.state}</TableCell>
 							<TableCell>{r.office}</TableCell>
 							<TableCell>{r.podName}</TableCell>
@@ -657,7 +651,7 @@ function PodComparisonTable({ priorFy }: { priorFy: string }) {
 								{r.priorBudget !== null ? fmtDollar(r.priorBudget) : "\u2014"}
 							</TableCell>
 							<TableCell
-								className={`text-right tabular-nums font-medium ${
+								className={`text-right font-medium tabular-nums ${
 									r.yoyChange === null
 										? "text-muted-foreground"
 										: r.yoyChange >= 0
@@ -670,7 +664,7 @@ function PodComparisonTable({ priorFy }: { priorFy: string }) {
 									: "\u2014"}
 							</TableCell>
 							<TableCell
-								className={`text-right tabular-nums font-medium ${
+								className={`text-right font-medium tabular-nums ${
 									r.yoyPct === null
 										? "text-muted-foreground"
 										: r.yoyPct >= 0
