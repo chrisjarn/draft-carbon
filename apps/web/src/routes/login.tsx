@@ -32,10 +32,12 @@ function LoginPage() {
 									"polygon(20% 0%,100% 0%,100% 22%,44% 22%,44% 78%,100% 78%,100% 100%,20% 100%,0% 80%,0% 20%)",
 							}}
 						/>
-						<span className="text-xl font-extrabold tracking-tight">Carbon Group</span>
+						<span className="font-extrabold text-xl tracking-tight">
+							Carbon Group
+						</span>
 					</div>
 					<span
-						className="text-sm font-medium text-muted-foreground"
+						className="font-medium text-muted-foreground text-sm"
 						style={{ fontFamily: "cursive" }}
 					>
 						Workforce Planner

@@ -1,6 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
+import type { LucideIcon } from "lucide-react";
 import {
-	BarChart3,
 	Briefcase,
 	CalendarDays,
 	LayoutDashboard,
@@ -9,32 +9,10 @@ import {
 	TrendingUp,
 	Users,
 } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
 
 import { authClient } from "@/lib/auth-client";
+import { getRank, getUserRole, ROLE_LABELS } from "@/lib/rbac";
 import { cn } from "@/lib/utils";
-
-// ── RBAC ─────────────────────────────────────────────────────────────────────
-
-const ROLE_RANKS: Record<string, number> = {
-	admin: 100,
-	practice_manager: 80,
-	sl_lead: 50,
-	state_manager: 50,
-	readonly: 10,
-};
-
-const ROLE_LABELS: Record<string, string> = {
-	admin: "Admin",
-	practice_manager: "Practice Manager",
-	sl_lead: "SL Lead",
-	state_manager: "State Manager",
-	readonly: "View Only",
-};
-
-function getRank(role: string | undefined | null): number {
-	return ROLE_RANKS[role ?? "readonly"] ?? 10;
-}
 
 // ── Nav config ────────────────────────────────────────────────────────────────
 
@@ -79,9 +57,10 @@ function NavLink({ item, isActive }: { item: NavItem; isActive: boolean }) {
 		<Link
 			to={item.to}
 			className={cn(
-				"flex items-center gap-2 rounded-sm px-3 py-2 text-sm font-bold transition-all duration-100",
+				"flex items-center gap-2 rounded-sm px-3 py-2 font-bold text-sm transition-all duration-100",
 				"text-sidebar-foreground/55 hover:bg-sidebar-accent hover:text-sidebar-foreground",
-				isActive && "bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary hover:text-sidebar-primary-foreground",
+				isActive &&
+					"bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary hover:text-sidebar-primary-foreground",
 			)}
 			activeOptions={{ exact: false }}
 		>
@@ -95,7 +74,11 @@ function UserCard({
 	name,
 	email,
 	role,
-}: { name: string; email: string; role: string }) {
+}: {
+	name: string;
+	email: string;
+	role: string;
+}) {
 	const initials = name
 		.split(" ")
 		.map((n) => n[0])
@@ -105,11 +88,13 @@ function UserCard({
 
 	return (
 		<div className="flex items-center gap-2.5 rounded-sm bg-sidebar-accent px-3 py-2.5">
-			<div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-sidebar-primary text-xs font-bold text-sidebar-primary-foreground">
+			<div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-sidebar-primary font-bold text-sidebar-primary-foreground text-xs">
 				{initials}
 			</div>
 			<div className="min-w-0 flex-1 overflow-hidden">
-				<div className="truncate text-xs font-bold text-sidebar-foreground">{name}</div>
+				<div className="truncate font-bold text-sidebar-foreground text-xs">
+					{name}
+				</div>
 				<div className="truncate text-[10px] text-sidebar-foreground/40">
 					{ROLE_LABELS[role] ?? role}
 				</div>
@@ -125,7 +110,7 @@ export function AppSidebar() {
 	const router = useRouterState();
 	const pathname = router.location.pathname;
 
-	const userRole = (session?.user as { role?: string })?.role ?? "readonly";
+	const userRole = getUserRole(session?.user);
 	const userRank = getRank(userRole);
 
 	const visibleNav = NAV_ITEMS.filter((item) => userRank >= item.minRank);
@@ -134,15 +119,15 @@ export function AppSidebar() {
 	return (
 		<aside className="flex h-svh w-[248px] shrink-0 flex-col bg-sidebar">
 			{/* Logo */}
-			<div className="flex flex-col gap-0.5 border-b border-sidebar-border px-4 py-5">
+			<div className="flex flex-col gap-0.5 border-sidebar-border border-b px-4 py-5">
 				<div className="flex items-center gap-2.5">
 					<CarbonLogo />
-					<span className="text-lg font-extrabold tracking-tight text-sidebar-foreground">
+					<span className="font-extrabold text-lg text-sidebar-foreground tracking-tight">
 						Carbon Group
 					</span>
 				</div>
 				<span
-					className="ml-[38px] text-[12.5px] font-medium text-sidebar-primary"
+					className="ml-[38px] font-medium text-[12.5px] text-sidebar-primary"
 					style={{ fontFamily: "cursive" }}
 				>
 					Workforce Planner
@@ -183,7 +168,7 @@ export function AppSidebar() {
 
 			{/* User card */}
 			{session?.user && (
-				<div className="border-t border-sidebar-border p-2.5">
+				<div className="border-sidebar-border border-t p-2.5">
 					<UserCard
 						name={session.user.name}
 						email={session.user.email}

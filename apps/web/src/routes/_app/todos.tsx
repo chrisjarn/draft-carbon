@@ -4,7 +4,13 @@ import { Loader2, Trash2 } from "lucide-react";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { trpc } from "@/utils/trpc";
@@ -40,8 +46,8 @@ function TodosPage() {
 	return (
 		<div className="p-6">
 			<div className="mb-6">
-				<h1 className="text-lg font-extrabold tracking-tight">Todos</h1>
-				<p className="mt-1 text-xs text-muted-foreground">Manage your tasks</p>
+				<h1 className="font-extrabold text-lg tracking-tight">Todos</h1>
+				<p className="mt-1 text-muted-foreground text-xs">Manage your tasks</p>
 			</div>
 
 			<div className="mx-auto max-w-md">
@@ -75,7 +81,7 @@ function TodosPage() {
 								<Loader2 className="size-6 animate-spin" />
 							</div>
 						) : todos.data?.length === 0 ? (
-							<p className="py-4 text-center text-sm text-muted-foreground">
+							<p className="py-4 text-center text-muted-foreground text-sm">
 								No todos yet. Add one above!
 							</p>
 						) : (
@@ -98,7 +104,11 @@ function TodosPage() {
 											/>
 											<label
 												htmlFor={`todo-${todo.id}`}
-												className={todo.completed ? "line-through text-muted-foreground" : ""}
+												className={
+													todo.completed
+														? "text-muted-foreground line-through"
+														: ""
+												}
 											>
 												{todo.text}
 											</label>

@@ -1,24 +1,24 @@
 {
-  "name": "@carbon-wfp/auth",
-  "type": "module",
-  "exports": {
-    ".": {
-      "default": "./src/index.ts"
-    },
-    "./*": {
-      "default": "./src/*.ts"
-    }
-  },
-  "scripts": {},
-  "dependencies": {
-    "@carbon-wfp/db": "workspace:*",
-    "@carbon-wfp/env": "workspace:*",
-    "better-auth": "catalog:",
-    "dotenv": "catalog:",
-    "zod": "catalog:"
-  },
-  "devDependencies": {
-    "@carbon-wfp/config": "workspace:*",
-    "typescript": "catalog:"
-  }
+	"name": "@carbon-wfp/auth",
+	"type": "module",
+	"exports": {
+		".": {
+			"default": "./src/index.ts"
+		},
+		"./*": {
+			"default": "./src/*.ts"
+		}
+	},
+	"scripts": {},
+	"dependencies": {
+		"@carbon-wfp/db": "workspace:*",
+		"@carbon-wfp/env": "workspace:*",
+		"better-auth": "catalog:",
+		"dotenv": "catalog:",
+		"zod": "catalog:"
+	},
+	"devDependencies": {
+		"@carbon-wfp/config": "workspace:*",
+		"typescript": "catalog:"
+	}
 }

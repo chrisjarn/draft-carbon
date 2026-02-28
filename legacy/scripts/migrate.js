@@ -7,15 +7,18 @@
  *   node scripts/migrate.js --reset  — DROP and recreate all tables (destructive!)
  */
 
-import 'dotenv/config';
-import pg from 'pg';
+import "dotenv/config";
+import pg from "pg";
 
 const { Client } = pg;
-const reset = process.argv.includes('--reset');
+const reset = process.argv.includes("--reset");
 
 const client = new Client({
-  connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+	connectionString: process.env.DATABASE_URL,
+	ssl:
+		process.env.NODE_ENV === "production"
+			? { rejectUnauthorized: false }
+			: false,
 });
 
 const DROP_ALL = `
@@ -163,23 +166,23 @@ const CREATE_ALL = `
 `;
 
 async function migrate() {
-  await client.connect();
-  console.log('✅ Connected to PostgreSQL');
+	await client.connect();
+	console.log("✅ Connected to PostgreSQL");
 
-  if (reset) {
-    console.log('⚠️  --reset flag detected. Dropping all tables...');
-    await client.query(DROP_ALL);
-    console.log('✅ All tables dropped');
-  }
+	if (reset) {
+		console.log("⚠️  --reset flag detected. Dropping all tables...");
+		await client.query(DROP_ALL);
+		console.log("✅ All tables dropped");
+	}
 
-  await client.query(CREATE_ALL);
-  console.log('✅ All tables created / verified');
+	await client.query(CREATE_ALL);
+	console.log("✅ All tables created / verified");
 
-  await client.end();
-  console.log('✅ Migration complete');
+	await client.end();
+	console.log("✅ Migration complete");
 }
 
 migrate().catch((err) => {
-  console.error('❌ Migration failed:', err.message);
-  process.exit(1);
+	console.error("❌ Migration failed:", err.message);
+	process.exit(1);
 });

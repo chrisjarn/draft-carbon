@@ -1,5 +1,5 @@
-import dotenv from "dotenv";
 import path from "node:path";
+import dotenv from "dotenv";
 import { defineConfig } from "drizzle-kit";
 
 dotenv.config({ path: path.resolve(process.cwd(), "../../.env") });

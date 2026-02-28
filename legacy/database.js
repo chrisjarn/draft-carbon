@@ -1,46 +1,55 @@
-import pg from 'pg';
-import 'dotenv/config';
+import pg from "pg";
+import "dotenv/config";
 
 const { Pool } = pg;
 
 // ── Diagnose missing DATABASE_URL immediately ─────────────────────────────────
 if (!process.env.DATABASE_URL) {
-  console.error('❌ DATABASE_URL is not set!');
-  console.error('   In Railway: go to your app service → Variables tab');
-  console.error('   → Add Variable Reference → select Postgres → DATABASE_URL');
-  console.error('');
-  console.error('   All current env vars:', Object.keys(process.env).filter(k =>
-    ['DATABASE', 'POSTGRES', 'PG', 'RAILWAY', 'NODE', 'PORT', 'BETTER'].some(p => k.startsWith(p))
-  ));
-  process.exit(1);
+	console.error("❌ DATABASE_URL is not set!");
+	console.error("   In Railway: go to your app service → Variables tab");
+	console.error("   → Add Variable Reference → select Postgres → DATABASE_URL");
+	console.error("");
+	console.error(
+		"   All current env vars:",
+		Object.keys(process.env).filter((k) =>
+			["DATABASE", "POSTGRES", "PG", "RAILWAY", "NODE", "PORT", "BETTER"].some(
+				(p) => k.startsWith(p),
+			),
+		),
+	);
+	process.exit(1);
 }
 
-console.log('✅ DATABASE_URL found:', process.env.DATABASE_URL.replace(/:\/\/.*@/, '://***@'));
+console.log(
+	"✅ DATABASE_URL found:",
+	process.env.DATABASE_URL.replace(/:\/\/.*@/, "://***@"),
+);
 
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === 'production'
-    ? { rejectUnauthorized: false }
-    : false,
-  max: 10,
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 10000,
+	connectionString: process.env.DATABASE_URL,
+	ssl:
+		process.env.NODE_ENV === "production"
+			? { rejectUnauthorized: false }
+			: false,
+	max: 10,
+	idleTimeoutMillis: 30000,
+	connectionTimeoutMillis: 10000,
 });
 
-pool.on('error', (err) => {
-  console.error('PostgreSQL pool error:', err.message);
+pool.on("error", (err) => {
+	console.error("PostgreSQL pool error:", err.message);
 });
 
 export const db = {
-  query:    (text, params) => pool.query(text, params),
-  queryOne: async (text, params) => {
-    const result = await pool.query(text, params);
-    return result.rows[0] ?? null;
-  },
+	query: (text, params) => pool.query(text, params),
+	queryOne: async (text, params) => {
+		const result = await pool.query(text, params);
+		return result.rows[0] ?? null;
+	},
 };
 
 export async function initDb() {
-  await pool.query(`
+	await pool.query(`
     CREATE TABLE IF NOT EXISTS carbonites (
       id          TEXT PRIMARY KEY,
       name        TEXT NOT NULL,
@@ -157,7 +166,7 @@ export async function initDb() {
       "updatedAt"  TIMESTAMPTZ DEFAULT NOW()
     );
   `);
-  console.log('✅ Database schema ready');
+	console.log("✅ Database schema ready");
 }
 
 export default pool;
@@ -165,7 +174,7 @@ export default pool;
 // ── Additional tables added for salary brackets + WFP persistence ─────────
 // Appended to initDb() via separate call in server.js boot
 export async function initExtendedDb() {
-  await pool.query(`
+	await pool.query(`
     CREATE TABLE IF NOT EXISTS salary_brackets (
       id          TEXT PRIMARY KEY,
       div         TEXT NOT NULL,
@@ -214,5 +223,5 @@ export async function initExtendedDb() {
       updated_at TIMESTAMPTZ DEFAULT NOW()
     );
   `);
-  console.log('✅ Extended schema ready');
+	console.log("✅ Extended schema ready");
 }

@@ -1,4 +1,11 @@
-import { boolean, numeric, pgTable, primaryKey, text, timestamp } from "drizzle-orm/pg-core";
+import {
+	boolean,
+	numeric,
+	pgTable,
+	primaryKey,
+	text,
+	timestamp,
+} from "drizzle-orm/pg-core";
 
 // Per-staff WFP data (billing targets, performance, promotions)
 export const wfpStaffMeta = pgTable("wfp_staff_meta", {

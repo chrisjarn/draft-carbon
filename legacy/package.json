@@ -1,46 +1,50 @@
 {
-  "name": "carbon-workforce-planner",
-  "version": "1.0.0",
-  "description": "Carbon Group internal workforce planning platform",
-  "type": "module",
-  "main": "server.js",
+	"name": "carbon-workforce-planner",
+	"version": "1.0.0",
+	"description": "Carbon Group internal workforce planning platform",
+	"type": "module",
+	"main": "server.js",
 
-  "scripts": {
-    "start":      "node server.js",
-    "dev":        "node --watch server.js",
-    "seed":       "node seed.js",
-    "db:migrate": "node scripts/migrate.js",
-    "lint":       "eslint . --ext .js",
-    "format":     "prettier --write \"**/*.{js,json,html,css,md}\""
-  },
+	"scripts": {
+		"start": "node server.js",
+		"dev": "node --watch server.js",
+		"seed": "node seed.js",
+		"db:migrate": "node scripts/migrate.js",
+		"lint": "eslint . --ext .js",
+		"format": "prettier --write \"**/*.{js,json,html,css,md}\""
+	},
 
-  "engines": {
-    "node": ">=22.0.0",
-    "npm":  ">=10.0.0"
-  },
+	"engines": {
+		"node": ">=22.0.0",
+		"npm": ">=10.0.0"
+	},
 
-  "dependencies": {
-    "better-auth": "^1.2.7",
-    "dotenv":      "^16.4.5",
-    "pg":          "^8.12.0"
-  },
+	"dependencies": {
+		"better-auth": "^1.2.7",
+		"dotenv": "^16.4.5",
+		"pg": "^8.12.0"
+	},
 
-  "devDependencies": {
-    "eslint":     "^9.9.0",
-    "@eslint/js": "^9.9.0",
-    "prettier":   "^3.3.3"
-  },
+	"devDependencies": {
+		"eslint": "^9.9.0",
+		"@eslint/js": "^9.9.0",
+		"prettier": "^3.3.3"
+	},
 
-  "keywords": ["workforce-planning", "carbon-group", "internal"],
-  "author": "Carbon Group",
-  "private": true,
-  "license": "UNLICENSED",
+	"keywords": [
+		"workforce-planning",
+		"carbon-group",
+		"internal"
+	],
+	"author": "Carbon Group",
+	"private": true,
+	"license": "UNLICENSED",
 
-  "prettier": {
-    "singleQuote": true,
-    "semi": true,
-    "tabWidth": 2,
-    "trailingComma": "es5",
-    "printWidth": 100
-  }
+	"prettier": {
+		"singleQuote": true,
+		"semi": true,
+		"tabWidth": 2,
+		"trailingComma": "es5",
+		"printWidth": 100
+	}
 }

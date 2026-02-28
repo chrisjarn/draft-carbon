@@ -2472,14 +2472,14 @@ async function handleSignOut() {
 }
 
 // Enter-key support for auth forms
-document.addEventListener('DOMContentLoaded', function() {
-  document.getElementById('auth-password').addEventListener('keydown', function(e) {
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('auth-password').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') handleSignIn();
   });
-  document.getElementById('auth-email').addEventListener('keydown', function(e) {
+  document.getElementById('auth-email').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') document.getElementById('auth-password').focus();
   });
-  document.getElementById('auth-signup-password').addEventListener('keydown', function(e) {
+  document.getElementById('auth-signup-password').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') handleSignUp();
   });
 });
@@ -2659,12 +2659,12 @@ const OFFICE_DATA = [
 // Carbonites — office = managing/budgeted office, location = physical base (null = same as office)
 // pod = pod name, reportsTo = manager name (null = Partner/top of pod)
 // seniority = level number for visual hierarchy
-let CARBONITES = [{"id": "c01", "name": "Lena M.", "role": "Director", "sl": "bkcfo", "sg": "bkcfo-cfo", "state": "nsw", "office": "parramatta", "pod": "NSW CFO Pod", "salary": 99000, "type": "FT", "seniority": 7, "location": null, "hours": null, "is_partner": 1, "reports_to": null, "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:41:06", "entity": "ent-syd", "isPartner": true, "reportsTo": null}, {"id": "c02", "name": "David K.", "role": "Senior Client Manager", "sl": "bkcfo", "sg": "bkcfo-cfo", "state": "nsw", "office": "parramatta", "pod": "NSW CFO Pod", "salary": 112000, "type": "FT", "seniority": 5, "location": "Working remotely", "hours": null, "is_partner": 0, "reports_to": "c01", "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-syd", "isPartner": false, "reportsTo": "c01"}, {"id": "c03", "name": "Ryan C.", "role": "Bookkeeper", "sl": "bkcfo", "sg": "bkcfo-bk", "state": "nsw", "office": "parramatta", "pod": "NSW BKK Pod", "salary": 68000, "type": "PT", "seniority": 2, "location": null, "hours": null, "is_partner": 0, "reports_to": "c04", "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-par", "isPartner": false, "reportsTo": "c04"}, {"id": "c04", "name": "Jessica T.", "role": "Senior Bookkeeper", "sl": "bkcfo", "sg": "bkcfo-bk", "state": "nsw", "office": "parramatta", "pod": "NSW BKK Pod", "salary": 82000, "type": "FT", "seniority": 3, "location": null, "hours": null, "is_partner": 0, "reports_to": null, "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-par", "isPartner": false, "reportsTo": null}, {"id": "c05", "name": "Wei L.", "role": "Payroll Specialist", "sl": "bkcfo", "sg": "bkcfo-pay", "state": "nsw", "office": "st-leonards", "pod": "NSW Pay Pod", "salary": 72000, "type": "FT", "seniority": 2, "location": null, "hours": null, "is_partner": 0, "reports_to": null, "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-stl", "isPartner": false, "reportsTo": null}, {"id": "c40", "name": "Hayden R.", "role": "Associate Director", "sl": "acc", "sg": "acc-main", "state": "qld", "office": "brisbane", "pod": "Bris Acc Pod", "salary": 158000, "type": "FT", "seniority": 8, "location": null, "hours": null, "is_partner": 1, "reports_to": null, "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-bne", "isPartner": true, "reportsTo": null}, {"id": "c41", "name": "Sarah M.", "role": "Senior Accountant", "sl": "acc", "sg": "acc-main", "state": "qld", "office": "brisbane", "pod": "Bris Acc Pod", "salary": 94000, "type": "FT", "seniority": 4, "location": null, "hours": null, "is_partner": 0, "reports_to": "c40", "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-bne", "isPartner": false, "reportsTo": "c40"}, {"id": "c42", "name": "James T.", "role": "Accountant", "sl": "acc", "sg": "acc-main", "state": "qld", "office": "brisbane", "pod": "Bris Acc Pod", "salary": 70000, "type": "FT", "seniority": 3, "location": null, "hours": null, "is_partner": 0, "reports_to": "c40", "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-bne", "isPartner": false, "reportsTo": "c40"}, {"id": "c43", "name": "Crystal V.", "role": "Director (WEA)", "sl": "wm", "sg": null, "state": "qld", "office": "brisbane", "pod": "Bris Wealth", "salary": 175000, "type": "FT", "seniority": 4, "location": null, "hours": null, "is_partner": 1, "reports_to": null, "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-bne", "isPartner": true, "reportsTo": null}, {"id": "c44", "name": "Amy K.", "role": "Senior Bookkeeper", "sl": "bkcfo", "sg": "bkcfo-bk", "state": "qld", "office": "brisbane", "pod": "Bris BKK Pod", "salary": 82000, "type": "FT", "seniority": 3, "location": null, "hours": null, "is_partner": 0, "reports_to": "c45", "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-bne", "isPartner": false, "reportsTo": "c45"}, {"id": "c45", "name": "Scott D.", "role": "Senior Manager (BKK)", "sl": "bkcfo", "sg": "bkcfo-bk", "state": "qld", "office": "brisbane", "pod": "Bris BKK Pod", "salary": 135000, "type": "FT", "seniority": 6, "location": null, "hours": null, "is_partner": 0, "reports_to": null, "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-bne", "isPartner": false, "reportsTo": null}, {"id": "c52", "name": "Amy L.", "role": "Bookkeeper", "sl": "bkcfo", "sg": "bkcfo-bk", "state": "qld", "office": "bundaberg", "pod": "QLD BKK Pod", "salary": 64000, "type": "PT", "seniority": 2, "location": "Working remotely", "hours": null, "is_partner": 0, "reports_to": null, "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-bun", "isPartner": false, "reportsTo": null}, {"id": "c50", "name": "Bob N.", "role": "Senior Manager (ACC)", "sl": "acc", "sg": "acc-main", "state": "qld", "office": "toowoomba", "pod": "Toowoomba Pod", "salary": 128000, "type": "FT", "seniority": 7, "location": null, "hours": null, "is_partner": 0, "reports_to": null, "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-too", "isPartner": false, "reportsTo": null}, {"id": "c51", "name": "Kate J.", "role": "Accountant", "sl": "acc", "sg": "acc-main", "state": "qld", "office": "toowoomba", "pod": "Toowoomba Pod", "salary": 65000, "type": "PT", "seniority": 3, "location": null, "hours": null, "is_partner": 0, "reports_to": "c50", "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-too", "isPartner": false, "reportsTo": "c50"}, {"id": "c80", "name": "David W.", "role": "Associate Director", "sl": "acc", "sg": "acc-main", "state": "sa", "office": "adelaide", "pod": "Adel Acc Pod", "salary": 165000, "type": "FT", "seniority": 8, "location": null, "hours": null, "is_partner": 1, "reports_to": null, "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-adl", "isPartner": true, "reportsTo": null}, {"id": "c81", "name": "Don B.", "role": "Senior Manager (ACC)", "sl": "acc", "sg": "acc-main", "state": "sa", "office": "adelaide", "pod": "Adel Acc Pod", "salary": 138000, "type": "FT", "seniority": 7, "location": "Barossa", "hours": null, "is_partner": 0, "reports_to": "c80", "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-adl", "isPartner": false, "reportsTo": "c80"}, {"id": "c82", "name": "Zara K.", "role": "Senior Accountant", "sl": "acc", "sg": "acc-main", "state": "sa", "office": "adelaide", "pod": "Adel Acc Pod", "salary": 92000, "type": "FT", "seniority": 4, "location": null, "hours": null, "is_partner": 0, "reports_to": "c81", "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-adl", "isPartner": false, "reportsTo": "c81"}, {"id": "c83", "name": "Gail R.", "role": "Financial Planning Manager", "sl": "wm", "sg": null, "state": "sa", "office": "adelaide", "pod": "Adel Wealth", "salary": 128000, "type": "FT", "seniority": 3, "location": null, "hours": null, "is_partner": 0, "reports_to": null, "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-adl", "isPartner": false, "reportsTo": null}, {"id": "c84", "name": "Nia J.", "role": "Client Services Officer", "sl": "wm", "sg": null, "state": "sa", "office": "adelaide", "pod": "Adel Wealth", "salary": 68000, "type": "PT", "seniority": 2, "location": null, "hours": null, "is_partner": 0, "reports_to": "c83", "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-adl", "isPartner": false, "reportsTo": "c83"}, {"id": "c10", "name": "Michelle M.", "role": "Associate Director", "sl": "acc", "sg": "acc-main", "state": "vic", "office": "elsternwick", "pod": "Elst Acc Pod", "salary": 165000, "type": "FT", "seniority": 8, "location": null, "hours": null, "is_partner": 1, "reports_to": null, "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-els", "isPartner": true, "reportsTo": null}, {"id": "c11", "name": "James M.", "role": "Senior Accountant", "sl": "acc", "sg": "acc-main", "state": "vic", "office": "elsternwick", "pod": "Elst Acc Pod", "salary": 95000, "type": "FT", "seniority": 4, "location": null, "hours": null, "is_partner": 0, "reports_to": "c10", "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-els", "isPartner": false, "reportsTo": "c10"}, {"id": "c12", "name": "Sophie R.", "role": "Accountant", "sl": "acc", "sg": "acc-main", "state": "vic", "office": "elsternwick", "pod": "Elst Acc Pod", "salary": 72000, "type": "FT", "seniority": 3, "location": null, "hours": null, "is_partner": 0, "reports_to": "c10", "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-els", "isPartner": false, "reportsTo": "c10"}, {"id": "c13", "name": "Marc W.", "role": "Director (WEA)", "sl": "wm", "sg": null, "state": "vic", "office": "elsternwick", "pod": "Elst Wealth", "salary": 185000, "type": "FT", "seniority": 4, "location": null, "hours": null, "is_partner": 1, "reports_to": null, "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-els", "isPartner": true, "reportsTo": null}, {"id": "c14", "name": "Priya M.", "role": "Senior Financial Planner", "sl": "wm", "sg": null, "state": "vic", "office": "elsternwick", "pod": "Elst Wealth", "salary": 110000, "type": "FT", "seniority": 2, "location": null, "hours": null, "is_partner": 0, "reports_to": "c13", "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-els", "isPartner": false, "reportsTo": "c13"}, {"id": "c20", "name": "Allison G.", "role": "Senior Manager (BKK)", "sl": "bkcfo", "sg": "bkcfo-bk", "state": "vic", "office": "monash", "pod": "Monash Pod", "salary": 125000, "type": "PT", "seniority": 6, "location": null, "hours": null, "is_partner": 0, "reports_to": null, "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-mon", "isPartner": false, "reportsTo": null}, {"id": "c21", "name": "Tom K.", "role": "Senior Bookkeeper", "sl": "bkcfo", "sg": "bkcfo-bk", "state": "vic", "office": "monash", "pod": "Monash Pod", "salary": 82000, "type": "FT", "seniority": 3, "location": null, "hours": null, "is_partner": 0, "reports_to": "c20", "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-mon", "isPartner": false, "reportsTo": "c20"}, {"id": "c22", "name": "Anika P.", "role": "Payroll Manager", "sl": "bkcfo", "sg": "bkcfo-pay", "state": "vic", "office": "monash", "pod": "Monash Pay", "salary": 95000, "type": "FT", "seniority": 4, "location": null, "hours": null, "is_partner": 0, "reports_to": null, "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-mon", "isPartner": false, "reportsTo": null}, {"id": "c25", "name": "Sam P.", "role": "Client Manager (BKK)", "sl": "bkcfo", "sg": "bkcfo-bk", "state": "vic", "office": "mornington", "pod": "Mornington Pod", "salary": 92000, "type": "FT", "seniority": 4, "location": "Mount Waverley", "hours": null, "is_partner": 0, "reports_to": null, "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-morn", "isPartner": false, "reportsTo": null}, {"id": "c26", "name": "Grace H.", "role": "Bookkeeper", "sl": "bkcfo", "sg": "bkcfo-bk", "state": "vic", "office": "mornington", "pod": "Mornington Pod", "salary": 64000, "type": "PT", "seniority": 2, "location": null, "hours": null, "is_partner": 0, "reports_to": "c25", "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-morn", "isPartner": false, "reportsTo": "c25"}, {"id": "c30", "name": "David L.", "role": "Client Manager (ACC)", "sl": "acc", "sg": "acc-main", "state": "vic", "office": "mount-waverley", "pod": "Mt Waverley Pod", "salary": 108000, "type": "FT", "seniority": 5, "location": null, "hours": null, "is_partner": 0, "reports_to": null, "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-mtwav", "isPartner": false, "reportsTo": null}, {"id": "c31", "name": "Kelly B.", "role": "Senior Accountant", "sl": "acc", "sg": "acc-main", "state": "vic", "office": "mount-waverley", "pod": "Mt Waverley Pod", "salary": 92000, "type": "FT", "seniority": 4, "location": null, "hours": null, "is_partner": 0, "reports_to": "c30", "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-mtwav", "isPartner": false, "reportsTo": "c30"}, {"id": "c60", "name": "Todd Z.", "role": "Associate Director", "sl": "acc", "sg": "acc-main", "state": "wa", "office": "osborne-park", "pod": "WA Acc Pod", "salary": 155000, "type": "FT", "seniority": 8, "location": null, "hours": null, "is_partner": 1, "reports_to": null, "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-op1", "isPartner": true, "reportsTo": null}, {"id": "c61", "name": "Chris W.", "role": "Senior Accountant", "sl": "acc", "sg": "acc-main", "state": "wa", "office": "osborne-park", "pod": "WA Acc Pod", "salary": 92000, "type": "FT", "seniority": 4, "location": null, "hours": null, "is_partner": 0, "reports_to": "c60", "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-op1", "isPartner": false, "reportsTo": "c60"}, {"id": "c62", "name": "Priya S.", "role": "SMSF Manager", "sl": "acc", "sg": "acc-smsf", "state": "wa", "office": "osborne-park", "pod": "WA SMSF Pod", "salary": 102000, "type": "FT", "seniority": 1, "location": null, "hours": null, "is_partner": 0, "reports_to": null, "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-op1", "isPartner": false, "reportsTo": null}, {"id": "c63", "name": "Luke M.", "role": "SMSF Manager", "sl": "acc", "sg": "acc-smsf", "state": "wa", "office": "osborne-park", "pod": "WA SMSF Pod", "salary": 98000, "type": "FT", "seniority": 1, "location": "Swan Valley", "hours": null, "is_partner": 0, "reports_to": "c62", "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-op1", "isPartner": false, "reportsTo": "c62"}, {"id": "c64", "name": "Kristen K.", "role": "Senior Bookkeeper", "sl": "bkcfo", "sg": "bkcfo-bk", "state": "wa", "office": "osborne-park", "pod": "WA BKK Pod", "salary": 78000, "type": "PT", "seniority": 3, "location": null, "hours": null, "is_partner": 0, "reports_to": null, "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-cbk", "isPartner": false, "reportsTo": null}, {"id": "c65", "name": "Grant T.", "role": "Senior Manager (BKK)", "sl": "rd", "sg": null, "state": "wa", "office": "osborne-park", "pod": "WA R&D Pod", "salary": 145000, "type": "FT", "seniority": 6, "location": null, "hours": null, "is_partner": 0, "reports_to": null, "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-way", "isPartner": false, "reportsTo": null}, {"id": "c66", "name": "Ben A.", "role": "Loan Administrator", "sl": "fin", "sg": null, "state": "wa", "office": "osborne-park", "pod": "WA Finance Pod", "salary": 65000, "type": "FT", "seniority": 1, "location": null, "hours": null, "is_partner": 0, "reports_to": "c67", "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-way", "isPartner": false, "reportsTo": "c67"}, {"id": "c67", "name": "Luke F.", "role": "Senior Financial Planner", "sl": "fin", "sg": null, "state": "wa", "office": "osborne-park", "pod": "WA Finance Pod", "salary": 110000, "type": "FT", "seniority": 2, "location": null, "hours": null, "is_partner": 0, "reports_to": null, "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-way", "isPartner": false, "reportsTo": null}, {"id": "c68", "name": "Nicole B.", "role": "Financial Planner", "sl": "wm", "sg": null, "state": "wa", "office": "osborne-park", "pod": "WA Wealth Pod", "salary": 118000, "type": "FT", "seniority": 1, "location": null, "hours": null, "is_partner": 0, "reports_to": null, "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-op2", "isPartner": false, "reportsTo": null}, {"id": "c69", "name": "Dan R.", "role": "Account Manager (INS)", "sl": "ins", "sg": null, "state": "wa", "office": "osborne-park", "pod": "WA Ins Pod", "salary": 92000, "type": "FT", "seniority": 3, "location": null, "hours": null, "is_partner": 0, "reports_to": null, "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-way", "isPartner": false, "reportsTo": null}, {"id": "c70", "name": "Mei C.", "role": "Broker Assistant (INS)", "sl": "ins", "sg": null, "state": "wa", "office": "osborne-park", "pod": "WA Ins Pod", "salary": 58000, "type": "PT", "seniority": 1, "location": null, "hours": null, "is_partner": 0, "reports_to": "c69", "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-way", "isPartner": false, "reportsTo": "c69"}];
+const CARBONITES = [{"id": "c01", "name": "Lena M.", "role": "Director", "sl": "bkcfo", "sg": "bkcfo-cfo", "state": "nsw", "office": "parramatta", "pod": "NSW CFO Pod", "salary": 99000, "type": "FT", "seniority": 7, "location": null, "hours": null, "is_partner": 1, "reports_to": null, "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:41:06", "entity": "ent-syd", "isPartner": true, "reportsTo": null}, {"id": "c02", "name": "David K.", "role": "Senior Client Manager", "sl": "bkcfo", "sg": "bkcfo-cfo", "state": "nsw", "office": "parramatta", "pod": "NSW CFO Pod", "salary": 112000, "type": "FT", "seniority": 5, "location": "Working remotely", "hours": null, "is_partner": 0, "reports_to": "c01", "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-syd", "isPartner": false, "reportsTo": "c01"}, {"id": "c03", "name": "Ryan C.", "role": "Bookkeeper", "sl": "bkcfo", "sg": "bkcfo-bk", "state": "nsw", "office": "parramatta", "pod": "NSW BKK Pod", "salary": 68000, "type": "PT", "seniority": 2, "location": null, "hours": null, "is_partner": 0, "reports_to": "c04", "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-par", "isPartner": false, "reportsTo": "c04"}, {"id": "c04", "name": "Jessica T.", "role": "Senior Bookkeeper", "sl": "bkcfo", "sg": "bkcfo-bk", "state": "nsw", "office": "parramatta", "pod": "NSW BKK Pod", "salary": 82000, "type": "FT", "seniority": 3, "location": null, "hours": null, "is_partner": 0, "reports_to": null, "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-par", "isPartner": false, "reportsTo": null}, {"id": "c05", "name": "Wei L.", "role": "Payroll Specialist", "sl": "bkcfo", "sg": "bkcfo-pay", "state": "nsw", "office": "st-leonards", "pod": "NSW Pay Pod", "salary": 72000, "type": "FT", "seniority": 2, "location": null, "hours": null, "is_partner": 0, "reports_to": null, "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-stl", "isPartner": false, "reportsTo": null}, {"id": "c40", "name": "Hayden R.", "role": "Associate Director", "sl": "acc", "sg": "acc-main", "state": "qld", "office": "brisbane", "pod": "Bris Acc Pod", "salary": 158000, "type": "FT", "seniority": 8, "location": null, "hours": null, "is_partner": 1, "reports_to": null, "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-bne", "isPartner": true, "reportsTo": null}, {"id": "c41", "name": "Sarah M.", "role": "Senior Accountant", "sl": "acc", "sg": "acc-main", "state": "qld", "office": "brisbane", "pod": "Bris Acc Pod", "salary": 94000, "type": "FT", "seniority": 4, "location": null, "hours": null, "is_partner": 0, "reports_to": "c40", "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-bne", "isPartner": false, "reportsTo": "c40"}, {"id": "c42", "name": "James T.", "role": "Accountant", "sl": "acc", "sg": "acc-main", "state": "qld", "office": "brisbane", "pod": "Bris Acc Pod", "salary": 70000, "type": "FT", "seniority": 3, "location": null, "hours": null, "is_partner": 0, "reports_to": "c40", "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-bne", "isPartner": false, "reportsTo": "c40"}, {"id": "c43", "name": "Crystal V.", "role": "Director (WEA)", "sl": "wm", "sg": null, "state": "qld", "office": "brisbane", "pod": "Bris Wealth", "salary": 175000, "type": "FT", "seniority": 4, "location": null, "hours": null, "is_partner": 1, "reports_to": null, "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-bne", "isPartner": true, "reportsTo": null}, {"id": "c44", "name": "Amy K.", "role": "Senior Bookkeeper", "sl": "bkcfo", "sg": "bkcfo-bk", "state": "qld", "office": "brisbane", "pod": "Bris BKK Pod", "salary": 82000, "type": "FT", "seniority": 3, "location": null, "hours": null, "is_partner": 0, "reports_to": "c45", "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-bne", "isPartner": false, "reportsTo": "c45"}, {"id": "c45", "name": "Scott D.", "role": "Senior Manager (BKK)", "sl": "bkcfo", "sg": "bkcfo-bk", "state": "qld", "office": "brisbane", "pod": "Bris BKK Pod", "salary": 135000, "type": "FT", "seniority": 6, "location": null, "hours": null, "is_partner": 0, "reports_to": null, "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-bne", "isPartner": false, "reportsTo": null}, {"id": "c52", "name": "Amy L.", "role": "Bookkeeper", "sl": "bkcfo", "sg": "bkcfo-bk", "state": "qld", "office": "bundaberg", "pod": "QLD BKK Pod", "salary": 64000, "type": "PT", "seniority": 2, "location": "Working remotely", "hours": null, "is_partner": 0, "reports_to": null, "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-bun", "isPartner": false, "reportsTo": null}, {"id": "c50", "name": "Bob N.", "role": "Senior Manager (ACC)", "sl": "acc", "sg": "acc-main", "state": "qld", "office": "toowoomba", "pod": "Toowoomba Pod", "salary": 128000, "type": "FT", "seniority": 7, "location": null, "hours": null, "is_partner": 0, "reports_to": null, "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-too", "isPartner": false, "reportsTo": null}, {"id": "c51", "name": "Kate J.", "role": "Accountant", "sl": "acc", "sg": "acc-main", "state": "qld", "office": "toowoomba", "pod": "Toowoomba Pod", "salary": 65000, "type": "PT", "seniority": 3, "location": null, "hours": null, "is_partner": 0, "reports_to": "c50", "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-too", "isPartner": false, "reportsTo": "c50"}, {"id": "c80", "name": "David W.", "role": "Associate Director", "sl": "acc", "sg": "acc-main", "state": "sa", "office": "adelaide", "pod": "Adel Acc Pod", "salary": 165000, "type": "FT", "seniority": 8, "location": null, "hours": null, "is_partner": 1, "reports_to": null, "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-adl", "isPartner": true, "reportsTo": null}, {"id": "c81", "name": "Don B.", "role": "Senior Manager (ACC)", "sl": "acc", "sg": "acc-main", "state": "sa", "office": "adelaide", "pod": "Adel Acc Pod", "salary": 138000, "type": "FT", "seniority": 7, "location": "Barossa", "hours": null, "is_partner": 0, "reports_to": "c80", "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-adl", "isPartner": false, "reportsTo": "c80"}, {"id": "c82", "name": "Zara K.", "role": "Senior Accountant", "sl": "acc", "sg": "acc-main", "state": "sa", "office": "adelaide", "pod": "Adel Acc Pod", "salary": 92000, "type": "FT", "seniority": 4, "location": null, "hours": null, "is_partner": 0, "reports_to": "c81", "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-adl", "isPartner": false, "reportsTo": "c81"}, {"id": "c83", "name": "Gail R.", "role": "Financial Planning Manager", "sl": "wm", "sg": null, "state": "sa", "office": "adelaide", "pod": "Adel Wealth", "salary": 128000, "type": "FT", "seniority": 3, "location": null, "hours": null, "is_partner": 0, "reports_to": null, "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-adl", "isPartner": false, "reportsTo": null}, {"id": "c84", "name": "Nia J.", "role": "Client Services Officer", "sl": "wm", "sg": null, "state": "sa", "office": "adelaide", "pod": "Adel Wealth", "salary": 68000, "type": "PT", "seniority": 2, "location": null, "hours": null, "is_partner": 0, "reports_to": "c83", "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-adl", "isPartner": false, "reportsTo": "c83"}, {"id": "c10", "name": "Michelle M.", "role": "Associate Director", "sl": "acc", "sg": "acc-main", "state": "vic", "office": "elsternwick", "pod": "Elst Acc Pod", "salary": 165000, "type": "FT", "seniority": 8, "location": null, "hours": null, "is_partner": 1, "reports_to": null, "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-els", "isPartner": true, "reportsTo": null}, {"id": "c11", "name": "James M.", "role": "Senior Accountant", "sl": "acc", "sg": "acc-main", "state": "vic", "office": "elsternwick", "pod": "Elst Acc Pod", "salary": 95000, "type": "FT", "seniority": 4, "location": null, "hours": null, "is_partner": 0, "reports_to": "c10", "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-els", "isPartner": false, "reportsTo": "c10"}, {"id": "c12", "name": "Sophie R.", "role": "Accountant", "sl": "acc", "sg": "acc-main", "state": "vic", "office": "elsternwick", "pod": "Elst Acc Pod", "salary": 72000, "type": "FT", "seniority": 3, "location": null, "hours": null, "is_partner": 0, "reports_to": "c10", "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-els", "isPartner": false, "reportsTo": "c10"}, {"id": "c13", "name": "Marc W.", "role": "Director (WEA)", "sl": "wm", "sg": null, "state": "vic", "office": "elsternwick", "pod": "Elst Wealth", "salary": 185000, "type": "FT", "seniority": 4, "location": null, "hours": null, "is_partner": 1, "reports_to": null, "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-els", "isPartner": true, "reportsTo": null}, {"id": "c14", "name": "Priya M.", "role": "Senior Financial Planner", "sl": "wm", "sg": null, "state": "vic", "office": "elsternwick", "pod": "Elst Wealth", "salary": 110000, "type": "FT", "seniority": 2, "location": null, "hours": null, "is_partner": 0, "reports_to": "c13", "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-els", "isPartner": false, "reportsTo": "c13"}, {"id": "c20", "name": "Allison G.", "role": "Senior Manager (BKK)", "sl": "bkcfo", "sg": "bkcfo-bk", "state": "vic", "office": "monash", "pod": "Monash Pod", "salary": 125000, "type": "PT", "seniority": 6, "location": null, "hours": null, "is_partner": 0, "reports_to": null, "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-mon", "isPartner": false, "reportsTo": null}, {"id": "c21", "name": "Tom K.", "role": "Senior Bookkeeper", "sl": "bkcfo", "sg": "bkcfo-bk", "state": "vic", "office": "monash", "pod": "Monash Pod", "salary": 82000, "type": "FT", "seniority": 3, "location": null, "hours": null, "is_partner": 0, "reports_to": "c20", "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-mon", "isPartner": false, "reportsTo": "c20"}, {"id": "c22", "name": "Anika P.", "role": "Payroll Manager", "sl": "bkcfo", "sg": "bkcfo-pay", "state": "vic", "office": "monash", "pod": "Monash Pay", "salary": 95000, "type": "FT", "seniority": 4, "location": null, "hours": null, "is_partner": 0, "reports_to": null, "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-mon", "isPartner": false, "reportsTo": null}, {"id": "c25", "name": "Sam P.", "role": "Client Manager (BKK)", "sl": "bkcfo", "sg": "bkcfo-bk", "state": "vic", "office": "mornington", "pod": "Mornington Pod", "salary": 92000, "type": "FT", "seniority": 4, "location": "Mount Waverley", "hours": null, "is_partner": 0, "reports_to": null, "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-morn", "isPartner": false, "reportsTo": null}, {"id": "c26", "name": "Grace H.", "role": "Bookkeeper", "sl": "bkcfo", "sg": "bkcfo-bk", "state": "vic", "office": "mornington", "pod": "Mornington Pod", "salary": 64000, "type": "PT", "seniority": 2, "location": null, "hours": null, "is_partner": 0, "reports_to": "c25", "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-morn", "isPartner": false, "reportsTo": "c25"}, {"id": "c30", "name": "David L.", "role": "Client Manager (ACC)", "sl": "acc", "sg": "acc-main", "state": "vic", "office": "mount-waverley", "pod": "Mt Waverley Pod", "salary": 108000, "type": "FT", "seniority": 5, "location": null, "hours": null, "is_partner": 0, "reports_to": null, "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-mtwav", "isPartner": false, "reportsTo": null}, {"id": "c31", "name": "Kelly B.", "role": "Senior Accountant", "sl": "acc", "sg": "acc-main", "state": "vic", "office": "mount-waverley", "pod": "Mt Waverley Pod", "salary": 92000, "type": "FT", "seniority": 4, "location": null, "hours": null, "is_partner": 0, "reports_to": "c30", "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-mtwav", "isPartner": false, "reportsTo": "c30"}, {"id": "c60", "name": "Todd Z.", "role": "Associate Director", "sl": "acc", "sg": "acc-main", "state": "wa", "office": "osborne-park", "pod": "WA Acc Pod", "salary": 155000, "type": "FT", "seniority": 8, "location": null, "hours": null, "is_partner": 1, "reports_to": null, "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-op1", "isPartner": true, "reportsTo": null}, {"id": "c61", "name": "Chris W.", "role": "Senior Accountant", "sl": "acc", "sg": "acc-main", "state": "wa", "office": "osborne-park", "pod": "WA Acc Pod", "salary": 92000, "type": "FT", "seniority": 4, "location": null, "hours": null, "is_partner": 0, "reports_to": "c60", "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-op1", "isPartner": false, "reportsTo": "c60"}, {"id": "c62", "name": "Priya S.", "role": "SMSF Manager", "sl": "acc", "sg": "acc-smsf", "state": "wa", "office": "osborne-park", "pod": "WA SMSF Pod", "salary": 102000, "type": "FT", "seniority": 1, "location": null, "hours": null, "is_partner": 0, "reports_to": null, "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-op1", "isPartner": false, "reportsTo": null}, {"id": "c63", "name": "Luke M.", "role": "SMSF Manager", "sl": "acc", "sg": "acc-smsf", "state": "wa", "office": "osborne-park", "pod": "WA SMSF Pod", "salary": 98000, "type": "FT", "seniority": 1, "location": "Swan Valley", "hours": null, "is_partner": 0, "reports_to": "c62", "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-op1", "isPartner": false, "reportsTo": "c62"}, {"id": "c64", "name": "Kristen K.", "role": "Senior Bookkeeper", "sl": "bkcfo", "sg": "bkcfo-bk", "state": "wa", "office": "osborne-park", "pod": "WA BKK Pod", "salary": 78000, "type": "PT", "seniority": 3, "location": null, "hours": null, "is_partner": 0, "reports_to": null, "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-cbk", "isPartner": false, "reportsTo": null}, {"id": "c65", "name": "Grant T.", "role": "Senior Manager (BKK)", "sl": "rd", "sg": null, "state": "wa", "office": "osborne-park", "pod": "WA R&D Pod", "salary": 145000, "type": "FT", "seniority": 6, "location": null, "hours": null, "is_partner": 0, "reports_to": null, "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-way", "isPartner": false, "reportsTo": null}, {"id": "c66", "name": "Ben A.", "role": "Loan Administrator", "sl": "fin", "sg": null, "state": "wa", "office": "osborne-park", "pod": "WA Finance Pod", "salary": 65000, "type": "FT", "seniority": 1, "location": null, "hours": null, "is_partner": 0, "reports_to": "c67", "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-way", "isPartner": false, "reportsTo": "c67"}, {"id": "c67", "name": "Luke F.", "role": "Senior Financial Planner", "sl": "fin", "sg": null, "state": "wa", "office": "osborne-park", "pod": "WA Finance Pod", "salary": 110000, "type": "FT", "seniority": 2, "location": null, "hours": null, "is_partner": 0, "reports_to": null, "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-way", "isPartner": false, "reportsTo": null}, {"id": "c68", "name": "Nicole B.", "role": "Financial Planner", "sl": "wm", "sg": null, "state": "wa", "office": "osborne-park", "pod": "WA Wealth Pod", "salary": 118000, "type": "FT", "seniority": 1, "location": null, "hours": null, "is_partner": 0, "reports_to": null, "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-op2", "isPartner": false, "reportsTo": null}, {"id": "c69", "name": "Dan R.", "role": "Account Manager (INS)", "sl": "ins", "sg": null, "state": "wa", "office": "osborne-park", "pod": "WA Ins Pod", "salary": 92000, "type": "FT", "seniority": 3, "location": null, "hours": null, "is_partner": 0, "reports_to": null, "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-way", "isPartner": false, "reportsTo": null}, {"id": "c70", "name": "Mei C.", "role": "Broker Assistant (INS)", "sl": "ins", "sg": null, "state": "wa", "office": "osborne-park", "pod": "WA Ins Pod", "salary": 58000, "type": "PT", "seniority": 1, "location": null, "hours": null, "is_partner": 0, "reports_to": "c69", "created_at": "2026-02-25 13:24:29", "updated_at": "2026-02-26 00:38:08", "entity": "ent-way", "isPartner": false, "reportsTo": "c69"}];
 
 // ============================================================
 // ENTITIES — real business names, partners, contact info
 // ============================================================
-let ENTITIES = [{"id": "ent-par", "biz": "Parramatta", "tan": null, "office_id": "parramatta", "state": "nsw", "phone": null, "address": "Suite 501, Level 5/55 Phillip Street, Parramatta NSW 2150", "email": null, "sl": ["bkcfo"], "partners": [], "updated_at": "2026-02-25 13:24:29"}, {"id": "ent-stl", "biz": "St Leonards", "tan": null, "office_id": "st-leonards", "state": "nsw", "phone": "(02) 9437 1785", "address": "C106/11 Chandos Street, St Leonards NSW 2065", "email": "cbknsw@carbongroup.com.au", "sl": ["bkcfo"], "partners": ["Wellington Takakura", "Marc Wiriadisastra", "Dale Ettridge"], "updated_at": "2026-02-25 13:24:29"}, {"id": "ent-syd", "biz": "Sydney / Surry Hills", "tan": "CBK NSW", "office_id": "parramatta", "state": "nsw", "phone": "(02) 8218 2126", "address": "Upper Ground Floor, 55 Brisbane St, Surry Hills NSW 2010", "email": "sydney@carbongroup.com.au", "sl": ["bkcfo"], "partners": ["Wellington Takakura"], "updated_at": "2026-02-25 13:24:29"}, {"id": "ent-bne", "biz": "Brisbane", "tan": "CABC Brisbane", "office_id": "brisbane", "state": "qld", "phone": "(07) 3910 6200", "address": "Level 8, 2 King Street, Fortitude Valley QLD 4006", "email": "fortitudevalley@carbongroup.com.au", "sl": ["acc", "bkcfo", "wm"], "partners": ["Anthony McPhee", "Gail Rogerson", "Samara Badgery"], "updated_at": "2026-02-25 13:24:29"}, {"id": "ent-bun", "biz": "Bundaberg", "tan": "CABC Bundaberg", "office_id": "bundaberg", "state": "qld", "phone": "(07) 4153 3444", "address": "4/290 Bourbong Street, Bundaberg West QLD 4670", "email": "bundaberg@carbongroup.com.au", "sl": ["acc", "bkcfo"], "partners": ["Anthony McPhee", "Jesse Williamson"], "updated_at": "2026-02-25 13:24:29"}, {"id": "ent-frc", "biz": "Fraser Coast", "tan": "CABC Bundaberg", "office_id": "fraser-coast", "state": "qld", "phone": "(07) 4184 9900", "address": "Unit 25, 58-60 Torquay Rd, Pialba QLD 4655", "email": "frasercoast@carbongroup.com.au", "sl": ["acc"], "partners": ["Jesse Williamson", "Anthony McPhee"], "updated_at": "2026-02-25 13:24:29"}, {"id": "ent-gym", "biz": "Gympie", "tan": "CABC Gympie", "office_id": "gympie", "state": "qld", "phone": "(07) 5482 1533", "address": "28 Excelsior Road, Gympie QLD 4570", "email": "gympie@carbongroup.com.au", "sl": ["acc"], "partners": ["Anthony McPhee", "Inga Jarick", "Shaun Ward"], "updated_at": "2026-02-25 13:24:29"}, {"id": "ent-ips", "biz": "Ipswich", "tan": "CABC Ipswich", "office_id": "ipswich", "state": "qld", "phone": "(07) 3812 2233", "address": "221 Brisbane Street, Ipswich QLD 4305", "email": "ipswich@carbongroup.com.au", "sl": ["acc"], "partners": ["Maria Kelly", "Vicki Yorston", "David Martin", "Neil Harding"], "updated_at": "2026-02-25 13:24:29"}, {"id": "ent-too", "biz": "Toowoomba", "tan": "Carbon Toowoomba Pty Ltd", "office_id": "toowoomba", "state": "qld", "phone": "(07) 4638 8022", "address": "208 Herries Street, Toowoomba QLD 4350", "email": "toowoomba@carbongroup.com.au", "sl": ["acc", "bkcfo"], "partners": ["Bob Noye"], "updated_at": "2026-02-25 13:24:29"}, {"id": "ent-adl", "biz": "Adelaide", "tan": "CABC Adelaide", "office_id": "adelaide", "state": "sa", "phone": "(08) 8359 2299", "address": "61-63 Carrington Street, Adelaide SA 5000", "email": "adelaide@carbongroup.com.au", "sl": ["acc", "wm"], "partners": ["David Block"], "updated_at": "2026-02-25 13:24:29"}, {"id": "ent-bar", "biz": "Barossa", "tan": null, "office_id": "barossa", "state": "sa", "phone": null, "address": "82A Murray Street, Tanunda SA 5352", "email": "barossa@carbongroup.com.au", "sl": ["acc"], "partners": ["Anthony Puliatti"], "updated_at": "2026-02-25 13:24:29"}, {"id": "ent-gaw", "biz": "Gawler", "tan": "Carbon Symes", "office_id": "gawler", "state": "sa", "phone": "(08) 8522 2633", "address": "27 Twelfth Street, Gawler South SA 5118", "email": "symes@carbongroup.com.au", "sl": ["acc"], "partners": ["Peter Caddy", "Hans Van Heuven"], "updated_at": "2026-02-25 13:24:29"}, {"id": "ent-pfd", "biz": "Parafield", "tan": "CABC Adelaide", "office_id": "parafield", "state": "sa", "phone": "(08) 8250 0035", "address": "Parafield Airport, 9 Dakota Dr, Parafield SA 5106", "email": "parafield@carbongroup.com.au", "sl": ["acc"], "partners": ["David Block", "Fiona Crook", "Sharyn Duck"], "updated_at": "2026-02-25 13:24:29"}, {"id": "ent-els", "biz": "Elsternwick", "tan": "CABC St Kilda", "office_id": "elsternwick", "state": "vic", "phone": "+61 3 9000 1234", "address": "Suite 2/469 Glen Huntly Road, Elsternwick VIC 3185", "email": "elsternwick@carbongroup.com.au", "sl": ["acc", "wm"], "partners": ["Mike Haberfield", "George Kapiniaris", "Les Silpert"], "updated_at": "2026-02-26 00:41:06"}, {"id": "ent-mon", "biz": "Monash", "tan": "Carbon Gardiner", "office_id": "monash", "state": "vic", "phone": "(03) 8582 2051", "address": "Level 2 Unit 18, 15 Ricketts Rd, Mt Waverley VIC 3149", "email": "monash@carbongroup.com.au", "sl": ["bkcfo"], "partners": ["Allison Gardiner", "Maree Hornsby"], "updated_at": "2026-02-25 13:24:29"}, {"id": "ent-morn", "biz": "Mornington Peninsula", "tan": "Carbon Kapovic", "office_id": "mornington", "state": "vic", "phone": "0415 091 609", "address": "Suite 3b, 72 Blamey Place, Mornington VIC 3931", "email": "Kate.k@carbongroup.com.au", "sl": ["bkcfo"], "partners": ["Kate Kapovic"], "updated_at": "2026-02-25 13:24:29"}, {"id": "ent-mtwav", "biz": "Mount Waverley", "tan": "CABC Mount Waverley", "office_id": "mount-waverley", "state": "vic", "phone": "(03) 9887 8751", "address": "631 High Street Road, Mount Waverley VIC 3149", "email": "mtwaverley@carbongroup.com.au", "sl": ["acc"], "partners": ["Igor Hnatko"], "updated_at": "2026-02-25 13:24:29"}, {"id": "ent-op1", "biz": "CABC Osborne Park", "tan": "Carbon Accountants & Business Consultants", "office_id": "osborne-park", "state": "wa", "phone": "(08) 9446 8588", "address": "24 Hasler Road, Osborne Park WA 6017", "email": "info@carbongroup.com.au", "sl": ["acc", "rd", "ins"], "partners": ["Clinton Gibson", "James McNaught", "Nathan Hood", "Dom Papaluca", "Wayne French"], "updated_at": "2026-02-25 13:24:29"}, {"id": "ent-op2", "biz": "CABC Osborne Park 2 (Kensington)", "tan": "CABC Osborne Park 2", "office_id": "osborne-park", "state": "wa", "phone": "(08) 9446 8588", "address": "24 Hasler Road, Osborne Park WA 6017", "email": "accounting@carbongroup.com.au", "sl": ["acc"], "partners": ["Wayne French"], "updated_at": "2026-02-25 13:24:29"}, {"id": "ent-cbk", "biz": "CBK Osborne Park", "tan": "Carbon Bookkeeping", "office_id": "osborne-park", "state": "wa", "phone": "(08) 9446 8588", "address": "24 Hasler Road, Osborne Park WA 6017", "email": "bookkeeping@carbongroup.com.au", "sl": ["bkcfo", "fin", "wm"], "partners": ["Marc Wiriadisastra", "Dale Ettridge"], "updated_at": "2026-02-25 13:24:29"}, {"id": "ent-fda", "biz": "Forrestdale", "tan": "Carbon Parish", "office_id": "osborne-park", "state": "wa", "phone": "(08) 6391 2100", "address": "4/15 Alex Wood Dr, Forrestdale WA 6112", "email": "forrestdale@carbongroup.com.au", "sl": ["bkcfo"], "partners": ["Jason Parish"], "updated_at": "2026-02-25 13:24:29"}, {"id": "ent-sv", "biz": "Swan Valley (Ellenbrook)", "tan": "Carbon Accountants Swan Valley", "office_id": "swan-valley", "state": "wa", "phone": "(08) 6296 7788", "address": "40 Ellen Stirling Parade, Ellenbrook WA 6069", "email": "swanvalley@carbongroup.com.au", "sl": ["acc"], "partners": ["Michelle Maynard", "Steve Wai", "Todd Zani"], "updated_at": "2026-02-25 13:24:29"}, {"id": "ent-way", "biz": "Waypoint Corporate", "tan": "Waypoint Corporate", "office_id": "osborne-park", "state": "wa", "phone": "(08) 9446 8588", "address": "24 Hasler Road, Osborne Park WA 6017", "email": "waypoint@carbongroup.com.au", "sl": ["bkcfo"], "partners": ["Marc Wiriadisastra", "Dale Ettridge"], "updated_at": "2026-02-25 13:24:29"}];
+const ENTITIES = [{"id": "ent-par", "biz": "Parramatta", "tan": null, "office_id": "parramatta", "state": "nsw", "phone": null, "address": "Suite 501, Level 5/55 Phillip Street, Parramatta NSW 2150", "email": null, "sl": ["bkcfo"], "partners": [], "updated_at": "2026-02-25 13:24:29"}, {"id": "ent-stl", "biz": "St Leonards", "tan": null, "office_id": "st-leonards", "state": "nsw", "phone": "(02) 9437 1785", "address": "C106/11 Chandos Street, St Leonards NSW 2065", "email": "cbknsw@carbongroup.com.au", "sl": ["bkcfo"], "partners": ["Wellington Takakura", "Marc Wiriadisastra", "Dale Ettridge"], "updated_at": "2026-02-25 13:24:29"}, {"id": "ent-syd", "biz": "Sydney / Surry Hills", "tan": "CBK NSW", "office_id": "parramatta", "state": "nsw", "phone": "(02) 8218 2126", "address": "Upper Ground Floor, 55 Brisbane St, Surry Hills NSW 2010", "email": "sydney@carbongroup.com.au", "sl": ["bkcfo"], "partners": ["Wellington Takakura"], "updated_at": "2026-02-25 13:24:29"}, {"id": "ent-bne", "biz": "Brisbane", "tan": "CABC Brisbane", "office_id": "brisbane", "state": "qld", "phone": "(07) 3910 6200", "address": "Level 8, 2 King Street, Fortitude Valley QLD 4006", "email": "fortitudevalley@carbongroup.com.au", "sl": ["acc", "bkcfo", "wm"], "partners": ["Anthony McPhee", "Gail Rogerson", "Samara Badgery"], "updated_at": "2026-02-25 13:24:29"}, {"id": "ent-bun", "biz": "Bundaberg", "tan": "CABC Bundaberg", "office_id": "bundaberg", "state": "qld", "phone": "(07) 4153 3444", "address": "4/290 Bourbong Street, Bundaberg West QLD 4670", "email": "bundaberg@carbongroup.com.au", "sl": ["acc", "bkcfo"], "partners": ["Anthony McPhee", "Jesse Williamson"], "updated_at": "2026-02-25 13:24:29"}, {"id": "ent-frc", "biz": "Fraser Coast", "tan": "CABC Bundaberg", "office_id": "fraser-coast", "state": "qld", "phone": "(07) 4184 9900", "address": "Unit 25, 58-60 Torquay Rd, Pialba QLD 4655", "email": "frasercoast@carbongroup.com.au", "sl": ["acc"], "partners": ["Jesse Williamson", "Anthony McPhee"], "updated_at": "2026-02-25 13:24:29"}, {"id": "ent-gym", "biz": "Gympie", "tan": "CABC Gympie", "office_id": "gympie", "state": "qld", "phone": "(07) 5482 1533", "address": "28 Excelsior Road, Gympie QLD 4570", "email": "gympie@carbongroup.com.au", "sl": ["acc"], "partners": ["Anthony McPhee", "Inga Jarick", "Shaun Ward"], "updated_at": "2026-02-25 13:24:29"}, {"id": "ent-ips", "biz": "Ipswich", "tan": "CABC Ipswich", "office_id": "ipswich", "state": "qld", "phone": "(07) 3812 2233", "address": "221 Brisbane Street, Ipswich QLD 4305", "email": "ipswich@carbongroup.com.au", "sl": ["acc"], "partners": ["Maria Kelly", "Vicki Yorston", "David Martin", "Neil Harding"], "updated_at": "2026-02-25 13:24:29"}, {"id": "ent-too", "biz": "Toowoomba", "tan": "Carbon Toowoomba Pty Ltd", "office_id": "toowoomba", "state": "qld", "phone": "(07) 4638 8022", "address": "208 Herries Street, Toowoomba QLD 4350", "email": "toowoomba@carbongroup.com.au", "sl": ["acc", "bkcfo"], "partners": ["Bob Noye"], "updated_at": "2026-02-25 13:24:29"}, {"id": "ent-adl", "biz": "Adelaide", "tan": "CABC Adelaide", "office_id": "adelaide", "state": "sa", "phone": "(08) 8359 2299", "address": "61-63 Carrington Street, Adelaide SA 5000", "email": "adelaide@carbongroup.com.au", "sl": ["acc", "wm"], "partners": ["David Block"], "updated_at": "2026-02-25 13:24:29"}, {"id": "ent-bar", "biz": "Barossa", "tan": null, "office_id": "barossa", "state": "sa", "phone": null, "address": "82A Murray Street, Tanunda SA 5352", "email": "barossa@carbongroup.com.au", "sl": ["acc"], "partners": ["Anthony Puliatti"], "updated_at": "2026-02-25 13:24:29"}, {"id": "ent-gaw", "biz": "Gawler", "tan": "Carbon Symes", "office_id": "gawler", "state": "sa", "phone": "(08) 8522 2633", "address": "27 Twelfth Street, Gawler South SA 5118", "email": "symes@carbongroup.com.au", "sl": ["acc"], "partners": ["Peter Caddy", "Hans Van Heuven"], "updated_at": "2026-02-25 13:24:29"}, {"id": "ent-pfd", "biz": "Parafield", "tan": "CABC Adelaide", "office_id": "parafield", "state": "sa", "phone": "(08) 8250 0035", "address": "Parafield Airport, 9 Dakota Dr, Parafield SA 5106", "email": "parafield@carbongroup.com.au", "sl": ["acc"], "partners": ["David Block", "Fiona Crook", "Sharyn Duck"], "updated_at": "2026-02-25 13:24:29"}, {"id": "ent-els", "biz": "Elsternwick", "tan": "CABC St Kilda", "office_id": "elsternwick", "state": "vic", "phone": "+61 3 9000 1234", "address": "Suite 2/469 Glen Huntly Road, Elsternwick VIC 3185", "email": "elsternwick@carbongroup.com.au", "sl": ["acc", "wm"], "partners": ["Mike Haberfield", "George Kapiniaris", "Les Silpert"], "updated_at": "2026-02-26 00:41:06"}, {"id": "ent-mon", "biz": "Monash", "tan": "Carbon Gardiner", "office_id": "monash", "state": "vic", "phone": "(03) 8582 2051", "address": "Level 2 Unit 18, 15 Ricketts Rd, Mt Waverley VIC 3149", "email": "monash@carbongroup.com.au", "sl": ["bkcfo"], "partners": ["Allison Gardiner", "Maree Hornsby"], "updated_at": "2026-02-25 13:24:29"}, {"id": "ent-morn", "biz": "Mornington Peninsula", "tan": "Carbon Kapovic", "office_id": "mornington", "state": "vic", "phone": "0415 091 609", "address": "Suite 3b, 72 Blamey Place, Mornington VIC 3931", "email": "Kate.k@carbongroup.com.au", "sl": ["bkcfo"], "partners": ["Kate Kapovic"], "updated_at": "2026-02-25 13:24:29"}, {"id": "ent-mtwav", "biz": "Mount Waverley", "tan": "CABC Mount Waverley", "office_id": "mount-waverley", "state": "vic", "phone": "(03) 9887 8751", "address": "631 High Street Road, Mount Waverley VIC 3149", "email": "mtwaverley@carbongroup.com.au", "sl": ["acc"], "partners": ["Igor Hnatko"], "updated_at": "2026-02-25 13:24:29"}, {"id": "ent-op1", "biz": "CABC Osborne Park", "tan": "Carbon Accountants & Business Consultants", "office_id": "osborne-park", "state": "wa", "phone": "(08) 9446 8588", "address": "24 Hasler Road, Osborne Park WA 6017", "email": "info@carbongroup.com.au", "sl": ["acc", "rd", "ins"], "partners": ["Clinton Gibson", "James McNaught", "Nathan Hood", "Dom Papaluca", "Wayne French"], "updated_at": "2026-02-25 13:24:29"}, {"id": "ent-op2", "biz": "CABC Osborne Park 2 (Kensington)", "tan": "CABC Osborne Park 2", "office_id": "osborne-park", "state": "wa", "phone": "(08) 9446 8588", "address": "24 Hasler Road, Osborne Park WA 6017", "email": "accounting@carbongroup.com.au", "sl": ["acc"], "partners": ["Wayne French"], "updated_at": "2026-02-25 13:24:29"}, {"id": "ent-cbk", "biz": "CBK Osborne Park", "tan": "Carbon Bookkeeping", "office_id": "osborne-park", "state": "wa", "phone": "(08) 9446 8588", "address": "24 Hasler Road, Osborne Park WA 6017", "email": "bookkeeping@carbongroup.com.au", "sl": ["bkcfo", "fin", "wm"], "partners": ["Marc Wiriadisastra", "Dale Ettridge"], "updated_at": "2026-02-25 13:24:29"}, {"id": "ent-fda", "biz": "Forrestdale", "tan": "Carbon Parish", "office_id": "osborne-park", "state": "wa", "phone": "(08) 6391 2100", "address": "4/15 Alex Wood Dr, Forrestdale WA 6112", "email": "forrestdale@carbongroup.com.au", "sl": ["bkcfo"], "partners": ["Jason Parish"], "updated_at": "2026-02-25 13:24:29"}, {"id": "ent-sv", "biz": "Swan Valley (Ellenbrook)", "tan": "Carbon Accountants Swan Valley", "office_id": "swan-valley", "state": "wa", "phone": "(08) 6296 7788", "address": "40 Ellen Stirling Parade, Ellenbrook WA 6069", "email": "swanvalley@carbongroup.com.au", "sl": ["acc"], "partners": ["Michelle Maynard", "Steve Wai", "Todd Zani"], "updated_at": "2026-02-25 13:24:29"}, {"id": "ent-way", "biz": "Waypoint Corporate", "tan": "Waypoint Corporate", "office_id": "osborne-park", "state": "wa", "phone": "(08) 9446 8588", "address": "24 Hasler Road, Osborne Park WA 6017", "email": "waypoint@carbongroup.com.au", "sl": ["bkcfo"], "partners": ["Marc Wiriadisastra", "Dale Ettridge"], "updated_at": "2026-02-25 13:24:29"}];
 
 
 // ============================================================
@@ -2995,7 +2995,7 @@ function cancelBudgetEdit() {
 }
 
 function previewBudgetEdit(val) {
-  const budget = parseFloat(val) || 0;
+  const budget = Number.parseFloat(val) || 0;
   const pod = window._activePod;
   if (!pod) return;
   const staffCost = pod.members.reduce((s,m)=>s+(m.salary||0),0);
@@ -3030,7 +3030,7 @@ function previewBudgetEdit(val) {
 }
 
 function saveBudgetEdit() {
-  const val    = parseFloat(document.getElementById('panel-budget-input').value) || 0;
+  const val    = Number.parseFloat(document.getElementById('panel-budget-input').value) || 0;
   const pod    = window._activePod;
   if (!pod || !val) return;
   setPodBudget(pod, val);
@@ -3064,7 +3064,7 @@ function savePersonEdit() {
   if (!c) return;
   c.name     = document.getElementById('pep-name').value.trim() || c.name;
   c.role     = document.getElementById('pep-role').value.trim() || c.role;
-  c.salary   = parseFloat(document.getElementById('pep-salary').value) || c.salary;
+  c.salary   = Number.parseFloat(document.getElementById('pep-salary').value) || c.salary;
   c.type     = document.getElementById('pep-type').value;
   c.location = document.getElementById('pep-location').value.trim() || null;
   document.getElementById('person-edit-panel').style.display = 'none';
@@ -3140,7 +3140,7 @@ function renderEntityDashboard(filter='') {
     kpiCard('Active Pods',      totalPods,         filteredCbs.filter(c => c.salary > 0).length + ' staff with salary set');
 
   // ── Service line filter ───────────────────────────────────────────────
-  let activeSL = window._entSLFilter || 'all';
+  const activeSL = window._entSLFilter || 'all';
   const sfBtns = document.getElementById('sl-filter-btns');
   if (!window._sfBtnsBuilt) {
     window._sfBtnsBuilt = true;
@@ -3156,7 +3156,7 @@ function renderEntityDashboard(filter='') {
   }
 
   // ── Filter entities ───────────────────────────────────────────────────
-  let visible = ENTITIES.filter(ent => {
+  const visible = ENTITIES.filter(ent => {
     if (activeSL !== 'all' && !ent.sl.includes(activeSL)) return false;
     if (lf) {
       return ent.biz.toLowerCase().includes(lf) ||
@@ -3208,7 +3208,7 @@ function renderEntityDashboard(filter='') {
             <div class="partner-av" style="background:${accentColor}">${ini(p)}</div>
             <div class="partner-av-tip">${p}</div>
           </div>`).join('') +
-      `</div>`;
+      "</div>";
     } else {
       partnerSection = `<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--grey-mid);font-size:10px;color:var(--grey);font-style:italic">No partners listed</div>`;
     }
@@ -3490,7 +3490,7 @@ function renderCapacity() {
       </div></div></div>`;
     });
 
-    h += `</div></div>`;
+    h += "</div></div>";
   });
   el.innerHTML = h;
 }
@@ -3610,22 +3610,22 @@ function renderPodCard(pod, delay) {
       const lbl = (!hasLeadTier && !m.reportsTo) ? 'Partner · Lead' : 'Partner';
       teamDrawerRows += teamRow(m, false, lbl);
     });
-    teamDrawerRows += `</div>`;
+    teamDrawerRows += "</div>";
   }
   if (hasLeadTier) {
     teamDrawerRows += `<div style="padding:6px 13px 0"><div style="font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--grey);margin-bottom:4px">Pod Lead</div>`;
     podLeads.forEach(m => { teamDrawerRows += teamRow(m, false, 'Pod Lead'); });
-    teamDrawerRows += `</div>`;
+    teamDrawerRows += "</div>";
   }
   if (!hasPartnerTier && !hasLeadTier && pod.members.length > 0) {
     teamDrawerRows += `<div style="padding:6px 13px 0"><div style="font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--grey);margin-bottom:4px">Pod Lead</div>`;
     teamDrawerRows += teamRow(pod.members[0], false, 'Pod Lead');
-    teamDrawerRows += `</div>`;
+    teamDrawerRows += "</div>";
   }
   if (staff.length) {
     teamDrawerRows += `<div class="pod-tree"><div class="pod-tree-label">Staff</div>`;
     staff.forEach(m => { teamDrawerRows += teamRow(m, true, ''); });
-    teamDrawerRows += `</div>`;
+    teamDrawerRows += "</div>";
   }
 
   const cardId = `pod-card-${pod.state}-${pod.office}-${pod.name}`.replace(/\s+/g,'-');
@@ -3842,10 +3842,10 @@ function addManagerRow() { document.getElementById('pod-managers').insertAdjacen
 function addStaffRow()   { document.getElementById('pod-staff').insertAdjacentHTML('beforeend', personRowHtml('staff','Staff','var(--grey)',podStaffCount++)); }
 
 function updatePodBudgetPreview() {
-  const fees   = parseFloat(document.getElementById('pod-fees')?.value) || 0;
-  const budget = parseFloat(document.getElementById('pod-budget').value) || 0;
+  const fees   = Number.parseFloat(document.getElementById('pod-fees')?.value) || 0;
+  const budget = Number.parseFloat(document.getElementById('pod-budget').value) || 0;
   let totalSalary = 0;
-  document.querySelectorAll('[id$="-salary"]').forEach(el => { totalSalary += parseFloat(el.value)||0; });
+  document.querySelectorAll('[id$="-salary"]').forEach(el => { totalSalary += Number.parseFloat(el.value)||0; });
 
   // ── Fees insight — shows when fees OR budget entered ──────────────────────
   const insightEl = document.getElementById('pod-fees-insight');
@@ -3922,18 +3922,18 @@ function savePod() {
   for (let i = 0; i < podManagerCount; i++) {
     if (!document.getElementById('mgr-row-'+i)) continue;
     const mname = document.getElementById('mgr-'+i+'-name')?.value.trim(); if (!mname) continue;
-    CARBONITES.push({ id:'np-'+now+'-m'+i, name:mname, role:document.getElementById('mgr-'+i+'-role')?.value.trim()||'Manager', seniority:7, state:st.id, office:ofId, location:null, sl:slId, sg:null, type:document.getElementById('mgr-'+i+'-type')?.value||'FT', salary:parseFloat(document.getElementById('mgr-'+i+'-salary')?.value)||0, util:80, pod:name, reportsTo:leadId });
+    CARBONITES.push({ id:'np-'+now+'-m'+i, name:mname, role:document.getElementById('mgr-'+i+'-role')?.value.trim()||'Manager', seniority:7, state:st.id, office:ofId, location:null, sl:slId, sg:null, type:document.getElementById('mgr-'+i+'-type')?.value||'FT', salary:Number.parseFloat(document.getElementById('mgr-'+i+'-salary')?.value)||0, util:80, pod:name, reportsTo:leadId });
   }
   for (let i = 0; i < podStaffCount; i++) {
     if (!document.getElementById('staff-row-'+i)) continue;
     const sname = document.getElementById('staff-'+i+'-name')?.value.trim(); if (!sname) continue;
-    CARBONITES.push({ id:'np-'+now+'-s'+i, name:sname, role:document.getElementById('staff-'+i+'-role')?.value.trim()||'Staff', seniority:3, state:st.id, office:ofId, location:null, sl:slId, sg:null, type:document.getElementById('staff-'+i+'-type')?.value||'FT', salary:parseFloat(document.getElementById('staff-'+i+'-salary')?.value)||0, util:80, pod:name, reportsTo:leadId });
+    CARBONITES.push({ id:'np-'+now+'-s'+i, name:sname, role:document.getElementById('staff-'+i+'-role')?.value.trim()||'Staff', seniority:3, state:st.id, office:ofId, location:null, sl:slId, sg:null, type:document.getElementById('staff-'+i+'-type')?.value||'FT', salary:Number.parseFloat(document.getElementById('staff-'+i+'-salary')?.value)||0, util:80, pod:name, reportsTo:leadId });
   }
 
   // Save budget and fees
   const podKey2 = st.id + '|' + ofId + '|' + name;
-  const budgetVal = parseFloat(document.getElementById('pod-budget').value) || 0;
-  const feesVal   = parseFloat(document.getElementById('pod-fees')?.value) || 0;
+  const budgetVal = Number.parseFloat(document.getElementById('pod-budget').value) || 0;
+  const feesVal   = Number.parseFloat(document.getElementById('pod-fees')?.value) || 0;
   if (budgetVal > 0) POD_BUDGETS[podKey2] = budgetVal;
   if (feesVal > 0)   POD_FEES[podKey2]   = feesVal;
 
@@ -4037,9 +4037,9 @@ function renderCarboniteCards(filter='') {
           </div>
         </div>`;
       });
-      h += `</div></div>`;
+      h += "</div></div>";
     });
-    h += `</div></div>`;
+    h += "</div></div>";
   });
   el.innerHTML = h || '<div style="padding:22px;color:var(--grey);text-align:center">No Carbonites found</div>';
 }
@@ -4072,7 +4072,7 @@ function toggleHoursField() {
 }
 
 function updateFTEPreview() {
-  const hrs = parseFloat(document.getElementById('m-hours')?.value) || 0;
+  const hrs = Number.parseFloat(document.getElementById('m-hours')?.value) || 0;
   const stAbbr = document.getElementById('m-state')?.value?.toLowerCase();
   // Estimate FT hours from selected state (entity not known yet at step 1)
   const stHrs = STATE_FT_HOURS[stAbbr] || 37.5;
@@ -4144,7 +4144,7 @@ function updateMRoles() {
 function updateSeniorityPreview() {
   const roleSel = document.getElementById('m-role');
   const opt = roleSel.options[roleSel.selectedIndex];
-  const level = opt ? parseInt(opt.dataset.level) : 0;
+  const level = opt ? Number.parseInt(opt.dataset.level) : 0;
   const prev = document.getElementById('m-seniority-preview');
   if (!level) { prev.style.display = 'none'; return; }
   prev.style.display = 'block';
@@ -4162,7 +4162,7 @@ function updateSeniorityPreview() {
 }
 
 function updateSalaryBenchmark() {
-  const val = parseFloat(document.getElementById('m-salary').value) || 0;
+  const val = Number.parseFloat(document.getElementById('m-salary').value) || 0;
   if (val > 0) {
     document.getElementById('m-c-mo').textContent = '$' + Math.round(val/12).toLocaleString();
     document.getElementById('m-c-qt').textContent = '$' + Math.round(val/4).toLocaleString();
@@ -4238,14 +4238,14 @@ function saveCb() {
   if (!st || !ofId || !slId) { alert('Please complete State, Office and Service Line.'); mGoStep(2); return; }
 
   const typeVal   = document.getElementById('m-type')?.value || 'FT';
-  const hoursVal  = typeVal === 'PT' ? (parseFloat(document.getElementById('m-hours')?.value) || null) : undefined;
+  const hoursVal  = typeVal === 'PT' ? (Number.parseFloat(document.getElementById('m-hours')?.value) || null) : undefined;
   const roleOpt   = document.getElementById('m-role');
   const roleTitle = roleOpt?.options[roleOpt.selectedIndex]?.text?.replace(/ \(Level \d+\)$/, '') || '';
-  const senLvl    = parseInt(roleOpt?.options[roleOpt.selectedIndex]?.dataset?.level) || 3;
+  const senLvl    = Number.parseInt(roleOpt?.options[roleOpt.selectedIndex]?.dataset?.level) || 3;
   const sgId      = document.getElementById('m-sg')?.value || null;
   const podName   = document.getElementById('m-pod')?.value.trim() || null;
   const reportsTo = document.getElementById('m-reports')?.value || null;
-  const salary    = parseFloat(document.getElementById('m-salary')?.value) || 0;
+  const salary    = Number.parseFloat(document.getElementById('m-salary')?.value) || 0;
   const location  = document.getElementById('m-location')?.value.trim() || null;
 
   // Find entity for this state+office
@@ -4856,7 +4856,7 @@ function parseFYCSV() {
   lines.forEach(line => {
     const parts = line.split(','); if(parts.length<2) return;
     const podName = parts[0].trim();
-    const budget  = parseFloat(parts.slice(1).join(',').replace(/[^0-9.]/g,''));
+    const budget  = Number.parseFloat(parts.slice(1).join(',').replace(/[^0-9.]/g,''));
     if(!podName||isNaN(budget)) return;
     const inp = document.querySelector(`[data-pod="${podName}"]`);
     if(inp){inp.value=budget;matched++;}
@@ -4873,7 +4873,7 @@ function saveImportFY() {
   const year = document.getElementById('fy-import-year').value;
   let saved = 0;
   document.querySelectorAll('#fy-import-rows [data-pod]').forEach(inp=>{
-    const val=parseFloat(inp.value);
+    const val=Number.parseFloat(inp.value);
     if(!isNaN(val)&&val>0){PRIOR_YEAR_DATA[inp.dataset.pod]={year,budget:val};saved++;}
   });
   closeImportFYModal();
@@ -4922,7 +4922,7 @@ document.getElementById('modal-add').addEventListener('click',e=>{if(e.target===
 // Headcount targets — actual current = derived from CARBONITES.
 // Target = what you want to reach. Set these via the edit UI.
 // Start at actual so no false gap is shown until you set real targets.
-let HEADCOUNT_TARGETS = {
+const HEADCOUNT_TARGETS = {
   acc:   { target:null, notes:'' },
   bkcfo: { target:null, notes:'' },
   wm:    { target:null, notes:'' },
@@ -4934,7 +4934,7 @@ let HEADCOUNT_TARGETS = {
 // Salary benchmarks — user enters market data and Carbon average.
 // carbon_avg is auto-calculated from CARBONITES but can be overridden.
 // market_min/max = Hays / Robert Half / SEEK salary guide ranges.
-let SALARY_BENCHMARKS = {
+const SALARY_BENCHMARKS = {
   acc:   { role:'Senior Accountant',  market_min:null, market_max:null, carbon_avg:null, override_avg:null, source:'' },
   bkcfo: { role:'Senior Bookkeeper',  market_min:null, market_max:null, carbon_avg:null, override_avg:null, source:'' },
   wm:    { role:'Financial Planner',  market_min:null, market_max:null, carbon_avg:null, override_avg:null, source:'' },
@@ -4963,16 +4963,16 @@ let ATTRITION_RISKS = [];
 // ── Workforce planning data stores ────────────────────────────────────────────
 // Revenue targets per entity per FY
 // { entId, fy, target, actual }
-let WFP_REVENUE = {"ent-par|FY25-26": {"target": 480000, "actual": 484800}, "ent-stl|FY25-26": {"target": 230000, "actual": 204700}, "ent-syd|FY25-26": {"target": 680000, "actual": 584800}, "ent-bne|FY25-26": {"target": 2280000, "actual": 1983600}, "ent-bun|FY25-26": {"target": 200000, "actual": 206000}, "ent-too|FY25-26": {"target": 620000, "actual": 545600}, "ent-adl|FY25-26": {"target": 1890000, "actual": 1568700}, "ent-els|FY25-26": {"target": 2010000, "actual": 2050200}, "ent-mon|FY25-26": {"target": 970000, "actual": 776000}, "ent-morn|FY25-26": {"target": 500000, "actual": 410000}, "ent-mtwav|FY25-26": {"target": 640000, "actual": 544000}, "ent-op1|FY25-26": {"target": 1430000, "actual": 1115400}, "ent-op2|FY25-26": {"target": 380000, "actual": 300200}, "ent-cbk|FY25-26": {"target": 250000, "actual": 205000}, "ent-way|FY25-26": {"target": 1500000, "actual": 1305000}};
+const WFP_REVENUE = {"ent-par|FY25-26": {"target": 480000, "actual": 484800}, "ent-stl|FY25-26": {"target": 230000, "actual": 204700}, "ent-syd|FY25-26": {"target": 680000, "actual": 584800}, "ent-bne|FY25-26": {"target": 2280000, "actual": 1983600}, "ent-bun|FY25-26": {"target": 200000, "actual": 206000}, "ent-too|FY25-26": {"target": 620000, "actual": 545600}, "ent-adl|FY25-26": {"target": 1890000, "actual": 1568700}, "ent-els|FY25-26": {"target": 2010000, "actual": 2050200}, "ent-mon|FY25-26": {"target": 970000, "actual": 776000}, "ent-morn|FY25-26": {"target": 500000, "actual": 410000}, "ent-mtwav|FY25-26": {"target": 640000, "actual": 544000}, "ent-op1|FY25-26": {"target": 1430000, "actual": 1115400}, "ent-op2|FY25-26": {"target": 380000, "actual": 300200}, "ent-cbk|FY25-26": {"target": 250000, "actual": 205000}, "ent-way|FY25-26": {"target": 1500000, "actual": 1305000}};
 
 
 // Staff metadata — billing targets, performance, promotion flags (per Carbonite)
 // key: carboniteId → metadata object
-let WFP_STAFF_META = {"c01": {"billingTarget": 317000, "billingActual": 304320, "perfRating": "80%", "promoFlag": "No", "promoEta": "", "staffRole": "Reviewer"}, "c02": {"billingTarget": 358000, "billingActual": 347260, "perfRating": "85%", "promoFlag": "No", "promoEta": "", "staffRole": "Doer"}, "c03": {"billingTarget": 218000, "billingActual": 213640, "perfRating": "90%", "promoFlag": "Maybe", "promoEta": "2026-12", "staffRole": "Doer"}, "c04": {"billingTarget": 262000, "billingActual": 259380, "perfRating": "95%", "promoFlag": "Yes", "promoEta": "2026-07", "staffRole": "Doer"}, "c05": {"billingTarget": 230000, "billingActual": 230000, "perfRating": "100%", "promoFlag": "No", "promoEta": "", "staffRole": "Doer"}, "c40": {"billingTarget": 506000, "billingActual": 500940, "perfRating": "95%", "promoFlag": "Yes", "promoEta": "2026-07", "staffRole": "Reviewer"}, "c41": {"billingTarget": 301000, "billingActual": 301000, "perfRating": "100%", "promoFlag": "No", "promoEta": "", "staffRole": "Doer"}, "c42": {"billingTarget": 224000, "billingActual": 226240, "perfRating": "105%", "promoFlag": "No", "promoEta": "", "staffRole": "Doer"}, "c43": {"billingTarget": 560000, "billingActual": 571200, "perfRating": "110%", "promoFlag": "No", "promoEta": "", "staffRole": "Reviewer"}, "c44": {"billingTarget": 262000, "billingActual": 269860, "perfRating": "80%", "promoFlag": "Maybe", "promoEta": "2026-12", "staffRole": "Doer"}, "c45": {"billingTarget": 432000, "billingActual": 449280, "perfRating": "85%", "promoFlag": "Yes", "promoEta": "2026-07", "staffRole": "Reviewer"}, "c52": {"billingTarget": 205000, "billingActual": 209100, "perfRating": "110%", "promoFlag": "No", "promoEta": "", "staffRole": "Doer"}, "c50": {"billingTarget": 410000, "billingActual": 410000, "perfRating": "100%", "promoFlag": "No", "promoEta": "", "staffRole": "Reviewer"}, "c51": {"billingTarget": 208000, "billingActual": 210080, "perfRating": "105%", "promoFlag": "No", "promoEta": "", "staffRole": "Doer"}, "c80": {"billingTarget": 528000, "billingActual": 543840, "perfRating": "80%", "promoFlag": "Maybe", "promoEta": "2026-12", "staffRole": "Reviewer"}, "c81": {"billingTarget": 442000, "billingActual": 459680, "perfRating": "85%", "promoFlag": "Yes", "promoEta": "2026-07", "staffRole": "Reviewer"}, "c82": {"billingTarget": 294000, "billingActual": 308700, "perfRating": "90%", "promoFlag": "No", "promoEta": "", "staffRole": "Doer"}, "c83": {"billingTarget": 410000, "billingActual": 434600, "perfRating": "95%", "promoFlag": "No", "promoEta": "", "staffRole": "Doer"}, "c84": {"billingTarget": 218000, "billingActual": 233260, "perfRating": "100%", "promoFlag": "No", "promoEta": "", "staffRole": "Doer"}, "c10": {"billingTarget": 528000, "billingActual": 506880, "perfRating": "80%", "promoFlag": "No", "promoEta": "", "staffRole": "Reviewer"}, "c11": {"billingTarget": 304000, "billingActual": 294880, "perfRating": "85%", "promoFlag": "No", "promoEta": "", "staffRole": "Doer"}, "c12": {"billingTarget": 230000, "billingActual": 225400, "perfRating": "90%", "promoFlag": "Maybe", "promoEta": "2026-12", "staffRole": "Doer"}, "c13": {"billingTarget": 592000, "billingActual": 586080, "perfRating": "95%", "promoFlag": "Yes", "promoEta": "2026-07", "staffRole": "Reviewer"}, "c14": {"billingTarget": 352000, "billingActual": 352000, "perfRating": "100%", "promoFlag": "No", "promoEta": "", "staffRole": "Doer"}, "c20": {"billingTarget": 400000, "billingActual": 388000, "perfRating": "85%", "promoFlag": "No", "promoEta": "", "staffRole": "Reviewer"}, "c21": {"billingTarget": 262000, "billingActual": 256760, "perfRating": "90%", "promoFlag": "Maybe", "promoEta": "2026-12", "staffRole": "Doer"}, "c22": {"billingTarget": 304000, "billingActual": 300960, "perfRating": "95%", "promoFlag": "Yes", "promoEta": "2026-07", "staffRole": "Doer"}, "c25": {"billingTarget": 294000, "billingActual": 299880, "perfRating": "110%", "promoFlag": "No", "promoEta": "", "staffRole": "Doer"}, "c26": {"billingTarget": 205000, "billingActual": 211150, "perfRating": "80%", "promoFlag": "Maybe", "promoEta": "2026-12", "staffRole": "Doer"}, "c30": {"billingTarget": 346000, "billingActual": 339080, "perfRating": "90%", "promoFlag": "Maybe", "promoEta": "2026-12", "staffRole": "Doer"}, "c31": {"billingTarget": 294000, "billingActual": 291060, "perfRating": "95%", "promoFlag": "Yes", "promoEta": "2026-07", "staffRole": "Doer"}, "c60": {"billingTarget": 496000, "billingActual": 500960, "perfRating": "105%", "promoFlag": "No", "promoEta": "", "staffRole": "Reviewer"}, "c61": {"billingTarget": 294000, "billingActual": 299880, "perfRating": "110%", "promoFlag": "No", "promoEta": "", "staffRole": "Doer"}, "c62": {"billingTarget": 326000, "billingActual": 335780, "perfRating": "80%", "promoFlag": "Maybe", "promoEta": "2026-12", "staffRole": "Doer"}, "c63": {"billingTarget": 314000, "billingActual": 326560, "perfRating": "85%", "promoFlag": "Yes", "promoEta": "2026-07", "staffRole": "Doer"}, "c64": {"billingTarget": 250000, "billingActual": 262500, "perfRating": "90%", "promoFlag": "No", "promoEta": "", "staffRole": "Doer"}, "c65": {"billingTarget": 464000, "billingActual": 491840, "perfRating": "95%", "promoFlag": "No", "promoEta": "", "staffRole": "Reviewer"}, "c66": {"billingTarget": 208000, "billingActual": 222560, "perfRating": "100%", "promoFlag": "No", "promoEta": "", "staffRole": "Doer"}, "c67": {"billingTarget": 352000, "billingActual": 380160, "perfRating": "105%", "promoFlag": "Maybe", "promoEta": "2026-12", "staffRole": "Doer"}, "c68": {"billingTarget": 378000, "billingActual": 412020, "perfRating": "110%", "promoFlag": "Yes", "promoEta": "2026-07", "staffRole": "Doer"}, "c69": {"billingTarget": 294000, "billingActual": 235200, "perfRating": "80%", "promoFlag": "No", "promoEta": "", "staffRole": "Doer"}, "c70": {"billingTarget": 186000, "billingActual": 189720, "perfRating": "110%", "promoFlag": "No", "promoEta": "", "staffRole": "Doer"}};
+const WFP_STAFF_META = {"c01": {"billingTarget": 317000, "billingActual": 304320, "perfRating": "80%", "promoFlag": "No", "promoEta": "", "staffRole": "Reviewer"}, "c02": {"billingTarget": 358000, "billingActual": 347260, "perfRating": "85%", "promoFlag": "No", "promoEta": "", "staffRole": "Doer"}, "c03": {"billingTarget": 218000, "billingActual": 213640, "perfRating": "90%", "promoFlag": "Maybe", "promoEta": "2026-12", "staffRole": "Doer"}, "c04": {"billingTarget": 262000, "billingActual": 259380, "perfRating": "95%", "promoFlag": "Yes", "promoEta": "2026-07", "staffRole": "Doer"}, "c05": {"billingTarget": 230000, "billingActual": 230000, "perfRating": "100%", "promoFlag": "No", "promoEta": "", "staffRole": "Doer"}, "c40": {"billingTarget": 506000, "billingActual": 500940, "perfRating": "95%", "promoFlag": "Yes", "promoEta": "2026-07", "staffRole": "Reviewer"}, "c41": {"billingTarget": 301000, "billingActual": 301000, "perfRating": "100%", "promoFlag": "No", "promoEta": "", "staffRole": "Doer"}, "c42": {"billingTarget": 224000, "billingActual": 226240, "perfRating": "105%", "promoFlag": "No", "promoEta": "", "staffRole": "Doer"}, "c43": {"billingTarget": 560000, "billingActual": 571200, "perfRating": "110%", "promoFlag": "No", "promoEta": "", "staffRole": "Reviewer"}, "c44": {"billingTarget": 262000, "billingActual": 269860, "perfRating": "80%", "promoFlag": "Maybe", "promoEta": "2026-12", "staffRole": "Doer"}, "c45": {"billingTarget": 432000, "billingActual": 449280, "perfRating": "85%", "promoFlag": "Yes", "promoEta": "2026-07", "staffRole": "Reviewer"}, "c52": {"billingTarget": 205000, "billingActual": 209100, "perfRating": "110%", "promoFlag": "No", "promoEta": "", "staffRole": "Doer"}, "c50": {"billingTarget": 410000, "billingActual": 410000, "perfRating": "100%", "promoFlag": "No", "promoEta": "", "staffRole": "Reviewer"}, "c51": {"billingTarget": 208000, "billingActual": 210080, "perfRating": "105%", "promoFlag": "No", "promoEta": "", "staffRole": "Doer"}, "c80": {"billingTarget": 528000, "billingActual": 543840, "perfRating": "80%", "promoFlag": "Maybe", "promoEta": "2026-12", "staffRole": "Reviewer"}, "c81": {"billingTarget": 442000, "billingActual": 459680, "perfRating": "85%", "promoFlag": "Yes", "promoEta": "2026-07", "staffRole": "Reviewer"}, "c82": {"billingTarget": 294000, "billingActual": 308700, "perfRating": "90%", "promoFlag": "No", "promoEta": "", "staffRole": "Doer"}, "c83": {"billingTarget": 410000, "billingActual": 434600, "perfRating": "95%", "promoFlag": "No", "promoEta": "", "staffRole": "Doer"}, "c84": {"billingTarget": 218000, "billingActual": 233260, "perfRating": "100%", "promoFlag": "No", "promoEta": "", "staffRole": "Doer"}, "c10": {"billingTarget": 528000, "billingActual": 506880, "perfRating": "80%", "promoFlag": "No", "promoEta": "", "staffRole": "Reviewer"}, "c11": {"billingTarget": 304000, "billingActual": 294880, "perfRating": "85%", "promoFlag": "No", "promoEta": "", "staffRole": "Doer"}, "c12": {"billingTarget": 230000, "billingActual": 225400, "perfRating": "90%", "promoFlag": "Maybe", "promoEta": "2026-12", "staffRole": "Doer"}, "c13": {"billingTarget": 592000, "billingActual": 586080, "perfRating": "95%", "promoFlag": "Yes", "promoEta": "2026-07", "staffRole": "Reviewer"}, "c14": {"billingTarget": 352000, "billingActual": 352000, "perfRating": "100%", "promoFlag": "No", "promoEta": "", "staffRole": "Doer"}, "c20": {"billingTarget": 400000, "billingActual": 388000, "perfRating": "85%", "promoFlag": "No", "promoEta": "", "staffRole": "Reviewer"}, "c21": {"billingTarget": 262000, "billingActual": 256760, "perfRating": "90%", "promoFlag": "Maybe", "promoEta": "2026-12", "staffRole": "Doer"}, "c22": {"billingTarget": 304000, "billingActual": 300960, "perfRating": "95%", "promoFlag": "Yes", "promoEta": "2026-07", "staffRole": "Doer"}, "c25": {"billingTarget": 294000, "billingActual": 299880, "perfRating": "110%", "promoFlag": "No", "promoEta": "", "staffRole": "Doer"}, "c26": {"billingTarget": 205000, "billingActual": 211150, "perfRating": "80%", "promoFlag": "Maybe", "promoEta": "2026-12", "staffRole": "Doer"}, "c30": {"billingTarget": 346000, "billingActual": 339080, "perfRating": "90%", "promoFlag": "Maybe", "promoEta": "2026-12", "staffRole": "Doer"}, "c31": {"billingTarget": 294000, "billingActual": 291060, "perfRating": "95%", "promoFlag": "Yes", "promoEta": "2026-07", "staffRole": "Doer"}, "c60": {"billingTarget": 496000, "billingActual": 500960, "perfRating": "105%", "promoFlag": "No", "promoEta": "", "staffRole": "Reviewer"}, "c61": {"billingTarget": 294000, "billingActual": 299880, "perfRating": "110%", "promoFlag": "No", "promoEta": "", "staffRole": "Doer"}, "c62": {"billingTarget": 326000, "billingActual": 335780, "perfRating": "80%", "promoFlag": "Maybe", "promoEta": "2026-12", "staffRole": "Doer"}, "c63": {"billingTarget": 314000, "billingActual": 326560, "perfRating": "85%", "promoFlag": "Yes", "promoEta": "2026-07", "staffRole": "Doer"}, "c64": {"billingTarget": 250000, "billingActual": 262500, "perfRating": "90%", "promoFlag": "No", "promoEta": "", "staffRole": "Doer"}, "c65": {"billingTarget": 464000, "billingActual": 491840, "perfRating": "95%", "promoFlag": "No", "promoEta": "", "staffRole": "Reviewer"}, "c66": {"billingTarget": 208000, "billingActual": 222560, "perfRating": "100%", "promoFlag": "No", "promoEta": "", "staffRole": "Doer"}, "c67": {"billingTarget": 352000, "billingActual": 380160, "perfRating": "105%", "promoFlag": "Maybe", "promoEta": "2026-12", "staffRole": "Doer"}, "c68": {"billingTarget": 378000, "billingActual": 412020, "perfRating": "110%", "promoFlag": "Yes", "promoEta": "2026-07", "staffRole": "Doer"}, "c69": {"billingTarget": 294000, "billingActual": 235200, "perfRating": "80%", "promoFlag": "No", "promoEta": "", "staffRole": "Doer"}, "c70": {"billingTarget": 186000, "billingActual": 189720, "perfRating": "110%", "promoFlag": "No", "promoEta": "", "staffRole": "Doer"}};
 
 
 // Entity-level billing multiplier overrides
-let WFP_ENTITY_SETTINGS = {"ent-par": {"billingMultiplier": 3.2, "fy": "FY25-26"}, "ent-stl": {"billingMultiplier": 3.2, "fy": "FY25-26"}, "ent-syd": {"billingMultiplier": 3.2, "fy": "FY25-26"}, "ent-bne": {"billingMultiplier": 3.2, "fy": "FY25-26"}, "ent-bun": {"billingMultiplier": 3.2, "fy": "FY25-26"}, "ent-too": {"billingMultiplier": 3.2, "fy": "FY25-26"}, "ent-adl": {"billingMultiplier": 3.2, "fy": "FY25-26"}, "ent-els": {"billingMultiplier": 3.2, "fy": "FY25-26"}, "ent-mon": {"billingMultiplier": 3.2, "fy": "FY25-26"}, "ent-morn": {"billingMultiplier": 3.2, "fy": "FY25-26"}, "ent-mtwav": {"billingMultiplier": 3.2, "fy": "FY25-26"}, "ent-op1": {"billingMultiplier": 3.2, "fy": "FY25-26"}, "ent-op2": {"billingMultiplier": 3.2, "fy": "FY25-26"}, "ent-cbk": {"billingMultiplier": 3.2, "fy": "FY25-26"}, "ent-way": {"billingMultiplier": 3.2, "fy": "FY25-26"}};
+const WFP_ENTITY_SETTINGS = {"ent-par": {"billingMultiplier": 3.2, "fy": "FY25-26"}, "ent-stl": {"billingMultiplier": 3.2, "fy": "FY25-26"}, "ent-syd": {"billingMultiplier": 3.2, "fy": "FY25-26"}, "ent-bne": {"billingMultiplier": 3.2, "fy": "FY25-26"}, "ent-bun": {"billingMultiplier": 3.2, "fy": "FY25-26"}, "ent-too": {"billingMultiplier": 3.2, "fy": "FY25-26"}, "ent-adl": {"billingMultiplier": 3.2, "fy": "FY25-26"}, "ent-els": {"billingMultiplier": 3.2, "fy": "FY25-26"}, "ent-mon": {"billingMultiplier": 3.2, "fy": "FY25-26"}, "ent-morn": {"billingMultiplier": 3.2, "fy": "FY25-26"}, "ent-mtwav": {"billingMultiplier": 3.2, "fy": "FY25-26"}, "ent-op1": {"billingMultiplier": 3.2, "fy": "FY25-26"}, "ent-op2": {"billingMultiplier": 3.2, "fy": "FY25-26"}, "ent-cbk": {"billingMultiplier": 3.2, "fy": "FY25-26"}, "ent-way": {"billingMultiplier": 3.2, "fy": "FY25-26"}};
 
 // WFP Scenarios: entity-scoped, unlimited per entity
 // { id, entId, name, desc, color, roles:[], notes }
@@ -5001,7 +5001,7 @@ function getRevenue(entId, fy) {
 }
 
 function setRevenue(entId, fy, target, actual) {
-  WFP_REVENUE[`${entId}|${fy}`] = { target: parseFloat(target)||0, actual: parseFloat(actual)||0 };
+  WFP_REVENUE[`${entId}|${fy}`] = { target: Number.parseFloat(target)||0, actual: Number.parseFloat(actual)||0 };
 }
 
 // Calculate a staff member's billing target
@@ -5322,12 +5322,12 @@ function saveEditRole() {
   h.sl           = document.getElementById('ern-sl').value||h.sl;
   h.state        = document.getElementById('ern-state').value||h.state;
   h.location     = document.getElementById('ern-location').value.trim()||h.location;
-  h.positions    = parseInt(document.getElementById('ern-positions').value)||h.positions;
+  h.positions    = Number.parseInt(document.getElementById('ern-positions').value)||h.positions;
   h.priority     = document.getElementById('ern-priority').value||h.priority;
   h.type         = document.getElementById('ern-type').value||h.type;
   if (h.status!=='closed') h.status = document.getElementById('ern-status').value||h.status;
-  h.salary_min   = parseInt(document.getElementById('ern-sal-min').value)||h.salary_min;
-  h.salary_max   = parseInt(document.getElementById('ern-sal-max').value)||h.salary_max;
+  h.salary_min   = Number.parseInt(document.getElementById('ern-sal-min').value)||h.salary_min;
+  h.salary_max   = Number.parseInt(document.getElementById('ern-sal-max').value)||h.salary_max;
   h.target_start = document.getElementById('ern-target').value||h.target_start;
   h.approved_by  = document.getElementById('ern-approver').value.trim()||h.approved_by;
   h.notes        = document.getElementById('ern-notes').value.trim()||h.notes;
@@ -5394,9 +5394,9 @@ function saveAddRole() {
   const sl       = document.getElementById('arn-sl').value;
   const state    = document.getElementById('arn-state').value;
   const loc      = document.getElementById('arn-location').value.trim();
-  const pos      = parseInt(document.getElementById('arn-positions').value)||1;
-  const salMin   = parseInt(document.getElementById('arn-sal-min').value)||0;
-  const salMax   = parseInt(document.getElementById('arn-sal-max').value)||0;
+  const pos      = Number.parseInt(document.getElementById('arn-positions').value)||1;
+  const salMin   = Number.parseInt(document.getElementById('arn-sal-min').value)||0;
+  const salMax   = Number.parseInt(document.getElementById('arn-sal-max').value)||0;
   const priority = document.getElementById('arn-priority').value;
   const type     = document.getElementById('arn-type').value;
   const approver = document.getElementById('arn-approver').value.trim();
@@ -6203,7 +6203,7 @@ function openStaffMetaModal(cbId) {
   const curPerf = meta.perfRating || 0;
   document.getElementById('smt-perf-pct').value = curPerf || '';
   updatePerfBar(curPerf);
-  document.getElementById('smt-perf-pct').oninput = function() { updatePerfBar(parseFloat(this.value)||0); };
+  document.getElementById('smt-perf-pct').oninput = function() { updatePerfBar(Number.parseFloat(this.value)||0); };
   document.getElementById('smt-perf-presets').innerHTML = PERF_RATING_PRESETS.map(p => {
     const col = perfPctColor(p);
     return `<button onclick="document.getElementById('smt-perf-pct').value=${p};updatePerfBar(${p})"
@@ -6292,8 +6292,8 @@ function selectSMTPromo(f) {
 function saveStaffMeta() {
   const cbId   = document.getElementById('smt-cb-id').value;
   const cb     = CARBONITES.find(c=>c.id===cbId);
-  const billing = parseFloat(document.getElementById('smt-billing-target').value)||0;
-  const actual  = parseFloat(document.getElementById('smt-billing-actual').value)||0;
+  const billing = Number.parseFloat(document.getElementById('smt-billing-target').value)||0;
+  const actual  = Number.parseFloat(document.getElementById('smt-billing-actual').value)||0;
   const oldRole = getStaffMeta(cbId).staffRole;
   const newRole = window._smtSelectedRole;
 
@@ -6301,7 +6301,7 @@ function saveStaffMeta() {
     billingTarget: billing || 0,
     billingActual: actual  || 0,
     staffRole:     newRole || '',
-    perfRating:    parseFloat(document.getElementById('smt-perf-pct').value)||0,
+    perfRating:    Number.parseFloat(document.getElementById('smt-perf-pct').value)||0,
     promoFlag:     window._smtSelectedPromo || '',
     promoEta:      document.getElementById('smt-promo-eta').value.trim(),
   });
@@ -6361,8 +6361,8 @@ function openWFPRevenueModal(entId) {
 function saveRevenueTarget() {
   const entId  = document.getElementById('rev-ent-id').value;
   const fy     = document.getElementById('rev-fy').value;
-  const target = parseFloat(document.getElementById('rev-target').value)||0;
-  const actual = parseFloat(document.getElementById('rev-actual').value)||0;
+  const target = Number.parseFloat(document.getElementById('rev-target').value)||0;
+  const actual = Number.parseFloat(document.getElementById('rev-actual').value)||0;
   setRevenue(entId, fy, target, actual);
   closeModal('modal-wfp-revenue');
   showToast('✓ Revenue target saved for ' + fy);
@@ -6392,7 +6392,7 @@ function openWFPSettingsModal(entId) {
   updateSettingsMultPreview(entId);
 
   document.getElementById('settings-mult-custom').oninput = function() {
-    const v = parseFloat(this.value);
+    const v = Number.parseFloat(this.value);
     if (v > 0) { window._settingsMult = v; updateSettingsMultPreview(entId); }
   };
 
@@ -6426,7 +6426,7 @@ function updateSettingsMultPreview(entId) {
 function saveWFPSettings() {
   const entId = document.getElementById('settings-ent-id').value;
   const fy    = document.getElementById('settings-fy').value;
-  const mult  = parseFloat(document.getElementById('settings-mult-custom').value) || window._settingsMult || DEFAULT_BILLING_MULT;
+  const mult  = Number.parseFloat(document.getElementById('settings-mult-custom').value) || window._settingsMult || DEFAULT_BILLING_MULT;
   WFP_ENTITY_SETTINGS[entId] = { billingMultiplier: mult, fy };
   closeModal('modal-wfp-settings');
   showToast('✓ Settings saved — billing targets recalculated');
@@ -6572,7 +6572,7 @@ function saveEditTarget() {
   const slId  = window._editingTargetSL;
   const entId = window._editingTargetEnt;
   const key   = (entId||'global') + ':' + slId;
-  const val   = parseInt(document.getElementById('etgt-target').value);
+  const val   = Number.parseInt(document.getElementById('etgt-target').value);
   const notes = document.getElementById('etgt-notes').value.trim();
   if (!HEADCOUNT_TARGETS[key]) HEADCOUNT_TARGETS[key]={};
   HEADCOUNT_TARGETS[key].target = isNaN(val)||val<1 ? null : val;
@@ -6608,9 +6608,9 @@ function saveEditBenchmark() {
   if (!SALARY_BENCHMARKS[slId]) SALARY_BENCHMARKS[slId]={};
   const bm = SALARY_BENCHMARKS[slId];
   bm.role         = document.getElementById('ebm-role').value.trim()||bm.role;
-  bm.market_min   = parseInt(document.getElementById('ebm-market-min').value)||null;
-  bm.market_max   = parseInt(document.getElementById('ebm-market-max').value)||null;
-  bm.override_avg = parseInt(document.getElementById('ebm-override').value)||null;
+  bm.market_min   = Number.parseInt(document.getElementById('ebm-market-min').value)||null;
+  bm.market_max   = Number.parseInt(document.getElementById('ebm-market-max').value)||null;
+  bm.override_avg = Number.parseInt(document.getElementById('ebm-override').value)||null;
   bm.source       = document.getElementById('ebm-source').value.trim();
   closeEditBenchmarkModal();
   if (window._wfpEntity) {
@@ -6745,8 +6745,8 @@ function renderScenarioRoleBuilder() {
 function addScenarioRole() {
   const role  = document.getElementById('sc-new-role').value.trim();
   const sl    = document.getElementById('sc-new-sl').value;
-  const sal   = parseFloat(document.getElementById('sc-new-sal').value)||0;
-  const count = parseInt(document.getElementById('sc-new-count').value)||1;
+  const sal   = Number.parseFloat(document.getElementById('sc-new-sal').value)||0;
+  const count = Number.parseInt(document.getElementById('sc-new-count').value)||1;
   if (!role) { document.getElementById('sc-new-role').focus(); return; }
   window._scRoles = window._scRoles || [];
   window._scRoles.push({ role, sl, salary: sal, count });
@@ -6813,7 +6813,7 @@ function openEditEntityModal(entId) {
 
   const entSLs = Array.isArray(ent.sl) ? ent.sl : (ent.sl ? [ent.sl] : []);
   const slBox  = document.getElementById('ent-sl-checkboxes');
-  slBox.innerHTML = SERVICE_LINES.map(function(s) {
+  slBox.innerHTML = SERVICE_LINES.map((s) => {
     const on = entSLs.includes(s.id);
     return '<label style="display:flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;cursor:pointer;padding:4px 10px;border-radius:7px;border:1.5px solid ' + (on ? s.color : 'var(--grey-mid)') + ';background:' + (on ? s.color + '18' : 'white') + ';color:' + (on ? s.color : 'var(--grey)') + ';transition:all 0.12s">'
       + '<input type="checkbox" value="' + s.id + '" ' + (on ? 'checked' : '') + ' style="width:13px;height:13px" onchange="updateEntSLStyle(this)">'
@@ -6839,8 +6839,8 @@ function saveAddStaffToEntity() {
     role:      document.getElementById('ase-role').value.trim() || 'Staff Member',
     sl:        document.getElementById('ase-sl').value,
     type:      document.getElementById('ase-type').value,
-    salary:    parseFloat(document.getElementById('ase-salary').value) || 0,
-    seniority: parseInt(document.getElementById('ase-seniority').value) || 3,
+    salary:    Number.parseFloat(document.getElementById('ase-salary').value) || 0,
+    seniority: Number.parseInt(document.getElementById('ase-seniority').value) || 3,
     entity:    entId,
     state:     ent ? (ent.state || '') : '',
     office:    ent ? (ent.officeId || '') : '',
@@ -6866,7 +6866,7 @@ function saveEntityEdit() {
   ent.phone   = document.getElementById('ent-phone').value.trim();
   ent.email   = document.getElementById('ent-email').value.trim();
   ent.address = document.getElementById('ent-address').value.trim();
-  ent.sl      = Array.from(document.querySelectorAll('#ent-sl-checkboxes input:checked')).map(function(i){ return i.value; });
+  ent.sl      = Array.from(document.querySelectorAll('#ent-sl-checkboxes input:checked')).map((i)=> i.value);
   saveEntityToDb(ent);
   closeModal('modal-edit-entity');
   showToast('\u2713 ' + ent.biz + ' updated');
@@ -6981,7 +6981,7 @@ function openAddPersonToPod(podKey) {
       setTimeout(() => {
         const podEl = document.getElementById('m-pod');
         if (podEl) {
-          for (let o of podEl.options) {
+          for (const o of podEl.options) {
             if (o.value === podName || o.textContent === podName) { podEl.value = o.value; break; }
           }
         }
@@ -7014,7 +7014,7 @@ function removePersonFromPod() {
 function savePodBudgetInline(podKey, inputId) {
   const input = document.getElementById(inputId);
   if (!input) return;
-  const val = parseInt(input.value);
+  const val = Number.parseInt(input.value);
   if (isNaN(val) || val < 0) { input.style.borderColor = 'var(--danger)'; return; }
   const [state, office, podName] = podKey.split('||');
   const pod = PODS.find(p => p.state === state && p.office === office && p.name === podName);
@@ -7034,7 +7034,7 @@ async function api(method, path, body) { /* standalone */ }
 
 function regenAttritionRisks() {
   ATTRITION_RISKS = [];
-  CARBONITES.forEach(function(cb) {
+  CARBONITES.forEach((cb) => {
     var isPartner = cb.isPartner || cb.is_partner;
     var highSenior = (cb.seniority || 0) >= 7;
     var highSalary = (cb.salary || 0) >= 120000;
@@ -7069,7 +7069,7 @@ function renderAll() {
 }
 
 function loadData() {
-  CARBONITES.forEach(function(cb) {
+  CARBONITES.forEach((cb) => {
     if (!('isPartner' in cb)) cb.isPartner = !!cb.is_partner;
     if (!('reportsTo' in cb)) cb.reportsTo = cb.reports_to;
   });
