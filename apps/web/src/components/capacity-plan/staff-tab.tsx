@@ -202,7 +202,7 @@ function MetaDialog({
 // ── Staff Tab ────────────────────────────────────────────────────────────────
 // ══════════════════════════════════════════════════════════════════════════════
 
-export function StaffTab() {
+export function StaffTab({ entityId }: { entityId?: string }) {
 	const { data: session } = authClient.useSession();
 	const userRole = getUserRole(session?.user);
 	const hasWriteAccess = canWrite(userRole);
@@ -213,14 +213,18 @@ export function StaffTab() {
 	const [filterOffice, setFilterOffice] = useState("");
 	const [filterPromo, setFilterPromo] = useState(false);
 
-	const query = useQuery(trpc.wfp.getStaffWithMeta.queryOptions());
+	const query = useQuery(
+		trpc.wfp.getStaffWithMeta.queryOptions(entityId ? { entityId } : undefined),
+	);
 	const allStaff = (query.data ?? []) as StaffWithMeta[];
 
 	const upsertMeta = useMutation(
 		trpc.wfp.upsertStaffMeta.mutationOptions({
 			onSuccess: () => {
 				qc.invalidateQueries({
-					queryKey: trpc.wfp.getStaffWithMeta.queryKey(),
+					queryKey: trpc.wfp.getStaffWithMeta.queryKey(
+						entityId ? { entityId } : undefined,
+					),
 				});
 				setEditStaff(null);
 				toast.success("Saved");

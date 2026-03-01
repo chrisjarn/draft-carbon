@@ -187,20 +187,26 @@ export const wfpRouter = router({
 		}),
 	// ── Staff meta ──────────────────────────────────────────────────────────────
 
-	getStaffWithMeta: protectedProcedure.query(async () => {
-		const staff = await db
-			.select()
-			.from(carbonites)
-			.where(eq(carbonites.isActive, true))
-			.orderBy(
-				asc(carbonites.state),
-				asc(carbonites.office),
-				asc(carbonites.name),
-			);
-		const meta = await db.select().from(wfpStaffMeta);
-		const metaMap = new Map(meta.map((m) => [m.cbId, m]));
-		return staff.map((s) => ({ ...s, meta: metaMap.get(s.id) ?? null }));
-	}),
+	getStaffWithMeta: protectedProcedure
+		.input(z.object({ entityId: z.string().optional() }).optional())
+		.query(async ({ input }) => {
+			const filters = [eq(carbonites.isActive, true)];
+			if (input?.entityId) {
+				filters.push(eq(carbonites.entity, input.entityId));
+			}
+			const staff = await db
+				.select()
+				.from(carbonites)
+				.where(and(...filters))
+				.orderBy(
+					asc(carbonites.state),
+					asc(carbonites.office),
+					asc(carbonites.name),
+				);
+			const meta = await db.select().from(wfpStaffMeta);
+			const metaMap = new Map(meta.map((m) => [m.cbId, m]));
+			return staff.map((s) => ({ ...s, meta: metaMap.get(s.id) ?? null }));
+		}),
 
 	upsertStaffMeta: protectedProcedure
 		.input(
