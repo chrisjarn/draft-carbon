@@ -11,6 +11,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
+import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -732,11 +733,9 @@ function FyPlanningPage() {
 
 	return (
 		<div className="flex h-full flex-col">
-			{/* Header */}
-			<div className="flex items-center justify-between border-border border-b px-6 py-4">
-				<div>
-					<h1 className="font-extrabold text-lg tracking-tight">FY Reports</h1>
-					<p className="mt-0.5 text-muted-foreground text-xs">
+			<PageHeader
+				description={
+					<>
 						Revenue targets vs actuals · {fmt(String(totalTarget))} target ·{" "}
 						{fmt(String(totalActual))} actual
 						{overallPct !== null && (
@@ -746,8 +745,9 @@ function FyPlanningPage() {
 								{overallPct}% attainment
 							</span>
 						)}
-					</p>
-				</div>
+					</>
+				}
+			>
 				<div className="flex items-center gap-2">
 					<Button
 						variant="outline"
@@ -782,7 +782,7 @@ function FyPlanningPage() {
 						</SelectContent>
 					</Select>
 				</div>
-			</div>
+			</PageHeader>
 
 			{/* Column headers */}
 			<div className="border-border border-b px-6 py-2.5">

@@ -17,6 +17,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
+import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -1834,30 +1835,22 @@ function WfpPage() {
 
 	return (
 		<div className="flex h-full flex-col">
-			{/* Header */}
-			<div className="flex items-center justify-between border-border border-b px-6 py-4">
-				<div>
-					<h1 className="font-extrabold text-lg tracking-tight">
-						Workforce Planning
-					</h1>
-				</div>
-				<div className="flex items-center gap-3">
-					<Tabs value={tab} onValueChange={(v) => setTab(v as string)}>
-						<TabsList className="h-8">
-							<TabsTrigger value="firm" className="px-3 text-xs">
-								Firm
-							</TabsTrigger>
-							<TabsTrigger value="staff" className="px-3 text-xs">
-								Staff
-							</TabsTrigger>
-						</TabsList>
-					</Tabs>
-					<HugeiconsIcon
-						icon={ChartLineData02Icon}
-						className="size-4 text-muted-foreground"
-					/>
-				</div>
-			</div>
+			<PageHeader>
+				<Tabs value={tab} onValueChange={(v) => setTab(v as string)}>
+					<TabsList className="h-8">
+						<TabsTrigger value="firm" className="px-3 text-xs">
+							Firm
+						</TabsTrigger>
+						<TabsTrigger value="staff" className="px-3 text-xs">
+							Staff
+						</TabsTrigger>
+					</TabsList>
+				</Tabs>
+				<HugeiconsIcon
+					icon={ChartLineData02Icon}
+					className="size-4 text-muted-foreground"
+				/>
+			</PageHeader>
 
 			{/* Tab content */}
 			<div className="flex-1 overflow-auto">

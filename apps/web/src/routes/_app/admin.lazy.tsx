@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
+import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -135,19 +136,14 @@ function AdminPage() {
 
 	return (
 		<div className="flex h-full flex-col">
-			{/* Header */}
-			<div className="flex items-center justify-between border-border border-b px-6 py-4">
-				<div>
-					<h1 className="font-extrabold text-lg tracking-tight">Admin</h1>
-					<p className="mt-0.5 text-muted-foreground text-xs">
-						{users.length} user{users.length !== 1 ? "s" : ""} · role management
-					</p>
-				</div>
+			<PageHeader
+				description={`${users.length} user${users.length !== 1 ? "s" : ""} · role management`}
+			>
 				<HugeiconsIcon
 					icon={Shield01Icon}
 					className="size-4 text-muted-foreground"
 				/>
-			</div>
+			</PageHeader>
 
 			{/* Table */}
 			<div className="flex-1 overflow-auto">

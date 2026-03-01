@@ -4,6 +4,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 
+import { PageHeader } from "@/components/shared/page-header";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -45,95 +46,100 @@ function TodosPage() {
 	};
 
 	return (
-		<div className="p-6">
-			<div className="mb-6">
-				<h1 className="font-extrabold text-lg tracking-tight">Todos</h1>
-				<p className="mt-1 text-muted-foreground text-xs">Manage your tasks</p>
-			</div>
+		<div className="flex h-full flex-col">
+			<PageHeader />
 
-			<div className="mx-auto max-w-md">
-				<Card>
-					<CardHeader>
-						<CardTitle>Todo List</CardTitle>
-						<CardDescription>Manage your tasks efficiently</CardDescription>
-					</CardHeader>
-					<CardContent>
-						<form onSubmit={handleAdd} className="mb-6 flex items-center gap-2">
-							<Input
-								value={newTodoText}
-								onChange={(e) => setNewTodoText(e.target.value)}
-								placeholder="Add a new task…"
-								disabled={createMutation.isPending}
-							/>
-							<Button
-								type="submit"
-								disabled={createMutation.isPending || !newTodoText.trim()}
+			<div className="flex-1 overflow-auto p-6">
+				<div className="mx-auto max-w-md">
+					<Card>
+						<CardHeader>
+							<CardTitle>Todo List</CardTitle>
+							<CardDescription>Manage your tasks efficiently</CardDescription>
+						</CardHeader>
+						<CardContent>
+							<form
+								onSubmit={handleAdd}
+								className="mb-6 flex items-center gap-2"
 							>
-								{createMutation.isPending ? (
+								<Input
+									value={newTodoText}
+									onChange={(e) => setNewTodoText(e.target.value)}
+									placeholder="Add a new task…"
+									disabled={createMutation.isPending}
+								/>
+								<Button
+									type="submit"
+									disabled={createMutation.isPending || !newTodoText.trim()}
+								>
+									{createMutation.isPending ? (
+										<HugeiconsIcon
+											icon={Loading01Icon}
+											className="size-4 animate-spin"
+										/>
+									) : (
+										"Add"
+									)}
+								</Button>
+							</form>
+
+							{todos.isLoading ? (
+								<div className="flex justify-center py-4">
 									<HugeiconsIcon
 										icon={Loading01Icon}
-										className="size-4 animate-spin"
+										className="size-6 animate-spin"
 									/>
-								) : (
-									"Add"
-								)}
-							</Button>
-						</form>
-
-						{todos.isLoading ? (
-							<div className="flex justify-center py-4">
-								<HugeiconsIcon
-									icon={Loading01Icon}
-									className="size-6 animate-spin"
-								/>
-							</div>
-						) : todos.data?.length === 0 ? (
-							<p className="py-4 text-center text-muted-foreground text-sm">
-								No todos yet. Add one above!
-							</p>
-						) : (
-							<ul className="flex flex-col gap-2">
-								{todos.data?.map((todo) => (
-									<li
-										key={todo.id}
-										className="flex items-center justify-between rounded-sm border p-2"
-									>
-										<div className="flex items-center gap-2">
-											<Checkbox
-												checked={todo.completed}
-												onCheckedChange={() =>
-													toggleMutation.mutate({
-														id: todo.id,
-														completed: !todo.completed,
-													})
-												}
-												id={`todo-${todo.id}`}
-											/>
-											<label
-												htmlFor={`todo-${todo.id}`}
-												className={
-													todo.completed
-														? "text-muted-foreground line-through"
-														: ""
-												}
-											>
-												{todo.text}
-											</label>
-										</div>
-										<Button
-											variant="ghost"
-											size="icon-sm"
-											onClick={() => deleteMutation.mutate({ id: todo.id })}
-											aria-label="Delete todo"
+								</div>
+							) : todos.data?.length === 0 ? (
+								<p className="py-4 text-center text-muted-foreground text-sm">
+									No todos yet. Add one above!
+								</p>
+							) : (
+								<ul className="flex flex-col gap-2">
+									{todos.data?.map((todo) => (
+										<li
+											key={todo.id}
+											className="flex items-center justify-between rounded-sm border p-2"
 										>
-											<HugeiconsIcon icon={Delete02Icon} className="size-3.5" />
-										</Button>
-									</li>
-								))}
-							</ul>
-						)}
-					</CardContent>
-				</Card>
+											<div className="flex items-center gap-2">
+												<Checkbox
+													checked={todo.completed}
+													onCheckedChange={() =>
+														toggleMutation.mutate({
+															id: todo.id,
+															completed: !todo.completed,
+														})
+													}
+													id={`todo-${todo.id}`}
+												/>
+												<label
+													htmlFor={`todo-${todo.id}`}
+													className={
+														todo.completed
+															? "text-muted-foreground line-through"
+															: ""
+													}
+												>
+													{todo.text}
+												</label>
+											</div>
+											<Button
+												variant="ghost"
+												size="icon-sm"
+												onClick={() => deleteMutation.mutate({ id: todo.id })}
+												aria-label="Delete todo"
+											>
+												<HugeiconsIcon
+													icon={Delete02Icon}
+													className="size-3.5"
+												/>
+											</Button>
+										</li>
+									))}
+								</ul>
+							)}
+						</CardContent>
+					</Card>
+				</div>
 			</div>
 		</div>
 	);

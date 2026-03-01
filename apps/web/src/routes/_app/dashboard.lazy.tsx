@@ -11,6 +11,7 @@ import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createLazyFileRoute, Link } from "@tanstack/react-router";
 
+import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -376,86 +377,84 @@ function DashboardPage() {
 	}
 
 	return (
-		<div className="flex flex-col gap-6 p-6">
-			{/* Page header */}
-			<div>
-				<h1 className="font-bold text-2xl tracking-tight">Dashboard</h1>
-				<p className="text-muted-foreground text-sm">
-					FY 2025-26 · 5 States · {officeCount} offices · 6 service lines
-				</p>
-			</div>
+		<div className="flex h-full flex-col">
+			<PageHeader />
 
-			{/* KPI strip */}
-			<div className="grid grid-cols-4 gap-3">
-				<StatCard
-					label="Total Carbonites"
-					value={carboniteCount}
-					icon={UserGroupIcon}
-					loading={stats.isLoading}
-				/>
-				<StatCard
-					label="Offices"
-					value={officeCount}
-					icon={Building03Icon}
-					loading={stats.isLoading}
-				/>
-				<StatCard
-					label="Open Roles"
-					value={openRoles}
-					icon={Briefcase01Icon}
-					loading={stats.isLoading}
-				/>
-				<StatCard
-					label="Entities"
-					value={entityCount}
-					icon={BarChartIcon}
-					loading={stats.isLoading}
-				/>
-			</div>
-
-			{/* Alerts */}
-			<AlertsPanel data={alerts.data} loading={alerts.isLoading} />
-
-			{/* Entity Cards */}
-			<div>
-				<h2 className="mb-3 font-semibold text-sm tracking-tight">Entities</h2>
-				<EntityCardsGrid
-					data={entitySummaries.data}
-					loading={entitySummaries.isLoading}
-				/>
-			</div>
-
-			{/* SL Breakdown */}
-			<Card>
-				<CardHeader>
-					<CardTitle className="text-sm">Service Line Breakdown</CardTitle>
-				</CardHeader>
-				<CardContent>
-					<SlBreakdownTable
-						data={slBreakdown.data}
-						loading={slBreakdown.isLoading}
+			<div className="flex flex-1 flex-col gap-6 overflow-auto p-6">
+				{/* KPI strip */}
+				<div className="grid grid-cols-4 gap-3">
+					<StatCard
+						label="Total Carbonites"
+						value={carboniteCount}
+						icon={UserGroupIcon}
+						loading={stats.isLoading}
 					/>
-				</CardContent>
-			</Card>
-
-			{/* API status */}
-			<Card>
-				<CardHeader>
-					<CardTitle className="text-sm">API Status</CardTitle>
-				</CardHeader>
-				<CardContent className="flex items-center gap-2">
-					<div
-						className={`size-2 rounded-full ${health.data ? "bg-green-500" : "bg-red-500"}`}
+					<StatCard
+						label="Offices"
+						value={officeCount}
+						icon={Building03Icon}
+						loading={stats.isLoading}
 					/>
-					<span className="text-muted-foreground text-xs">
-						{health.isLoading
-							? "Checking..."
-							: health.data
-								? "Connected"
-								: "Disconnected"}
-					</span>
-				</CardContent>
-			</Card>
+					<StatCard
+						label="Open Roles"
+						value={openRoles}
+						icon={Briefcase01Icon}
+						loading={stats.isLoading}
+					/>
+					<StatCard
+						label="Entities"
+						value={entityCount}
+						icon={BarChartIcon}
+						loading={stats.isLoading}
+					/>
+				</div>
+
+				{/* Alerts */}
+				<AlertsPanel data={alerts.data} loading={alerts.isLoading} />
+
+				{/* Entity Cards */}
+				<div>
+					<h2 className="mb-3 font-semibold text-sm tracking-tight">
+						Entities
+					</h2>
+					<EntityCardsGrid
+						data={entitySummaries.data}
+						loading={entitySummaries.isLoading}
+					/>
+				</div>
+
+				{/* SL Breakdown */}
+				<Card>
+					<CardHeader>
+						<CardTitle className="text-sm">Service Line Breakdown</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<SlBreakdownTable
+							data={slBreakdown.data}
+							loading={slBreakdown.isLoading}
+						/>
+					</CardContent>
+				</Card>
+
+				{/* API status */}
+				<Card>
+					<CardHeader>
+						<CardTitle className="text-sm">API Status</CardTitle>
+					</CardHeader>
+					<CardContent className="flex items-center gap-2">
+						<div
+							className={`size-2 rounded-full ${health.data ? "bg-green-500" : "bg-red-500"}`}
+						/>
+						<span className="text-muted-foreground text-xs">
+							{health.isLoading
+								? "Checking..."
+								: health.data
+									? "Connected"
+									: "Disconnected"}
+						</span>
+					</CardContent>
+				</Card>
+			</div>
 		</div>
 	);
 }

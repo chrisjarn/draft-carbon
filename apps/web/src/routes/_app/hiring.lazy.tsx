@@ -14,6 +14,7 @@ import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { DataTable } from "@/components/shared/data-table";
 import { DetailRow, DetailSection } from "@/components/shared/detail-display";
+import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -834,11 +835,9 @@ function HiringPage() {
 
 	return (
 		<div className="flex h-full flex-col">
-			{/* Header */}
-			<div className="flex items-center justify-between border-border border-b px-6 py-4">
-				<div>
-					<h1 className="font-extrabold text-lg tracking-tight">Hiring</h1>
-					<p className="mt-0.5 text-muted-foreground text-xs">
+			<PageHeader
+				description={
+					<>
 						{query.isSuccess
 							? `${rows.length} role${rows.length !== 1 ? "s" : ""}`
 							: "Loading…"}
@@ -865,39 +864,38 @@ function HiringPage() {
 								)}
 							</span>
 						)}
-					</p>
-				</div>
-				<div className="flex items-center gap-3">
-					<Tabs
-						value={tab}
-						onValueChange={(v) => {
-							setTab(v as TabStatus);
-							setSelected(null);
+					</>
+				}
+			>
+				<Tabs
+					value={tab}
+					onValueChange={(v) => {
+						setTab(v as TabStatus);
+						setSelected(null);
+					}}
+				>
+					<TabsList className="h-8">
+						<TabsTrigger value="open" className="px-3 text-xs">
+							Open
+						</TabsTrigger>
+						<TabsTrigger value="closed" className="px-3 text-xs">
+							Closed
+						</TabsTrigger>
+					</TabsList>
+				</Tabs>
+				{hasWriteAccess && (
+					<Button
+						size="sm"
+						onClick={() => {
+							setEditTarget(null);
+							setDialogOpen(true);
 						}}
 					>
-						<TabsList className="h-8">
-							<TabsTrigger value="open" className="px-3 text-xs">
-								Open
-							</TabsTrigger>
-							<TabsTrigger value="closed" className="px-3 text-xs">
-								Closed
-							</TabsTrigger>
-						</TabsList>
-					</Tabs>
-					{hasWriteAccess && (
-						<Button
-							size="sm"
-							onClick={() => {
-								setEditTarget(null);
-								setDialogOpen(true);
-							}}
-						>
-							<HugeiconsIcon icon={PlusSignIcon} className="mr-1.5 size-3.5" />{" "}
-							Add Role
-						</Button>
-					)}
-				</div>
-			</div>
+						<HugeiconsIcon icon={PlusSignIcon} className="mr-1.5 size-3.5" />{" "}
+						Add Role
+					</Button>
+				)}
+			</PageHeader>
 
 			{/* Table */}
 			<div className="flex-1 overflow-auto px-6 py-4">

@@ -11,6 +11,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
+import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -834,17 +835,14 @@ function CapacityPage() {
 
 	return (
 		<div className="flex h-full flex-col">
-			{/* Header */}
-			<div className="flex items-center justify-between border-border border-b px-6 py-4">
-				<div>
-					<h1 className="font-extrabold text-lg tracking-tight">
-						Capacity Plan
-					</h1>
-					<p className="mt-0.5 text-muted-foreground text-xs">
+			<PageHeader
+				description={
+					<>
 						Pod headcount vs budget — {groups.length} states ·{" "}
 						{groups.reduce((s, g) => s + g.offices.length, 0)} offices
-					</p>
-				</div>
+					</>
+				}
+			>
 				<div className="flex items-center gap-4 text-muted-foreground text-xs">
 					<span>
 						<span className="font-semibold text-foreground">{totalActual}</span>{" "}
@@ -863,7 +861,7 @@ function CapacityPage() {
 						</Button>
 					)}
 				</div>
-			</div>
+			</PageHeader>
 
 			{/* Legend */}
 			<div className="flex items-center gap-6 border-border border-b px-6 py-2.5">
