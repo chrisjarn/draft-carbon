@@ -1,5 +1,7 @@
 import { integer, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 
+import { carbonites } from "./carbonites";
+
 export const hiringNeeds = pgTable("hiring_needs", {
 	id: text("id").primaryKey(),
 	role: text("role").notNull(),
@@ -21,6 +23,9 @@ export const hiringNeeds = pgTable("hiring_needs", {
 	closedHow: text("closed_how"), // hired | cancelled | deferred
 	closedDate: text("closed_date"),
 	closedName: text("closed_name"),
+	hiredCarboniteId: text("hired_carbonite_id").references(() => carbonites.id, {
+		onDelete: "set null",
+	}),
 	createdAt: timestamp("created_at").defaultNow(),
 	updatedAt: timestamp("updated_at").defaultNow(),
 });

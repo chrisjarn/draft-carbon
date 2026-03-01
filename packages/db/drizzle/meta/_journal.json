@@ -43,6 +43,13 @@
       "when": 1772386695143,
       "tag": "0005_p1-3-role-tag-enum",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1772386993103,
+      "tag": "0006_p1-4-hired-carbonite-fk",
+      "breakpoints": true
     }
   ]
 }

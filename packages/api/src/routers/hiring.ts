@@ -1,4 +1,5 @@
 import { db } from "@carbon-wfp/db";
+import { carbonites } from "@carbon-wfp/db/schema/carbonites";
 import { hiringNeeds } from "@carbon-wfp/db/schema/hiring-needs";
 import { TRPCError } from "@trpc/server";
 import { asc, eq } from "drizzle-orm";
@@ -100,10 +101,23 @@ export const hiringRouter = router({
 				]),
 				closedDate: z.string(),
 				closedName: z.string().optional(),
+				hiredCarboniteId: z.string().optional(),
 			}),
 		)
 		.mutation(async ({ ctx, input }) => {
 			assertWriter(ctx.session.user);
+			// Verify carbonite exists before linking
+			if (input.hiredCarboniteId) {
+				const [cb] = await db
+					.select({ id: carbonites.id })
+					.from(carbonites)
+					.where(eq(carbonites.id, input.hiredCarboniteId));
+				if (!cb)
+					throw new TRPCError({
+						code: "BAD_REQUEST",
+						message: `Carbonite not found: ${input.hiredCarboniteId}`,
+					});
+			}
 			const { id, ...fields } = input;
 			const [row] = await db
 				.update(hiringNeeds)
