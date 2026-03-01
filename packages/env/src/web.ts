@@ -6,6 +6,6 @@ export const env = createEnv({
 	client: {
 		VITE_SERVER_URL: z.string().default(""),
 	},
-	runtimeEnv: (import.meta as any).env,
+	runtimeEnv: import.meta.env,
 	emptyStringAsUndefined: true,
 });

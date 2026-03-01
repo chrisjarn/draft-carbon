@@ -5,6 +5,7 @@ import {
 	hiringNeeds,
 	salaryBrackets,
 } from "./src/schema/index.js";
+import type { NewSalaryBracket } from "./src/schema/salary-brackets.js";
 
 // ── Entities (24 records) ───────────────────────────────────────────────────
 
@@ -3056,20 +3057,21 @@ const SALARY_BRACKETS_RAW = [
 ];
 
 // Generate unique IDs for salary brackets (sl+prog is not unique across divisions)
-const SALARY_BRACKETS = SALARY_BRACKETS_RAW.map((b, i) => ({
+// The raw seed data uses number[] which TS won't narrow to [number, number] tuples,
+// so we assert the mapped result to the Drizzle insert type.
+const SALARY_BRACKETS: NewSalaryBracket[] = SALARY_BRACKETS_RAW.map((b, i) => ({
 	id: `sb-${b.sl}-${b.prog}-${i}`,
 	div: b.div,
 	sl: b.sl,
 	prog: b.prog,
 	role: b.role,
-	// Cast to bypass strict TS types — json columns accept any shape
-	nsw: (b.nsw ?? {}) as never,
-	qld: (b.qld ?? {}) as never,
-	sa: (b.sa ?? {}) as never,
-	vic: (b.vic ?? {}) as never,
-	wa: (b.wa ?? {}) as never,
-	bands: b.bands as never,
-}));
+	nsw: b.nsw ?? null,
+	qld: b.qld ?? null,
+	sa: b.sa ?? null,
+	vic: b.vic ?? null,
+	wa: b.wa ?? null,
+	bands: b.bands ?? [],
+})) as NewSalaryBracket[];
 
 // ── Seed ────────────────────────────────────────────────────────────────────
 

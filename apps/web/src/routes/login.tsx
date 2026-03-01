@@ -1,6 +1,5 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 
-import Login04 from "@/components/login-04";
 import { authClient } from "@/lib/auth-client";
 
 export const Route = createFileRoute("/login")({
@@ -10,5 +9,4 @@ export const Route = createFileRoute("/login")({
 			throw redirect({ to: "/dashboard" });
 		}
 	},
-	component: Login04,
 });

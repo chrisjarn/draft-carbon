@@ -1,5 +1,10 @@
+import {
+	ArrowUpDownIcon,
+	Logout01Icon,
+	Settings01Icon,
+} from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import { useNavigate } from "@tanstack/react-router";
-import { ChevronsUpDown, LogOut, Settings } from "lucide-react";
 
 import {
 	DropdownMenu,
@@ -17,13 +22,7 @@ import {
 import { authClient } from "@/lib/auth-client";
 import { ROLE_LABELS } from "@/lib/rbac";
 
-export function UserDropdown({
-	name,
-	role,
-}: {
-	name: string;
-	role: string;
-}) {
+export function UserDropdown({ name, role }: { name: string; role: string }) {
 	const { isMobile } = useSidebar();
 	const navigate = useNavigate();
 
@@ -43,40 +42,29 @@ export function UserDropdown({
 		<SidebarMenu>
 			<SidebarMenuItem>
 				<DropdownMenu>
-					<DropdownMenuTrigger
-						render={
-							<SidebarMenuButton
-								size="lg"
-								className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-							/>
-						}
-					>
-						<div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary font-bold text-primary-foreground text-xs">
-							{initials}
-						</div>
+					<DropdownMenuTrigger>
+						<SidebarMenuButton>{initials}</SidebarMenuButton>
 						<div className="grid flex-1 text-left text-sm leading-tight">
 							<span className="truncate font-semibold">{name}</span>
-							<span className="truncate text-xs text-sidebar-foreground/50">
+							<span className="truncate text-sidebar-foreground/50 text-xs">
 								{ROLE_LABELS[role] ?? role}
 							</span>
 						</div>
-						<ChevronsUpDown className="ml-auto" />
+						<HugeiconsIcon icon={ArrowUpDownIcon} />
 					</DropdownMenuTrigger>
 					<DropdownMenuContent
-						className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+						className="min-w-56 rounded-lg"
 						align="start"
 						side={isMobile ? "bottom" : "right"}
 						sideOffset={4}
 					>
-						<DropdownMenuItem
-							onSelect={() => navigate({ to: "/admin" })}
-						>
-							<Settings className="mr-2 size-4" />
+						<DropdownMenuItem onSelect={() => navigate({ to: "/admin" })}>
+							<HugeiconsIcon icon={Settings01Icon} className="mr-2 size-4" />
 							Settings
 						</DropdownMenuItem>
 						<DropdownMenuSeparator />
 						<DropdownMenuItem onSelect={handleSignOut}>
-							<LogOut className="mr-2 size-4" />
+							<HugeiconsIcon icon={Logout01Icon} className="mr-2 size-4" />
 							Sign out
 						</DropdownMenuItem>
 					</DropdownMenuContent>

@@ -1,10 +1,20 @@
 import { json, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 
-// Salary range type used per state
-export type SalaryRange = {
-	min: number;
-	max: number;
-	mid?: number;
+// State salary range: m = market range, r = recommended range (each is [min, max] or null)
+export type StateRange = {
+	m: [number, number] | null;
+	r: [number, number];
+} | null;
+
+// Band breakdown per performance level
+export type SalaryBand = {
+	perf: string;
+	label: string;
+	nsw: StateRange;
+	qld: StateRange;
+	sa: StateRange;
+	vic: StateRange;
+	wa: StateRange;
 };
 
 export const salaryBrackets = pgTable("salary_brackets", {
@@ -13,12 +23,12 @@ export const salaryBrackets = pgTable("salary_brackets", {
 	sl: text("sl").notNull(), // service line
 	prog: text("prog"), // programme / specialisation
 	role: text("role").notNull(),
-	nsw: json("nsw").$type<SalaryRange>().notNull().default({ min: 0, max: 0 }),
-	qld: json("qld").$type<SalaryRange>().notNull().default({ min: 0, max: 0 }),
-	sa: json("sa").$type<SalaryRange>().notNull().default({ min: 0, max: 0 }),
-	vic: json("vic").$type<SalaryRange>().notNull().default({ min: 0, max: 0 }),
-	wa: json("wa").$type<SalaryRange>().notNull().default({ min: 0, max: 0 }),
-	bands: json("bands").$type<string[]>().notNull().default([]),
+	nsw: json("nsw").$type<StateRange>(),
+	qld: json("qld").$type<StateRange>(),
+	sa: json("sa").$type<StateRange>(),
+	vic: json("vic").$type<StateRange>(),
+	wa: json("wa").$type<StateRange>(),
+	bands: json("bands").$type<SalaryBand[]>().notNull().default([]),
 	updatedAt: timestamp("updated_at").defaultNow(),
 });
 

@@ -1,6 +1,15 @@
 "use client";
 
 import {
+	ArrowLeft01Icon,
+	ArrowRight01Icon,
+	Delete02Icon,
+	EyeIcon,
+	MoreHorizontalIcon,
+	PencilEdit01Icon,
+} from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
 	type ColumnDef,
 	flexRender,
 	getCoreRowModel,
@@ -10,14 +19,6 @@ import {
 	type SortingState,
 	useReactTable,
 } from "@tanstack/react-table";
-import {
-	ChevronLeft,
-	ChevronRight,
-	Eye,
-	MoreHorizontal,
-	Pencil,
-	Trash2,
-} from "lucide-react";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -141,21 +142,21 @@ const columns: ColumnDef<Item>[] = [
 					<DropdownMenuTrigger
 						render={<Button variant="ghost" size="icon" className="h-8 w-8" />}
 					>
-						<MoreHorizontal className="h-4 w-4" />
+						<HugeiconsIcon icon={MoreHorizontalIcon} className="h-4 w-4" />
 						<span className="sr-only">Open menu</span>
 					</DropdownMenuTrigger>
 					<DropdownMenuContent align="end">
 						<DropdownMenuItem>
-							<Eye className="mr-2 h-4 w-4" />
+							<HugeiconsIcon icon={EyeIcon} className="mr-2 h-4 w-4" />
 							View details
 						</DropdownMenuItem>
 						<DropdownMenuItem>
-							<Pencil className="mr-2 h-4 w-4" />
+							<HugeiconsIcon icon={PencilEdit01Icon} className="mr-2 h-4 w-4" />
 							Edit
 						</DropdownMenuItem>
 						<DropdownMenuSeparator />
 						<DropdownMenuItem className="text-destructive">
-							<Trash2 className="mr-2 h-4 w-4" />
+							<HugeiconsIcon icon={Delete02Icon} className="mr-2 h-4 w-4" />
 							Delete
 						</DropdownMenuItem>
 					</DropdownMenuContent>
@@ -355,7 +356,7 @@ export default function Table05() {
 						disabled={!table.getCanPreviousPage()}
 						aria-label="Previous page"
 					>
-						<ChevronLeft className="h-4 w-4" />
+						<HugeiconsIcon icon={ArrowLeft01Icon} className="h-4 w-4" />
 						<span className="sr-only">Previous page</span>
 					</Button>
 					{Array.from({ length: pageCount }, (_, i) => i + 1).map((page) => (
@@ -378,7 +379,7 @@ export default function Table05() {
 						disabled={!table.getCanNextPage()}
 						aria-label="Next page"
 					>
-						<ChevronRight className="h-4 w-4" />
+						<HugeiconsIcon icon={ArrowRight01Icon} className="h-4 w-4" />
 						<span className="sr-only">Next page</span>
 					</Button>
 				</div>

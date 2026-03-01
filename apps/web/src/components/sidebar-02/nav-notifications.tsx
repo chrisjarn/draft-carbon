@@ -1,6 +1,5 @@
-"use client";
-
-import { BellIcon } from "lucide-react";
+import { Notification03Icon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -37,7 +36,7 @@ export function NotificationsPopover({
 					/>
 				}
 			>
-				<BellIcon className="size-5" />
+				<HugeiconsIcon icon={Notification03Icon} className="size-5" />
 			</DropdownMenuTrigger>
 			<DropdownMenuContent side="right" className="my-6 w-80">
 				<DropdownMenuLabel>Notifications</DropdownMenuLabel>

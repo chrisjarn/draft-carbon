@@ -1,3 +1,5 @@
+import { ArrowLeft01Icon, ArrowRight01Icon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import {
 	type ColumnDef,
 	flexRender,
@@ -10,7 +12,6 @@ import {
 	type SortingState,
 	useReactTable,
 } from "@tanstack/react-table";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -189,7 +190,7 @@ export function DataTable<TData>({
 							disabled={!table.getCanPreviousPage()}
 							aria-label="Previous page"
 						>
-							<ChevronLeft className="h-4 w-4" />
+							<HugeiconsIcon icon={ArrowLeft01Icon} className="h-4 w-4" />
 						</Button>
 						{Array.from({ length: pageCount }, (_, i) => i + 1).map((page) => (
 							<Button
@@ -211,7 +212,7 @@ export function DataTable<TData>({
 							disabled={!table.getCanNextPage()}
 							aria-label="Next page"
 						>
-							<ChevronRight className="h-4 w-4" />
+							<HugeiconsIcon icon={ArrowRight01Icon} className="h-4 w-4" />
 						</Button>
 					</div>
 				</div>

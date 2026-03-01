@@ -381,10 +381,10 @@ export function getFTHours(
 	entityId?: string | null,
 ): number {
 	if (entityId && entityId in ENTITY_FT_HOURS) {
-		return ENTITY_FT_HOURS[entityId];
+		return ENTITY_FT_HOURS[entityId] ?? DEFAULT_FT_HOURS;
 	}
 	if (stateId && stateId in STATE_FT_HOURS) {
-		return STATE_FT_HOURS[stateId];
+		return STATE_FT_HOURS[stateId] ?? DEFAULT_FT_HOURS;
 	}
 	return DEFAULT_FT_HOURS;
 }

@@ -25,7 +25,7 @@ const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any).lazy(() => import('./routes/login.lazy').then((d) => d.Route))
 const AppRoute = AppRouteImport.update({
   id: '/_app',
   getParentRoute: () => rootRouteImport,
@@ -39,42 +39,48 @@ const AppWfpRoute = AppWfpRouteImport.update({
   id: '/wfp',
   path: '/wfp',
   getParentRoute: () => AppRoute,
-} as any)
+} as any).lazy(() => import('./routes/_app/wfp.lazy').then((d) => d.Route))
 const AppTodosRoute = AppTodosRouteImport.update({
   id: '/todos',
   path: '/todos',
   getParentRoute: () => AppRoute,
-} as any)
+} as any).lazy(() => import('./routes/_app/todos.lazy').then((d) => d.Route))
 const AppHiringRoute = AppHiringRouteImport.update({
   id: '/hiring',
   path: '/hiring',
   getParentRoute: () => AppRoute,
-} as any)
+} as any).lazy(() => import('./routes/_app/hiring.lazy').then((d) => d.Route))
 const AppFyPlanningRoute = AppFyPlanningRouteImport.update({
   id: '/fy-planning',
   path: '/fy-planning',
   getParentRoute: () => AppRoute,
-} as any)
+} as any).lazy(() =>
+  import('./routes/_app/fy-planning.lazy').then((d) => d.Route),
+)
 const AppDashboardRoute = AppDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
   getParentRoute: () => AppRoute,
-} as any)
+} as any).lazy(() =>
+  import('./routes/_app/dashboard.lazy').then((d) => d.Route),
+)
 const AppCarbonitesRoute = AppCarbonitesRouteImport.update({
   id: '/carbonites',
   path: '/carbonites',
   getParentRoute: () => AppRoute,
-} as any)
+} as any).lazy(() =>
+  import('./routes/_app/carbonites.lazy').then((d) => d.Route),
+)
 const AppCapacityRoute = AppCapacityRouteImport.update({
   id: '/capacity',
   path: '/capacity',
   getParentRoute: () => AppRoute,
-} as any)
+} as any).lazy(() => import('./routes/_app/capacity.lazy').then((d) => d.Route))
 const AppAdminRoute = AppAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
   getParentRoute: () => AppRoute,
-} as any)
+} as any).lazy(() => import('./routes/_app/admin.lazy').then((d) => d.Route))
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute

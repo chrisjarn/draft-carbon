@@ -1,5 +1,0 @@
-BETTER_AUTH_SECRET=97tCmExewXfQz1IPdoia4MFS5miNSQh5
-BETTER_AUTH_URL=http://localhost:3001
-CORS_ORIGIN=http://localhost:3001
-DATABASE_URL=postgresql://neondb_owner:npg_ELR97mqYxJTl@ep-withered-morning-a78gq7du-pooler.ap-southeast-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require
-    

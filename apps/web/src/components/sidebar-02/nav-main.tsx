@@ -1,5 +1,5 @@
+import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react";
 import { Link, useRouterState } from "@tanstack/react-router";
-import type { LucideIcon } from "lucide-react";
 
 import {
 	SidebarMenu,
@@ -10,7 +10,7 @@ import {
 export type NavItem = {
 	to: string;
 	label: string;
-	icon: LucideIcon;
+	icon: IconSvgElement;
 	minRank: number;
 };
 
@@ -21,7 +21,6 @@ export function NavMain({ items }: { items: NavItem[] }) {
 	return (
 		<SidebarMenu>
 			{items.map((item) => {
-				const Icon = item.icon;
 				const isActive =
 					item.to === "/dashboard"
 						? pathname === "/dashboard"
@@ -32,9 +31,8 @@ export function NavMain({ items }: { items: NavItem[] }) {
 						<SidebarMenuButton
 							isActive={isActive}
 							render={<Link to={item.to} />}
-							className="h-auto rounded-sm px-3 py-2 font-bold text-sm text-sidebar-foreground/55 hover:bg-sidebar-accent hover:text-sidebar-foreground data-[active]:bg-sidebar-primary data-[active]:text-sidebar-primary-foreground data-[active]:hover:bg-sidebar-primary data-[active]:hover:text-sidebar-primary-foreground"
 						>
-							<Icon className="size-4" />
+							<HugeiconsIcon icon={item.icon} />
 							<span>{item.label}</span>
 						</SidebarMenuButton>
 					</SidebarMenuItem>

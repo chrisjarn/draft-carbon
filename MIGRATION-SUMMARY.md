@@ -224,11 +224,135 @@ All routers registered in `packages/api/src/routers/index.ts`:
 
 ---
 
+## Phase 6: Design System Rebuild (shadcn base-maia + Hugeicons + Outfit)
+
+Complete visual overhaul — stripped all hardcoded styling and rebuilt using shadcn's design system with the base-maia style, zinc+emerald theme, Hugeicons, Outfit font, and floating sidebar variant.
+
+### Configuration
+```
+shadcn config URL: https://ui.shadcn.com/create?base=base&style=maia&baseColor=zinc&theme=emerald&iconLibrary=hugeicons&font=outfit&menuAccent=bold&menuColor=inverted&radius=default&item=sidebar-floating-example
+```
+
+### Packages Changed
+| Action | Package |
+|--------|---------|
+| Installed | `@fontsource-variable/outfit` (variable weight font) |
+| Installed | `@hugeicons/react@1.1.5` (icon wrapper component) |
+| Installed | `@hugeicons/core-free-icons@3.3.0` (4,600+ free stroke-rounded icons) |
+| Removed | `lucide-react` (fully replaced, zero imports remain) |
+
+### Config Files Updated
+| File | Changes |
+|------|---------|
+| `apps/web/components.json` | `baseColor: "zinc"`, `iconLibrary: "hugeicons"`, `menuColor: "inverted"`, `menuAccent: "bold"` |
+| `apps/web/src/index.css` | Complete rewrite: zinc base + emerald primary oklch tokens, inverted dark sidebar tokens, Outfit font import, chart colors for light/dark |
+
+### Core UI Components Rebuilt (from official base-maia source)
+| Component | Key Changes |
+|-----------|-------------|
+| `ui/card.tsx` | `rounded-2xl`, `gap-6`, `py-6`, `px-6`, `text-sm`, `text-base` title |
+| `ui/sidebar.tsx` | Proper radii (`rounded-lg` floating inner, `rounded-xl` SidebarInset), gaps, sizing, HugeiconsIcon trigger |
+
+### Icon Migration: lucide-react → Hugeicons (all 37 icons)
+
+| Lucide | Hugeicons |
+|--------|-----------|
+| AlertTriangle / TriangleAlertIcon | Alert02Icon |
+| BarChart3 | BarChartIcon |
+| Briefcase | Briefcase01Icon |
+| Building2 | Building03Icon |
+| RefreshCw | ArrowReloadHorizontalIcon |
+| Users | UserGroupIcon |
+| WifiOff | WifiOff01Icon |
+| Check / CheckIcon | Tick01Icon |
+| ChevronDown / ChevronDownIcon | ArrowDown01Icon |
+| ChevronUp / ChevronUpIcon | ArrowUp01Icon |
+| ChevronRight / ChevronRightIcon | ArrowRight01Icon |
+| ChevronLeft / ChevronLeftIcon | ArrowLeft01Icon |
+| ChevronsUpDown / ArrowUpDownIcon | ArrowUpDownIcon |
+| Pencil | PencilEdit01Icon |
+| Plus | PlusSignIcon |
+| DollarSign | Dollar01Icon |
+| Star | StarIcon |
+| Target | Target01Icon |
+| Trash2 | Delete02Icon |
+| TrendingUp | ChartLineData02Icon |
+| Wand2 | MagicWand01Icon |
+| Download | Download01Icon |
+| Upload | Upload01Icon |
+| RotateCcw | Rotate01Icon |
+| X / XIcon | Cancel01Icon |
+| Shield | Shield01Icon |
+| Loader2 / Loader2Icon | Loading01Icon |
+| Eye | EyeIcon |
+| MoreHorizontal / MoreHorizontalIcon | MoreHorizontalIcon |
+| Logout | Logout01Icon |
+| Settings | Settings01Icon |
+| PanelLeftIcon | SidebarLeft01Icon |
+| BellIcon | Notification03Icon |
+| MinusIcon | MinusSignIcon |
+| SearchIcon | Search01Icon |
+| CircleCheckIcon | CheckmarkCircle01Icon |
+| InfoIcon | InformationCircleIcon |
+| OctagonXIcon | CancelCircleIcon |
+
+### Files Updated (40 files total)
+
+**Sidebar components (4)**:
+- `sidebar-02/app-sidebar.tsx` — `variant="floating"`, all icons, removed Carbon brand styling
+- `sidebar-02/nav-main.tsx` — Removed custom className overrides, `IconSvgElement` type, `HugeiconsIcon` wrapper
+- `sidebar-02/team-switcher.tsx` — Icons
+- `sidebar-02/nav-notifications.tsx` — Icons
+
+**Route pages (8)**:
+- `routes/_app/dashboard.lazy.tsx` — Icons + banner stripped (`bg-[#3a3f44]`→`bg-muted`, removed hardcoded `text-white`, `style={{ fontFamily: "cursive" }}`, `rounded-sm`→`rounded-xl`)
+- `routes/_app/capacity.lazy.tsx` — 6 icons
+- `routes/_app/wfp.lazy.tsx` — 12 icons, ~24 occurrences
+- `routes/_app/fy-planning.lazy.tsx` — 6 icons
+- `routes/_app/hiring.lazy.tsx` — 6 icons
+- `routes/_app/carbonites.lazy.tsx` — 5 icons
+- `routes/_app/admin.lazy.tsx` — 2 icons
+- `routes/_app/todos.lazy.tsx` — 2 icons
+
+**Shared components (3)**:
+- `components/table-05.tsx` — 6 icons
+- `components/shared/data-table.tsx` — 2 icons
+- `components/loader.tsx` — Loading01Icon
+
+**UI components (19)**:
+- `ui/sheet.tsx`, `ui/dialog.tsx` — Cancel01Icon
+- `ui/checkbox.tsx` — Tick01Icon
+- `ui/input-otp.tsx` — MinusSignIcon
+- `ui/menubar.tsx` — Tick01Icon
+- `ui/select.tsx` — Tick01Icon, ArrowDown01Icon, ArrowUp01Icon
+- `ui/navigation-menu.tsx` — ArrowDown01Icon
+- `ui/dropdown-menu.tsx` — Tick01Icon, ArrowRight01Icon
+- `ui/native-select.tsx` — ArrowDown01Icon
+- `ui/context-menu.tsx` — Tick01Icon, ArrowRight01Icon
+- `ui/command.tsx` — Tick01Icon, Search01Icon
+- `ui/combobox.tsx` — Tick01Icon, ArrowDown01Icon, Cancel01Icon
+- `ui/carousel.tsx` — ArrowLeft01Icon, ArrowRight01Icon
+- `ui/breadcrumb.tsx` — ArrowRight01Icon, MoreHorizontalIcon
+- `ui/accordion.tsx` — ArrowDown01Icon, ArrowUp01Icon
+- `ui/spinner.tsx` — Loading01Icon
+- `ui/sonner.tsx` — CheckmarkCircle01Icon, InformationCircleIcon, Alert02Icon, CancelCircleIcon, Loading01Icon
+- `ui/pagination.tsx` — ArrowLeft01Icon, ArrowRight01Icon, MoreHorizontalIcon
+- `ui/calendar.tsx` — ArrowDown01Icon, ArrowLeft01Icon, ArrowRight01Icon
+
+### Key Decisions
+1. **Full strip, not incremental** — All hardcoded colors, Carbon branding, and custom styles were removed. Clean slate using shadcn tokens only.
+2. **Official base-maia sources as reference** — Card and sidebar rebuilt from `https://ui.shadcn.com/r/styles/base-maia/{component}.json` to get correct radii, gaps, and sizing.
+3. **Zinc + emerald oklch tokens** — Sourced from shadcn theming docs. Light primary: `oklch(0.596 0.145 163.225)`, dark primary: `oklch(0.648 0.2 163.1)`.
+4. **Floating sidebar** — Uses `variant="floating"` with inverted menu color (dark sidebar in light mode).
+5. **Outfit font via CSS @import** — `@fontsource-variable/outfit` loaded in `index.css`, no runtime JS.
+
+---
+
 ## Build Status
 
 | Check | Result |
 |-------|--------|
-| `bun run check-types` | 2/2 tasks pass |
+| `bun run check-types` | 2/2 tasks pass (0 errors) |
 | `bun run build` | 2/2 tasks pass (chunk size warning — non-blocking) |
 | `bunx vitest run` | 47/47 tests pass (16 rbac + 31 format) |
 

@@ -1,3 +1,4 @@
 {
-	"extends": "@carbon-wfp/config/tsconfig.base.json"
+	"extends": "@carbon-wfp/config/tsconfig.base.json",
+	"exclude": ["legacy", "node_modules", "**/dist", "**/.turbo"]
 }

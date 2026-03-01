@@ -15,8 +15,20 @@ const hiringInput = z.object({
 	office: z.string().optional(),
 	location: z.string().optional(),
 	positions: z.number().int().min(1).optional(),
-	type: z.enum(["FT", "PT", "Contract"]).optional(),
-	priority: z.enum(["critical", "high", "medium", "low"]).optional(),
+	type: z
+		.enum([
+			"FT",
+			"PT",
+			"Contract",
+			"succession",
+			"growth",
+			"backfill",
+			"new-capability",
+		])
+		.optional(),
+	priority: z
+		.enum(["critical", "urgent", "high", "medium", "low", "planned"])
+		.optional(),
 	salaryMin: z.number().int().optional(),
 	salaryMax: z.number().int().optional(),
 	targetStart: z.string().optional(),
@@ -29,7 +41,11 @@ export const hiringRouter = router({
 	getAll: protectedProcedure
 		.input(
 			z
-				.object({ status: z.enum(["open", "closed", "all"]).optional() })
+				.object({
+					status: z
+						.enum(["open", "active", "offer", "closed", "all"])
+						.optional(),
+				})
 				.optional(),
 		)
 		.query(async ({ input }) => {
@@ -40,6 +56,8 @@ export const hiringRouter = router({
 
 			const status = input?.status ?? "open";
 			if (status === "all") return rows;
+			// "open" tab includes active/offer/open (anything not closed)
+			if (status === "open") return rows.filter((r) => r.status !== "closed");
 			return rows.filter((r) => r.status === status);
 		}),
 
@@ -73,7 +91,13 @@ export const hiringRouter = router({
 		.input(
 			z.object({
 				id: z.string(),
-				closedHow: z.enum(["hired", "cancelled", "deferred"]),
+				closedHow: z.enum([
+					"hired",
+					"cancelled",
+					"deferred",
+					"internal",
+					"referral",
+				]),
 				closedDate: z.string(),
 				closedName: z.string().optional(),
 			}),

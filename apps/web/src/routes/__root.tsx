@@ -1,17 +1,33 @@
 import type { QueryClient } from "@tanstack/react-query";
 
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import {
 	createRootRouteWithContext,
 	HeadContent,
 	Outlet,
 } from "@tanstack/react-router";
-import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
+import { Agentation } from "agentation";
+import { lazy, Suspense } from "react";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import type { trpc } from "@/utils/trpc";
 
 import "../index.css";
+
+const TanStackRouterDevtools = import.meta.env.PROD
+	? () => null
+	: lazy(() =>
+			import("@tanstack/react-router-devtools").then((m) => ({
+				default: m.TanStackRouterDevtools,
+			})),
+		);
+
+const ReactQueryDevtools = import.meta.env.PROD
+	? () => null
+	: lazy(() =>
+			import("@tanstack/react-query-devtools").then((m) => ({
+				default: m.ReactQueryDevtools,
+			})),
+		);
 
 export interface RouterAppContext {
 	trpc: typeof trpc;
@@ -42,8 +58,11 @@ function RootComponent() {
 				<Outlet />
 				<Toaster richColors />
 			</ThemeProvider>
-			<TanStackRouterDevtools position="bottom-left" />
-			<ReactQueryDevtools position="bottom" buttonPosition="bottom-right" />
+			{import.meta.env.DEV && <Agentation />}
+			<Suspense fallback={null}>
+				<TanStackRouterDevtools position="bottom-left" />
+				<ReactQueryDevtools position="bottom" buttonPosition="bottom-right" />
+			</Suspense>
 		</>
 	);
 }

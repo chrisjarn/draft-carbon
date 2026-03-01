@@ -3,14 +3,14 @@ import { todo } from "@carbon-wfp/db/schema/todo";
 import { eq } from "drizzle-orm";
 import z from "zod";
 
-import { publicProcedure, router } from "../index";
+import { protectedProcedure, publicProcedure, router } from "../index";
 
 export const todoRouter = router({
 	getAll: publicProcedure.query(async () => {
 		return await db.select().from(todo);
 	}),
 
-	create: publicProcedure
+	create: protectedProcedure
 		.input(z.object({ text: z.string().min(1) }))
 		.mutation(async ({ input }) => {
 			return await db.insert(todo).values({
@@ -18,7 +18,7 @@ export const todoRouter = router({
 			});
 		}),
 
-	toggle: publicProcedure
+	toggle: protectedProcedure
 		.input(z.object({ id: z.number(), completed: z.boolean() }))
 		.mutation(async ({ input }) => {
 			return await db
@@ -27,7 +27,7 @@ export const todoRouter = router({
 				.where(eq(todo.id, input.id));
 		}),
 
-	delete: publicProcedure
+	delete: protectedProcedure
 		.input(z.object({ id: z.number() }))
 		.mutation(async ({ input }) => {
 			return await db.delete(todo).where(eq(todo.id, input.id));
