@@ -6,7 +6,7 @@ import { and, asc, eq, ilike, or } from "drizzle-orm";
 import z from "zod";
 
 import { protectedProcedure, router } from "../index";
-import { assertWriter } from "../lib/rbac";
+import { assertAdmin, assertWriter } from "../lib/rbac";
 
 const carboniteInput = z.object({
 	name: z.string().min(1),
@@ -129,7 +129,7 @@ export const carbonitesRouter = router({
 	delete: protectedProcedure
 		.input(z.object({ id: z.string() }))
 		.mutation(async ({ ctx, input }) => {
-			assertWriter(ctx.session.user);
+			assertAdmin(ctx.session.user);
 			const [row] = await db
 				.update(carbonites)
 				.set({ isActive: false, updatedAt: new Date() })

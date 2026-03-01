@@ -48,7 +48,7 @@ import {
 	STATES,
 } from "@/lib/constants";
 import { initials } from "@/lib/format";
-import { canWrite, getUserRole } from "@/lib/rbac";
+import { canAdminWrite, canWrite, getUserRole } from "@/lib/rbac";
 import { trpc } from "@/utils/trpc";
 
 export const Route = createLazyFileRoute("/_app/carbonites")({
@@ -249,12 +249,14 @@ function CarboniteDetailSheet({
 	onEdit,
 	onDelete,
 	canWriteAccess,
+	canAdminAccess,
 }: {
 	carbonite: Carbonite | null;
 	onClose: () => void;
 	onEdit: (c: Carbonite) => void;
 	onDelete: (c: Carbonite) => void;
 	canWriteAccess: boolean;
+	canAdminAccess: boolean;
 }) {
 	return (
 		<Sheet open={!!carbonite} onOpenChange={(open) => !open && onClose()}>
@@ -327,13 +329,15 @@ function CarboniteDetailSheet({
 									/>{" "}
 									Edit
 								</Button>
-								<Button
-									size="sm"
-									variant="destructive"
-									onClick={() => onDelete(carbonite)}
-								>
-									<HugeiconsIcon icon={Delete02Icon} className="size-3" />
-								</Button>
+								{canAdminAccess && (
+									<Button
+										size="sm"
+										variant="destructive"
+										onClick={() => onDelete(carbonite)}
+									>
+										<HugeiconsIcon icon={Delete02Icon} className="size-3" />
+									</Button>
+								)}
 							</div>
 						)}
 					</>
@@ -693,6 +697,7 @@ function CarbonitesPage() {
 	const { data: session } = authClient.useSession();
 	const userRole = getUserRole(session?.user);
 	const hasWriteAccess = canWrite(userRole);
+	const hasAdminAccess = canAdminWrite(userRole);
 
 	const qc = useQueryClient();
 	const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
@@ -747,7 +752,7 @@ function CarbonitesPage() {
 				invalidate();
 				setDeleteTarget(null);
 				setSelected(null);
-				toast.success("Carbonite deleted");
+				toast.success("Carbonite deactivated");
 			},
 			onError: (e) => toast.error(e.message),
 		}),
@@ -847,6 +852,7 @@ function CarbonitesPage() {
 				}}
 				onDelete={setDeleteTarget}
 				canWriteAccess={hasWriteAccess}
+				canAdminAccess={hasAdminAccess}
 			/>
 
 			{/* Edit/Create dialog */}
@@ -865,10 +871,12 @@ function CarbonitesPage() {
 			>
 				<DialogContent className="max-w-sm">
 					<DialogHeader>
-						<DialogTitle>Delete Carbonite</DialogTitle>
+						<DialogTitle>Deactivate Carbonite</DialogTitle>
 					</DialogHeader>
 					<p className="text-muted-foreground text-sm">
-						Delete <strong>{deleteTarget?.name}</strong>? This cannot be undone.
+						Are you sure you want to deactivate{" "}
+						<strong>{deleteTarget?.name}</strong>? They will be removed from all
+						active views.
 					</p>
 					<DialogFooter>
 						<Button
@@ -886,7 +894,7 @@ function CarbonitesPage() {
 								deleteTarget && deleteMut.mutate({ id: deleteTarget.id })
 							}
 						>
-							{deleteMut.isPending ? "Deleting…" : "Delete"}
+							{deleteMut.isPending ? "Deactivating…" : "Deactivate"}
 						</Button>
 					</DialogFooter>
 				</DialogContent>
