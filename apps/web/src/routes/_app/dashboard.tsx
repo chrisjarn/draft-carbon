@@ -1,3 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { z } from "zod";
 
-export const Route = createFileRoute("/_app/dashboard")({});
+const searchSchema = z.object({
+	fy: z.string().optional(),
+});
+
+export const Route = createFileRoute("/_app/dashboard")({
+	validateSearch: searchSchema,
+});

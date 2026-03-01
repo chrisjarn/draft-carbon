@@ -1,5 +1,12 @@
-import { carbonites, db, entities, hiringNeeds } from "@carbon-wfp/db";
-import { and, count, eq, lt, ne, sql } from "drizzle-orm";
+import {
+	carbonites,
+	db,
+	entities,
+	hiringNeeds,
+	wfpRevenue,
+} from "@carbon-wfp/db";
+import { and, count, eq, inArray, lt, ne, sql } from "drizzle-orm";
+import { z } from "zod";
 
 import { protectedProcedure, router } from "../index";
 import {
@@ -9,48 +16,113 @@ import {
 } from "../lib/rbac";
 
 export const dashboardRouter = router({
-	stats: protectedProcedure.query(async ({ ctx }) => {
-		const rf = getRoleFilter(ctx.session.user);
-		const cbWhere = carboniteRoleWhere(rf);
-		const entWhere = entityRoleWhere(rf);
-
-		const [
-			[carboniteCount],
-			[entityCount],
-			[openRolesResult],
-			[uniqueOffices],
-		] = await Promise.all([
-			db
-				.select({ value: count() })
-				.from(carbonites)
-				.where(and(eq(carbonites.isActive, true), cbWhere)),
-			db.select({ value: count() }).from(entities).where(entWhere),
-			db
-				.select({ value: count() })
-				.from(hiringNeeds)
-				.where(sql`${hiringNeeds.status} != 'closed'`),
-			db
-				.select({
-					value: sql<number>`count(distinct ${entities.officeId})`,
+	/**
+	 * Headline stats — returns per-carbonite rows so the frontend can
+	 * aggregate and filter by state client-side without a re-fetch.
+	 */
+	stats: protectedProcedure
+		.input(
+			z
+				.object({
+					fy: z.string().optional(),
 				})
-				.from(entities)
-				.where(entWhere),
-		]);
+				.optional(),
+		)
+		.query(async ({ ctx, input }) => {
+			const rf = getRoleFilter(ctx.session.user);
+			const fyFilter = input?.fy ?? "FY25-26";
 
-		return {
-			totalCarbonites: carboniteCount?.value ?? 0,
-			totalEntities: entityCount?.value ?? 0,
-			openRoles: openRolesResult?.value ?? 0,
-			offices: Number(uniqueOffices?.value ?? 0),
-		};
-	}),
+			// RBAC-scoped carbonite conditions (no state filter — that's client-side)
+			const cbConditions = [eq(carbonites.isActive, true)];
+			const rbacCb = carboniteRoleWhere(rf);
+			if (rbacCb) cbConditions.push(rbacCb);
+			const cbWhere = and(...cbConditions);
+
+			// Per-state headcount + FTE
+			const staffByState = await db
+				.select({
+					state: carbonites.state,
+					headcount: count(),
+					fte: sql<number>`coalesce(sum(
+						CASE
+							WHEN ${carbonites.type} = 'PT' AND ${carbonites.hours} IS NOT NULL
+							THEN ${carbonites.hours}::numeric / 37.5
+							ELSE 1.0
+						END
+					), 0)`,
+				})
+				.from(carbonites)
+				.where(cbWhere)
+				.groupBy(carbonites.state);
+
+			// RBAC-scoped entity IDs (for revenue lookup)
+			const entConditions: ReturnType<typeof eq>[] = [];
+			const rbacEnt = entityRoleWhere(rf);
+			if (rbacEnt) entConditions.push(rbacEnt);
+			const entWhere =
+				entConditions.length > 0 ? and(...entConditions) : undefined;
+
+			const entRows = await db
+				.select({ id: entities.id, state: entities.state })
+				.from(entities)
+				.where(entWhere);
+			const entIds = entRows.map((e) => e.id);
+
+			// Revenue per entity for the selected FY
+			let revenueByEntity: {
+				entId: string;
+				target: number;
+				actual: number;
+			}[] = [];
+			if (entIds.length > 0) {
+				const revRows = await db
+					.select({
+						entId: wfpRevenue.entId,
+						target: wfpRevenue.target,
+						actual: wfpRevenue.actual,
+					})
+					.from(wfpRevenue)
+					.where(
+						and(eq(wfpRevenue.fy, fyFilter), inArray(wfpRevenue.entId, entIds)),
+					);
+				revenueByEntity = revRows.map((r) => ({
+					entId: r.entId,
+					target: Number(r.target ?? 0),
+					actual: Number(r.actual ?? 0),
+				}));
+			}
+
+			// Build entity → state lookup
+			const entStateMap = new Map(entRows.map((e) => [e.id, e.state]));
+
+			return {
+				staffByState: staffByState.map((r) => ({
+					state: r.state,
+					headcount: r.headcount,
+					fte: Number(Number(r.fte).toFixed(1)),
+				})),
+				revenueByEntity: revenueByEntity.map((r) => ({
+					...r,
+					state: entStateMap.get(r.entId) ?? null,
+				})),
+			};
+		}),
 
 	entitySummaries: protectedProcedure.query(async ({ ctx }) => {
 		const rf = getRoleFilter(ctx.session.user);
-		const cbWhere = carboniteRoleWhere(rf);
-		const entWhere = entityRoleWhere(rf);
 
-		// Get all entities (filtered by role)
+		// RBAC-scoped — no state param, client filters
+		const entConditions: ReturnType<typeof eq>[] = [];
+		const rbacEnt = entityRoleWhere(rf);
+		if (rbacEnt) entConditions.push(rbacEnt);
+		const entWhere =
+			entConditions.length > 0 ? and(...entConditions) : undefined;
+
+		const cbConditions = [eq(carbonites.isActive, true)];
+		const rbacCb = carboniteRoleWhere(rf);
+		if (rbacCb) cbConditions.push(rbacCb);
+		const cbWhere = and(...cbConditions);
+
 		const allEntities = await db
 			.select({
 				id: entities.id,
@@ -62,7 +134,6 @@ export const dashboardRouter = router({
 			.from(entities)
 			.where(entWhere);
 
-		// Get headcount and salary per entity (active only, filtered by role)
 		const staffAgg = await db
 			.select({
 				entity: carbonites.entity,
@@ -72,34 +143,28 @@ export const dashboardRouter = router({
 				),
 			})
 			.from(carbonites)
-			.where(and(eq(carbonites.isActive, true), cbWhere))
+			.where(cbWhere)
 			.groupBy(carbonites.entity);
 
-		// Get distinct SLs per entity (active only, filtered by role)
 		const slPerEntity = await db
 			.select({
 				entity: carbonites.entity,
 				sl: carbonites.sl,
 			})
 			.from(carbonites)
-			.where(
-				and(
-					sql`${carbonites.sl} is not null`,
-					eq(carbonites.isActive, true),
-					cbWhere,
-				),
-			)
+			.where(and(sql`${carbonites.sl} is not null`, ...cbConditions))
 			.groupBy(carbonites.entity, carbonites.sl);
 
-		// Build a lookup map for staff aggregates
 		const staffMap = new Map(
 			staffAgg.map((row) => [
 				row.entity,
-				{ headcount: row.headcount, totalSalary: Number(row.totalSalary) },
+				{
+					headcount: row.headcount,
+					totalSalary: Number(row.totalSalary),
+				},
 			]),
 		);
 
-		// Build a lookup map for SLs per entity
 		const slMap = new Map<string, string[]>();
 		for (const row of slPerEntity) {
 			if (!row.entity || !row.sl) continue;
@@ -119,32 +184,103 @@ export const dashboardRouter = router({
 		}));
 	}),
 
+	revenueByEntity: protectedProcedure
+		.input(
+			z
+				.object({
+					fy: z.string().optional(),
+				})
+				.optional(),
+		)
+		.query(async ({ ctx, input }) => {
+			const rf = getRoleFilter(ctx.session.user);
+			const fyFilter = input?.fy ?? "FY25-26";
+
+			// RBAC-scoped entities — no state param
+			const entConditions: ReturnType<typeof eq>[] = [];
+			const rbacEnt = entityRoleWhere(rf);
+			if (rbacEnt) entConditions.push(rbacEnt);
+			const entWhere =
+				entConditions.length > 0 ? and(...entConditions) : undefined;
+
+			const filteredEntities = await db
+				.select({
+					id: entities.id,
+					biz: entities.biz,
+					state: entities.state,
+				})
+				.from(entities)
+				.where(entWhere);
+
+			const entIds = filteredEntities.map((e) => e.id);
+			if (entIds.length === 0) return [];
+
+			const revenueRows = await db
+				.select({
+					entId: wfpRevenue.entId,
+					target: wfpRevenue.target,
+					actual: wfpRevenue.actual,
+				})
+				.from(wfpRevenue)
+				.where(
+					and(eq(wfpRevenue.fy, fyFilter), inArray(wfpRevenue.entId, entIds)),
+				);
+
+			const revMap = new Map(
+				revenueRows.map((r) => [
+					r.entId,
+					{
+						target: Number(r.target ?? 0),
+						actual: Number(r.actual ?? 0),
+					},
+				]),
+			);
+
+			return filteredEntities
+				.map((ent) => {
+					const rev = revMap.get(ent.id) ?? { target: 0, actual: 0 };
+					const pct =
+						rev.target > 0 ? Math.round((rev.actual / rev.target) * 100) : 0;
+					return {
+						id: ent.id,
+						biz: ent.biz,
+						state: ent.state,
+						target: rev.target,
+						actual: rev.actual,
+						pct,
+					};
+				})
+				.filter((e) => e.target > 0 || e.actual > 0)
+				.sort((a, b) => b.target - a.target);
+		}),
+
 	slBreakdown: protectedProcedure.query(async ({ ctx }) => {
 		const rf = getRoleFilter(ctx.session.user);
-		const cbWhere = carboniteRoleWhere(rf);
+
+		// RBAC-scoped — no state param
+		const cbConditions = [eq(carbonites.isActive, true)];
+		const rbacCb = carboniteRoleWhere(rf);
+		if (rbacCb) cbConditions.push(rbacCb);
+		const cbWhere = and(...cbConditions);
 
 		const rows = await db
 			.select({
 				sl: carbonites.sl,
+				state: carbonites.state,
 				headcount: count(),
 				totalSalary: sql<number>`coalesce(sum(${carbonites.salary}), 0)`.as(
 					"total_salary",
 				),
 			})
 			.from(carbonites)
-			.where(and(eq(carbonites.isActive, true), cbWhere))
-			.groupBy(carbonites.sl);
-
-		const totalHeadcount = rows.reduce((sum, r) => sum + r.headcount, 0);
+			.where(cbWhere)
+			.groupBy(carbonites.sl, carbonites.state);
 
 		return rows.map((row) => ({
 			sl: row.sl ?? "Unknown",
+			state: row.state,
 			headcount: row.headcount,
 			totalSalary: Number(row.totalSalary),
-			pctOfFirm:
-				totalHeadcount > 0
-					? Math.round((row.headcount / totalHeadcount) * 100)
-					: 0,
 		}));
 	}),
 

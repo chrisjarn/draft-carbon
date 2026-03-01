@@ -78,4 +78,4 @@ All under `/_app/` use `.lazy.tsx` code-splitting: `/dashboard`, `/carbonites`, 
 - `drizzle-kit push` cannot handle `text → typed column` casts (no `USING` clause support). For any `text → date`, `text → enum`, or similar type conversions, generate the migration file and run the `ALTER` manually via the Neon SQL editor or `psql` with the Neon connection string, then verify with `db:push` that no diff remains.
 
 ## TODO — Post-P1 Cleanup
-- **Pre-existing frontend type errors**: Files `staff-tab.tsx`, `wfp.lazy.tsx`, `capacity.lazy.tsx` have type errors unrelated to P0/P1 work. These should be fixed in a dedicated cleanup pass after P1 is complete to avoid scope creep during feature work.
+- **Pre-existing frontend type errors**: Files `staff-tab.tsx`, `wfp.lazy.tsx`, `capacity.lazy.tsx`, `chart.tsx` (shadcn chart component, Recharts 3.x incompatibility) have type errors unrelated to P0/P1 work. These should be fixed in a dedicated cleanup pass after P1 is complete to avoid scope creep during feature work.

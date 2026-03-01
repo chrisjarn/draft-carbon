@@ -6,6 +6,7 @@ import {
 	entities,
 	hiringNeeds,
 	salaryBrackets,
+	wfpRevenue,
 } from "./src/schema/index.js";
 import type { NewSalaryBracket } from "./src/schema/salary-brackets.js";
 
@@ -3099,6 +3100,40 @@ const SALARY_BRACKETS_RAW = [
 	},
 ];
 
+// ── Revenue Data (per entity per FY) ────────────────────────────────────────
+// Realistic targets + YTD actuals for FY25-26 (as of Mar 2026, ~75% through FY)
+
+const REVENUE_DATA = [
+	// WA entities
+	{ entId: "ent-op1", fy: "FY25-26", target: "4200000", actual: "3360000" }, // 80%
+	{ entId: "ent-op2", fy: "FY25-26", target: "1100000", actual: "880000" }, // 80%
+	{ entId: "ent-cbk", fy: "FY25-26", target: "2800000", actual: "2520000" }, // 90%
+	{ entId: "ent-fda", fy: "FY25-26", target: "600000", actual: "510000" }, // 85%
+	{ entId: "ent-sv", fy: "FY25-26", target: "1500000", actual: "1425000" }, // 95%
+	{ entId: "ent-way", fy: "FY25-26", target: "900000", actual: "765000" }, // 85%
+	// NSW entities
+	{ entId: "ent-syd", fy: "FY25-26", target: "1800000", actual: "1620000" }, // 90%
+	{ entId: "ent-stl", fy: "FY25-26", target: "2200000", actual: "1760000" }, // 80%
+	{ entId: "ent-par", fy: "FY25-26", target: "3500000", actual: "3325000" }, // 95%
+	// VIC entities
+	{ entId: "ent-morn", fy: "FY25-26", target: "800000", actual: "600000" }, // 75%
+	{ entId: "ent-mtwav", fy: "FY25-26", target: "1600000", actual: "1520000" }, // 95%
+	{ entId: "ent-mon", fy: "FY25-26", target: "1200000", actual: "1020000" }, // 85%
+	{ entId: "ent-els", fy: "FY25-26", target: "2500000", actual: "2375000" }, // 95%
+	// QLD entities
+	{ entId: "ent-bne", fy: "FY25-26", target: "3800000", actual: "3040000" }, // 80%
+	{ entId: "ent-bun", fy: "FY25-26", target: "1400000", actual: "1190000" }, // 85%
+	{ entId: "ent-gym", fy: "FY25-26", target: "900000", actual: "855000" }, // 95%
+	{ entId: "ent-frc", fy: "FY25-26", target: "700000", actual: "490000" }, // 70%
+	{ entId: "ent-ips", fy: "FY25-26", target: "1100000", actual: "880000" }, // 80%
+	{ entId: "ent-too", fy: "FY25-26", target: "1300000", actual: "1170000" }, // 90%
+	// SA entities
+	{ entId: "ent-adl", fy: "FY25-26", target: "2600000", actual: "2470000" }, // 95%
+	{ entId: "ent-gaw", fy: "FY25-26", target: "800000", actual: "640000" }, // 80%
+	{ entId: "ent-pfd", fy: "FY25-26", target: "1500000", actual: "1275000" }, // 85%
+	{ entId: "ent-bar", fy: "FY25-26", target: "500000", actual: "375000" }, // 75%
+] satisfies (typeof wfpRevenue.$inferInsert)[];
+
 // Generate unique IDs for salary brackets (sl+prog is not unique across divisions)
 // The raw seed data uses number[] which TS won't narrow to [number, number] tuples,
 // so we assert the mapped result to the Drizzle insert type.
@@ -3157,7 +3192,16 @@ async function seed() {
 		`  salary_brackets: ${sbResult.count} inserted (${SALARY_BRACKETS.length} total)`,
 	);
 
-	// 5. Test users (for RBAC testing)
+	// 5. Revenue data
+	const revResult = await db
+		.insert(wfpRevenue)
+		.values(REVENUE_DATA)
+		.onConflictDoNothing();
+	console.log(
+		`  wfp_revenue: ${revResult.count} inserted (${REVENUE_DATA.length} total)`,
+	);
+
+	// 6. Test users (for RBAC testing)
 	const passwordHash = await hashPassword("Test1234!");
 	let usersInserted = 0;
 	for (const u of TEST_USERS) {

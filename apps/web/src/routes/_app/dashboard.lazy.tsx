@@ -3,18 +3,36 @@ import {
 	ArrowReloadHorizontalIcon,
 	BarChartIcon,
 	Briefcase01Icon,
-	Building03Icon,
+	ChartLineData03Icon,
 	UserGroupIcon,
 	WifiOff01Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { createLazyFileRoute, Link } from "@tanstack/react-router";
+import { createLazyFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
+import {
+	Bar,
+	BarChart,
+	CartesianGrid,
+	Cell,
+	ResponsiveContainer,
+	Tooltip,
+	XAxis,
+	YAxis,
+} from "recharts";
 
 import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
 	Table,
@@ -24,7 +42,14 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
-import { SERVICE_LINES, SL_COLOR_MAP, STATE_COLOR_MAP } from "@/lib/constants";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+	FY_OPTIONS,
+	SERVICE_LINES,
+	SL_COLOR_MAP,
+	STATE_COLOR_MAP,
+	STATES,
+} from "@/lib/constants";
 import { fmtDollar } from "@/lib/format";
 import { trpc } from "@/utils/trpc";
 
@@ -32,18 +57,36 @@ export const Route = createLazyFileRoute("/_app/dashboard")({
 	component: DashboardPage,
 });
 
-/* ─── Stat Card (existing) ─────────────────────────────────────────────── */
+/* ─── Revenue color helpers ────────────────────────────────────────────── */
+
+function revColor(pct: number): string {
+	if (pct >= 95) return "var(--color-emerald-500, #10b981)";
+	if (pct >= 80) return "var(--color-amber-500, #f59e0b)";
+	return "var(--color-red-500, #ef4444)";
+}
+
+function revTextColor(pct: number): string {
+	if (pct >= 95) return "text-emerald-500";
+	if (pct >= 80) return "text-amber-500";
+	return "text-red-500";
+}
+
+/* ─── Stat Card ────────────────────────────────────────────────────────── */
 
 function StatCard({
 	label,
 	value,
 	icon: Icon,
 	loading,
+	subtitle,
+	subtitleClass,
 }: {
 	label: string;
 	value: string | number;
 	icon: IconSvgElement;
 	loading?: boolean;
+	subtitle?: string;
+	subtitleClass?: string;
 }) {
 	return (
 		<Card>
@@ -55,16 +98,27 @@ function StatCard({
 			</CardHeader>
 			<CardContent>
 				{loading ? (
-					<Skeleton className="h-8 w-16" />
+					<Skeleton className="h-8 w-24" />
 				) : (
-					<div className="font-extrabold text-2xl tracking-tight">{value}</div>
+					<>
+						<div className="font-extrabold text-2xl tracking-tight">
+							{value}
+						</div>
+						{subtitle && (
+							<div
+								className={`mt-0.5 text-xs ${subtitleClass ?? "text-muted-foreground"}`}
+							>
+								{subtitle}
+							</div>
+						)}
+					</>
 				)}
 			</CardContent>
 		</Card>
 	);
 }
 
-/* ─── SL color dot helper ──────────────────────────────────────────────── */
+/* ─── SL dot + State badge ─────────────────────────────────────────────── */
 
 function SlDot({ sl }: { sl: string }) {
 	const color = SL_COLOR_MAP[sl] ?? "#888";
@@ -77,8 +131,6 @@ function SlDot({ sl }: { sl: string }) {
 		/>
 	);
 }
-
-/* ─── State badge helper ───────────────────────────────────────────────── */
 
 function StateBadge({ stateId }: { stateId: string | null }) {
 	if (!stateId) return null;
@@ -96,22 +148,24 @@ function StateBadge({ stateId }: { stateId: string | null }) {
 
 /* ─── Entity Card Grid ─────────────────────────────────────────────────── */
 
+type EntitySummary = {
+	id: string;
+	biz: string;
+	state: string | null;
+	officeId: string | null;
+	headcount: number;
+	totalSalary: number;
+	sls: string[];
+};
+
 function EntityCardsGrid({
 	data,
 	loading,
+	fy,
 }: {
-	data:
-		| {
-				id: string;
-				biz: string;
-				state: string | null;
-				officeId: string | null;
-				headcount: number;
-				totalSalary: number;
-				sls: string[];
-		  }[]
-		| undefined;
+	data: EntitySummary[] | undefined;
 	loading: boolean;
+	fy: string;
 }) {
 	if (loading) {
 		return (
@@ -139,7 +193,7 @@ function EntityCardsGrid({
 				<Link
 					key={ent.id}
 					to="/capacity-plan"
-					search={{ entity: ent.id }}
+					search={{ entity: ent.id, fy }}
 					className="group"
 				>
 					<Card className="transition-colors group-hover:border-sidebar-primary/40">
@@ -170,20 +224,138 @@ function EntityCardsGrid({
 	);
 }
 
+/* ─── Revenue Bar Chart ────────────────────────────────────────────────── */
+
+type RevenueEntry = {
+	id: string;
+	biz: string;
+	state: string | null;
+	target: number;
+	actual: number;
+	pct: number;
+};
+
+function RevenueChart({
+	data,
+	loading,
+	fy,
+}: {
+	data: RevenueEntry[] | undefined;
+	loading: boolean;
+	fy: string;
+}) {
+	const navigate = useNavigate();
+
+	if (loading) {
+		return <Skeleton className="h-[350px] w-full" />;
+	}
+
+	if (!data || data.length === 0) {
+		return (
+			<p className="py-8 text-center text-muted-foreground text-sm">
+				No revenue data for this FY.
+			</p>
+		);
+	}
+
+	const chartData = data.map((d) => ({
+		...d,
+		name: d.biz.length > 18 ? `${d.biz.slice(0, 16)}...` : d.biz,
+		targetM: d.target / 1_000_000,
+		actualM: d.actual / 1_000_000,
+	}));
+
+	return (
+		<ResponsiveContainer width="100%" height={350}>
+			<BarChart
+				data={chartData}
+				margin={{ top: 8, right: 16, left: 0, bottom: 60 }}
+			>
+				<CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+				<XAxis
+					dataKey="name"
+					angle={-45}
+					textAnchor="end"
+					tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
+					interval={0}
+					height={80}
+				/>
+				<YAxis
+					tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
+					tickFormatter={(v: number) => `$${v.toFixed(1)}m`}
+				/>
+				<Tooltip
+					content={({ active, payload }) => {
+						if (!active || !payload?.length) return null;
+						const item = payload[0]?.payload as (typeof chartData)[0];
+						return (
+							<div className="rounded-md border bg-popover px-3 py-2 shadow-md">
+								<div className="font-semibold text-sm">{item.biz}</div>
+								<div className="mt-1 space-y-0.5 text-xs">
+									<div>
+										Target:{" "}
+										<span className="font-medium">
+											{fmtDollar(item.target)}
+										</span>
+									</div>
+									<div>
+										Actual:{" "}
+										<span className="font-medium">
+											{fmtDollar(item.actual)}
+										</span>
+									</div>
+									<div className={revTextColor(item.pct)}>
+										{item.pct}% to target
+									</div>
+								</div>
+							</div>
+						);
+					}}
+				/>
+				<Bar
+					dataKey="targetM"
+					name="Target"
+					fill="hsl(var(--muted-foreground) / 0.3)"
+					radius={[2, 2, 0, 0]}
+				/>
+				<Bar
+					dataKey="actualM"
+					name="Actual"
+					radius={[2, 2, 0, 0]}
+					cursor="pointer"
+					onClick={(_data: unknown, index: number) => {
+						const entry = chartData[index];
+						if (entry) {
+							navigate({
+								to: "/capacity-plan",
+								search: { entity: entry.id, fy },
+							});
+						}
+					}}
+				>
+					{chartData.map((entry) => (
+						<Cell key={entry.id} fill={revColor(entry.pct)} />
+					))}
+				</Bar>
+			</BarChart>
+		</ResponsiveContainer>
+	);
+}
+
 /* ─── SL Breakdown Table ───────────────────────────────────────────────── */
+
+type SlRow = {
+	sl: string;
+	headcount: number;
+	totalSalary: number;
+	pctOfFirm: number;
+};
 
 function SlBreakdownTable({
 	data,
 	loading,
 }: {
-	data:
-		| {
-				sl: string;
-				headcount: number;
-				totalSalary: number;
-				pctOfFirm: number;
-		  }[]
-		| undefined;
+	data: SlRow[] | undefined;
 	loading: boolean;
 }) {
 	if (loading) {
@@ -288,34 +460,173 @@ function AlertsPanel({
 	);
 }
 
+/* ─── Client-side filter helpers ───────────────────────────────────────── */
+
+function useFilteredStats(
+	raw:
+		| {
+				staffByState: {
+					state: string | null;
+					headcount: number;
+					fte: number;
+				}[];
+				revenueByEntity: {
+					entId: string;
+					target: number;
+					actual: number;
+					state: string | null;
+				}[];
+		  }
+		| undefined,
+	stateFilter: string | null,
+) {
+	return useMemo(() => {
+		if (!raw) return null;
+
+		const staff = stateFilter
+			? raw.staffByState.filter((r) => r.state === stateFilter)
+			: raw.staffByState;
+
+		const rev = stateFilter
+			? raw.revenueByEntity.filter((r) => r.state === stateFilter)
+			: raw.revenueByEntity;
+
+		const totalCarbonites = staff.reduce((s, r) => s + r.headcount, 0);
+		const totalFte = Number(staff.reduce((s, r) => s + r.fte, 0).toFixed(1));
+		const revenueTarget = rev.reduce((s, r) => s + r.target, 0);
+		const revenueActual = rev.reduce((s, r) => s + r.actual, 0);
+		const revenuePct =
+			revenueTarget > 0 ? Math.round((revenueActual / revenueTarget) * 100) : 0;
+
+		return {
+			totalCarbonites,
+			totalFte,
+			revenueTarget,
+			revenueActual,
+			revenuePct,
+		};
+	}, [raw, stateFilter]);
+}
+
+function useFilteredEntities(
+	data: EntitySummary[] | undefined,
+	stateFilter: string | null,
+) {
+	return useMemo(() => {
+		if (!data) return undefined;
+		if (!stateFilter) return data;
+		return data.filter((e) => e.state === stateFilter);
+	}, [data, stateFilter]);
+}
+
+function useFilteredRevenue(
+	data: RevenueEntry[] | undefined,
+	stateFilter: string | null,
+) {
+	return useMemo(() => {
+		if (!data) return undefined;
+		if (!stateFilter) return data;
+		return data.filter((e) => e.state === stateFilter);
+	}, [data, stateFilter]);
+}
+
+function useFilteredSlBreakdown(
+	raw:
+		| {
+				sl: string;
+				state: string | null;
+				headcount: number;
+				totalSalary: number;
+		  }[]
+		| undefined,
+	stateFilter: string | null,
+): SlRow[] | undefined {
+	return useMemo(() => {
+		if (!raw) return undefined;
+
+		const filtered = stateFilter
+			? raw.filter((r) => r.state === stateFilter)
+			: raw;
+
+		// Aggregate by SL (server returns per-state rows)
+		const map = new Map<string, { headcount: number; totalSalary: number }>();
+		for (const row of filtered) {
+			const existing = map.get(row.sl) ?? { headcount: 0, totalSalary: 0 };
+			existing.headcount += row.headcount;
+			existing.totalSalary += row.totalSalary;
+			map.set(row.sl, existing);
+		}
+
+		const totalHeadcount = [...map.values()].reduce(
+			(s, r) => s + r.headcount,
+			0,
+		);
+
+		return [...map.entries()]
+			.map(([sl, agg]) => ({
+				sl,
+				headcount: agg.headcount,
+				totalSalary: agg.totalSalary,
+				pctOfFirm:
+					totalHeadcount > 0
+						? Math.round((agg.headcount / totalHeadcount) * 100)
+						: 0,
+			}))
+			.sort((a, b) => b.headcount - a.headcount);
+	}, [raw, stateFilter]);
+}
+
 /* ─── Main Dashboard Page ──────────────────────────────────────────────── */
 
 function DashboardPage() {
+	const navigate = useNavigate({ from: "/dashboard" });
 	const queryClient = useQueryClient();
+	const { fy } = Route.useSearch();
+	const activeFy = fy ?? "FY25-26";
+
+	// State filter is local — no URL param, no server re-fetch
+	const [stateFilter, setStateFilter] = useState<string | null>(null);
+
+	// ── Server queries (no state param — RBAC only) ──────────────────────
 	const health = useQuery(trpc.healthCheck.queryOptions());
-	const stats = useQuery(trpc.dashboard.stats.queryOptions());
+	const stats = useQuery(trpc.dashboard.stats.queryOptions({ fy: activeFy }));
 	const entitySummaries = useQuery(
 		trpc.dashboard.entitySummaries.queryOptions(),
+	);
+	const revenueByEntity = useQuery(
+		trpc.dashboard.revenueByEntity.queryOptions({ fy: activeFy }),
 	);
 	const slBreakdown = useQuery(trpc.dashboard.slBreakdown.queryOptions());
 	const alerts = useQuery(trpc.dashboard.alerts.queryOptions());
 
-	const carboniteCount = stats.data?.totalCarbonites ?? 0;
-	const officeCount = stats.data?.offices ?? 0;
-	const openRoles = stats.data?.openRoles ?? 0;
-	const entityCount = stats.data?.totalEntities ?? 0;
+	// ── Client-side filtering (instant, no network) ──────────────────────
+	const filteredStats = useFilteredStats(stats.data, stateFilter);
+	const filteredEntities = useFilteredEntities(
+		entitySummaries.data,
+		stateFilter,
+	);
+	const filteredRevenue = useFilteredRevenue(revenueByEntity.data, stateFilter);
+	const filteredSl = useFilteredSlBreakdown(slBreakdown.data, stateFilter);
 
 	const isError = stats.isError || health.isError;
 	const isEmpty =
 		!stats.isLoading &&
 		!stats.isError &&
-		carboniteCount === 0 &&
-		officeCount === 0 &&
-		openRoles === 0 &&
-		entityCount === 0;
+		(filteredStats?.totalCarbonites ?? 0) === 0 &&
+		!stateFilter;
 
 	const handleRetry = () => {
 		queryClient.invalidateQueries();
+	};
+
+	const setFy = (newFy: string | null) => {
+		if (!newFy) return;
+		void navigate({
+			search: (prev: Record<string, unknown>) => ({
+				...prev,
+				fy: newFy === "FY25-26" ? undefined : newFy,
+			}),
+		});
 	};
 
 	if (isError) {
@@ -378,36 +689,91 @@ function DashboardPage() {
 
 	return (
 		<div className="flex h-full flex-col">
-			<PageHeader />
+			<PageHeader>
+				<div className="flex items-center gap-3">
+					<Select value={activeFy} onValueChange={setFy}>
+						<SelectTrigger className="w-[130px]">
+							<SelectValue />
+						</SelectTrigger>
+						<SelectContent>
+							{FY_OPTIONS.map((f) => (
+								<SelectItem key={f} value={f}>
+									{f}
+								</SelectItem>
+							))}
+						</SelectContent>
+					</Select>
+				</div>
+			</PageHeader>
 
 			<div className="flex flex-1 flex-col gap-6 overflow-auto p-6">
+				{/* State filter tabs */}
+				<Tabs
+					value={stateFilter ?? "all"}
+					onValueChange={(val) => setStateFilter(val === "all" ? null : val)}
+				>
+					<TabsList variant="line">
+						<TabsTrigger value="all">All States</TabsTrigger>
+						{STATES.map((s) => (
+							<TabsTrigger key={s.id} value={s.id}>
+								{s.abbr}
+							</TabsTrigger>
+						))}
+					</TabsList>
+				</Tabs>
+
 				{/* KPI strip */}
-				<div className="grid grid-cols-4 gap-3">
+				<div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
 					<StatCard
 						label="Total Carbonites"
-						value={carboniteCount}
+						value={filteredStats?.totalCarbonites ?? 0}
 						icon={UserGroupIcon}
 						loading={stats.isLoading}
 					/>
 					<StatCard
-						label="Offices"
-						value={officeCount}
-						icon={Building03Icon}
-						loading={stats.isLoading}
-					/>
-					<StatCard
-						label="Open Roles"
-						value={openRoles}
+						label="Total FTE"
+						value={filteredStats?.totalFte ?? 0}
 						icon={Briefcase01Icon}
 						loading={stats.isLoading}
 					/>
 					<StatCard
-						label="Entities"
-						value={entityCount}
+						label="Revenue Target"
+						value={fmtDollar(filteredStats?.revenueTarget)}
+						icon={ChartLineData03Icon}
+						loading={stats.isLoading}
+						subtitle={activeFy}
+					/>
+					<StatCard
+						label="Revenue Actual"
+						value={fmtDollar(filteredStats?.revenueActual)}
 						icon={BarChartIcon}
 						loading={stats.isLoading}
+						subtitle={
+							filteredStats
+								? `${filteredStats.revenuePct}% to target`
+								: undefined
+						}
+						subtitleClass={
+							filteredStats ? revTextColor(filteredStats.revenuePct) : undefined
+						}
 					/>
 				</div>
+
+				{/* Revenue Chart */}
+				<Card>
+					<CardHeader>
+						<CardTitle className="text-sm">
+							Revenue by Entity — {activeFy}
+						</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<RevenueChart
+							data={filteredRevenue}
+							loading={revenueByEntity.isLoading}
+							fy={activeFy}
+						/>
+					</CardContent>
+				</Card>
 
 				{/* Alerts */}
 				<AlertsPanel data={alerts.data} loading={alerts.isLoading} />
@@ -418,8 +784,9 @@ function DashboardPage() {
 						Entities
 					</h2>
 					<EntityCardsGrid
-						data={entitySummaries.data}
+						data={filteredEntities}
 						loading={entitySummaries.isLoading}
+						fy={activeFy}
 					/>
 				</div>
 
@@ -430,28 +797,9 @@ function DashboardPage() {
 					</CardHeader>
 					<CardContent>
 						<SlBreakdownTable
-							data={slBreakdown.data}
+							data={filteredSl}
 							loading={slBreakdown.isLoading}
 						/>
-					</CardContent>
-				</Card>
-
-				{/* API status */}
-				<Card>
-					<CardHeader>
-						<CardTitle className="text-sm">API Status</CardTitle>
-					</CardHeader>
-					<CardContent className="flex items-center gap-2">
-						<div
-							className={`size-2 rounded-full ${health.data ? "bg-green-500" : "bg-red-500"}`}
-						/>
-						<span className="text-muted-foreground text-xs">
-							{health.isLoading
-								? "Checking..."
-								: health.data
-									? "Connected"
-									: "Disconnected"}
-						</span>
 					</CardContent>
 				</Card>
 			</div>
