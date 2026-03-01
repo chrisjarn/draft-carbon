@@ -125,6 +125,7 @@ export const wfpRouter = router({
 					promoFlag: string | null;
 					promoEta: string | null;
 					staffRole: string | null;
+					roleTag: string | null;
 				}
 			>();
 			if (staffIds.length > 0) {
@@ -211,6 +212,7 @@ export const wfpRouter = router({
 				promoFlag: z.enum(["yes", "maybe", "no"]).optional(),
 				promoEta: z.string().optional(),
 				staffRole: z.string().optional(),
+				roleTag: z.enum(["doer", "reviewer", "bd"]).nullish(),
 			}),
 		)
 		.mutation(async ({ ctx, input }) => {

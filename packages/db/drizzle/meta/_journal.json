@@ -36,6 +36,13 @@
       "when": 1772386257632,
       "tag": "0004_p1-2-promo-eta-date",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1772386695143,
+      "tag": "0005_p1-3-role-tag-enum",
+      "breakpoints": true
     }
   ]
 }

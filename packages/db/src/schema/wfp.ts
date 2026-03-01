@@ -12,6 +12,11 @@ import { carbonites } from "./carbonites";
 import { entities } from "./entities";
 
 export const promoFlagEnum = pgEnum("promo_flag", ["yes", "maybe", "no"]);
+export const staffRoleTagEnum = pgEnum("staff_role_tag", [
+	"doer",
+	"reviewer",
+	"bd",
+]);
 
 // Per-staff WFP data (billing targets, performance, promotions)
 export const wfpStaffMeta = pgTable("wfp_staff_meta", {
@@ -23,6 +28,7 @@ export const wfpStaffMeta = pgTable("wfp_staff_meta", {
 	promoFlag: promoFlagEnum("promo_flag").default("no"),
 	promoEta: date("promo_eta", { mode: "string" }),
 	staffRole: text("staff_role"), // display role override for WFP
+	roleTag: staffRoleTagEnum("role_tag"), // doer | reviewer | bd (nullable)
 	billingActual: numeric("billing_actual"),
 	updatedAt: timestamp("updated_at").defaultNow(),
 });

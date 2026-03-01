@@ -18,6 +18,7 @@ export type StaffWithMeta = {
 		promoFlag: string | null;
 		promoEta: string | null;
 		staffRole: string | null;
+		roleTag: string | null;
 	} | null;
 };
 
@@ -26,6 +27,7 @@ export type MetaForm = {
 	promoFlag: string;
 	promoEta: string;
 	staffRole: string;
+	roleTag: string;
 	billingTarget: string;
 	billingActual: string;
 };

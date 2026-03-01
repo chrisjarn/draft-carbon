@@ -56,6 +56,7 @@ function MetaDialog({
 		promoFlag: m?.promoFlag ?? "no",
 		promoEta: m?.promoEta ?? "",
 		staffRole: m?.staffRole ?? "",
+		roleTag: m?.roleTag ?? "",
 		billingTarget: m?.billingTarget ?? "",
 		billingActual: m?.billingActual ?? "",
 	});
@@ -69,6 +70,7 @@ function MetaDialog({
 			promoFlag: m?.promoFlag ?? "no",
 			promoEta: m?.promoEta ?? "",
 			staffRole: m?.staffRole ?? "",
+			roleTag: m?.roleTag ?? "",
 			billingTarget: m?.billingTarget ?? "",
 			billingActual: m?.billingActual ?? "",
 		});
@@ -96,6 +98,25 @@ function MetaDialog({
 							className="h-8 text-xs"
 							placeholder={staff?.role ?? ""}
 						/>
+					</div>
+					<div>
+						<Label className="mb-1 block text-[11px] text-muted-foreground">
+							Role Tag
+						</Label>
+						<Select
+							value={form.roleTag || "none"}
+							onValueChange={(v) => set("roleTag")(v === "none" ? "" : v)}
+						>
+							<SelectTrigger className="h-8 text-xs">
+								<SelectValue />
+							</SelectTrigger>
+							<SelectContent>
+								<SelectItem value="none">None</SelectItem>
+								<SelectItem value="doer">Doer</SelectItem>
+								<SelectItem value="reviewer">Reviewer</SelectItem>
+								<SelectItem value="bd">BD</SelectItem>
+							</SelectContent>
+						</Select>
 					</div>
 					<div>
 						<Label className="mb-1 block text-[11px] text-muted-foreground">
@@ -313,6 +334,7 @@ export function StaffTab() {
 							<TableRow>
 								<TableHead className="w-[180px]">Name</TableHead>
 								<TableHead>Role</TableHead>
+								<TableHead>Tag</TableHead>
 								<TableHead>SL</TableHead>
 								<TableHead>Office</TableHead>
 								<TableHead>Pod</TableHead>
@@ -332,6 +354,9 @@ export function StaffTab() {
 									</TableCell>
 									<TableCell className="text-muted-foreground text-xs">
 										{s.meta?.staffRole || s.role || "\u2014"}
+									</TableCell>
+									<TableCell className="text-xs capitalize">
+										{s.meta?.roleTag ?? "\u2014"}
 									</TableCell>
 									<TableCell className="text-xs">{s.sl ?? "\u2014"}</TableCell>
 									<TableCell className="text-xs">
@@ -422,6 +447,9 @@ export function StaffTab() {
 						promoFlag: form.promoFlag as "yes" | "maybe" | "no",
 						promoEta: form.promoEta || undefined,
 						staffRole: form.staffRole || undefined,
+						roleTag: form.roleTag
+							? (form.roleTag as "doer" | "reviewer" | "bd")
+							: null,
 						billingTarget: form.billingTarget || undefined,
 						billingActual: form.billingActual || undefined,
 					});
