@@ -1,4 +1,8 @@
-import { Delete02Icon, Shield01Icon } from "@hugeicons/core-free-icons";
+import {
+	Delete02Icon,
+	PlusSignIcon,
+	Shield01Icon,
+} from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createLazyFileRoute } from "@tanstack/react-router";
@@ -14,6 +18,8 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
 	Select,
 	SelectContent,
@@ -109,8 +115,11 @@ function AdminPage() {
 
 	const qc = useQueryClient();
 	const [deleteTarget, setDeleteTarget] = useState<AppUser | null>(null);
+	const [entityDialogOpen, setEntityDialogOpen] = useState(false);
+	const [entityForm, setEntityForm] = useState({ biz: "", state: "" });
 
 	const query = useQuery(trpc.admin.listUsers.queryOptions());
+	const entitiesQuery = useQuery(trpc.entities.getAll.queryOptions());
 	const users = (query.data ?? []) as AppUser[];
 
 	const updateRole = useMutation(
@@ -131,6 +140,20 @@ function AdminPage() {
 				qc.invalidateQueries({ queryKey: trpc.admin.listUsers.queryKey() });
 				setDeleteTarget(null);
 				toast.success("User deleted");
+			},
+			onError: (e) => toast.error(e.message),
+		}),
+	);
+
+	const createEntity = useMutation(
+		trpc.entities.create.mutationOptions({
+			onSuccess: (created) => {
+				qc.invalidateQueries({
+					queryKey: trpc.entities.getAll.queryKey(),
+				});
+				setEntityDialogOpen(false);
+				setEntityForm({ biz: "", state: "" });
+				toast.success(`Entity "${created?.biz ?? "New entity"}" created`);
 			},
 			onError: (e) => toast.error(e.message),
 		}),
@@ -330,6 +353,112 @@ function AdminPage() {
 					</Table>
 				)}
 			</div>
+
+			{/* Entities section */}
+			<div className="border-border border-t px-6 py-4">
+				<div className="mb-3 flex items-center justify-between">
+					<div>
+						<h2 className="font-semibold text-sm">Entities</h2>
+						<p className="text-muted-foreground text-xs">
+							{entitiesQuery.data?.length ?? 0} entities
+						</p>
+					</div>
+					<Button
+						size="sm"
+						onClick={() => {
+							setEntityForm({ biz: "", state: "" });
+							setEntityDialogOpen(true);
+						}}
+					>
+						<HugeiconsIcon icon={PlusSignIcon} className="mr-1.5 size-3.5" />
+						Add Entity
+					</Button>
+				</div>
+				<div className="flex flex-wrap gap-1.5">
+					{(entitiesQuery.data ?? []).map((e) => (
+						<Badge key={e.id} variant="outline" className="text-xs">
+							{e.biz}
+							{e.state && (
+								<span className="ml-1 text-muted-foreground">({e.state})</span>
+							)}
+						</Badge>
+					))}
+				</div>
+			</div>
+
+			{/* Add Entity dialog */}
+			<Dialog
+				open={entityDialogOpen}
+				onOpenChange={(o) => !o && setEntityDialogOpen(false)}
+			>
+				<DialogContent className="max-w-sm">
+					<DialogHeader>
+						<DialogTitle>Add Entity</DialogTitle>
+					</DialogHeader>
+					<div className="space-y-3">
+						<div>
+							<Label className="mb-1 block text-[11px] text-muted-foreground">
+								Name *
+							</Label>
+							<Input
+								value={entityForm.biz}
+								onChange={(e) =>
+									setEntityForm((f) => ({ ...f, biz: e.target.value }))
+								}
+								placeholder="e.g. Carbon Perth"
+								className="h-8 text-xs"
+							/>
+						</div>
+						<div>
+							<Label className="mb-1 block text-[11px] text-muted-foreground">
+								State *
+							</Label>
+							<Select
+								value={entityForm.state || "__none__"}
+								onValueChange={(v) =>
+									setEntityForm((f) => ({
+										...f,
+										state: !v || v === "__none__" ? "" : v,
+									}))
+								}
+							>
+								<SelectTrigger className="h-8 text-xs">
+									<span className="flex flex-1 truncate text-left">
+										{STATES.find((s) => s.id === entityForm.state)?.name ??
+											"Select state"}
+									</span>
+								</SelectTrigger>
+								<SelectContent>
+									<SelectItem value="__none__">Select state</SelectItem>
+									{STATES.map((s) => (
+										<SelectItem key={s.id} value={s.id} className="text-xs">
+											{s.name}
+										</SelectItem>
+									))}
+								</SelectContent>
+							</Select>
+						</div>
+					</div>
+					<DialogFooter>
+						<Button
+							variant="outline"
+							size="sm"
+							onClick={() => setEntityDialogOpen(false)}
+						>
+							Cancel
+						</Button>
+						<Button
+							size="sm"
+							disabled={
+								!entityForm.biz || !entityForm.state || createEntity.isPending
+							}
+							onClick={() => createEntity.mutate(entityForm)}
+						>
+							{createEntity.isPending ? "Creating…" : "Create Entity"}
+						</Button>
+					</DialogFooter>
+				</DialogContent>
+			</Dialog>
 
 			{/* Delete confirm */}
 			<Dialog
