@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1772382580016,
+      "tag": "0000_true_warstar",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1772384019240,
+      "tag": "0001_overjoyed_may_parker",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1772384489166,
+      "tag": "0002_p0-5-role-enum",
+      "breakpoints": true
+    }
+  ]
+}

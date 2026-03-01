@@ -50,31 +50,31 @@ type AppUser = {
 type ValidRole =
 	| "admin"
 	| "practice_manager"
-	| "sl_lead"
+	| "service_line_lead"
 	| "state_manager"
-	| "readonly";
+	| "read_only";
 
 // ── Role config ───────────────────────────────────────────────────────────────
 
 const ROLES: { value: ValidRole; label: string }[] = [
 	{ value: "admin", label: "Admin" },
 	{ value: "practice_manager", label: "Practice Manager" },
-	{ value: "sl_lead", label: "SL Lead" },
+	{ value: "service_line_lead", label: "Service Line Lead" },
 	{ value: "state_manager", label: "State Manager" },
-	{ value: "readonly", label: "View Only" },
+	{ value: "read_only", label: "View Only" },
 ];
 
 const ROLE_STYLES: Record<string, string> = {
 	admin: "border-purple-500/40 bg-purple-500/10 text-purple-400",
 	practice_manager: "border-blue-500/40 bg-blue-500/10 text-blue-400",
-	sl_lead: "border-cyan-500/40 bg-cyan-500/10 text-cyan-400",
+	service_line_lead: "border-cyan-500/40 bg-cyan-500/10 text-cyan-400",
 	state_manager: "border-teal-500/40 bg-teal-500/10 text-teal-400",
-	readonly: "border-border bg-muted/40 text-muted-foreground",
+	read_only: "border-border bg-muted/40 text-muted-foreground",
 };
 
 function RoleBadge({ role }: { role: string }) {
 	const label = ROLES.find((r) => r.value === role)?.label ?? role;
-	const cls = ROLE_STYLES[role] ?? ROLE_STYLES.readonly;
+	const cls = ROLE_STYLES[role] ?? ROLE_STYLES.read_only;
 	return (
 		<Badge variant="outline" className={`text-[10px] ${cls}`}>
 			{label}

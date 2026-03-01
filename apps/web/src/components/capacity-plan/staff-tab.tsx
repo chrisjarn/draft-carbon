@@ -53,7 +53,7 @@ function MetaDialog({
 	const m = staff?.meta;
 	const [form, setForm] = useState<MetaForm>({
 		perfRating: m?.perfRating ?? "N/A",
-		promoFlag: m?.promoFlag ?? false,
+		promoFlag: m?.promoFlag ?? "no",
 		promoEta: m?.promoEta ?? "",
 		staffRole: m?.staffRole ?? "",
 		billingTarget: m?.billingTarget ?? "",
@@ -66,15 +66,14 @@ function MetaDialog({
 		setPrev(staff);
 		setForm({
 			perfRating: m?.perfRating ?? "N/A",
-			promoFlag: m?.promoFlag ?? false,
+			promoFlag: m?.promoFlag ?? "no",
 			promoEta: m?.promoEta ?? "",
 			staffRole: m?.staffRole ?? "",
 			billingTarget: m?.billingTarget ?? "",
 			billingActual: m?.billingActual ?? "",
 		});
 	}
-
-	const set = (k: keyof MetaForm) => (v: string | boolean | null) =>
+	const set = (k: keyof MetaForm) => (v: string | null) =>
 		setForm((p) => ({ ...p, [k]: v ?? "" }));
 
 	return (
@@ -136,19 +135,22 @@ function MetaDialog({
 							</SelectContent>
 						</Select>
 					</div>
-					<div className="flex items-center gap-2">
-						<input
-							id="promoFlag"
-							type="checkbox"
-							checked={form.promoFlag}
-							onChange={(e) => set("promoFlag")(e.target.checked)}
-							className="size-3.5"
-						/>
-						<Label htmlFor="promoFlag" className="text-xs">
-							Promotion Flagged
+					<div>
+						<Label className="mb-1 block text-[11px] text-muted-foreground">
+							Promotion Status
 						</Label>
+						<Select value={form.promoFlag} onValueChange={set("promoFlag")}>
+							<SelectTrigger className="h-8 text-xs">
+								<SelectValue />
+							</SelectTrigger>
+							<SelectContent>
+								<SelectItem value="no">No</SelectItem>
+								<SelectItem value="maybe">Maybe</SelectItem>
+								<SelectItem value="yes">Yes</SelectItem>
+							</SelectContent>
+						</Select>
 					</div>
-					{form.promoFlag && (
+					{form.promoFlag !== "no" && (
 						<div>
 							<Label className="mb-1 block text-[11px] text-muted-foreground">
 								Promo ETA
@@ -213,7 +215,12 @@ export function StaffTab() {
 	const filtered = allStaff.filter((s) => {
 		if (filterSl && s.sl !== filterSl) return false;
 		if (filterOffice && s.office !== filterOffice) return false;
-		if (filterPromo && !s.meta?.promoFlag) return false;
+		if (
+			filterPromo &&
+			s.meta?.promoFlag !== "yes" &&
+			s.meta?.promoFlag !== "maybe"
+		)
+			return false;
 		return true;
 	});
 
@@ -226,7 +233,9 @@ export function StaffTab() {
 		(s, r) => s + Number(r.meta?.billingActual ?? 0),
 		0,
 	);
-	const promoCount = filtered.filter((r) => r.meta?.promoFlag).length;
+	const promoCount = filtered.filter(
+		(r) => r.meta?.promoFlag === "yes" || r.meta?.promoFlag === "maybe",
+	).length;
 
 	return (
 		<div className="flex h-full flex-col">
@@ -357,17 +366,21 @@ export function StaffTab() {
 										<PerfBadge rating={s.meta?.perfRating} />
 									</TableCell>
 									<TableCell>
-										{s.meta?.promoFlag ? (
+										{s.meta?.promoFlag === "yes" ||
+										s.meta?.promoFlag === "maybe" ? (
 											<div className="flex items-center gap-1">
 												<HugeiconsIcon
 													icon={StarIcon}
-													className="size-3.5 fill-amber-400 text-amber-400"
+													className={`size-3.5 ${s.meta.promoFlag === "yes" ? "fill-amber-400 text-amber-400" : "fill-amber-400/50 text-amber-400/50"}`}
 												/>
-												{s.meta.promoEta && (
-													<span className="text-[10px] text-amber-400">
-														{s.meta.promoEta}
-													</span>
-												)}
+												<span className="text-[10px] text-amber-400">
+													{s.meta.promoFlag === "maybe" ? "Maybe" : ""}
+													{s.meta.promoEta
+														? s.meta.promoFlag === "maybe"
+															? ` \u00B7 ${s.meta.promoEta}`
+															: s.meta.promoEta
+														: ""}
+												</span>
 											</div>
 										) : (
 											<span className="text-muted-foreground/40 text-xs">
@@ -406,7 +419,7 @@ export function StaffTab() {
 					upsertMeta.mutate({
 						cbId: editStaff.id,
 						perfRating: form.perfRating,
-						promoFlag: form.promoFlag,
+						promoFlag: form.promoFlag as "yes" | "maybe" | "no",
 						promoEta: form.promoEta || undefined,
 						staffRole: form.staffRole || undefined,
 						billingTarget: form.billingTarget || undefined,

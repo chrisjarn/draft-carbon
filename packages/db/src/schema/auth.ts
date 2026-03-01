@@ -1,4 +1,12 @@
-import { boolean, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { boolean, pgEnum, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+
+export const userRoleEnum = pgEnum("user_role", [
+	"admin",
+	"practice_manager",
+	"service_line_lead",
+	"state_manager",
+	"read_only",
+]);
 
 export const user = pgTable("user", {
 	id: text("id").primaryKey(),
@@ -8,8 +16,7 @@ export const user = pgTable("user", {
 	image: text("image"),
 	createdAt: timestamp("createdAt").notNull().defaultNow(),
 	updatedAt: timestamp("updatedAt").notNull().defaultNow(),
-	// RBAC role — preserved from legacy app
-	role: text("role").notNull().default("readonly"),
+	role: userRoleEnum("role").notNull().default("read_only"),
 });
 
 export const session = pgTable("session", {

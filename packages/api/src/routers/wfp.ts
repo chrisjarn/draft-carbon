@@ -8,6 +8,7 @@ import {
 	wfpStaffMeta,
 } from "@carbon-wfp/db/schema/wfp";
 import { attritionRisks } from "@carbon-wfp/db/schema/wfp-extended";
+import { TRPCError } from "@trpc/server";
 import { and, asc, avg, count, eq, ne, sql, sum } from "drizzle-orm";
 import z from "zod";
 
@@ -25,7 +26,8 @@ export const wfpRouter = router({
 					totalPayroll: sum(carbonites.salary),
 					avgSalary: avg(carbonites.salary),
 				})
-				.from(carbonites),
+				.from(carbonites)
+				.where(eq(carbonites.isActive, true)),
 			db.select({ value: count() }).from(attritionRisks),
 		]);
 		return {
@@ -54,6 +56,7 @@ export const wfpRouter = router({
 				),
 			})
 			.from(carbonites)
+			.where(eq(carbonites.isActive, true))
 			.groupBy(carbonites.entity);
 
 		const staffMap = new Map(staffByEntity.map((s) => [s.entity, s]));
@@ -98,11 +101,16 @@ export const wfpRouter = router({
 			const fy = settings?.fy ?? "FY25-26";
 			const revenue = revenueRows.find((r) => r.fy === fy) ?? null;
 
-			// All carbonites in this entity
+			// All active carbonites in this entity
 			const staff = await db
 				.select()
 				.from(carbonites)
-				.where(eq(carbonites.entity, input.entityId))
+				.where(
+					and(
+						eq(carbonites.entity, input.entityId),
+						eq(carbonites.isActive, true),
+					),
+				)
 				.orderBy(asc(carbonites.pod), asc(carbonites.name));
 
 			// Staff meta
@@ -114,7 +122,7 @@ export const wfpRouter = router({
 					billingTarget: string | null;
 					billingActual: string | null;
 					perfRating: string | null;
-					promoFlag: boolean | null;
+					promoFlag: string | null;
 					promoEta: string | null;
 					staffRole: string | null;
 				}
@@ -182,6 +190,7 @@ export const wfpRouter = router({
 		const staff = await db
 			.select()
 			.from(carbonites)
+			.where(eq(carbonites.isActive, true))
 			.orderBy(
 				asc(carbonites.state),
 				asc(carbonites.office),
@@ -199,7 +208,7 @@ export const wfpRouter = router({
 				billingTarget: z.string().optional(),
 				billingActual: z.string().optional(),
 				perfRating: z.string().optional(),
-				promoFlag: z.boolean().optional(),
+				promoFlag: z.enum(["yes", "maybe", "no"]).optional(),
 				promoEta: z.string().optional(),
 				staffRole: z.string().optional(),
 			}),
@@ -218,6 +227,16 @@ export const wfpRouter = router({
 					.returning();
 				return row;
 			}
+			// Verify carbonite exists before first insert
+			const [cb] = await db
+				.select({ id: carbonites.id })
+				.from(carbonites)
+				.where(eq(carbonites.id, input.cbId));
+			if (!cb)
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message: `Carbonite not found: ${input.cbId}`,
+				});
 			const [row] = await db.insert(wfpStaffMeta).values(input).returning();
 			return row;
 		}),
@@ -256,6 +275,16 @@ export const wfpRouter = router({
 					.returning();
 				return row;
 			}
+			// Verify entity exists before first insert
+			const [ent] = await db
+				.select({ id: entities.id })
+				.from(entities)
+				.where(eq(entities.id, input.entId));
+			if (!ent)
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message: `Entity not found: ${input.entId}`,
+				});
 			const [row] = await db
 				.insert(wfpEntitySettings)
 				.values(input)
@@ -307,6 +336,16 @@ export const wfpRouter = router({
 					.returning();
 				return row;
 			}
+			// Verify entity exists before first insert
+			const [ent] = await db
+				.select({ id: entities.id })
+				.from(entities)
+				.where(eq(entities.id, input.entId));
+			if (!ent)
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message: `Entity not found: ${input.entId}`,
+				});
 			const [row] = await db.insert(wfpRevenue).values(input).returning();
 			return row;
 		}),

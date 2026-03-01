@@ -1,5 +1,5 @@
 import { carbonites, db, entities, hiringNeeds } from "@carbon-wfp/db";
-import { and, count, lt, ne, sql } from "drizzle-orm";
+import { and, count, eq, lt, ne, sql } from "drizzle-orm";
 
 import { protectedProcedure, router } from "../index";
 
@@ -11,7 +11,10 @@ export const dashboardRouter = router({
 			[openRolesResult],
 			[uniqueOffices],
 		] = await Promise.all([
-			db.select({ value: count() }).from(carbonites),
+			db
+				.select({ value: count() })
+				.from(carbonites)
+				.where(eq(carbonites.isActive, true)),
 			db.select({ value: count() }).from(entities),
 			db
 				.select({ value: count() })
@@ -44,7 +47,7 @@ export const dashboardRouter = router({
 			})
 			.from(entities);
 
-		// Get headcount and salary per entity
+		// Get headcount and salary per entity (active only)
 		const staffAgg = await db
 			.select({
 				entity: carbonites.entity,
@@ -54,16 +57,19 @@ export const dashboardRouter = router({
 				),
 			})
 			.from(carbonites)
+			.where(eq(carbonites.isActive, true))
 			.groupBy(carbonites.entity);
 
-		// Get distinct SLs per entity
+		// Get distinct SLs per entity (active only)
 		const slPerEntity = await db
 			.select({
 				entity: carbonites.entity,
 				sl: carbonites.sl,
 			})
 			.from(carbonites)
-			.where(sql`${carbonites.sl} is not null`)
+			.where(
+				and(sql`${carbonites.sl} is not null`, eq(carbonites.isActive, true)),
+			)
 			.groupBy(carbonites.entity, carbonites.sl);
 
 		// Build a lookup map for staff aggregates
@@ -104,6 +110,7 @@ export const dashboardRouter = router({
 				),
 			})
 			.from(carbonites)
+			.where(eq(carbonites.isActive, true))
 			.groupBy(carbonites.sl);
 
 		const totalHeadcount = rows.reduce((sum, r) => sum + r.headcount, 0);

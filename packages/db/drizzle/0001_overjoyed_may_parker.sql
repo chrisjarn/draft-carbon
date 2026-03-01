@@ -1,0 +1,2 @@
+ALTER TABLE "carbonites" ADD CONSTRAINT "carbonites_entity_entities_id_fk" FOREIGN KEY ("entity") REFERENCES "public"."entities"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "carbonites" ADD CONSTRAINT "carbonites_reports_to_carbonites_id_fk" FOREIGN KEY ("reports_to") REFERENCES "public"."carbonites"("id") ON DELETE set null ON UPDATE no action;

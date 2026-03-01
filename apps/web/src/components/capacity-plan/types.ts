@@ -15,7 +15,7 @@ export type StaffWithMeta = {
 		billingTarget: string | null;
 		billingActual: string | null;
 		perfRating: string | null;
-		promoFlag: boolean | null;
+		promoFlag: string | null;
 		promoEta: string | null;
 		staffRole: string | null;
 	} | null;
@@ -23,7 +23,7 @@ export type StaffWithMeta = {
 
 export type MetaForm = {
 	perfRating: string;
-	promoFlag: boolean;
+	promoFlag: string;
 	promoEta: string;
 	staffRole: string;
 	billingTarget: string;

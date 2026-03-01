@@ -1,3 +1,4 @@
+import type { AnyPgColumn } from "drizzle-orm/pg-core";
 import {
 	boolean,
 	integer,
@@ -5,6 +6,8 @@ import {
 	text,
 	timestamp,
 } from "drizzle-orm/pg-core";
+
+import { entities } from "./entities";
 
 export const carbonites = pgTable("carbonites", {
 	id: text("id").primaryKey(),
@@ -21,8 +24,13 @@ export const carbonites = pgTable("carbonites", {
 	location: text("location"),
 	hours: integer("hours"),
 	isPartner: boolean("is_partner").default(false),
-	entity: text("entity"),
-	reportsTo: text("reports_to"),
+	entity: text("entity").references(() => entities.id, {
+		onDelete: "set null",
+	}),
+	reportsTo: text("reports_to").references((): AnyPgColumn => carbonites.id, {
+		onDelete: "set null",
+	}),
+	isActive: boolean("is_active").default(true).notNull(),
 	createdAt: timestamp("created_at").defaultNow(),
 	updatedAt: timestamp("updated_at").defaultNow(),
 });

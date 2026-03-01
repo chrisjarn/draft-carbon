@@ -1,28 +1,111 @@
-# Capacity Plan Refactor — Steps Checklist
+# Carbon WFP Refactor — Progress Log
 
-## Phase 1: Merge /capacity + /wfp → /capacity-plan
+## What Has Been Done
 
-- [x] **Step 1** — Create `components/capacity-plan/types.ts` (shared types: StaffWithMeta, MetaForm, EntityDetailData)
-- [x] **Step 2** — Create `components/capacity-plan/shared.tsx` (PerfBadge, EditableCell, KpiCard, pct, unique)
-- [x] **Step 3** — Create `components/capacity-plan/headcount-targets-section.tsx` (lines 650-831 from wfp.lazy.tsx)
-- [x] **Step 4** — Create `components/capacity-plan/attrition-risks-section.tsx` (lines 833-1217 from wfp.lazy.tsx)
-- [x] **Step 5** — Create `components/capacity-plan/scenario-workbench-section.tsx` (lines 1219-1583 from wfp.lazy.tsx)
-- [x] **Step 6** — Create `components/capacity-plan/firm-tab.tsx` (FirmTab + EntityDetailPanel, imports sections from 3-5)
-- [x] **Step 7** — Create `components/capacity-plan/staff-tab.tsx` (StaffTab + MetaDialog)
-- [x] **Step 8** — Create `components/capacity-plan/pod-budgets-tab.tsx` (all capacity.lazy.tsx components as a tab)
-- [x] **Step 9** — Create `routes/_app/capacity-plan.tsx` (eager route file with entity search param validation)
-- [x] **Step 10** — Create `routes/_app/capacity-plan.lazy.tsx` (shell: 3 tabs, PageHeader, entity deep-link)
-- [x] **Step 11** — Update `lib/route-config.ts` (remove /capacity + /wfp, add /capacity-plan)
-- [x] **Step 12** — Update `sidebar-02/app-sidebar.tsx` (single "Capacity Plan" nav item, minRank 50)
-- [x] **Step 13** — Update `dashboard.lazy.tsx` (entity card link → /capacity-plan)
-- [x] **Step 14** — Delete old files (wfp.tsx, wfp.lazy.tsx, capacity.tsx, capacity.lazy.tsx)
-- [x] **Step 15** — Run check-types + build (both pass)
-- [ ] **Step 16** — Commit and push
+### 1. Codebase Audit
 
-## Phase 2: P0 — Data Integrity (after merge)
+Conducted a full audit of the codebase against the requirements spec (`apps/carbon-wfp-claude-code-prompt.md`). Reviewed all 16 DB tables, 12 tRPC routers, and 8 frontend pages. Identified:
 
-- [ ] Add `is_active` to carbonites + convert delete to soft delete
-- [ ] Add FK constraints across domain tables
-- [ ] Add `financial_year` to headcount_targets (update composite PK)
-- [ ] Add `financial_year` to scenarios
-- [ ] Fix role enum values (readonly → read_only, add service_line_lead, use pgEnum)
+- **DB schema gaps**: missing `is_active` on carbonites, no FK constraints, no `financial_year` on headcount_targets or scenarios, broken role enum values
+- **Frontend feature gaps**: no salary benchmarks section, no drag-drop for scenarios, limited filtering on some pages
+- **Prioritised build order**: P0 (data integrity) > P1 (missing features) > P2 (UX polish)
+
+### 2. PageHeader Refactor
+
+**Commit:** `255f936` — `refactor: extract shared PageHeader component across all routes`
+
+Replaced inline page headers across all 8 routes with a single shared `PageHeader` component. Created:
+
+- `apps/web/src/components/shared/page-header.tsx` — reads title/description from a centralised config, supports dynamic subtitle overrides and right-side action slots via children prop
+- `apps/web/src/lib/route-config.ts` — static metadata (title + description) for every route
+
+Updated all 8 lazy route files: dashboard, carbonites, hiring, capacity, wfp, fy-planning, admin, todos. 10 files changed, 336 insertions, 270 deletions.
+
+### 3. CLAUDE.md Cleanup
+
+**Commit:** `322b0c5` — `docs: trim CLAUDE.md and document shared PageHeader component`
+
+Trimmed `CLAUDE.md` from 224 lines to 75 lines. Removed redundant details, tightened architecture docs, added the shared PageHeader convention so future work follows the pattern.
+
+### 4. Agent Skills Installed
+
+Installed 6 skills relevant to the stack so code follows correct patterns:
+
+- Better Auth, Railway, TanStack (Query + Router), Drizzle + PostgreSQL, Hono, tRPC
+
+### 5. Phase 1: Merge /capacity + /wfp into /capacity-plan (COMPLETE)
+
+**Commit:** `fc0eb0b` — `refactor: merge /capacity + /wfp into unified /capacity-plan route`
+
+Consolidated two separate pages (`/capacity` at 920 lines and `/wfp` at 1861 lines) into a single unified `/capacity-plan` route with 3 tabs. All components extracted into focused files under `components/capacity-plan/`.
+
+#### New file structure
+
+```
+components/capacity-plan/
+  types.ts                        (63 lines)   — StaffWithMeta, MetaForm, EntityDetailData
+  shared.tsx                      (156 lines)  — PerfBadge, EditableCell, KpiCard, pct(), unique()
+  headcount-targets-section.tsx   (211 lines)  — per-entity SL headcount targets with progress bars
+  attrition-risks-section.tsx     (426 lines)  — risk flags with add/edit/delete + notes
+  scenario-workbench-section.tsx  (405 lines)  — what-if scenarios with role additions + cost calc
+  firm-tab.tsx                    (248 lines)  — KPI strip, entity selector grid, entity detail panel
+  staff-tab.tsx                   (331 lines)  — staff table, filters, billing targets, MetaDialog
+  pod-budgets-tab.tsx             (795 lines)  — budget tree (state > office > pod), add pod, staff sheet
+
+routes/_app/
+  capacity-plan.tsx               (12 lines)   — eager route with ?entity= search param validation
+  capacity-plan.lazy.tsx          (55 lines)   — shell: PageHeader + 3 tab navigation
+```
+
+#### Tab structure
+
+| Tab | Source | What it contains |
+|---|---|---|
+| **Firm** | wfp.lazy.tsx | Firm-wide KPIs (headcount, payroll, avg salary, at-risk), entity selector cards, entity detail panel with revenue progress, compensation budget, pods table, headcount targets, attrition risks, scenario workbench |
+| **Staff** | wfp.lazy.tsx | Filterable staff table (by SL, office, promo flag), inline-editable billing target/actual columns, attainment %, perf rating badges, promo flags, edit dialog for full meta |
+| **Pod Budgets** | capacity.lazy.tsx | Budget summary cards (budget, actual, variance, utilisation), collapsible state > office > pod tree with capacity bars, inline budget editing, add pod dialog, pod staff detail sheet |
+
+#### Other changes in this commit
+
+- **route-config.ts**: removed `/capacity` and `/wfp` entries, added `/capacity-plan`
+- **app-sidebar.tsx**: replaced two nav items with single "Capacity Plan" (minRank 50, SL lead+), removed unused Target01Icon and HugeiconsIcon imports
+- **dashboard.lazy.tsx**: entity card links now point to `/capacity-plan?entity=<id>` instead of `/wfp`
+- **routeTree.gen.ts**: auto-regenerated by TanStack Router CLI
+- **Deleted**: `wfp.tsx`, `wfp.lazy.tsx`, `capacity.tsx`, `capacity.lazy.tsx` (2,787 lines removed)
+
+#### Improvements over original
+
+- **Entity deep-link works now**: the old `/wfp` page accepted `?entity=id` from the dashboard but never read it. The new route uses `validateSearch` in the eager file and `Route.useSearch()` in the lazy file to pass it to FirmTab, which auto-selects the entity on load.
+- **Shell page is 55 lines**: all content lives in focused, single-responsibility component files (each under 400 lines per the spec)
+- **Access unified**: both old routes had different minRank values (10 vs 50). Now consistently minRank 50 (SL lead+) as specified.
+
+#### Verification
+
+- `bun run check-types` — passes (0 errors)
+- `bun run build` — passes (web bundle: capacity-plan.lazy chunk is 48.83 kB gzip 10.88 kB)
+- `bun run check` — only pre-existing warnings in shadcn/ui generated components, no new issues
+
+---
+
+## What Is Not Yet Pushed
+
+The commit `fc0eb0b` (Phase 1 merge) is local only. Run `git push` to publish.
+
+---
+
+## Phase 2: P0 Data Integrity (COMPLETE)
+
+- [x] **P0-1**: Add `is_active` boolean to carbonites (default true), convert hard delete to soft delete
+- [x] **P0-2**: Add FK constraints — `wfpStaffMeta.cbId` > `carbonites.id`, `wfpEntitySettings.entId` > `entities.id`, `wfpRevenue.entId` > `entities.id`, `headcountTargets.entityId` > `entities.id`, `attritionRisks.carboniteId` > `carbonites.id`, `scenarios.entityId` > `entities.id`, `scenarioRoles.scenarioId` > `scenarios.id`
+- [x] **P0-3**: Add `fy` column to `headcount_targets`, update composite PK to `(entityId, slId, fy)`, update tRPC router to accept/filter by FY
+- [x] **P0-4**: Add `fy` column to `scenarios`, update tRPC router to accept/filter by FY
+- [x] **P0-5**: Rename role `readonly` > `read_only` across DB default, server RBAC, client RBAC, admin page, CLAUDE.md. Kept as `text` column (not pgEnum) to avoid conflicts with Better Auth schema expectations.
+- [x] **P0-6**: Convert `promoFlag` from `boolean` to `text` enum (`yes` / `maybe` / `no`). Updated DB column, tRPC input schema, shared types, MetaDialog (checkbox > 3-way Select), staff table promo column display, and promo filter logic.
+
+**Note:** `bun run db:push` must be run to apply schema changes to the database. Existing `readonly` role values in the `user` table need a one-time data migration: `UPDATE "user" SET role = 'read_only' WHERE role = 'readonly'`. Existing `promo_flag` boolean values need migration: `UPDATE wfp_staff_meta SET promo_flag = CASE WHEN promo_flag = 'true' THEN 'yes' ELSE 'no' END`.
+
+---
+
+## P1 — Known Gaps (after P0)
+
+- [ ] **Staff query needs entity + FY filtering**: `trpc.wfp.getStaffWithMeta.queryOptions()` currently takes no params and fetches all staff across all entities. Once entity + FY selectors are wired up at the shell level, this query needs to accept `entityId` and `fy` as optional params and filter server-side. Affects `staff-tab.tsx` and the `wfp.getStaffWithMeta` router procedure.

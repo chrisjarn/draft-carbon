@@ -1,5 +1,6 @@
 import { db } from "@carbon-wfp/db";
 import { carbonites } from "@carbon-wfp/db/schema/carbonites";
+import { entities } from "@carbon-wfp/db/schema/entities";
 import { TRPCError } from "@trpc/server";
 import { and, asc, eq, ilike, or } from "drizzle-orm";
 import z from "zod";
@@ -39,16 +40,15 @@ export const carbonitesRouter = router({
 				.optional(),
 		)
 		.query(async ({ input }) => {
-			const filters = [];
+			const filters = [eq(carbonites.isActive, true)];
 
 			if (input?.search) {
-				filters.push(
-					or(
-						ilike(carbonites.name, `%${input.search}%`),
-						ilike(carbonites.role, `%${input.search}%`),
-						ilike(carbonites.pod, `%${input.search}%`),
-					),
+				const searchFilter = or(
+					ilike(carbonites.name, `%${input.search}%`),
+					ilike(carbonites.role, `%${input.search}%`),
+					ilike(carbonites.pod, `%${input.search}%`),
 				);
+				if (searchFilter) filters.push(searchFilter);
 			}
 			if (input?.state) filters.push(eq(carbonites.state, input.state));
 			if (input?.sl) filters.push(eq(carbonites.sl, input.sl));
@@ -58,7 +58,7 @@ export const carbonitesRouter = router({
 			return await db
 				.select()
 				.from(carbonites)
-				.where(filters.length ? and(...filters) : undefined)
+				.where(and(...filters))
 				.orderBy(
 					asc(carbonites.state),
 					asc(carbonites.office),
@@ -82,6 +82,17 @@ export const carbonitesRouter = router({
 		.input(carboniteInput)
 		.mutation(async ({ ctx, input }) => {
 			assertWriter(ctx.session.user);
+			if (input.entity) {
+				const [ent] = await db
+					.select({ id: entities.id })
+					.from(entities)
+					.where(eq(entities.id, input.entity));
+				if (!ent)
+					throw new TRPCError({
+						code: "BAD_REQUEST",
+						message: `Entity not found: ${input.entity}`,
+					});
+			}
 			const id = `c${Date.now()}`;
 			const [row] = await db
 				.insert(carbonites)
@@ -94,6 +105,17 @@ export const carbonitesRouter = router({
 		.input(z.object({ id: z.string() }).merge(carboniteInput.partial()))
 		.mutation(async ({ ctx, input }) => {
 			assertWriter(ctx.session.user);
+			if (input.entity) {
+				const [ent] = await db
+					.select({ id: entities.id })
+					.from(entities)
+					.where(eq(entities.id, input.entity));
+				if (!ent)
+					throw new TRPCError({
+						code: "BAD_REQUEST",
+						message: `Entity not found: ${input.entity}`,
+					});
+			}
 			const { id, ...fields } = input;
 			const [row] = await db
 				.update(carbonites)
@@ -108,7 +130,12 @@ export const carbonitesRouter = router({
 		.input(z.object({ id: z.string() }))
 		.mutation(async ({ ctx, input }) => {
 			assertWriter(ctx.session.user);
-			await db.delete(carbonites).where(eq(carbonites.id, input.id));
-			return { deleted: input.id };
+			const [row] = await db
+				.update(carbonites)
+				.set({ isActive: false, updatedAt: new Date() })
+				.where(eq(carbonites.id, input.id))
+				.returning();
+			if (!row) throw new TRPCError({ code: "NOT_FOUND" });
+			return { deactivated: input.id };
 		}),
 });

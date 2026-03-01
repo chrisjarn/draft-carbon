@@ -1,5 +1,6 @@
 import { db } from "@carbon-wfp/db";
 import { carbonites } from "@carbon-wfp/db/schema/carbonites";
+import { entities } from "@carbon-wfp/db/schema/entities";
 import {
 	attritionRisks,
 	headcountTargets,
@@ -17,12 +18,21 @@ export const wfpExtendedRouter = router({
 	// ── Headcount targets ────────────────────────────────────────────────────────
 
 	getHeadcountTargets: protectedProcedure
-		.input(z.object({ entityId: z.string() }))
+		.input(
+			z.object({
+				entityId: z.string(),
+				fy: z.string().optional(),
+			}),
+		)
 		.query(async ({ input }) => {
+			const filters = [eq(headcountTargets.entityId, input.entityId)];
+			if (input.fy) {
+				filters.push(eq(headcountTargets.fy, input.fy));
+			}
 			return db
 				.select()
 				.from(headcountTargets)
-				.where(eq(headcountTargets.entityId, input.entityId))
+				.where(and(...filters))
 				.orderBy(asc(headcountTargets.slId));
 		}),
 
@@ -31,6 +41,7 @@ export const wfpExtendedRouter = router({
 			z.object({
 				entityId: z.string(),
 				slId: z.string(),
+				fy: z.string().default("FY25-26"),
 				target: z.number().int().min(0),
 				notes: z.string().optional(),
 			}),
@@ -44,6 +55,7 @@ export const wfpExtendedRouter = router({
 					and(
 						eq(headcountTargets.entityId, input.entityId),
 						eq(headcountTargets.slId, input.slId),
+						eq(headcountTargets.fy, input.fy),
 					),
 				);
 			if (existing.length > 0) {
@@ -58,11 +70,22 @@ export const wfpExtendedRouter = router({
 						and(
 							eq(headcountTargets.entityId, input.entityId),
 							eq(headcountTargets.slId, input.slId),
+							eq(headcountTargets.fy, input.fy),
 						),
 					)
 					.returning();
 				return row;
 			}
+			// Verify entity exists before first insert
+			const [ent] = await db
+				.select({ id: entities.id })
+				.from(entities)
+				.where(eq(entities.id, input.entityId));
+			if (!ent)
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message: `Entity not found: ${input.entityId}`,
+				});
 			const [row] = await db.insert(headcountTargets).values(input).returning();
 			return row;
 		}),
@@ -72,11 +95,16 @@ export const wfpExtendedRouter = router({
 	getAttritionRisks: protectedProcedure
 		.input(z.object({ entityId: z.string() }))
 		.query(async ({ input }) => {
-			// Get all carbonites in entity, then join with risks
+			// Get all active carbonites in entity, then join with risks
 			const staff = await db
 				.select({ id: carbonites.id })
 				.from(carbonites)
-				.where(eq(carbonites.entity, input.entityId));
+				.where(
+					and(
+						eq(carbonites.entity, input.entityId),
+						eq(carbonites.isActive, true),
+					),
+				);
 			const staffIds = new Set(staff.map((s) => s.id));
 
 			if (staffIds.size === 0) return [];
@@ -107,6 +135,16 @@ export const wfpExtendedRouter = router({
 		)
 		.mutation(async ({ ctx, input }) => {
 			assertWriter(ctx.session.user);
+			// Verify carbonite exists before insert
+			const [cb] = await db
+				.select({ id: carbonites.id })
+				.from(carbonites)
+				.where(eq(carbonites.id, input.carboniteId));
+			if (!cb)
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message: `Carbonite not found: ${input.carboniteId}`,
+				});
 			const id = `ar${Date.now()}`;
 			const [row] = await db
 				.insert(attritionRisks)
@@ -147,12 +185,21 @@ export const wfpExtendedRouter = router({
 	// ── Scenarios ────────────────────────────────────────────────────────────────
 
 	getScenarios: protectedProcedure
-		.input(z.object({ entityId: z.string() }))
+		.input(
+			z.object({
+				entityId: z.string(),
+				fy: z.string().optional(),
+			}),
+		)
 		.query(async ({ input }) => {
+			const filters = [eq(scenarios.entityId, input.entityId)];
+			if (input.fy) {
+				filters.push(eq(scenarios.fy, input.fy));
+			}
 			const scens = await db
 				.select()
 				.from(scenarios)
-				.where(eq(scenarios.entityId, input.entityId))
+				.where(and(...filters))
 				.orderBy(asc(scenarios.createdAt));
 
 			const allRoles = await db
@@ -180,6 +227,7 @@ export const wfpExtendedRouter = router({
 		.input(
 			z.object({
 				entityId: z.string(),
+				fy: z.string().default("FY25-26"),
 				name: z.string().min(1),
 				description: z.string().optional(),
 				color: z.string().optional(),
@@ -197,12 +245,23 @@ export const wfpExtendedRouter = router({
 		)
 		.mutation(async ({ ctx, input }) => {
 			assertWriter(ctx.session.user);
+			// Verify entity exists before insert
+			const [ent] = await db
+				.select({ id: entities.id })
+				.from(entities)
+				.where(eq(entities.id, input.entityId));
+			if (!ent)
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message: `Entity not found: ${input.entityId}`,
+				});
 			const id = `sc${Date.now()}`;
 			const [scenario] = await db
 				.insert(scenarios)
 				.values({
 					id,
 					entityId: input.entityId,
+					fy: input.fy,
 					name: input.name,
 					description: input.description,
 					color: input.color,
@@ -226,10 +285,7 @@ export const wfpExtendedRouter = router({
 		.input(z.object({ id: z.string() }))
 		.mutation(async ({ ctx, input }) => {
 			assertWriter(ctx.session.user);
-			// Delete roles first, then scenario
-			await db
-				.delete(scenarioRoles)
-				.where(eq(scenarioRoles.scenarioId, input.id));
+			// scenario_roles FK has onDelete: cascade — no manual cleanup needed
 			await db.delete(scenarios).where(eq(scenarios.id, input.id));
 			return { deleted: input.id };
 		}),

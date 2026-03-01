@@ -45,11 +45,11 @@ bun run seed         # Seed database
 - **Frontend** (`apps/web/.env`): `VITE_SERVER_URL`
 
 ## RBAC Roles
-`admin` (100) > `practice_manager` (80) > `sl_lead` / `state_manager` (50) > `readonly` (10, default).
+`admin` (100) > `practice_manager` (80) > `service_line_lead` / `state_manager` (50) > `read_only` (10, default).
 Server: `assertWriter()`, `assertAdmin()`. Client: `canWrite()`, `canAdminWrite()`.
 
 ## Web Routes
-All under `/_app/` use `.lazy.tsx` code-splitting: `/dashboard`, `/carbonites`, `/capacity`, `/hiring`, `/wfp`, `/fy-planning`, `/admin`, `/todos`. Auth guard in `_app.tsx` `beforeLoad`.
+All under `/_app/` use `.lazy.tsx` code-splitting: `/dashboard`, `/carbonites`, `/capacity-plan`, `/hiring`, `/fy-planning`, `/admin`, `/todos`. Auth guard in `_app.tsx` `beforeLoad`.
 
 ## Shared Components (`apps/web/src/components/shared/`)
 - **`PageHeader`** — All routes use `<PageHeader>` from `page-header.tsx`. Reads title/description from `@/lib/route-config.ts`. Accepts optional `description` override (ReactNode) and `children` for right-side actions. Renders with bottom border; route content goes in a sibling `div` below it.
