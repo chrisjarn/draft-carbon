@@ -1,0 +1,1 @@
+ALTER TABLE "wfp_staff_meta" ALTER COLUMN "promo_eta" SET DATA TYPE date;

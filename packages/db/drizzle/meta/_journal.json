@@ -22,6 +22,20 @@
       "when": 1772384489166,
       "tag": "0002_p0-5-role-enum",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1772385655685,
+      "tag": "0003_p1-1-promo-flag-enum",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1772386257632,
+      "tag": "0004_p1-2-promo-eta-date",
+      "breakpoints": true
     }
   ]
 }

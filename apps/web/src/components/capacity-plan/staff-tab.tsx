@@ -34,7 +34,7 @@ import { fmtDollar } from "@/lib/format";
 import { canWrite, getUserRole } from "@/lib/rbac";
 import { trpc } from "@/utils/trpc";
 
-import { EditableCell, PerfBadge, pct, unique } from "./shared";
+import { EditableCell, fmtPromoEta, PerfBadge, pct, unique } from "./shared";
 import type { MetaForm, StaffWithMeta } from "./types";
 
 // ── Staff meta edit dialog ────────────────────────────────────────────────────
@@ -156,10 +156,10 @@ function MetaDialog({
 								Promo ETA
 							</Label>
 							<Input
+								type="date"
 								value={form.promoEta}
 								onChange={(e) => set("promoEta")(e.target.value)}
 								className="h-8 text-xs"
-								placeholder="e.g. Q2 FY26"
 							/>
 						</div>
 					)}
@@ -377,8 +377,8 @@ export function StaffTab() {
 													{s.meta.promoFlag === "maybe" ? "Maybe" : ""}
 													{s.meta.promoEta
 														? s.meta.promoFlag === "maybe"
-															? ` \u00B7 ${s.meta.promoEta}`
-															: s.meta.promoEta
+															? ` \u00B7 ${fmtPromoEta(s.meta.promoEta)}`
+															: fmtPromoEta(s.meta.promoEta)
 														: ""}
 												</span>
 											</div>

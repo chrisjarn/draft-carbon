@@ -1,5 +1,7 @@
 import {
+	date,
 	numeric,
+	pgEnum,
 	pgTable,
 	primaryKey,
 	text,
@@ -9,6 +11,8 @@ import {
 import { carbonites } from "./carbonites";
 import { entities } from "./entities";
 
+export const promoFlagEnum = pgEnum("promo_flag", ["yes", "maybe", "no"]);
+
 // Per-staff WFP data (billing targets, performance, promotions)
 export const wfpStaffMeta = pgTable("wfp_staff_meta", {
 	cbId: text("cb_id")
@@ -16,8 +20,8 @@ export const wfpStaffMeta = pgTable("wfp_staff_meta", {
 		.references(() => carbonites.id, { onDelete: "cascade" }),
 	billingTarget: numeric("billing_target"),
 	perfRating: text("perf_rating"), // e.g. "Exceeds", "Meets", "Below"
-	promoFlag: text("promo_flag").default("no"), // yes | maybe | no
-	promoEta: text("promo_eta"), // e.g. "Q2 FY26"
+	promoFlag: promoFlagEnum("promo_flag").default("no"),
+	promoEta: date("promo_eta", { mode: "string" }),
 	staffRole: text("staff_role"), // display role override for WFP
 	billingActual: numeric("billing_actual"),
 	updatedAt: timestamp("updated_at").defaultNow(),

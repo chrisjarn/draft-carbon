@@ -73,3 +73,6 @@ All under `/_app/` use `.lazy.tsx` code-splitting: `/dashboard`, `/carbonites`, 
 - File-based routing with `.lazy.tsx` code-splitting; auth guards in `beforeLoad`
 - New routers in `packages/api/src/routers/` — register in `routers/index.ts`
 - `legacy/` excluded from Biome and TypeScript
+
+## Known Gotchas
+- `drizzle-kit push` cannot handle `text → typed column` casts (no `USING` clause support). For any `text → date`, `text → enum`, or similar type conversions, generate the migration file and run the `ALTER` manually via the Neon SQL editor or `psql` with the Neon connection string, then verify with `db:push` that no diff remains.
