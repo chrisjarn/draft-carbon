@@ -1,4 +1,6 @@
+import crypto from "node:crypto";
 import { db } from "./src/index.js";
+import { account, user } from "./src/schema/auth.js";
 import {
 	carbonites,
 	entities,
@@ -6,6 +8,47 @@ import {
 	salaryBrackets,
 } from "./src/schema/index.js";
 import type { NewSalaryBracket } from "./src/schema/salary-brackets.js";
+
+// ── Password hashing (matches Better Auth's scrypt format) ──────────────────
+function hashPassword(password: string): Promise<string> {
+	return new Promise((resolve, reject) => {
+		const salt = crypto.randomBytes(16).toString("hex");
+		crypto.scrypt(password, salt, 64, (err, derivedKey) => {
+			if (err) reject(err);
+			resolve(`${salt}:${derivedKey.toString("hex")}`);
+		});
+	});
+}
+
+function generateId(length = 32): string {
+	const chars =
+		"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+	let result = "";
+	const bytes = crypto.randomBytes(length);
+	for (let i = 0; i < length; i++) {
+		result += chars[bytes[i]! % chars.length];
+	}
+	return result;
+}
+
+// ── Test Users (for RBAC testing) ───────────────────────────────────────────
+// Password for all test users: Test1234!
+const TEST_USERS = [
+	{
+		name: "WA State Manager",
+		email: "wa-manager@carbon.test",
+		role: "state_manager" as const,
+		assignedState: "wa",
+		assignedServiceLine: null,
+	},
+	{
+		name: "Accounting SL Lead",
+		email: "acc-lead@carbon.test",
+		role: "service_line_lead" as const,
+		assignedState: null,
+		assignedServiceLine: "acc",
+	},
+];
 
 // ── Entities (24 records) ───────────────────────────────────────────────────
 
@@ -3112,6 +3155,39 @@ async function seed() {
 		.onConflictDoNothing();
 	console.log(
 		`  salary_brackets: ${sbResult.count} inserted (${SALARY_BRACKETS.length} total)`,
+	);
+
+	// 5. Test users (for RBAC testing)
+	const passwordHash = await hashPassword("Test1234!");
+	let usersInserted = 0;
+	for (const u of TEST_USERS) {
+		const userId = generateId();
+		const accountId = generateId();
+		const userResult = await db
+			.insert(user)
+			.values({
+				id: userId,
+				name: u.name,
+				email: u.email,
+				emailVerified: false,
+				role: u.role,
+				assignedState: u.assignedState,
+				assignedServiceLine: u.assignedServiceLine,
+			})
+			.onConflictDoNothing();
+		if (userResult.count > 0) {
+			await db.insert(account).values({
+				id: accountId,
+				accountId: userId,
+				providerId: "credential",
+				userId: userId,
+				password: passwordHash,
+			});
+			usersInserted++;
+		}
+	}
+	console.log(
+		`  test_users: ${usersInserted} inserted (${TEST_USERS.length} total, password: Test1234!)`,
 	);
 
 	console.log("\nSeed complete.");
