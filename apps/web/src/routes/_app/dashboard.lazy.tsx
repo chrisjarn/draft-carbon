@@ -138,7 +138,7 @@ function EntityCardsGrid({
 			{data.map((ent) => (
 				<Link
 					key={ent.id}
-					to="/wfp"
+					to="/capacity-plan"
 					search={{ entity: ent.id }}
 					className="group"
 				>

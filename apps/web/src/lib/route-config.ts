@@ -17,14 +17,10 @@ export const ROUTE_CONFIG: Record<
 		description:
 			"Recruitment pipeline — open roles, offers, and closed positions.",
 	},
-	"/capacity": {
+	"/capacity-plan": {
 		title: "Capacity Plan",
-		description: "Pod headcount vs budget across states and offices.",
-	},
-	"/wfp": {
-		title: "Workforce Planning",
 		description:
-			"Firm KPIs, entity detail, staff meta, and scenario workbench.",
+			"Workforce planning — entity KPIs, staff meta, pod budgets, and scenarios.",
 	},
 	"/fy-planning": {
 		title: "FY Reports",

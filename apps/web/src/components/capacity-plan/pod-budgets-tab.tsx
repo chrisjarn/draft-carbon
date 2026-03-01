@@ -8,10 +8,9 @@ import {
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createLazyFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
-import { PageHeader } from "@/components/shared/page-header";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -43,10 +42,6 @@ import { getOfficesForState, STATES } from "@/lib/constants";
 import { fmtDollar } from "@/lib/format";
 import { canWrite, getUserRole } from "@/lib/rbac";
 import { trpc } from "@/utils/trpc";
-
-export const Route = createLazyFileRoute("/_app/capacity")({
-	component: CapacityPage,
-});
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -540,7 +535,7 @@ function BudgetSummary({
 									: "text-green-400"
 						}`}
 					>
-						{totalBudget > 0 ? `${utilisation}%` : "—"}
+						{totalBudget > 0 ? `${utilisation}%` : "\u2014"}
 					</p>
 				</CardContent>
 			</Card>
@@ -811,9 +806,11 @@ function StateSection({
 	);
 }
 
-// ── Page ──────────────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════════
+// ── Pod Budgets Tab ──────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════════
 
-function CapacityPage() {
+export function PodBudgetsTab() {
 	const { data: session } = authClient.useSession();
 	const userRole = getUserRole(session?.user);
 	const hasWriteAccess = canWrite(userRole);
@@ -835,14 +832,12 @@ function CapacityPage() {
 
 	return (
 		<div className="flex h-full flex-col">
-			<PageHeader
-				description={
-					<>
-						Pod headcount vs budget — {groups.length} states ·{" "}
-						{groups.reduce((s, g) => s + g.offices.length, 0)} offices
-					</>
-				}
-			>
+			{/* Subheader */}
+			<div className="flex items-center justify-between border-border border-b px-6 py-3">
+				<p className="text-muted-foreground text-xs">
+					Pod headcount vs budget — {groups.length} states &middot;{" "}
+					{groups.reduce((s, g) => s + g.offices.length, 0)} offices
+				</p>
 				<div className="flex items-center gap-4 text-muted-foreground text-xs">
 					<span>
 						<span className="font-semibold text-foreground">{totalActual}</span>{" "}
@@ -861,7 +856,7 @@ function CapacityPage() {
 						</Button>
 					)}
 				</div>
-			</PageHeader>
+			</div>
 
 			{/* Legend */}
 			<div className="flex items-center gap-6 border-border border-b px-6 py-2.5">

@@ -4,7 +4,6 @@ import {
 	ChartLineData02Icon,
 	DashboardSquare01Icon,
 	Settings01Icon,
-	Target01Icon,
 	UserGroupIcon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -30,17 +29,11 @@ const NAV_ITEMS: NavItem[] = [
 		icon: DashboardSquare01Icon,
 		minRank: 10,
 	},
-	{
-		to: "/capacity",
-		label: "Capacity Plan",
-		icon: Target01Icon,
-		minRank: 10,
-	},
 	{ to: "/carbonites", label: "Carbonites", icon: UserGroupIcon, minRank: 10 },
 	{ to: "/hiring", label: "Hiring", icon: Briefcase01Icon, minRank: 10 },
 	{
-		to: "/wfp",
-		label: "Workforce Planning",
+		to: "/capacity-plan",
+		label: "Capacity Plan",
 		icon: ChartLineData02Icon,
 		minRank: 50,
 	},

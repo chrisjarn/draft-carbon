@@ -12,13 +12,12 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AppWfpRouteImport } from './routes/_app/wfp'
 import { Route as AppTodosRouteImport } from './routes/_app/todos'
 import { Route as AppHiringRouteImport } from './routes/_app/hiring'
 import { Route as AppFyPlanningRouteImport } from './routes/_app/fy-planning'
 import { Route as AppDashboardRouteImport } from './routes/_app/dashboard'
 import { Route as AppCarbonitesRouteImport } from './routes/_app/carbonites'
-import { Route as AppCapacityRouteImport } from './routes/_app/capacity'
+import { Route as AppCapacityPlanRouteImport } from './routes/_app/capacity-plan'
 import { Route as AppAdminRouteImport } from './routes/_app/admin'
 
 const LoginRoute = LoginRouteImport.update({
@@ -35,11 +34,6 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AppWfpRoute = AppWfpRouteImport.update({
-  id: '/wfp',
-  path: '/wfp',
-  getParentRoute: () => AppRoute,
-} as any).lazy(() => import('./routes/_app/wfp.lazy').then((d) => d.Route))
 const AppTodosRoute = AppTodosRouteImport.update({
   id: '/todos',
   path: '/todos',
@@ -71,11 +65,13 @@ const AppCarbonitesRoute = AppCarbonitesRouteImport.update({
 } as any).lazy(() =>
   import('./routes/_app/carbonites.lazy').then((d) => d.Route),
 )
-const AppCapacityRoute = AppCapacityRouteImport.update({
-  id: '/capacity',
-  path: '/capacity',
+const AppCapacityPlanRoute = AppCapacityPlanRouteImport.update({
+  id: '/capacity-plan',
+  path: '/capacity-plan',
   getParentRoute: () => AppRoute,
-} as any).lazy(() => import('./routes/_app/capacity.lazy').then((d) => d.Route))
+} as any).lazy(() =>
+  import('./routes/_app/capacity-plan.lazy').then((d) => d.Route),
+)
 const AppAdminRoute = AppAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -86,25 +82,23 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/admin': typeof AppAdminRoute
-  '/capacity': typeof AppCapacityRoute
+  '/capacity-plan': typeof AppCapacityPlanRoute
   '/carbonites': typeof AppCarbonitesRoute
   '/dashboard': typeof AppDashboardRoute
   '/fy-planning': typeof AppFyPlanningRoute
   '/hiring': typeof AppHiringRoute
   '/todos': typeof AppTodosRoute
-  '/wfp': typeof AppWfpRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/admin': typeof AppAdminRoute
-  '/capacity': typeof AppCapacityRoute
+  '/capacity-plan': typeof AppCapacityPlanRoute
   '/carbonites': typeof AppCarbonitesRoute
   '/dashboard': typeof AppDashboardRoute
   '/fy-planning': typeof AppFyPlanningRoute
   '/hiring': typeof AppHiringRoute
   '/todos': typeof AppTodosRoute
-  '/wfp': typeof AppWfpRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -112,13 +106,12 @@ export interface FileRoutesById {
   '/_app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
   '/_app/admin': typeof AppAdminRoute
-  '/_app/capacity': typeof AppCapacityRoute
+  '/_app/capacity-plan': typeof AppCapacityPlanRoute
   '/_app/carbonites': typeof AppCarbonitesRoute
   '/_app/dashboard': typeof AppDashboardRoute
   '/_app/fy-planning': typeof AppFyPlanningRoute
   '/_app/hiring': typeof AppHiringRoute
   '/_app/todos': typeof AppTodosRoute
-  '/_app/wfp': typeof AppWfpRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -126,38 +119,35 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/admin'
-    | '/capacity'
+    | '/capacity-plan'
     | '/carbonites'
     | '/dashboard'
     | '/fy-planning'
     | '/hiring'
     | '/todos'
-    | '/wfp'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/login'
     | '/admin'
-    | '/capacity'
+    | '/capacity-plan'
     | '/carbonites'
     | '/dashboard'
     | '/fy-planning'
     | '/hiring'
     | '/todos'
-    | '/wfp'
   id:
     | '__root__'
     | '/'
     | '/_app'
     | '/login'
     | '/_app/admin'
-    | '/_app/capacity'
+    | '/_app/capacity-plan'
     | '/_app/carbonites'
     | '/_app/dashboard'
     | '/_app/fy-planning'
     | '/_app/hiring'
     | '/_app/todos'
-    | '/_app/wfp'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -188,13 +178,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/_app/wfp': {
-      id: '/_app/wfp'
-      path: '/wfp'
-      fullPath: '/wfp'
-      preLoaderRoute: typeof AppWfpRouteImport
-      parentRoute: typeof AppRoute
     }
     '/_app/todos': {
       id: '/_app/todos'
@@ -231,11 +214,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppCarbonitesRouteImport
       parentRoute: typeof AppRoute
     }
-    '/_app/capacity': {
-      id: '/_app/capacity'
-      path: '/capacity'
-      fullPath: '/capacity'
-      preLoaderRoute: typeof AppCapacityRouteImport
+    '/_app/capacity-plan': {
+      id: '/_app/capacity-plan'
+      path: '/capacity-plan'
+      fullPath: '/capacity-plan'
+      preLoaderRoute: typeof AppCapacityPlanRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/admin': {
@@ -250,24 +233,22 @@ declare module '@tanstack/react-router' {
 
 interface AppRouteChildren {
   AppAdminRoute: typeof AppAdminRoute
-  AppCapacityRoute: typeof AppCapacityRoute
+  AppCapacityPlanRoute: typeof AppCapacityPlanRoute
   AppCarbonitesRoute: typeof AppCarbonitesRoute
   AppDashboardRoute: typeof AppDashboardRoute
   AppFyPlanningRoute: typeof AppFyPlanningRoute
   AppHiringRoute: typeof AppHiringRoute
   AppTodosRoute: typeof AppTodosRoute
-  AppWfpRoute: typeof AppWfpRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
   AppAdminRoute: AppAdminRoute,
-  AppCapacityRoute: AppCapacityRoute,
+  AppCapacityPlanRoute: AppCapacityPlanRoute,
   AppCarbonitesRoute: AppCarbonitesRoute,
   AppDashboardRoute: AppDashboardRoute,
   AppFyPlanningRoute: AppFyPlanningRoute,
   AppHiringRoute: AppHiringRoute,
   AppTodosRoute: AppTodosRoute,
-  AppWfpRoute: AppWfpRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
