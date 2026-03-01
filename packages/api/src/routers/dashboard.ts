@@ -2,9 +2,18 @@ import { carbonites, db, entities, hiringNeeds } from "@carbon-wfp/db";
 import { and, count, eq, lt, ne, sql } from "drizzle-orm";
 
 import { protectedProcedure, router } from "../index";
+import {
+	carboniteRoleWhere,
+	entityRoleWhere,
+	getRoleFilter,
+} from "../lib/rbac";
 
 export const dashboardRouter = router({
-	stats: protectedProcedure.query(async () => {
+	stats: protectedProcedure.query(async ({ ctx }) => {
+		const rf = getRoleFilter(ctx.session.user);
+		const cbWhere = carboniteRoleWhere(rf);
+		const entWhere = entityRoleWhere(rf);
+
 		const [
 			[carboniteCount],
 			[entityCount],
@@ -14,8 +23,8 @@ export const dashboardRouter = router({
 			db
 				.select({ value: count() })
 				.from(carbonites)
-				.where(eq(carbonites.isActive, true)),
-			db.select({ value: count() }).from(entities),
+				.where(and(eq(carbonites.isActive, true), cbWhere)),
+			db.select({ value: count() }).from(entities).where(entWhere),
 			db
 				.select({ value: count() })
 				.from(hiringNeeds)
@@ -24,7 +33,8 @@ export const dashboardRouter = router({
 				.select({
 					value: sql<number>`count(distinct ${entities.officeId})`,
 				})
-				.from(entities),
+				.from(entities)
+				.where(entWhere),
 		]);
 
 		return {
@@ -35,8 +45,12 @@ export const dashboardRouter = router({
 		};
 	}),
 
-	entitySummaries: protectedProcedure.query(async () => {
-		// Get all entities
+	entitySummaries: protectedProcedure.query(async ({ ctx }) => {
+		const rf = getRoleFilter(ctx.session.user);
+		const cbWhere = carboniteRoleWhere(rf);
+		const entWhere = entityRoleWhere(rf);
+
+		// Get all entities (filtered by role)
 		const allEntities = await db
 			.select({
 				id: entities.id,
@@ -45,9 +59,10 @@ export const dashboardRouter = router({
 				officeId: entities.officeId,
 				sl: entities.sl,
 			})
-			.from(entities);
+			.from(entities)
+			.where(entWhere);
 
-		// Get headcount and salary per entity (active only)
+		// Get headcount and salary per entity (active only, filtered by role)
 		const staffAgg = await db
 			.select({
 				entity: carbonites.entity,
@@ -57,10 +72,10 @@ export const dashboardRouter = router({
 				),
 			})
 			.from(carbonites)
-			.where(eq(carbonites.isActive, true))
+			.where(and(eq(carbonites.isActive, true), cbWhere))
 			.groupBy(carbonites.entity);
 
-		// Get distinct SLs per entity (active only)
+		// Get distinct SLs per entity (active only, filtered by role)
 		const slPerEntity = await db
 			.select({
 				entity: carbonites.entity,
@@ -68,7 +83,11 @@ export const dashboardRouter = router({
 			})
 			.from(carbonites)
 			.where(
-				and(sql`${carbonites.sl} is not null`, eq(carbonites.isActive, true)),
+				and(
+					sql`${carbonites.sl} is not null`,
+					eq(carbonites.isActive, true),
+					cbWhere,
+				),
 			)
 			.groupBy(carbonites.entity, carbonites.sl);
 
@@ -100,7 +119,10 @@ export const dashboardRouter = router({
 		}));
 	}),
 
-	slBreakdown: protectedProcedure.query(async () => {
+	slBreakdown: protectedProcedure.query(async ({ ctx }) => {
+		const rf = getRoleFilter(ctx.session.user);
+		const cbWhere = carboniteRoleWhere(rf);
+
 		const rows = await db
 			.select({
 				sl: carbonites.sl,
@@ -110,7 +132,7 @@ export const dashboardRouter = router({
 				),
 			})
 			.from(carbonites)
-			.where(eq(carbonites.isActive, true))
+			.where(and(eq(carbonites.isActive, true), cbWhere))
 			.groupBy(carbonites.sl);
 
 		const totalHeadcount = rows.reduce((sum, r) => sum + r.headcount, 0);
@@ -126,7 +148,8 @@ export const dashboardRouter = router({
 		}));
 	}),
 
-	alerts: protectedProcedure.query(async () => {
+	alerts: protectedProcedure.query(async ({ ctx }) => {
+		const rf = getRoleFilter(ctx.session.user);
 		const ninetyDaysAgo = new Date();
 		ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
 
@@ -143,6 +166,7 @@ export const dashboardRouter = router({
 				and(
 					ne(hiringNeeds.status, "closed"),
 					lt(hiringNeeds.createdAt, ninetyDaysAgo),
+					rf.state ? eq(hiringNeeds.state, rf.state) : undefined,
 				),
 			);
 

@@ -19,7 +19,6 @@ import {
 	SelectContent,
 	SelectItem,
 	SelectTrigger,
-	SelectValue,
 } from "@/components/ui/select";
 import {
 	Table,
@@ -30,6 +29,7 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import { authClient } from "@/lib/auth-client";
+import { SERVICE_LINES, STATES } from "@/lib/constants";
 import { trpc } from "@/utils/trpc";
 
 export const Route = createLazyFileRoute("/_app/admin")({
@@ -43,6 +43,8 @@ type AppUser = {
 	name: string;
 	email: string;
 	role: string;
+	assignedState: string | null;
+	assignedServiceLine: string | null;
 	emailVerified: boolean;
 	createdAt: string;
 };
@@ -159,6 +161,7 @@ function AdminPage() {
 								<TableHead>Email</TableHead>
 								<TableHead>Current Role</TableHead>
 								<TableHead className="w-[200px]">Change Role</TableHead>
+								<TableHead className="w-[180px]">Assignment</TableHead>
 								<TableHead>Joined</TableHead>
 								<TableHead>Verified</TableHead>
 								<TableHead />
@@ -205,7 +208,10 @@ function AdminPage() {
 													disabled={updateRole.isPending}
 												>
 													<SelectTrigger className="h-7 w-44 text-xs">
-														<SelectValue />
+														<span className="flex flex-1 truncate text-left">
+															{ROLES.find((r) => r.value === u.role)?.label ??
+																u.role}
+														</span>
 													</SelectTrigger>
 													<SelectContent>
 														{ROLES.map((r) => (
@@ -219,6 +225,76 @@ function AdminPage() {
 														))}
 													</SelectContent>
 												</Select>
+											)}
+										</TableCell>
+										<TableCell>
+											{!isMe && u.role === "state_manager" ? (
+												<Select
+													value={u.assignedState ?? "__none__"}
+													onValueChange={(v) =>
+														updateRole.mutate({
+															userId: u.id,
+															role: u.role as ValidRole,
+															assignedState: v === "__none__" ? null : v,
+														})
+													}
+													disabled={updateRole.isPending}
+												>
+													<SelectTrigger className="h-7 w-36 text-xs">
+														<span className="flex flex-1 truncate text-left">
+															{STATES.find((s) => s.id === u.assignedState)
+																?.abbr ?? "Select state"}
+														</span>
+													</SelectTrigger>
+													<SelectContent>
+														<SelectItem value="__none__">No state</SelectItem>
+														{STATES.map((s) => (
+															<SelectItem
+																key={s.id}
+																value={s.id}
+																className="text-xs"
+															>
+																{s.name}
+															</SelectItem>
+														))}
+													</SelectContent>
+												</Select>
+											) : !isMe && u.role === "service_line_lead" ? (
+												<Select
+													value={u.assignedServiceLine ?? "__none__"}
+													onValueChange={(v) =>
+														updateRole.mutate({
+															userId: u.id,
+															role: u.role as ValidRole,
+															assignedServiceLine: v === "__none__" ? null : v,
+														})
+													}
+													disabled={updateRole.isPending}
+												>
+													<SelectTrigger className="h-7 w-36 text-xs">
+														<span className="flex flex-1 truncate text-left">
+															{SERVICE_LINES.find(
+																(sl) => sl.id === u.assignedServiceLine,
+															)?.short ?? "Select SL"}
+														</span>
+													</SelectTrigger>
+													<SelectContent>
+														<SelectItem value="__none__">
+															No service line
+														</SelectItem>
+														{SERVICE_LINES.map((sl) => (
+															<SelectItem
+																key={sl.id}
+																value={sl.id}
+																className="text-xs"
+															>
+																{sl.name}
+															</SelectItem>
+														))}
+													</SelectContent>
+												</Select>
+											) : (
+												<span className="text-muted-foreground text-xs">—</span>
 											)}
 										</TableCell>
 										<TableCell className="text-muted-foreground text-xs">

@@ -16,6 +16,8 @@ export const adminRouter = router({
 				name: user.name,
 				email: user.email,
 				role: user.role,
+				assignedState: user.assignedState,
+				assignedServiceLine: user.assignedServiceLine,
 				emailVerified: user.emailVerified,
 				createdAt: user.createdAt,
 			})
@@ -24,7 +26,14 @@ export const adminRouter = router({
 	}),
 
 	updateRole: protectedProcedure
-		.input(z.object({ userId: z.string(), role: z.enum(VALID_ROLES) }))
+		.input(
+			z.object({
+				userId: z.string(),
+				role: z.enum(VALID_ROLES),
+				assignedState: z.string().nullish(),
+				assignedServiceLine: z.string().nullish(),
+			}),
+		)
 		.mutation(async ({ ctx, input }) => {
 			assertAdmin(ctx.session.user);
 			if (input.userId === ctx.session.user.id) {
@@ -33,15 +42,29 @@ export const adminRouter = router({
 					message: "Cannot change your own role",
 				});
 			}
+			// Clear assignment fields when role doesn't need them
+			const assignedState =
+				input.role === "state_manager" ? (input.assignedState ?? null) : null;
+			const assignedServiceLine =
+				input.role === "service_line_lead"
+					? (input.assignedServiceLine ?? null)
+					: null;
 			const [row] = await db
 				.update(user)
-				.set({ role: input.role, updatedAt: new Date() })
+				.set({
+					role: input.role,
+					assignedState,
+					assignedServiceLine,
+					updatedAt: new Date(),
+				})
 				.where(eq(user.id, input.userId))
 				.returning({
 					id: user.id,
 					name: user.name,
 					email: user.email,
 					role: user.role,
+					assignedState: user.assignedState,
+					assignedServiceLine: user.assignedServiceLine,
 				});
 			if (!row) throw new TRPCError({ code: "NOT_FOUND" });
 			return row;

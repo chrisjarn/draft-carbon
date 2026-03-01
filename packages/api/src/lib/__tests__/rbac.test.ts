@@ -5,7 +5,9 @@ import {
 	ADMIN_WRITE_ROLES,
 	assertAdmin,
 	assertWriter,
+	getRoleFilter,
 	getUserRole,
+	type RoleFilter,
 } from "../rbac";
 
 describe("getUserRole", () => {
@@ -111,5 +113,74 @@ describe("assertAdmin", () => {
 
 	it("does not throw for admin", () => {
 		expect(() => assertAdmin({ role: "admin" })).not.toThrow();
+	});
+});
+
+// ── getRoleFilter ───────────────────────────────────────────────────────────
+
+function mockUser(
+	overrides: Partial<{
+		role: string;
+		assignedState: string | null;
+		assignedServiceLine: string | null;
+	}> = {},
+) {
+	return {
+		id: "u1",
+		name: "Test",
+		email: "test@test.com",
+		emailVerified: false,
+		image: null,
+		createdAt: new Date(),
+		updatedAt: new Date(),
+		role: "read_only",
+		assignedState: null,
+		assignedServiceLine: null,
+		...overrides,
+	};
+}
+
+describe("getRoleFilter", () => {
+	it("returns empty filter for admin", () => {
+		const filter: RoleFilter = getRoleFilter(mockUser({ role: "admin" }));
+		expect(filter).toEqual({});
+	});
+
+	it("returns empty filter for practice_manager", () => {
+		const filter = getRoleFilter(mockUser({ role: "practice_manager" }));
+		expect(filter).toEqual({});
+	});
+
+	it("returns state filter for state_manager with assignedState", () => {
+		const filter = getRoleFilter(
+			mockUser({ role: "state_manager", assignedState: "qld" }),
+		);
+		expect(filter).toEqual({ state: "qld" });
+	});
+
+	it("returns empty filter for state_manager without assignedState", () => {
+		const filter = getRoleFilter(
+			mockUser({ role: "state_manager", assignedState: null }),
+		);
+		expect(filter).toEqual({});
+	});
+
+	it("returns serviceLine filter for service_line_lead with assignedServiceLine", () => {
+		const filter = getRoleFilter(
+			mockUser({ role: "service_line_lead", assignedServiceLine: "acc" }),
+		);
+		expect(filter).toEqual({ serviceLine: "acc" });
+	});
+
+	it("returns empty filter for service_line_lead without assignedServiceLine", () => {
+		const filter = getRoleFilter(
+			mockUser({ role: "service_line_lead", assignedServiceLine: null }),
+		);
+		expect(filter).toEqual({});
+	});
+
+	it("returns empty filter for read_only", () => {
+		const filter = getRoleFilter(mockUser({ role: "read_only" }));
+		expect(filter).toEqual({});
 	});
 });

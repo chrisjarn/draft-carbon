@@ -12,7 +12,7 @@ import { and, asc, count, eq } from "drizzle-orm";
 import z from "zod";
 
 import { protectedProcedure, router } from "../index";
-import { assertWriter } from "../lib/rbac";
+import { assertWriter, carboniteRoleWhere, getRoleFilter } from "../lib/rbac";
 
 export const wfpExtendedRouter = router({
 	// ── Headcount targets ────────────────────────────────────────────────────────
@@ -94,7 +94,9 @@ export const wfpExtendedRouter = router({
 
 	getAttritionRisks: protectedProcedure
 		.input(z.object({ entityId: z.string() }))
-		.query(async ({ input }) => {
+		.query(async ({ ctx, input }) => {
+			const rf = getRoleFilter(ctx.session.user);
+			const cbWhere = carboniteRoleWhere(rf);
 			// Get all active carbonites in entity, then join with risks
 			const staff = await db
 				.select({ id: carbonites.id })
@@ -103,6 +105,7 @@ export const wfpExtendedRouter = router({
 					and(
 						eq(carbonites.entity, input.entityId),
 						eq(carbonites.isActive, true),
+						cbWhere,
 					),
 				);
 			const staffIds = new Set(staff.map((s) => s.id));
@@ -117,11 +120,27 @@ export const wfpExtendedRouter = router({
 			return risks.filter((r) => staffIds.has(r.carboniteId));
 		}),
 
-	getAllAttritionRisks: protectedProcedure.query(async () => {
-		return db
+	getAllAttritionRisks: protectedProcedure.query(async ({ ctx }) => {
+		const rf = getRoleFilter(ctx.session.user);
+		const cbWhere = carboniteRoleWhere(rf);
+		// If no role filter, return all risks
+		if (!cbWhere) {
+			return db
+				.select()
+				.from(attritionRisks)
+				.orderBy(asc(attritionRisks.createdAt));
+		}
+		// Otherwise, filter risks to only carbonites the user can see
+		const visibleStaff = await db
+			.select({ id: carbonites.id })
+			.from(carbonites)
+			.where(and(eq(carbonites.isActive, true), cbWhere));
+		const staffIds = new Set(visibleStaff.map((s) => s.id));
+		const allRisks = await db
 			.select()
 			.from(attritionRisks)
 			.orderBy(asc(attritionRisks.createdAt));
+		return allRisks.filter((r) => staffIds.has(r.carboniteId));
 	}),
 
 	createAttritionRisk: protectedProcedure

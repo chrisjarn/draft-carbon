@@ -17,6 +17,8 @@ export const user = pgTable("user", {
 	createdAt: timestamp("createdAt").notNull().defaultNow(),
 	updatedAt: timestamp("updatedAt").notNull().defaultNow(),
 	role: userRoleEnum("role").notNull().default("read_only"),
+	assignedState: text("assigned_state"),
+	assignedServiceLine: text("assigned_service_line"),
 });
 
 export const session = pgTable("session", {

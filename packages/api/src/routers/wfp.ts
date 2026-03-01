@@ -13,12 +13,19 @@ import { and, asc, avg, count, eq, ne, sql, sum } from "drizzle-orm";
 import z from "zod";
 
 import { protectedProcedure, router } from "../index";
-import { assertWriter } from "../lib/rbac";
+import {
+	assertWriter,
+	carboniteRoleWhere,
+	entityRoleWhere,
+	getRoleFilter,
+} from "../lib/rbac";
 
 export const wfpRouter = router({
 	// ── Firm-wide KPIs ──────────────────────────────────────────────────────────
 
-	firmKPIs: protectedProcedure.query(async () => {
+	firmKPIs: protectedProcedure.query(async ({ ctx }) => {
+		const rf = getRoleFilter(ctx.session.user);
+		const cbWhere = carboniteRoleWhere(rf);
 		const [[row], [riskRow]] = await Promise.all([
 			db
 				.select({
@@ -27,7 +34,7 @@ export const wfpRouter = router({
 					avgSalary: avg(carbonites.salary),
 				})
 				.from(carbonites)
-				.where(eq(carbonites.isActive, true)),
+				.where(and(eq(carbonites.isActive, true), cbWhere)),
 			db.select({ value: count() }).from(attritionRisks),
 		]);
 		return {
@@ -40,10 +47,15 @@ export const wfpRouter = router({
 
 	// ── Entity overview ─────────────────────────────────────────────────────────
 
-	entityOverview: protectedProcedure.query(async () => {
+	entityOverview: protectedProcedure.query(async ({ ctx }) => {
+		const rf = getRoleFilter(ctx.session.user);
+		const entWhere = entityRoleWhere(rf);
+		const cbWhere = carboniteRoleWhere(rf);
+
 		const ents = await db
 			.select()
 			.from(entities)
+			.where(entWhere)
 			.orderBy(asc(entities.state), asc(entities.biz));
 
 		const staffByEntity = await db
@@ -56,7 +68,7 @@ export const wfpRouter = router({
 				),
 			})
 			.from(carbonites)
-			.where(eq(carbonites.isActive, true))
+			.where(and(eq(carbonites.isActive, true), cbWhere))
 			.groupBy(carbonites.entity);
 
 		const staffMap = new Map(staffByEntity.map((s) => [s.entity, s]));
@@ -79,12 +91,15 @@ export const wfpRouter = router({
 
 	entityDetail: protectedProcedure
 		.input(z.object({ entityId: z.string() }))
-		.query(async ({ input }) => {
-			// Entity info
+		.query(async ({ ctx, input }) => {
+			const rf = getRoleFilter(ctx.session.user);
+			const entWhere = entityRoleWhere(rf);
+
+			// Entity info — also apply role filter
 			const [entity] = await db
 				.select()
 				.from(entities)
-				.where(eq(entities.id, input.entityId));
+				.where(and(eq(entities.id, input.entityId), entWhere));
 			if (!entity) return null;
 
 			// Entity settings
@@ -189,7 +204,9 @@ export const wfpRouter = router({
 
 	getStaffWithMeta: protectedProcedure
 		.input(z.object({ entityId: z.string().optional() }).optional())
-		.query(async ({ input }) => {
+		.query(async ({ ctx, input }) => {
+			const rf = getRoleFilter(ctx.session.user);
+			const cbWhere = carboniteRoleWhere(rf);
 			const filters = [eq(carbonites.isActive, true)];
 			if (input?.entityId) {
 				filters.push(eq(carbonites.entity, input.entityId));
@@ -197,7 +214,7 @@ export const wfpRouter = router({
 			const staff = await db
 				.select()
 				.from(carbonites)
-				.where(and(...filters))
+				.where(and(...filters, cbWhere))
 				.orderBy(
 					asc(carbonites.state),
 					asc(carbonites.office),
