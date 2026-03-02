@@ -29,7 +29,7 @@ const ReactQueryDevtools = import.meta.env.PROD
 			})),
 		);
 
-export interface RouterAppContext {
+interface RouterAppContext {
 	trpc: typeof trpc;
 	queryClient: QueryClient;
 }

@@ -162,7 +162,6 @@ function RevenueCell({
 						if (e.key === "Escape") setEditing(false);
 					}}
 					className="h-6 w-24 text-sm"
-					autoFocus
 				/>
 				<button
 					type="button"
@@ -475,7 +474,7 @@ function CsvImportDialog({
 							</TableHeader>
 							<TableBody>
 								{parsed.map((r, i) => (
-									<TableRow key={`${r.state}-${r.office}-${r.podName}-${i}`}>
+									<TableRow key={`${r.state}-${r.office}-${r.podName}`}>
 										<TableCell>{r.state}</TableCell>
 										<TableCell>{r.office}</TableCell>
 										<TableCell>{r.podName}</TableCell>

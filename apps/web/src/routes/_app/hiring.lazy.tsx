@@ -352,11 +352,11 @@ function HiringDialog({
 
 	return (
 		<Dialog open={open} onOpenChange={(o) => !o && onClose()}>
-			<DialogContent className="max-w-lg">
+			<DialogContent>
 				<DialogHeader>
-					<DialogTitle>{initial.role ? "Edit Role" : "Add Role"}</DialogTitle>
+					<DialogTitle>{initial.role ? "Edit Role" : "Log a Hiring Role"}</DialogTitle>
 				</DialogHeader>
-				<ScrollArea className="max-h-[60vh]">
+				<ScrollArea>
 					<div className="grid grid-cols-2 gap-3 p-1">
 						<div className="col-span-2">
 							<Label className="mb-1 block text-muted-foreground">
@@ -365,7 +365,7 @@ function HiringDialog({
 							<Input
 								value={form.role}
 								onChange={(e) => set("role")(e.target.value)}
-								className="h-8 text-sm"
+			
 							/>
 						</div>
 						<div>
@@ -556,7 +556,7 @@ function CloseRoleDialog({
 	saving: boolean;
 }) {
 	const [how, setHow] = useState<"hired" | "cancelled" | "deferred">("hired");
-	const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
+	const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
 	const [name, setName] = useState("");
 
 	return (
@@ -889,7 +889,7 @@ function HiringPage() {
 				</Tabs>
 				{hasWriteAccess && (
 					<Button
-						size="sm"
+			
 						onClick={() => {
 							setEditTarget(null);
 							setDialogOpen(true);

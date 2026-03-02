@@ -263,15 +263,11 @@ export function StaffTab({
 			),
 		[filteredRows],
 	);
-	const promoCount = useMemo(
-		() =>
-			filteredRows.filter(
-				(r) =>
-					r.original.meta?.promoFlag === "yes" ||
-					r.original.meta?.promoFlag === "maybe",
-			).length,
-		[filteredRows],
-	);
+	const promoCount = filteredRows.filter(
+		(r) =>
+			r.original.meta?.promoFlag === "yes" ||
+			r.original.meta?.promoFlag === "maybe",
+	).length;
 
 	if (query.isPending) {
 		return (

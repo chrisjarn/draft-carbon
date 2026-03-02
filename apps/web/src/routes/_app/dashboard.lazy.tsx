@@ -7,7 +7,13 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createLazyFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { motion, useMotionValueEvent, useSpring } from "motion/react";
+import {
+	domAnimation,
+	LazyMotion,
+	m,
+	useMotionValueEvent,
+	useSpring,
+} from "motion/react";
 import * as React from "react";
 import { useMemo } from "react";
 import {
@@ -117,19 +123,6 @@ function InlineStat({
 	);
 }
 
-/* ─── SL dot (still used by SL breakdown table) ──────────────────────── */
-
-function SlDot({ sl }: { sl: string }) {
-	const color = SL_COLOR_MAP[sl] ?? "#888";
-	const slMeta = SERVICE_LINES.find((s) => s.id === sl);
-	return (
-		<span
-			title={slMeta?.name ?? sl}
-			className="inline-block size-2.5 rounded-full"
-			style={{ backgroundColor: color }}
-		/>
-	);
-}
 
 /* ─── Revenue Bar Chart (interactive, shadcn ChartContainer) ───────────── */
 
@@ -720,12 +713,14 @@ function DashboardPage() {
 	return (
 		<div className="flex h-full flex-col">
 			<div className="flex items-center justify-center px-6 py-2">
-				<motion.div
-					whileTap={{ scale: 0.97 }}
-					transition={{ type: "spring", duration: 0.5, bounce: 0 }}
-				>
-					<SearchBarTrigger />
-				</motion.div>
+				<LazyMotion features={domAnimation}>
+					<m.div
+						whileTap={{ scale: 0.97 }}
+						transition={{ type: "spring", duration: 0.5, bounce: 0 }}
+					>
+						<SearchBarTrigger />
+					</m.div>
+				</LazyMotion>
 			</div>
 			<div className="scrollbar-hide flex-1 overflow-auto">
 				<div className="mx-auto w-full max-w-[968px] px-6 pt-10 pb-6">
@@ -818,9 +813,7 @@ function DashboardPage() {
 							/>
 							<Card>
 								<CardHeader>
-									<CardTitle>
-										Service Line Breakdown
-									</CardTitle>
+									<CardTitle>Service Line Breakdown</CardTitle>
 								</CardHeader>
 								<CardContent>
 									<SlBreakdownTable
@@ -836,9 +829,7 @@ function DashboardPage() {
 
 						{/* Entity Cards */}
 						<div>
-							<h2 className="mb-4 font-semibold text-base ">
-								Entities
-							</h2>
+							<h2 className="mb-4 font-semibold text-base">Entities</h2>
 							<EntityCardGrid
 								data={filteredEntities}
 								loading={entitySummaries.isLoading}

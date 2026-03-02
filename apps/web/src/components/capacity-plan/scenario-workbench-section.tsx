@@ -291,7 +291,7 @@ export function ScenarioWorkbenchSection({
 							<div className="space-y-2">
 								{formRoles.map((role, idx) => (
 									<div
-										key={`role-row-${idx}`}
+										key={`${role.roleTitle}-${role.sl}-${role.salary}-${role.count}`}
 										className="flex items-center gap-1.5"
 									>
 										<Input
@@ -352,7 +352,7 @@ export function ScenarioWorkbenchSection({
 								<Button
 									variant="outline"
 									size="sm"
-									className="h-6 text-xs"
+		
 									onClick={() =>
 										setFormRoles((prev) => [
 											...prev,

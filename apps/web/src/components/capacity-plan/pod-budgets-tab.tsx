@@ -221,7 +221,6 @@ function BudgetCell({
 						if (e.key === "Escape") setEditing(false);
 					}}
 					className="h-6 w-16 text-center text-sm"
-					autoFocus
 				/>
 				<button
 					type="button"
@@ -371,7 +370,6 @@ function AddPodDialog({
 								value={office}
 								onChange={(e) => setOffice(e.target.value)}
 								placeholder="Select a state first"
-			
 								disabled={!state}
 							/>
 						)}

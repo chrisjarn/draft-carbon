@@ -13,7 +13,7 @@ export function PageHeader() {
 	if (!config) return null;
 
 	return (
-		<div className="flex items-center justify-center  bg-white px-6 py-2">
+		<div className="flex items-center justify-center bg-white px-6 py-2">
 			<h1 className="font-medium text-base tracking-tight">{config.title}</h1>
 		</div>
 	);

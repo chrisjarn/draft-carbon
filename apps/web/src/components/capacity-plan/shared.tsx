@@ -80,7 +80,6 @@ export function EditableCell({
 						if (e.key === "Escape") setEditing(false);
 					}}
 					className="h-6 w-20 text-sm"
-					autoFocus
 				/>
 				<button
 					type="button"
