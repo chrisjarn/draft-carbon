@@ -15,7 +15,7 @@ import {
 	EntityCardGrid,
 	type EntitySummary,
 } from "@/components/dashboard/entity-card";
-import { PageHeader } from "@/components/shared/page-header";
+import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -529,8 +529,10 @@ function useFilteredSlBreakdown(
 function DashboardPage() {
 	const navigate = useNavigate({ from: "/dashboard" });
 	const queryClient = useQueryClient();
+	const { data: session } = authClient.useSession();
 	const { fy } = Route.useSearch();
 	const activeFy = fy ?? "FY25-26";
+	const firstName = session?.user?.name?.split(" ")[0];
 
 	// State filter is local — no URL param, no server re-fetch
 	const [stateFilter, setStateFilter] = useState<string | null>(null);
@@ -637,42 +639,48 @@ function DashboardPage() {
 
 	return (
 		<div className="flex h-full flex-col">
-			<PageHeader />
-
-			{/* State filter tabs + FY selector */}
-			<div className="flex items-center justify-between bg-white px-6 pt-3 pb-2">
-				<Tabs
-					value={stateFilter ?? "all"}
-					onValueChange={(val) => setStateFilter(val === "all" ? null : val)}
-				>
-					<TabsList variant="pill">
-						<TabsTrigger value="all">All States</TabsTrigger>
-						{STATES.map((s) => (
-							<TabsTrigger key={s.id} value={s.id}>
-								{s.abbr}
-							</TabsTrigger>
-						))}
-					</TabsList>
-				</Tabs>
-				<Select value={activeFy} onValueChange={setFy}>
-					<SelectTrigger className="w-32">
-						<SelectValue />
-					</SelectTrigger>
-					<SelectContent>
-						{FY_OPTIONS.map((f) => (
-							<SelectItem key={f} value={f}>
-								{f}
-							</SelectItem>
-						))}
-					</SelectContent>
-				</Select>
+			<div className="flex items-center justify-center border-border border-b bg-white px-6 py-2">
+				<h1 className="font-medium text-base tracking-tight">Dashboard</h1>
 			</div>
 
-			<div className="flex flex-1 flex-col gap-6 overflow-auto p-6">
-				{/* KPI stats (Mercury inline) + Revenue Chart — side by side */}
-				<div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-					{/* Mercury inline stats — flat row with vertical dividers */}
-					<div className="flex items-start divide-x divide-zinc-200">
+			<div className="mx-auto w-full max-w-[968px] flex-1 overflow-auto px-6 py-6">
+				{/* Greeting */}
+				<h2 className="font-semibold text-2xl tracking-tight">
+					{firstName ? `Hi, ${firstName}` : "Hi"}
+				</h2>
+
+				{/* State filter tabs + FY selector */}
+				<div className="flex items-center justify-between pt-5 pb-2">
+					<Tabs
+						value={stateFilter ?? "all"}
+						onValueChange={(val) => setStateFilter(val === "all" ? null : val)}
+					>
+						<TabsList variant="pill">
+							<TabsTrigger value="all">All States</TabsTrigger>
+							{STATES.map((s) => (
+								<TabsTrigger key={s.id} value={s.id}>
+									{s.abbr}
+								</TabsTrigger>
+							))}
+						</TabsList>
+					</Tabs>
+					<Select value={activeFy} onValueChange={setFy}>
+						<SelectTrigger className="w-32">
+							<SelectValue />
+						</SelectTrigger>
+						<SelectContent>
+							{FY_OPTIONS.map((f) => (
+								<SelectItem key={f} value={f}>
+									{f}
+								</SelectItem>
+							))}
+						</SelectContent>
+					</Select>
+				</div>
+
+				<div className="flex flex-col gap-5 pt-4">
+					{/* Mercury inline stats */}
+					<div className="grid grid-cols-4 divide-x divide-zinc-200">
 						<div className="pr-6">
 							<InlineStat
 								label="Total Carbonites"
@@ -695,7 +703,7 @@ function DashboardPage() {
 								subtitle={activeFy}
 							/>
 						</div>
-						<div className="px-6">
+						<div className="pl-6">
 							<InlineStat
 								label="Revenue Actual"
 								value={fmtDollar(filteredStats?.revenueActual)}
@@ -714,43 +722,44 @@ function DashboardPage() {
 						</div>
 					</div>
 
-					{/* Revenue Chart */}
-					<RevenueChart
-						data={filteredRevenue}
-						loading={revenueByEntity.isLoading}
-						fy={activeFy}
-					/>
-				</div>
-
-				{/* Alerts */}
-				<AlertsPanel data={alerts.data} loading={alerts.isLoading} />
-
-				{/* Entity Cards */}
-				<div>
-					<h2 className="mb-4 font-semibold text-base tracking-tight">
-						Entities
-					</h2>
-					<EntityCardGrid
-						data={filteredEntities}
-						loading={entitySummaries.isLoading}
-						fy={activeFy}
-					/>
-				</div>
-
-				{/* SL Breakdown */}
-				<Card>
-					<CardHeader>
-						<CardTitle className="font-semibold text-base">
-							Service Line Breakdown
-						</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<SlBreakdownTable
-							data={filteredSl}
-							loading={slBreakdown.isLoading}
+					{/* Revenue Chart + SL Breakdown */}
+					<div className="grid grid-cols-2 gap-5">
+						<RevenueChart
+							data={filteredRevenue}
+							loading={revenueByEntity.isLoading}
+							fy={activeFy}
 						/>
-					</CardContent>
-				</Card>
+						<Card>
+							<CardHeader>
+								<CardTitle className="font-semibold text-base">
+									Service Line Breakdown
+								</CardTitle>
+							</CardHeader>
+							<CardContent>
+								<SlBreakdownTable
+									data={filteredSl}
+									loading={slBreakdown.isLoading}
+								/>
+							</CardContent>
+						</Card>
+					</div>
+
+					{/* Alerts */}
+					<AlertsPanel data={alerts.data} loading={alerts.isLoading} />
+
+					{/* Entity Cards */}
+					<div>
+						<h2 className="mb-4 font-semibold text-base tracking-tight">
+							Entities
+						</h2>
+						<EntityCardGrid
+							data={filteredEntities}
+							loading={entitySummaries.isLoading}
+							fy={activeFy}
+							columns={2}
+						/>
+					</div>
+				</div>
 			</div>
 		</div>
 	);

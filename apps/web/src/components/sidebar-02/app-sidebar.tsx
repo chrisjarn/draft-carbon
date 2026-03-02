@@ -66,7 +66,7 @@ export function AppSidebar() {
 	const visibleAdmin = ADMIN_ITEMS.filter((item) => userRank >= item.minRank);
 
 	return (
-		<Sidebar variant="floating" collapsible="icon">
+		<Sidebar variant="sidebar" collapsible="icon">
 			<SidebarHeader className="flex flex-row items-center justify-between md:pt-3.5">
 				<div className="flex items-center gap-2">
 					<CarbonLogo className="size-7 shrink-0 text-sidebar-primary" />
