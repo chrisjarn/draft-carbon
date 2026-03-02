@@ -32,9 +32,11 @@ import type { EntityDetailData } from "./types";
 export function HeadcountTargetsSection({
 	entityId,
 	staff,
+	fy,
 }: {
 	entityId: string;
 	staff: EntityDetailData["staff"];
+	fy?: string;
 }) {
 	const { data: session } = authClient.useSession();
 	const userRole = getUserRole(session?.user);
@@ -47,7 +49,7 @@ export function HeadcountTargetsSection({
 	const [formNotes, setFormNotes] = useState("");
 
 	const { data: targets } = useQuery(
-		trpc.wfpExtended.getHeadcountTargets.queryOptions({ entityId }),
+		trpc.wfpExtended.getHeadcountTargets.queryOptions({ entityId, fy }),
 	);
 
 	const upsertTarget = useMutation(
@@ -130,7 +132,9 @@ export function HeadcountTargetsSection({
 			>
 				<DialogContent className="max-w-xs">
 					<DialogHeader>
-						<DialogTitle className="text-base">Set Headcount Target</DialogTitle>
+						<DialogTitle className="text-base">
+							Set Headcount Target
+						</DialogTitle>
 					</DialogHeader>
 					<div className="space-y-3">
 						<div>

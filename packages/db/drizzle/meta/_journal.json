@@ -1,55 +1,55 @@
 {
-  "version": "7",
-  "dialect": "postgresql",
-  "entries": [
-    {
-      "idx": 0,
-      "version": "7",
-      "when": 1772382580016,
-      "tag": "0000_true_warstar",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1772384019240,
-      "tag": "0001_overjoyed_may_parker",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1772384489166,
-      "tag": "0002_p0-5-role-enum",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1772385655685,
-      "tag": "0003_p1-1-promo-flag-enum",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1772386257632,
-      "tag": "0004_p1-2-promo-eta-date",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1772386695143,
-      "tag": "0005_p1-3-role-tag-enum",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "7",
-      "when": 1772386993103,
-      "tag": "0006_p1-4-hired-carbonite-fk",
-      "breakpoints": true
-    }
-  ]
+	"version": "7",
+	"dialect": "postgresql",
+	"entries": [
+		{
+			"idx": 0,
+			"version": "7",
+			"when": 1772382580016,
+			"tag": "0000_true_warstar",
+			"breakpoints": true
+		},
+		{
+			"idx": 1,
+			"version": "7",
+			"when": 1772384019240,
+			"tag": "0001_overjoyed_may_parker",
+			"breakpoints": true
+		},
+		{
+			"idx": 2,
+			"version": "7",
+			"when": 1772384489166,
+			"tag": "0002_p0-5-role-enum",
+			"breakpoints": true
+		},
+		{
+			"idx": 3,
+			"version": "7",
+			"when": 1772385655685,
+			"tag": "0003_p1-1-promo-flag-enum",
+			"breakpoints": true
+		},
+		{
+			"idx": 4,
+			"version": "7",
+			"when": 1772386257632,
+			"tag": "0004_p1-2-promo-eta-date",
+			"breakpoints": true
+		},
+		{
+			"idx": 5,
+			"version": "7",
+			"when": 1772386695143,
+			"tag": "0005_p1-3-role-tag-enum",
+			"breakpoints": true
+		},
+		{
+			"idx": 6,
+			"version": "7",
+			"when": 1772386993103,
+			"tag": "0006_p1-4-hired-carbonite-fk",
+			"breakpoints": true
+		}
+	]
 }

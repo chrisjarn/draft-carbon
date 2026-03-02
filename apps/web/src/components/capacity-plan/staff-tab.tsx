@@ -195,7 +195,13 @@ function MetaDialog({
 // ── Staff Tab ────────────────────────────────────────────────────────────────
 // ══════════════════════════════════════════════════════════════════════════════
 
-export function StaffTab({ entityId }: { entityId?: string }) {
+export function StaffTab({
+	entityId,
+	fy: _fy,
+}: {
+	entityId?: string;
+	fy?: string;
+}) {
 	const { data: session } = authClient.useSession();
 	const userRole = getUserRole(session?.user);
 	const hasWriteAccess = canWrite(userRole);

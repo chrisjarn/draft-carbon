@@ -58,7 +58,13 @@ const PRESET_COLORS = [
 	"#12B886",
 ];
 
-export function ScenarioWorkbenchSection({ entityId }: { entityId: string }) {
+export function ScenarioWorkbenchSection({
+	entityId,
+	fy,
+}: {
+	entityId: string;
+	fy?: string;
+}) {
 	const { data: session } = authClient.useSession();
 	const userRole = getUserRole(session?.user);
 	const hasWriteAccess = canWrite(userRole);
@@ -73,7 +79,7 @@ export function ScenarioWorkbenchSection({ entityId }: { entityId: string }) {
 	]);
 
 	const { data: scenarioList } = useQuery(
-		trpc.wfpExtended.getScenarios.queryOptions({ entityId }),
+		trpc.wfpExtended.getScenarios.queryOptions({ entityId, fy }),
 	);
 
 	const createScenario = useMutation(

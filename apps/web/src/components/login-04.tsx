@@ -59,7 +59,7 @@ function SignInView({ onSwitch }: { onSwitch: () => void }) {
 			<h3 className="mt-6 text-balance font-semibold text-foreground text-lg">
 				Sign in to your account
 			</h3>
-			<p className="mt-2 text-pretty text-muted-foreground text-base">
+			<p className="mt-2 text-pretty text-base text-muted-foreground">
 				Don&apos;t have an account?{" "}
 				<button
 					type="button"
@@ -191,7 +191,7 @@ function SignUpView({ onSwitch }: { onSwitch: () => void }) {
 			<h3 className="mt-6 text-balance font-semibold text-foreground text-lg">
 				Create your account
 			</h3>
-			<p className="mt-2 text-pretty text-muted-foreground text-base">
+			<p className="mt-2 text-pretty text-base text-muted-foreground">
 				Already have an account?{" "}
 				<button
 					type="button"

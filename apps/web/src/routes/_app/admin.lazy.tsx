@@ -458,7 +458,7 @@ function AdminPage() {
 					<DialogHeader>
 						<DialogTitle>Delete User</DialogTitle>
 					</DialogHeader>
-					<p className="text-muted-foreground text-base">
+					<p className="text-base text-muted-foreground">
 						Delete <strong>{deleteTarget?.name}</strong> ({deleteTarget?.email}
 						)? This will remove their account and all sessions. This cannot be
 						undone.

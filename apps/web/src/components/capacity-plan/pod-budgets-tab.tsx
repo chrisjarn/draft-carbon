@@ -8,7 +8,7 @@ import {
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
@@ -21,6 +21,13 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
+import {
+	Empty,
+	EmptyDescription,
+	EmptyHeader,
+	EmptyMedia,
+	EmptyTitle,
+} from "@/components/ui/empty";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -38,10 +45,12 @@ import {
 	SheetTitle,
 } from "@/components/ui/sheet";
 import { authClient } from "@/lib/auth-client";
-import { getOfficesForState, STATES } from "@/lib/constants";
+import { getOfficesForState, getSL, STATES } from "@/lib/constants";
 import { fmtDollar } from "@/lib/format";
 import { canWrite, getUserRole } from "@/lib/rbac";
 import { trpc } from "@/utils/trpc";
+
+import styles from "./pod-budgets-tab.module.css";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -67,6 +76,8 @@ type PodRow = {
 	podName: string;
 	budget: number;
 	actual: number;
+	dominantSl: string | null;
+	totalSalary: number;
 };
 
 type OfficeGroup = {
@@ -89,12 +100,29 @@ type SelectedPod = {
 	podName: string;
 };
 
+// ── SL badge class mapping ────────────────────────────────────────────────────
+
+const SL_BADGE_MODIFIER: Record<string, string> = {
+	acc: "slBadge--accounting",
+	bkcfo: "slBadge--bookkeeping",
+	fin: "slBadge--finance",
+	wm: "slBadge--wealth",
+	rd: "slBadge--rd",
+	ins: "slBadge--insurance",
+	admin: "slBadge--admin",
+};
+
+function slBadgeClass(sl: string): string {
+	const modifier = SL_BADGE_MODIFIER[sl] ?? "slBadge--unknown";
+	return `${styles.slBadge ?? ""} ${styles[modifier] ?? ""}`.trim();
+}
+
 // ── Status logic ──────────────────────────────────────────────────────────────
 
 type Status = "under" | "at" | "over" | "empty";
 
 function getStatus(actual: number, budget: number): Status {
-	if (budget === 0 && actual === 0) return "empty";
+	if (budget === 0) return "empty";
 	if (actual > budget) return "over";
 	if (actual === budget) return "at";
 	return "under";
@@ -230,15 +258,27 @@ function BudgetCell({
 function AddPodDialog({
 	open,
 	onClose,
+	defaultState,
+	defaultOffice,
 }: {
 	open: boolean;
 	onClose: () => void;
+	defaultState?: string;
+	defaultOffice?: string;
 }) {
 	const qc = useQueryClient();
-	const [state, setState] = useState("");
-	const [office, setOffice] = useState("");
+	const [state, setState] = useState(defaultState ?? "");
+	const [office, setOffice] = useState(defaultOffice ?? "");
 	const [podName, setPodName] = useState("");
 	const [budget, setBudget] = useState("0");
+
+	// Sync defaults when the dialog opens with pre-filled context
+	const prevOpen = useRef(open);
+	if (open && !prevOpen.current) {
+		if (defaultState && state !== defaultState) setState(defaultState);
+		if (defaultOffice && office !== defaultOffice) setOffice(defaultOffice);
+	}
+	prevOpen.current = open;
 
 	const officeOptions = state ? getOfficesForState(state) : [];
 
@@ -392,10 +432,12 @@ function PodStaffSheet({
 	selectedPod,
 	onClose,
 	carbonites,
+	budgets,
 }: {
 	selectedPod: SelectedPod | null;
 	onClose: () => void;
 	carbonites: Carbonite[];
+	budgets: PodBudget[];
 }) {
 	const podStaff = selectedPod
 		? carbonites.filter(
@@ -407,6 +449,15 @@ function PodStaffSheet({
 		: [];
 
 	const totalSalary = podStaff.reduce((sum, c) => sum + (c.salary ?? 0), 0);
+
+	const podBudget = selectedPod
+		? (budgets.find(
+				(b) =>
+					b.state === selectedPod.state &&
+					b.office === selectedPod.office &&
+					b.podName === selectedPod.podName,
+			)?.budget ?? 0)
+		: 0;
 
 	return (
 		<Sheet open={!!selectedPod} onOpenChange={(open) => !open && onClose()}>
@@ -423,6 +474,25 @@ function PodStaffSheet({
 								{podStaff.length} staff
 							</SheetDescription>
 						</SheetHeader>
+						<div className={styles.sheetSummary ?? ""}>
+							<div className={styles.sheetSummaryItem ?? ""}>
+								<span className={styles.sheetSummaryLabel ?? ""}>
+									Headcount
+								</span>
+								<span className={styles.sheetSummaryValue ?? ""}>
+									{podStaff.length} / {podBudget}
+								</span>
+							</div>
+							<div className={styles.sheetSummaryItem ?? ""}>
+								<span className={styles.sheetSummaryLabel ?? ""}>
+									Staff Cost
+								</span>
+								<span className={styles.sheetSummaryValue ?? ""}>
+									{fmtDollar(totalSalary)}
+								</span>
+							</div>
+							<StatusBadge actual={podStaff.length} budget={podBudget} />
+						</div>
 						<div className="flex-1 overflow-auto px-4 py-3">
 							{podStaff.length === 0 ? (
 								<p className="py-8 text-center text-muted-foreground text-sm">
@@ -567,10 +637,18 @@ function buildGroups(
 	}
 
 	const countMap = new Map<string, number>();
+	const salaryMap = new Map<string, number>();
+	const slTally = new Map<string, Map<string, number>>();
 	for (const c of carbonites) {
 		if (!c.state || !c.office || !c.pod) continue;
 		const key = `${c.state}||${c.office}||${c.pod}`;
 		countMap.set(key, (countMap.get(key) ?? 0) + 1);
+		salaryMap.set(key, (salaryMap.get(key) ?? 0) + (c.salary ?? 0));
+		if (c.sl) {
+			if (!slTally.has(key)) slTally.set(key, new Map());
+			const podSls = slTally.get(key) as Map<string, number>;
+			podSls.set(c.sl, (podSls.get(c.sl) ?? 0) + 1);
+		}
 	}
 
 	const budgetMap = new Map<string, number>();
@@ -585,10 +663,23 @@ function buildGroups(
 		if (!offMap) continue;
 		if (!offMap.has(office)) offMap.set(office, []);
 		const key = `${state}||${office}||${podName}`;
+		const podSls = slTally.get(key);
+		let dominantSl: string | null = null;
+		if (podSls) {
+			let maxCount = 0;
+			for (const [sl, count] of podSls) {
+				if (count > maxCount) {
+					maxCount = count;
+					dominantSl = sl;
+				}
+			}
+		}
 		offMap.get(office)?.push({
 			podName,
 			budget: budgetMap.get(key) ?? 0,
 			actual: countMap.get(key) ?? 0,
+			dominantSl,
+			totalSalary: salaryMap.get(key) ?? 0,
 		});
 	}
 
@@ -629,13 +720,25 @@ function PodRowComponent({
 }) {
 	return (
 		<div className="grid grid-cols-[1fr_80px_80px_80px_140px_120px] items-center gap-4 px-4 py-2 text-base hover:bg-muted/30">
-			<button
-				type="button"
-				onClick={() => onSelect({ state, office, podName: pod.podName })}
-				className="pl-10 text-left text-muted-foreground text-sm hover:text-foreground hover:underline"
-			>
-				{pod.podName}
-			</button>
+			<div className={styles.podNameCell}>
+				<div className="flex items-center gap-2">
+					<button
+						type="button"
+						onClick={() => onSelect({ state, office, podName: pod.podName })}
+						className={styles.podNameLink}
+					>
+						{pod.podName}
+					</button>
+					{pod.dominantSl && (
+						<span className={slBadgeClass(pod.dominantSl)}>
+							{getSL(pod.dominantSl)?.short ?? pod.dominantSl}
+						</span>
+					)}
+				</div>
+				<span className={styles.podMeta}>
+					{pod.actual} staff / {fmtDollar(pod.totalSalary)}
+				</span>
+			</div>
 			<BudgetCell
 				state={state}
 				office={office}
@@ -667,12 +770,14 @@ function OfficeSection({
 	canWriteAccess,
 	defaultOpen,
 	onSelectPod,
+	onAddPod,
 }: {
 	office: OfficeGroup;
 	state: string;
 	canWriteAccess: boolean;
 	defaultOpen: boolean;
 	onSelectPod: (pod: SelectedPod) => void;
+	onAddPod: (state: string, office: string) => void;
 }) {
 	const [open, setOpen] = useState(defaultOpen);
 	return (
@@ -719,17 +824,30 @@ function OfficeSection({
 				<CapacityBar actual={office.totalActual} budget={office.totalBudget} />
 				<StatusBadge actual={office.totalActual} budget={office.totalBudget} />
 			</button>
-			{open &&
-				office.pods.map((pod) => (
-					<PodRowComponent
-						key={pod.podName}
-						pod={pod}
-						state={state}
-						office={office.office}
-						canWriteAccess={canWriteAccess}
-						onSelect={onSelectPod}
-					/>
-				))}
+			{open && (
+				<>
+					{office.pods.map((pod) => (
+						<PodRowComponent
+							key={pod.podName}
+							pod={pod}
+							state={state}
+							office={office.office}
+							canWriteAccess={canWriteAccess}
+							onSelect={onSelectPod}
+						/>
+					))}
+					{canWriteAccess && (
+						<button
+							type="button"
+							onClick={() => onAddPod(state, office.office)}
+							className={styles.ghostRow ?? ""}
+						>
+							<HugeiconsIcon icon={PlusSignIcon} className="size-3.5" />
+							<span>Add Pod</span>
+						</button>
+					)}
+				</>
+			)}
 		</div>
 	);
 }
@@ -738,10 +856,12 @@ function StateSection({
 	group,
 	canWriteAccess,
 	onSelectPod,
+	onAddPod,
 }: {
 	group: StateGroup;
 	canWriteAccess: boolean;
 	onSelectPod: (pod: SelectedPod) => void;
+	onAddPod: (state: string, office: string) => void;
 }) {
 	const [open, setOpen] = useState(true);
 	return (
@@ -798,6 +918,7 @@ function StateSection({
 							canWriteAccess={canWriteAccess}
 							defaultOpen={group.offices.length === 1}
 							onSelectPod={onSelectPod}
+							onAddPod={onAddPod}
 						/>
 					))}
 				</div>
@@ -810,13 +931,22 @@ function StateSection({
 // ── Pod Budgets Tab ──────────────────────────────────────────────────────────
 // ══════════════════════════════════════════════════════════════════════════════
 
-export function PodBudgetsTab() {
+export function PodBudgetsTab({ fy: _fy }: { fy?: string }) {
 	const { data: session } = authClient.useSession();
 	const userRole = getUserRole(session?.user);
 	const hasWriteAccess = canWrite(userRole);
 
 	const [addPodOpen, setAddPodOpen] = useState(false);
+	const [addPodDefaults, setAddPodDefaults] = useState<{
+		state: string;
+		office: string;
+	} | null>(null);
 	const [selectedPod, setSelectedPod] = useState<SelectedPod | null>(null);
+
+	function handleAddPod(state: string, office: string) {
+		setAddPodDefaults({ state, office });
+		setAddPodOpen(true);
+	}
 
 	const carbonitesQuery = useQuery(trpc.carbonites.getAll.queryOptions({}));
 	const budgetsQuery = useQuery(trpc.podBudgets.getAll.queryOptions());
@@ -844,17 +974,6 @@ export function PodBudgetsTab() {
 						/ {totalBudget} headcount
 					</span>
 					<StatusBadge actual={totalActual} budget={totalBudget} />
-					{hasWriteAccess && (
-						<Button
-							size="sm"
-							variant="outline"
-							onClick={() => setAddPodOpen(true)}
-							className="text-sm"
-						>
-							<HugeiconsIcon icon={PlusSignIcon} className="mr-1 size-3.5" />
-							Add Pod
-						</Button>
-					)}
 				</div>
 			</div>
 
@@ -877,12 +996,30 @@ export function PodBudgetsTab() {
 						Loading...
 					</div>
 				) : groups.length === 0 ? (
-					<div className="flex h-40 flex-col items-center justify-center gap-2 text-muted-foreground text-sm">
-						<p>No capacity data yet.</p>
-						<p className="text-[11px]">
-							Add staff to Carbonites or seed pod budgets to see this view.
-						</p>
-					</div>
+					<Empty>
+						<EmptyHeader>
+							<EmptyMedia variant="icon">
+								<HugeiconsIcon icon={UserGroupIcon} />
+							</EmptyMedia>
+							<EmptyTitle>No pod budgets yet</EmptyTitle>
+							<EmptyDescription>
+								Set headcount budgets for your pods to start tracking capacity
+								across states and offices.
+							</EmptyDescription>
+						</EmptyHeader>
+						{hasWriteAccess && (
+							<Button
+								size="sm"
+								onClick={() => {
+									setAddPodDefaults(null);
+									setAddPodOpen(true);
+								}}
+							>
+								<HugeiconsIcon icon={PlusSignIcon} className="mr-1 size-3.5" />
+								Add your first pod
+							</Button>
+						)}
+					</Empty>
 				) : (
 					<div className="space-y-4">
 						<BudgetSummary
@@ -895,6 +1032,7 @@ export function PodBudgetsTab() {
 								group={group}
 								canWriteAccess={hasWriteAccess}
 								onSelectPod={setSelectedPod}
+								onAddPod={handleAddPod}
 							/>
 						))}
 					</div>
@@ -902,13 +1040,22 @@ export function PodBudgetsTab() {
 			</div>
 
 			{/* Add Pod Dialog */}
-			<AddPodDialog open={addPodOpen} onClose={() => setAddPodOpen(false)} />
+			<AddPodDialog
+				open={addPodOpen}
+				onClose={() => {
+					setAddPodOpen(false);
+					setAddPodDefaults(null);
+				}}
+				defaultState={addPodDefaults?.state}
+				defaultOffice={addPodDefaults?.office}
+			/>
 
 			{/* Pod Staff Sheet */}
 			<PodStaffSheet
 				selectedPod={selectedPod}
 				onClose={() => setSelectedPod(null)}
 				carbonites={carbonites}
+				budgets={budgets}
 			/>
 		</div>
 	);

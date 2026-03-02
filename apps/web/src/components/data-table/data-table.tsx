@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 interface DataTableProps<TData> extends React.ComponentProps<"div"> {
 	actionBar?: React.ReactNode;
 	table: TanstackTable<TData>;
+	onRowClick?: (row: TData) => void;
 }
 
 export function DataTable<TData>({
@@ -22,13 +23,11 @@ export function DataTable<TData>({
 	children,
 	className,
 	table,
+	onRowClick,
 	...props
 }: DataTableProps<TData>) {
 	return (
-		<div
-			className={cn("flex w-full flex-col gap-2.5 overflow-auto", className)}
-			{...props}
-		>
+		<div className={cn("flex w-full flex-col gap-2.5", className)} {...props}>
 			{children}
 
 			<div className="overflow-hidden rounded-lg bg-white shadow-card">
@@ -62,6 +61,8 @@ export function DataTable<TData>({
 								<TableRow
 									data-state={row.getIsSelected() && "selected"}
 									key={row.id}
+									className={onRowClick ? "cursor-pointer" : undefined}
+									onClick={() => onRowClick?.(row.original)}
 								>
 									{row.getVisibleCells().map((cell) => (
 										<TableCell

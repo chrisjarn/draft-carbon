@@ -106,9 +106,9 @@ function CapacityPlanPage() {
 
 			{/* Tab content */}
 			<div className="flex-1 overflow-auto">
-				{tab === "firm" && <FirmTab initialEntityId={entity} />}
-				{tab === "staff" && <StaffTab entityId={entity} />}
-				{tab === "pod-budgets" && <PodBudgetsTab />}
+				{tab === "firm" && <FirmTab initialEntityId={entity} fy={fy} />}
+				{tab === "staff" && <StaffTab entityId={entity} fy={fy} />}
+				{tab === "pod-budgets" && <PodBudgetsTab fy={fy} />}
 			</div>
 		</div>
 	);

@@ -1,1542 +1,1466 @@
 {
-  "id": "d4c350a8-448d-4e0d-b283-c93723d249f4",
-  "prevId": "9507da09-9d14-4683-81db-0b166037b883",
-  "version": "7",
-  "dialect": "postgresql",
-  "tables": {
-    "public.account": {
-      "name": "account",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "accountId": {
-          "name": "accountId",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "providerId": {
-          "name": "providerId",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "userId": {
-          "name": "userId",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "accessToken": {
-          "name": "accessToken",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "refreshToken": {
-          "name": "refreshToken",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "idToken": {
-          "name": "idToken",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "accessTokenExpiresAt": {
-          "name": "accessTokenExpiresAt",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "refreshTokenExpiresAt": {
-          "name": "refreshTokenExpiresAt",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "scope": {
-          "name": "scope",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "password": {
-          "name": "password",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "createdAt": {
-          "name": "createdAt",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        },
-        "updatedAt": {
-          "name": "updatedAt",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "account_userId_user_id_fk": {
-          "name": "account_userId_user_id_fk",
-          "tableFrom": "account",
-          "tableTo": "user",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.session": {
-      "name": "session",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "expiresAt": {
-          "name": "expiresAt",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "token": {
-          "name": "token",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "createdAt": {
-          "name": "createdAt",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        },
-        "updatedAt": {
-          "name": "updatedAt",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        },
-        "ipAddress": {
-          "name": "ipAddress",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "userAgent": {
-          "name": "userAgent",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "userId": {
-          "name": "userId",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "session_userId_user_id_fk": {
-          "name": "session_userId_user_id_fk",
-          "tableFrom": "session",
-          "tableTo": "user",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "session_token_unique": {
-          "name": "session_token_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "token"
-          ]
-        }
-      },
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.user": {
-      "name": "user",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "email": {
-          "name": "email",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "emailVerified": {
-          "name": "emailVerified",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": true,
-          "default": false
-        },
-        "image": {
-          "name": "image",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "createdAt": {
-          "name": "createdAt",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        },
-        "updatedAt": {
-          "name": "updatedAt",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        },
-        "role": {
-          "name": "role",
-          "type": "user_role",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "'read_only'"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "user_email_unique": {
-          "name": "user_email_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "email"
-          ]
-        }
-      },
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.verification": {
-      "name": "verification",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "identifier": {
-          "name": "identifier",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "value": {
-          "name": "value",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "expiresAt": {
-          "name": "expiresAt",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "createdAt": {
-          "name": "createdAt",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
-        },
-        "updatedAt": {
-          "name": "updatedAt",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.todo": {
-      "name": "todo",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "text": {
-          "name": "text",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "completed": {
-          "name": "completed",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": true,
-          "default": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.carbonites": {
-      "name": "carbonites",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "role": {
-          "name": "role",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "sl": {
-          "name": "sl",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "sg": {
-          "name": "sg",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "state": {
-          "name": "state",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "office": {
-          "name": "office",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "pod": {
-          "name": "pod",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "salary": {
-          "name": "salary",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "default": 0
-        },
-        "type": {
-          "name": "type",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'FT'"
-        },
-        "seniority": {
-          "name": "seniority",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "default": 5
-        },
-        "location": {
-          "name": "location",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "hours": {
-          "name": "hours",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "is_partner": {
-          "name": "is_partner",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": false,
-          "default": false
-        },
-        "entity": {
-          "name": "entity",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "reports_to": {
-          "name": "reports_to",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "is_active": {
-          "name": "is_active",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": true,
-          "default": true
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "carbonites_entity_entities_id_fk": {
-          "name": "carbonites_entity_entities_id_fk",
-          "tableFrom": "carbonites",
-          "tableTo": "entities",
-          "columnsFrom": [
-            "entity"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        },
-        "carbonites_reports_to_carbonites_id_fk": {
-          "name": "carbonites_reports_to_carbonites_id_fk",
-          "tableFrom": "carbonites",
-          "tableTo": "carbonites",
-          "columnsFrom": [
-            "reports_to"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.entities": {
-      "name": "entities",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "biz": {
-          "name": "biz",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "tan": {
-          "name": "tan",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "office_id": {
-          "name": "office_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "state": {
-          "name": "state",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "phone": {
-          "name": "phone",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "address": {
-          "name": "address",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "email": {
-          "name": "email",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "sl": {
-          "name": "sl",
-          "type": "json",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'[]'::json"
-        },
-        "partners": {
-          "name": "partners",
-          "type": "json",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'[]'::json"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.pod_budgets": {
-      "name": "pod_budgets",
-      "schema": "",
-      "columns": {
-        "state": {
-          "name": "state",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "office": {
-          "name": "office",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "pod_name": {
-          "name": "pod_name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "budget": {
-          "name": "budget",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "default": 0
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {
-        "pod_budgets_state_office_pod_name_pk": {
-          "name": "pod_budgets_state_office_pod_name_pk",
-          "columns": [
-            "state",
-            "office",
-            "pod_name"
-          ]
-        }
-      },
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.hiring_needs": {
-      "name": "hiring_needs",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "role": {
-          "name": "role",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "sl": {
-          "name": "sl",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "sg": {
-          "name": "sg",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "state": {
-          "name": "state",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "office": {
-          "name": "office",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "location": {
-          "name": "location",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "positions": {
-          "name": "positions",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "default": 1
-        },
-        "type": {
-          "name": "type",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "priority": {
-          "name": "priority",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "status": {
-          "name": "status",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'open'"
-        },
-        "salary_min": {
-          "name": "salary_min",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "salary_max": {
-          "name": "salary_max",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "target_start": {
-          "name": "target_start",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "approved_by": {
-          "name": "approved_by",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "managed_by": {
-          "name": "managed_by",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "notes": {
-          "name": "notes",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "closed_how": {
-          "name": "closed_how",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "closed_date": {
-          "name": "closed_date",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "closed_name": {
-          "name": "closed_name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "hired_carbonite_id": {
-          "name": "hired_carbonite_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "hiring_needs_hired_carbonite_id_carbonites_id_fk": {
-          "name": "hiring_needs_hired_carbonite_id_carbonites_id_fk",
-          "tableFrom": "hiring_needs",
-          "tableTo": "carbonites",
-          "columnsFrom": [
-            "hired_carbonite_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.salary_brackets": {
-      "name": "salary_brackets",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "div": {
-          "name": "div",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "sl": {
-          "name": "sl",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "prog": {
-          "name": "prog",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "role": {
-          "name": "role",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "nsw": {
-          "name": "nsw",
-          "type": "json",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "qld": {
-          "name": "qld",
-          "type": "json",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "sa": {
-          "name": "sa",
-          "type": "json",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "vic": {
-          "name": "vic",
-          "type": "json",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "wa": {
-          "name": "wa",
-          "type": "json",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "bands": {
-          "name": "bands",
-          "type": "json",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "'[]'::json"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.wfp_entity_settings": {
-      "name": "wfp_entity_settings",
-      "schema": "",
-      "columns": {
-        "ent_id": {
-          "name": "ent_id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "billing_multiplier": {
-          "name": "billing_multiplier",
-          "type": "numeric",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'3.5'"
-        },
-        "fy": {
-          "name": "fy",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'FY25-26'"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "wfp_entity_settings_ent_id_entities_id_fk": {
-          "name": "wfp_entity_settings_ent_id_entities_id_fk",
-          "tableFrom": "wfp_entity_settings",
-          "tableTo": "entities",
-          "columnsFrom": [
-            "ent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.wfp_revenue": {
-      "name": "wfp_revenue",
-      "schema": "",
-      "columns": {
-        "ent_id": {
-          "name": "ent_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "fy": {
-          "name": "fy",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "target": {
-          "name": "target",
-          "type": "numeric",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'0'"
-        },
-        "actual": {
-          "name": "actual",
-          "type": "numeric",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'0'"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "wfp_revenue_ent_id_entities_id_fk": {
-          "name": "wfp_revenue_ent_id_entities_id_fk",
-          "tableFrom": "wfp_revenue",
-          "tableTo": "entities",
-          "columnsFrom": [
-            "ent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {
-        "wfp_revenue_ent_id_fy_pk": {
-          "name": "wfp_revenue_ent_id_fy_pk",
-          "columns": [
-            "ent_id",
-            "fy"
-          ]
-        }
-      },
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.wfp_staff_meta": {
-      "name": "wfp_staff_meta",
-      "schema": "",
-      "columns": {
-        "cb_id": {
-          "name": "cb_id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "billing_target": {
-          "name": "billing_target",
-          "type": "numeric",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "perf_rating": {
-          "name": "perf_rating",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "promo_flag": {
-          "name": "promo_flag",
-          "type": "promo_flag",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'no'"
-        },
-        "promo_eta": {
-          "name": "promo_eta",
-          "type": "date",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "staff_role": {
-          "name": "staff_role",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "role_tag": {
-          "name": "role_tag",
-          "type": "staff_role_tag",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "billing_actual": {
-          "name": "billing_actual",
-          "type": "numeric",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "wfp_staff_meta_cb_id_carbonites_id_fk": {
-          "name": "wfp_staff_meta_cb_id_carbonites_id_fk",
-          "tableFrom": "wfp_staff_meta",
-          "tableTo": "carbonites",
-          "columnsFrom": [
-            "cb_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.app_settings": {
-      "name": "app_settings",
-      "schema": "",
-      "columns": {
-        "key": {
-          "name": "key",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "value": {
-          "name": "value",
-          "type": "json",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.attrition_risks": {
-      "name": "attrition_risks",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "carbonite_id": {
-          "name": "carbonite_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "risk_level": {
-          "name": "risk_level",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "'medium'"
-        },
-        "reason": {
-          "name": "reason",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "action": {
-          "name": "action",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "attrition_risks_carbonite_id_carbonites_id_fk": {
-          "name": "attrition_risks_carbonite_id_carbonites_id_fk",
-          "tableFrom": "attrition_risks",
-          "tableTo": "carbonites",
-          "columnsFrom": [
-            "carbonite_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.headcount_targets": {
-      "name": "headcount_targets",
-      "schema": "",
-      "columns": {
-        "entity_id": {
-          "name": "entity_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "sl_id": {
-          "name": "sl_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "fy": {
-          "name": "fy",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "'FY25-26'"
-        },
-        "target": {
-          "name": "target",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "default": 0
-        },
-        "notes": {
-          "name": "notes",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "headcount_targets_entity_id_entities_id_fk": {
-          "name": "headcount_targets_entity_id_entities_id_fk",
-          "tableFrom": "headcount_targets",
-          "tableTo": "entities",
-          "columnsFrom": [
-            "entity_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {
-        "headcount_targets_entity_id_sl_id_fy_pk": {
-          "name": "headcount_targets_entity_id_sl_id_fy_pk",
-          "columns": [
-            "entity_id",
-            "sl_id",
-            "fy"
-          ]
-        }
-      },
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.prior_year_data": {
-      "name": "prior_year_data",
-      "schema": "",
-      "columns": {
-        "state": {
-          "name": "state",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "office": {
-          "name": "office",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "pod_name": {
-          "name": "pod_name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "year": {
-          "name": "year",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "budget": {
-          "name": "budget",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "default": 0
-        },
-        "headcount": {
-          "name": "headcount",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "default": 0
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {
-        "prior_year_data_state_office_pod_name_year_pk": {
-          "name": "prior_year_data_state_office_pod_name_year_pk",
-          "columns": [
-            "state",
-            "office",
-            "pod_name",
-            "year"
-          ]
-        }
-      },
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.scenario_roles": {
-      "name": "scenario_roles",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "scenario_id": {
-          "name": "scenario_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "role_title": {
-          "name": "role_title",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "sl": {
-          "name": "sl",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "salary": {
-          "name": "salary",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "default": 0
-        },
-        "count": {
-          "name": "count",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "default": 1
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "scenario_roles_scenario_id_scenarios_id_fk": {
-          "name": "scenario_roles_scenario_id_scenarios_id_fk",
-          "tableFrom": "scenario_roles",
-          "tableTo": "scenarios",
-          "columnsFrom": [
-            "scenario_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.scenarios": {
-      "name": "scenarios",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "entity_id": {
-          "name": "entity_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "fy": {
-          "name": "fy",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "'FY25-26'"
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "description": {
-          "name": "description",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "color": {
-          "name": "color",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'#6366f1'"
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "scenarios_entity_id_entities_id_fk": {
-          "name": "scenarios_entity_id_entities_id_fk",
-          "tableFrom": "scenarios",
-          "tableTo": "entities",
-          "columnsFrom": [
-            "entity_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    }
-  },
-  "enums": {
-    "public.user_role": {
-      "name": "user_role",
-      "schema": "public",
-      "values": [
-        "admin",
-        "practice_manager",
-        "service_line_lead",
-        "state_manager",
-        "read_only"
-      ]
-    },
-    "public.promo_flag": {
-      "name": "promo_flag",
-      "schema": "public",
-      "values": [
-        "yes",
-        "maybe",
-        "no"
-      ]
-    },
-    "public.staff_role_tag": {
-      "name": "staff_role_tag",
-      "schema": "public",
-      "values": [
-        "doer",
-        "reviewer",
-        "bd"
-      ]
-    }
-  },
-  "schemas": {},
-  "sequences": {},
-  "roles": {},
-  "policies": {},
-  "views": {},
-  "_meta": {
-    "columns": {},
-    "schemas": {},
-    "tables": {}
-  }
+	"id": "d4c350a8-448d-4e0d-b283-c93723d249f4",
+	"prevId": "9507da09-9d14-4683-81db-0b166037b883",
+	"version": "7",
+	"dialect": "postgresql",
+	"tables": {
+		"public.account": {
+			"name": "account",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "text",
+					"primaryKey": true,
+					"notNull": true
+				},
+				"accountId": {
+					"name": "accountId",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"providerId": {
+					"name": "providerId",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"userId": {
+					"name": "userId",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"accessToken": {
+					"name": "accessToken",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"refreshToken": {
+					"name": "refreshToken",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"idToken": {
+					"name": "idToken",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"accessTokenExpiresAt": {
+					"name": "accessTokenExpiresAt",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"refreshTokenExpiresAt": {
+					"name": "refreshTokenExpiresAt",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"scope": {
+					"name": "scope",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"password": {
+					"name": "password",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"createdAt": {
+					"name": "createdAt",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				},
+				"updatedAt": {
+					"name": "updatedAt",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {
+				"account_userId_user_id_fk": {
+					"name": "account_userId_user_id_fk",
+					"tableFrom": "account",
+					"tableTo": "user",
+					"columnsFrom": ["userId"],
+					"columnsTo": ["id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"policies": {},
+			"checkConstraints": {},
+			"isRLSEnabled": false
+		},
+		"public.session": {
+			"name": "session",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "text",
+					"primaryKey": true,
+					"notNull": true
+				},
+				"expiresAt": {
+					"name": "expiresAt",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"token": {
+					"name": "token",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"createdAt": {
+					"name": "createdAt",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				},
+				"updatedAt": {
+					"name": "updatedAt",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				},
+				"ipAddress": {
+					"name": "ipAddress",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"userAgent": {
+					"name": "userAgent",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"userId": {
+					"name": "userId",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {
+				"session_userId_user_id_fk": {
+					"name": "session_userId_user_id_fk",
+					"tableFrom": "session",
+					"tableTo": "user",
+					"columnsFrom": ["userId"],
+					"columnsTo": ["id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {
+				"session_token_unique": {
+					"name": "session_token_unique",
+					"nullsNotDistinct": false,
+					"columns": ["token"]
+				}
+			},
+			"policies": {},
+			"checkConstraints": {},
+			"isRLSEnabled": false
+		},
+		"public.user": {
+			"name": "user",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "text",
+					"primaryKey": true,
+					"notNull": true
+				},
+				"name": {
+					"name": "name",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"email": {
+					"name": "email",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"emailVerified": {
+					"name": "emailVerified",
+					"type": "boolean",
+					"primaryKey": false,
+					"notNull": true,
+					"default": false
+				},
+				"image": {
+					"name": "image",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"createdAt": {
+					"name": "createdAt",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				},
+				"updatedAt": {
+					"name": "updatedAt",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				},
+				"role": {
+					"name": "role",
+					"type": "user_role",
+					"typeSchema": "public",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "'read_only'"
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {
+				"user_email_unique": {
+					"name": "user_email_unique",
+					"nullsNotDistinct": false,
+					"columns": ["email"]
+				}
+			},
+			"policies": {},
+			"checkConstraints": {},
+			"isRLSEnabled": false
+		},
+		"public.verification": {
+			"name": "verification",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "text",
+					"primaryKey": true,
+					"notNull": true
+				},
+				"identifier": {
+					"name": "identifier",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"value": {
+					"name": "value",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"expiresAt": {
+					"name": "expiresAt",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"createdAt": {
+					"name": "createdAt",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": false,
+					"default": "now()"
+				},
+				"updatedAt": {
+					"name": "updatedAt",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": false,
+					"default": "now()"
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"policies": {},
+			"checkConstraints": {},
+			"isRLSEnabled": false
+		},
+		"public.todo": {
+			"name": "todo",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "serial",
+					"primaryKey": true,
+					"notNull": true
+				},
+				"text": {
+					"name": "text",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"completed": {
+					"name": "completed",
+					"type": "boolean",
+					"primaryKey": false,
+					"notNull": true,
+					"default": false
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"policies": {},
+			"checkConstraints": {},
+			"isRLSEnabled": false
+		},
+		"public.carbonites": {
+			"name": "carbonites",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "text",
+					"primaryKey": true,
+					"notNull": true
+				},
+				"name": {
+					"name": "name",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"role": {
+					"name": "role",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"sl": {
+					"name": "sl",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"sg": {
+					"name": "sg",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"state": {
+					"name": "state",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"office": {
+					"name": "office",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"pod": {
+					"name": "pod",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"salary": {
+					"name": "salary",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": false,
+					"default": 0
+				},
+				"type": {
+					"name": "type",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false,
+					"default": "'FT'"
+				},
+				"seniority": {
+					"name": "seniority",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": false,
+					"default": 5
+				},
+				"location": {
+					"name": "location",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"hours": {
+					"name": "hours",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"is_partner": {
+					"name": "is_partner",
+					"type": "boolean",
+					"primaryKey": false,
+					"notNull": false,
+					"default": false
+				},
+				"entity": {
+					"name": "entity",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"reports_to": {
+					"name": "reports_to",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"is_active": {
+					"name": "is_active",
+					"type": "boolean",
+					"primaryKey": false,
+					"notNull": true,
+					"default": true
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": false,
+					"default": "now()"
+				},
+				"updated_at": {
+					"name": "updated_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": false,
+					"default": "now()"
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {
+				"carbonites_entity_entities_id_fk": {
+					"name": "carbonites_entity_entities_id_fk",
+					"tableFrom": "carbonites",
+					"tableTo": "entities",
+					"columnsFrom": ["entity"],
+					"columnsTo": ["id"],
+					"onDelete": "set null",
+					"onUpdate": "no action"
+				},
+				"carbonites_reports_to_carbonites_id_fk": {
+					"name": "carbonites_reports_to_carbonites_id_fk",
+					"tableFrom": "carbonites",
+					"tableTo": "carbonites",
+					"columnsFrom": ["reports_to"],
+					"columnsTo": ["id"],
+					"onDelete": "set null",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"policies": {},
+			"checkConstraints": {},
+			"isRLSEnabled": false
+		},
+		"public.entities": {
+			"name": "entities",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "text",
+					"primaryKey": true,
+					"notNull": true
+				},
+				"biz": {
+					"name": "biz",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"tan": {
+					"name": "tan",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"office_id": {
+					"name": "office_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"state": {
+					"name": "state",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"phone": {
+					"name": "phone",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"address": {
+					"name": "address",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"email": {
+					"name": "email",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"sl": {
+					"name": "sl",
+					"type": "json",
+					"primaryKey": false,
+					"notNull": false,
+					"default": "'[]'::json"
+				},
+				"partners": {
+					"name": "partners",
+					"type": "json",
+					"primaryKey": false,
+					"notNull": false,
+					"default": "'[]'::json"
+				},
+				"updated_at": {
+					"name": "updated_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": false,
+					"default": "now()"
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"policies": {},
+			"checkConstraints": {},
+			"isRLSEnabled": false
+		},
+		"public.pod_budgets": {
+			"name": "pod_budgets",
+			"schema": "",
+			"columns": {
+				"state": {
+					"name": "state",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"office": {
+					"name": "office",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"pod_name": {
+					"name": "pod_name",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"budget": {
+					"name": "budget",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"default": 0
+				},
+				"updated_at": {
+					"name": "updated_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": false,
+					"default": "now()"
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {},
+			"compositePrimaryKeys": {
+				"pod_budgets_state_office_pod_name_pk": {
+					"name": "pod_budgets_state_office_pod_name_pk",
+					"columns": ["state", "office", "pod_name"]
+				}
+			},
+			"uniqueConstraints": {},
+			"policies": {},
+			"checkConstraints": {},
+			"isRLSEnabled": false
+		},
+		"public.hiring_needs": {
+			"name": "hiring_needs",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "text",
+					"primaryKey": true,
+					"notNull": true
+				},
+				"role": {
+					"name": "role",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"sl": {
+					"name": "sl",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"sg": {
+					"name": "sg",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"state": {
+					"name": "state",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"office": {
+					"name": "office",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"location": {
+					"name": "location",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"positions": {
+					"name": "positions",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": false,
+					"default": 1
+				},
+				"type": {
+					"name": "type",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"priority": {
+					"name": "priority",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"status": {
+					"name": "status",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false,
+					"default": "'open'"
+				},
+				"salary_min": {
+					"name": "salary_min",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"salary_max": {
+					"name": "salary_max",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"target_start": {
+					"name": "target_start",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"approved_by": {
+					"name": "approved_by",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"managed_by": {
+					"name": "managed_by",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"notes": {
+					"name": "notes",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"closed_how": {
+					"name": "closed_how",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"closed_date": {
+					"name": "closed_date",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"closed_name": {
+					"name": "closed_name",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"hired_carbonite_id": {
+					"name": "hired_carbonite_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": false,
+					"default": "now()"
+				},
+				"updated_at": {
+					"name": "updated_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": false,
+					"default": "now()"
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {
+				"hiring_needs_hired_carbonite_id_carbonites_id_fk": {
+					"name": "hiring_needs_hired_carbonite_id_carbonites_id_fk",
+					"tableFrom": "hiring_needs",
+					"tableTo": "carbonites",
+					"columnsFrom": ["hired_carbonite_id"],
+					"columnsTo": ["id"],
+					"onDelete": "set null",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"policies": {},
+			"checkConstraints": {},
+			"isRLSEnabled": false
+		},
+		"public.salary_brackets": {
+			"name": "salary_brackets",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "text",
+					"primaryKey": true,
+					"notNull": true
+				},
+				"div": {
+					"name": "div",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"sl": {
+					"name": "sl",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"prog": {
+					"name": "prog",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"role": {
+					"name": "role",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"nsw": {
+					"name": "nsw",
+					"type": "json",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"qld": {
+					"name": "qld",
+					"type": "json",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"sa": {
+					"name": "sa",
+					"type": "json",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"vic": {
+					"name": "vic",
+					"type": "json",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"wa": {
+					"name": "wa",
+					"type": "json",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"bands": {
+					"name": "bands",
+					"type": "json",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "'[]'::json"
+				},
+				"updated_at": {
+					"name": "updated_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": false,
+					"default": "now()"
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"policies": {},
+			"checkConstraints": {},
+			"isRLSEnabled": false
+		},
+		"public.wfp_entity_settings": {
+			"name": "wfp_entity_settings",
+			"schema": "",
+			"columns": {
+				"ent_id": {
+					"name": "ent_id",
+					"type": "text",
+					"primaryKey": true,
+					"notNull": true
+				},
+				"billing_multiplier": {
+					"name": "billing_multiplier",
+					"type": "numeric",
+					"primaryKey": false,
+					"notNull": false,
+					"default": "'3.5'"
+				},
+				"fy": {
+					"name": "fy",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false,
+					"default": "'FY25-26'"
+				},
+				"updated_at": {
+					"name": "updated_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": false,
+					"default": "now()"
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {
+				"wfp_entity_settings_ent_id_entities_id_fk": {
+					"name": "wfp_entity_settings_ent_id_entities_id_fk",
+					"tableFrom": "wfp_entity_settings",
+					"tableTo": "entities",
+					"columnsFrom": ["ent_id"],
+					"columnsTo": ["id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"policies": {},
+			"checkConstraints": {},
+			"isRLSEnabled": false
+		},
+		"public.wfp_revenue": {
+			"name": "wfp_revenue",
+			"schema": "",
+			"columns": {
+				"ent_id": {
+					"name": "ent_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"fy": {
+					"name": "fy",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"target": {
+					"name": "target",
+					"type": "numeric",
+					"primaryKey": false,
+					"notNull": false,
+					"default": "'0'"
+				},
+				"actual": {
+					"name": "actual",
+					"type": "numeric",
+					"primaryKey": false,
+					"notNull": false,
+					"default": "'0'"
+				},
+				"updated_at": {
+					"name": "updated_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": false,
+					"default": "now()"
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {
+				"wfp_revenue_ent_id_entities_id_fk": {
+					"name": "wfp_revenue_ent_id_entities_id_fk",
+					"tableFrom": "wfp_revenue",
+					"tableTo": "entities",
+					"columnsFrom": ["ent_id"],
+					"columnsTo": ["id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {
+				"wfp_revenue_ent_id_fy_pk": {
+					"name": "wfp_revenue_ent_id_fy_pk",
+					"columns": ["ent_id", "fy"]
+				}
+			},
+			"uniqueConstraints": {},
+			"policies": {},
+			"checkConstraints": {},
+			"isRLSEnabled": false
+		},
+		"public.wfp_staff_meta": {
+			"name": "wfp_staff_meta",
+			"schema": "",
+			"columns": {
+				"cb_id": {
+					"name": "cb_id",
+					"type": "text",
+					"primaryKey": true,
+					"notNull": true
+				},
+				"billing_target": {
+					"name": "billing_target",
+					"type": "numeric",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"perf_rating": {
+					"name": "perf_rating",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"promo_flag": {
+					"name": "promo_flag",
+					"type": "promo_flag",
+					"typeSchema": "public",
+					"primaryKey": false,
+					"notNull": false,
+					"default": "'no'"
+				},
+				"promo_eta": {
+					"name": "promo_eta",
+					"type": "date",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"staff_role": {
+					"name": "staff_role",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"role_tag": {
+					"name": "role_tag",
+					"type": "staff_role_tag",
+					"typeSchema": "public",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"billing_actual": {
+					"name": "billing_actual",
+					"type": "numeric",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"updated_at": {
+					"name": "updated_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": false,
+					"default": "now()"
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {
+				"wfp_staff_meta_cb_id_carbonites_id_fk": {
+					"name": "wfp_staff_meta_cb_id_carbonites_id_fk",
+					"tableFrom": "wfp_staff_meta",
+					"tableTo": "carbonites",
+					"columnsFrom": ["cb_id"],
+					"columnsTo": ["id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"policies": {},
+			"checkConstraints": {},
+			"isRLSEnabled": false
+		},
+		"public.app_settings": {
+			"name": "app_settings",
+			"schema": "",
+			"columns": {
+				"key": {
+					"name": "key",
+					"type": "text",
+					"primaryKey": true,
+					"notNull": true
+				},
+				"value": {
+					"name": "value",
+					"type": "json",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"updated_at": {
+					"name": "updated_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": false,
+					"default": "now()"
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"policies": {},
+			"checkConstraints": {},
+			"isRLSEnabled": false
+		},
+		"public.attrition_risks": {
+			"name": "attrition_risks",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "text",
+					"primaryKey": true,
+					"notNull": true
+				},
+				"carbonite_id": {
+					"name": "carbonite_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"risk_level": {
+					"name": "risk_level",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "'medium'"
+				},
+				"reason": {
+					"name": "reason",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"action": {
+					"name": "action",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": false,
+					"default": "now()"
+				},
+				"updated_at": {
+					"name": "updated_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": false,
+					"default": "now()"
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {
+				"attrition_risks_carbonite_id_carbonites_id_fk": {
+					"name": "attrition_risks_carbonite_id_carbonites_id_fk",
+					"tableFrom": "attrition_risks",
+					"tableTo": "carbonites",
+					"columnsFrom": ["carbonite_id"],
+					"columnsTo": ["id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"policies": {},
+			"checkConstraints": {},
+			"isRLSEnabled": false
+		},
+		"public.headcount_targets": {
+			"name": "headcount_targets",
+			"schema": "",
+			"columns": {
+				"entity_id": {
+					"name": "entity_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"sl_id": {
+					"name": "sl_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"fy": {
+					"name": "fy",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "'FY25-26'"
+				},
+				"target": {
+					"name": "target",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"default": 0
+				},
+				"notes": {
+					"name": "notes",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"updated_at": {
+					"name": "updated_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": false,
+					"default": "now()"
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {
+				"headcount_targets_entity_id_entities_id_fk": {
+					"name": "headcount_targets_entity_id_entities_id_fk",
+					"tableFrom": "headcount_targets",
+					"tableTo": "entities",
+					"columnsFrom": ["entity_id"],
+					"columnsTo": ["id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {
+				"headcount_targets_entity_id_sl_id_fy_pk": {
+					"name": "headcount_targets_entity_id_sl_id_fy_pk",
+					"columns": ["entity_id", "sl_id", "fy"]
+				}
+			},
+			"uniqueConstraints": {},
+			"policies": {},
+			"checkConstraints": {},
+			"isRLSEnabled": false
+		},
+		"public.prior_year_data": {
+			"name": "prior_year_data",
+			"schema": "",
+			"columns": {
+				"state": {
+					"name": "state",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"office": {
+					"name": "office",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"pod_name": {
+					"name": "pod_name",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"year": {
+					"name": "year",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"budget": {
+					"name": "budget",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": false,
+					"default": 0
+				},
+				"headcount": {
+					"name": "headcount",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": false,
+					"default": 0
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {},
+			"compositePrimaryKeys": {
+				"prior_year_data_state_office_pod_name_year_pk": {
+					"name": "prior_year_data_state_office_pod_name_year_pk",
+					"columns": ["state", "office", "pod_name", "year"]
+				}
+			},
+			"uniqueConstraints": {},
+			"policies": {},
+			"checkConstraints": {},
+			"isRLSEnabled": false
+		},
+		"public.scenario_roles": {
+			"name": "scenario_roles",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "text",
+					"primaryKey": true,
+					"notNull": true
+				},
+				"scenario_id": {
+					"name": "scenario_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"role_title": {
+					"name": "role_title",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"sl": {
+					"name": "sl",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"salary": {
+					"name": "salary",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"default": 0
+				},
+				"count": {
+					"name": "count",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"default": 1
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {
+				"scenario_roles_scenario_id_scenarios_id_fk": {
+					"name": "scenario_roles_scenario_id_scenarios_id_fk",
+					"tableFrom": "scenario_roles",
+					"tableTo": "scenarios",
+					"columnsFrom": ["scenario_id"],
+					"columnsTo": ["id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"policies": {},
+			"checkConstraints": {},
+			"isRLSEnabled": false
+		},
+		"public.scenarios": {
+			"name": "scenarios",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "text",
+					"primaryKey": true,
+					"notNull": true
+				},
+				"entity_id": {
+					"name": "entity_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"fy": {
+					"name": "fy",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "'FY25-26'"
+				},
+				"name": {
+					"name": "name",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"description": {
+					"name": "description",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"color": {
+					"name": "color",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false,
+					"default": "'#6366f1'"
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": false,
+					"default": "now()"
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {
+				"scenarios_entity_id_entities_id_fk": {
+					"name": "scenarios_entity_id_entities_id_fk",
+					"tableFrom": "scenarios",
+					"tableTo": "entities",
+					"columnsFrom": ["entity_id"],
+					"columnsTo": ["id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"policies": {},
+			"checkConstraints": {},
+			"isRLSEnabled": false
+		}
+	},
+	"enums": {
+		"public.user_role": {
+			"name": "user_role",
+			"schema": "public",
+			"values": [
+				"admin",
+				"practice_manager",
+				"service_line_lead",
+				"state_manager",
+				"read_only"
+			]
+		},
+		"public.promo_flag": {
+			"name": "promo_flag",
+			"schema": "public",
+			"values": ["yes", "maybe", "no"]
+		},
+		"public.staff_role_tag": {
+			"name": "staff_role_tag",
+			"schema": "public",
+			"values": ["doer", "reviewer", "bd"]
+		}
+	},
+	"schemas": {},
+	"sequences": {},
+	"roles": {},
+	"policies": {},
+	"views": {},
+	"_meta": {
+		"columns": {},
+		"schemas": {},
+		"tables": {}
+	}
 }

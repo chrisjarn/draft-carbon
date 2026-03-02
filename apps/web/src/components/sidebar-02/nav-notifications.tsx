@@ -54,7 +54,7 @@ export function NotificationsPopover({
 					</DropdownMenuItem>
 				))}
 				<DropdownMenuSeparator />
-				<DropdownMenuItem className="justify-center text-muted-foreground text-base hover:text-primary">
+				<DropdownMenuItem className="justify-center text-base text-muted-foreground hover:text-primary">
 					View all notifications
 				</DropdownMenuItem>
 			</DropdownMenuContent>

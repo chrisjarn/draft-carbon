@@ -9,10 +9,19 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createLazyFileRoute } from "@tanstack/react-router";
-import type { ColumnDef } from "@tanstack/react-table";
+import {
+	type ColumnDef,
+	getCoreRowModel,
+	getFilteredRowModel,
+	getPaginationRowModel,
+	getSortedRowModel,
+	type SortingState,
+	useReactTable,
+} from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { DataTable } from "@/components/shared/data-table";
+import { DataTable } from "@/components/data-table/data-table";
+import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header";
 import { DetailRow, DetailSection } from "@/components/shared/detail-display";
 import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
@@ -734,25 +743,27 @@ function HiringPage() {
 
 	const saving = createMut.isPending || updateMut.isPending;
 
-	// Summary counts per priority for open tab
-	const openByPriority = rows.reduce<Record<string, number>>((acc, r) => {
-		const p = r.priority ?? "low";
-		acc[p] = (acc[p] ?? 0) + (r.positions ?? 1);
-		return acc;
-	}, {});
+	const [sorting, setSorting] = useState<SortingState>([]);
+	const [globalFilter, setGlobalFilter] = useState("");
 
 	const columns = useMemo<ColumnDef<HiringNeed, unknown>[]>(() => {
 		const base: ColumnDef<HiringNeed, unknown>[] = [
 			{
 				accessorKey: "role",
-				header: "Role",
+				enableSorting: true,
+				header: ({ column }) => (
+					<DataTableColumnHeader column={column} title="Role" />
+				),
 				cell: ({ row }) => (
 					<span className="font-medium text-base">{row.getValue("role")}</span>
 				),
 			},
 			{
 				accessorKey: "sl",
-				header: "SL",
+				enableSorting: true,
+				header: ({ column }) => (
+					<DataTableColumnHeader column={column} title="SL" />
+				),
 				cell: ({ row }) => (
 					<span className="text-sm">
 						{(row.getValue("sl") as string) ?? "—"}
@@ -761,7 +772,10 @@ function HiringPage() {
 			},
 			{
 				accessorKey: "state",
-				header: "State",
+				enableSorting: true,
+				header: ({ column }) => (
+					<DataTableColumnHeader column={column} title="State" />
+				),
 				cell: ({ row }) => (
 					<span className="text-sm">
 						{(row.getValue("state") as string) ?? "—"}
@@ -770,7 +784,10 @@ function HiringPage() {
 			},
 			{
 				accessorKey: "office",
-				header: "Office",
+				enableSorting: true,
+				header: ({ column }) => (
+					<DataTableColumnHeader column={column} title="Office" />
+				),
 				cell: ({ row }) => (
 					<span className="text-sm">
 						{(row.getValue("office") as string) ?? "—"}
@@ -779,7 +796,10 @@ function HiringPage() {
 			},
 			{
 				accessorKey: "positions",
-				header: "Pos.",
+				enableSorting: true,
+				header: ({ column }) => (
+					<DataTableColumnHeader column={column} title="Pos." />
+				),
 				cell: ({ row }) => (
 					<span className="text-sm tabular-nums">
 						{(row.getValue("positions") as number) ?? 1}
@@ -788,19 +808,28 @@ function HiringPage() {
 			},
 			{
 				accessorKey: "type",
-				header: "Type",
+				enableSorting: true,
+				header: ({ column }) => (
+					<DataTableColumnHeader column={column} title="Type" />
+				),
 				cell: ({ row }) => <TypeBadge type={row.getValue("type")} />,
 			},
 			{
 				accessorKey: "priority",
-				header: "Priority",
+				enableSorting: true,
+				header: ({ column }) => (
+					<DataTableColumnHeader column={column} title="Priority" />
+				),
 				cell: ({ row }) => (
 					<PriorityBadge priority={row.getValue("priority")} />
 				),
 			},
 			{
 				accessorKey: "targetStart",
-				header: "Target Start",
+				enableSorting: true,
+				header: ({ column }) => (
+					<DataTableColumnHeader column={column} title="Target Start" />
+				),
 				cell: ({ row }) => (
 					<span className="text-sm">
 						{(row.getValue("targetStart") as string) ?? "—"}
@@ -809,6 +838,7 @@ function HiringPage() {
 			},
 			{
 				id: "salary",
+				enableSorting: false,
 				header: "Salary",
 				cell: ({ row }) => (
 					<span className="text-sm">
@@ -821,7 +851,10 @@ function HiringPage() {
 		if (tab === "closed") {
 			base.push({
 				accessorKey: "closedHow",
-				header: "Closed How",
+				enableSorting: true,
+				header: ({ column }) => (
+					<DataTableColumnHeader column={column} title="Closed How" />
+				),
 				cell: ({ row }) => (
 					<Badge variant="outline" className="text-[10px] capitalize">
 						{(row.getValue("closedHow") as string) ?? "—"}
@@ -832,6 +865,20 @@ function HiringPage() {
 
 		return base;
 	}, [tab]);
+
+	const table = useReactTable({
+		data: rows,
+		columns,
+		getCoreRowModel: getCoreRowModel(),
+		getPaginationRowModel: getPaginationRowModel(),
+		getSortedRowModel: getSortedRowModel(),
+		getFilteredRowModel: getFilteredRowModel(),
+		onSortingChange: setSorting,
+		onGlobalFilterChange: setGlobalFilter,
+		globalFilterFn: "includesString",
+		state: { sorting, globalFilter },
+		initialState: { pagination: { pageSize: 10 } },
+	});
 
 	return (
 		<div className="flex h-full flex-col">
@@ -880,14 +927,14 @@ function HiringPage() {
 						No {tab} roles
 					</div>
 				) : (
-					<DataTable
-						columns={columns}
-						data={rows}
-						pageSize={10}
-						searchPlaceholder="Search roles..."
-						onRowClick={setSelected}
-						emptyMessage={`No ${tab} roles`}
-					/>
+					<DataTable table={table} onRowClick={setSelected}>
+						<Input
+							placeholder="Search roles..."
+							value={globalFilter}
+							onChange={(e) => setGlobalFilter(e.target.value)}
+							className="h-8 w-full sm:w-64"
+						/>
+					</DataTable>
 				)}
 			</div>
 
@@ -939,7 +986,7 @@ function HiringPage() {
 					<DialogHeader>
 						<DialogTitle>Delete Role</DialogTitle>
 					</DialogHeader>
-					<p className="text-muted-foreground text-base">
+					<p className="text-base text-muted-foreground">
 						Delete <strong>{deleteTarget?.role}</strong>? This cannot be undone.
 					</p>
 					<DialogFooter>

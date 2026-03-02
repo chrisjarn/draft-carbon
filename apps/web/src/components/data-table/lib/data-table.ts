@@ -21,9 +21,7 @@ export function getCommonPinningStyles<TData>({
 		isPinned === "right" && column.getIsFirstColumn("right");
 
 	return {
-		background: isPinned
-			? "var(--primary-foreground)"
-			: "var(--primary-foreground)",
+		background: isPinned ? "var(--primary-foreground)" : undefined,
 		boxShadow: withBorder
 			? isLastLeftPinnedColumn
 				? "-4px 0 4px -4px var(--border) inset"
@@ -32,11 +30,11 @@ export function getCommonPinningStyles<TData>({
 					: undefined
 			: undefined,
 		left: isPinned === "left" ? `${column.getStart("left")}px` : undefined,
-		opacity: isPinned ? 0.97 : 1,
-		position: isPinned ? "sticky" : "relative",
+		opacity: isPinned ? 0.97 : undefined,
+		position: isPinned ? "sticky" : undefined,
 		right: isPinned === "right" ? `${column.getAfter("right")}px` : undefined,
-		width: column.getSize(),
-		zIndex: isPinned ? 1 : 0,
+		width: isPinned ? column.getSize() : undefined,
+		zIndex: isPinned ? 1 : undefined,
 	};
 }
 

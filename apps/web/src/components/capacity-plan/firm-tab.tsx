@@ -34,8 +34,10 @@ import type { EntityDetailData } from "./types";
 
 export function FirmTab({
 	initialEntityId,
+	fy,
 }: {
 	initialEntityId?: string | null;
+	fy?: string;
 }) {
 	const [selectedEntity, setSelectedEntity] = useState<string | null>(
 		initialEntityId ?? null,
@@ -151,6 +153,7 @@ export function FirmTab({
 					entityId={selectedEntity}
 					detail={detail ?? null}
 					loading={detailQuery.isPending}
+					fy={fy}
 				/>
 			)}
 		</div>
@@ -163,10 +166,12 @@ function EntityDetailPanel({
 	entityId,
 	detail,
 	loading,
+	fy,
 }: {
 	entityId: string;
 	detail: EntityDetailData | null;
 	loading: boolean;
+	fy?: string;
 }) {
 	if (loading) {
 		return (
@@ -269,13 +274,17 @@ function EntityDetailPanel({
 			)}
 
 			{/* Headcount Targets */}
-			<HeadcountTargetsSection entityId={entityId} staff={detail.staff} />
+			<HeadcountTargetsSection
+				entityId={entityId}
+				staff={detail.staff}
+				fy={fy}
+			/>
 
 			{/* Attrition Risks */}
 			<AttritionRisksSection entityId={entityId} staff={detail.staff} />
 
 			{/* Scenario Workbench */}
-			<ScenarioWorkbenchSection entityId={entityId} />
+			<ScenarioWorkbenchSection entityId={entityId} fy={fy} />
 		</div>
 	);
 }
