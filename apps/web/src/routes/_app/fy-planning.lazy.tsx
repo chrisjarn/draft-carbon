@@ -309,7 +309,7 @@ function StateSection({
 						/>
 					)}
 					<span className="font-bold">{group.state}</span>
-					<Badge variant="outline" className="text-[10px]">
+					<Badge variant="outline" size="sm">
 						{group.entities.length} entities
 					</Badge>
 				</div>
@@ -773,7 +773,7 @@ function FyPlanningPage() {
 
 			{/* Column headers */}
 			<div className="border-border border-b px-6 py-2.5">
-				<div className="grid grid-cols-[1fr_130px_130px_110px_160px_80px] gap-4 font-semibold text-[11px] text-muted-foreground uppercase tracking-wider">
+				<div className="grid grid-cols-[1fr_130px_130px_110px_160px_80px] gap-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider">
 					<span className="pl-8">Entity</span>
 					<span>Target</span>
 					<span>Actual</span>
@@ -792,7 +792,7 @@ function FyPlanningPage() {
 				) : groups.length === 0 ? (
 					<div className="flex h-40 flex-col items-center justify-center gap-2 text-muted-foreground text-sm">
 						<p>No entities found.</p>
-						<p className="text-[11px]">
+						<p className="text-xs">
 							Seed entities data to see FY revenue planning.
 						</p>
 					</div>

@@ -46,6 +46,7 @@ import {
 import {
 	Sheet,
 	SheetContent,
+	SheetFooter,
 	SheetHeader,
 	SheetTitle,
 } from "@/components/ui/sheet";
@@ -102,7 +103,7 @@ const PRIORITY_STYLES: Record<string, string> = {
 function PriorityBadge({ priority }: { priority: string | null }) {
 	const cls = PRIORITY_STYLES[priority ?? "low"] ?? PRIORITY_STYLES.low;
 	return (
-		<Badge variant="outline" className={`text-[10px] capitalize ${cls}`}>
+		<Badge variant="outline" size="sm" className={`capitalize ${cls}`}>
 			{priority ?? "—"}
 		</Badge>
 	);
@@ -110,7 +111,7 @@ function PriorityBadge({ priority }: { priority: string | null }) {
 
 function TypeBadge({ type }: { type: string | null }) {
 	return (
-		<Badge variant="outline" className="text-[10px]">
+		<Badge variant="outline" size="sm">
 			{type ?? "—"}
 		</Badge>
 	);
@@ -160,7 +161,7 @@ function DetailSheet({
 										<PriorityBadge priority={role.priority} />
 										<TypeBadge type={role.type} />
 										{role.positions && role.positions > 1 && (
-											<Badge variant="secondary" className="text-[10px]">
+											<Badge variant="secondary" size="sm">
 												{role.positions} positions
 											</Badge>
 										)}
@@ -213,7 +214,7 @@ function DetailSheet({
 						</ScrollArea>
 
 						{canWriteAccess && (
-							<div className="flex flex-wrap gap-2 pt-4">
+							<SheetFooter className="flex-row flex-wrap">
 								<Button
 									size="sm"
 									variant="outline"
@@ -258,7 +259,7 @@ function DetailSheet({
 								>
 									<HugeiconsIcon icon={Delete02Icon} className="size-3" />
 								</Button>
-							</div>
+							</SheetFooter>
 						)}
 					</>
 				)}
@@ -358,7 +359,7 @@ function HiringDialog({
 				<ScrollArea className="max-h-[60vh]">
 					<div className="grid grid-cols-2 gap-3 p-1">
 						<div className="col-span-2">
-							<Label className="mb-1 block text-[11px] text-muted-foreground">
+							<Label className="mb-1 block text-muted-foreground">
 								Role Title *
 							</Label>
 							<Input
@@ -368,7 +369,7 @@ function HiringDialog({
 							/>
 						</div>
 						<div>
-							<Label className="mb-1 block text-[11px] text-muted-foreground">
+							<Label className="mb-1 block text-muted-foreground">
 								Service Line
 							</Label>
 							<Input
@@ -378,7 +379,7 @@ function HiringDialog({
 							/>
 						</div>
 						<div>
-							<Label className="mb-1 block text-[11px] text-muted-foreground">
+							<Label className="mb-1 block text-muted-foreground">
 								Sub Group
 							</Label>
 							<Input
@@ -388,9 +389,7 @@ function HiringDialog({
 							/>
 						</div>
 						<div>
-							<Label className="mb-1 block text-[11px] text-muted-foreground">
-								State
-							</Label>
+							<Label className="mb-1 block text-muted-foreground">State</Label>
 							<Input
 								value={form.state}
 								onChange={(e) => set("state")(e.target.value)}
@@ -398,9 +397,7 @@ function HiringDialog({
 							/>
 						</div>
 						<div>
-							<Label className="mb-1 block text-[11px] text-muted-foreground">
-								Office
-							</Label>
+							<Label className="mb-1 block text-muted-foreground">Office</Label>
 							<Input
 								value={form.office}
 								onChange={(e) => set("office")(e.target.value)}
@@ -408,7 +405,7 @@ function HiringDialog({
 							/>
 						</div>
 						<div>
-							<Label className="mb-1 block text-[11px] text-muted-foreground">
+							<Label className="mb-1 block text-muted-foreground">
 								Location
 							</Label>
 							<Input
@@ -418,7 +415,7 @@ function HiringDialog({
 							/>
 						</div>
 						<div>
-							<Label className="mb-1 block text-[11px] text-muted-foreground">
+							<Label className="mb-1 block text-muted-foreground">
 								Positions
 							</Label>
 							<Input
@@ -430,9 +427,7 @@ function HiringDialog({
 							/>
 						</div>
 						<div>
-							<Label className="mb-1 block text-[11px] text-muted-foreground">
-								Type
-							</Label>
+							<Label className="mb-1 block text-muted-foreground">Type</Label>
 							<Select value={form.type} onValueChange={set("type")}>
 								<SelectTrigger className="text-sm">
 									<SelectValue />
@@ -445,7 +440,7 @@ function HiringDialog({
 							</Select>
 						</div>
 						<div>
-							<Label className="mb-1 block text-[11px] text-muted-foreground">
+							<Label className="mb-1 block text-muted-foreground">
 								Priority
 							</Label>
 							<Select value={form.priority} onValueChange={set("priority")}>
@@ -461,7 +456,7 @@ function HiringDialog({
 							</Select>
 						</div>
 						<div>
-							<Label className="mb-1 block text-[11px] text-muted-foreground">
+							<Label className="mb-1 block text-muted-foreground">
 								Salary Min
 							</Label>
 							<Input
@@ -473,7 +468,7 @@ function HiringDialog({
 							/>
 						</div>
 						<div>
-							<Label className="mb-1 block text-[11px] text-muted-foreground">
+							<Label className="mb-1 block text-muted-foreground">
 								Salary Max
 							</Label>
 							<Input
@@ -485,7 +480,7 @@ function HiringDialog({
 							/>
 						</div>
 						<div>
-							<Label className="mb-1 block text-[11px] text-muted-foreground">
+							<Label className="mb-1 block text-muted-foreground">
 								Target Start
 							</Label>
 							<Input
@@ -496,7 +491,7 @@ function HiringDialog({
 							/>
 						</div>
 						<div>
-							<Label className="mb-1 block text-[11px] text-muted-foreground">
+							<Label className="mb-1 block text-muted-foreground">
 								Approved By
 							</Label>
 							<Input
@@ -506,7 +501,7 @@ function HiringDialog({
 							/>
 						</div>
 						<div className="col-span-2">
-							<Label className="mb-1 block text-[11px] text-muted-foreground">
+							<Label className="mb-1 block text-muted-foreground">
 								Managed By
 							</Label>
 							<Input
@@ -516,9 +511,7 @@ function HiringDialog({
 							/>
 						</div>
 						<div className="col-span-2">
-							<Label className="mb-1 block text-[11px] text-muted-foreground">
-								Notes
-							</Label>
+							<Label className="mb-1 block text-muted-foreground">Notes</Label>
 							<Textarea
 								value={form.notes}
 								onChange={(e) => set("notes")(e.target.value)}
@@ -574,9 +567,7 @@ function CloseRoleDialog({
 				</DialogHeader>
 				<div className="space-y-3">
 					<div>
-						<Label className="mb-1 block text-[11px] text-muted-foreground">
-							Outcome
-						</Label>
+						<Label className="mb-1 block text-muted-foreground">Outcome</Label>
 						<Select value={how} onValueChange={(v) => setHow(v as typeof how)}>
 							<SelectTrigger className="text-sm">
 								<SelectValue />
@@ -589,9 +580,7 @@ function CloseRoleDialog({
 						</Select>
 					</div>
 					<div>
-						<Label className="mb-1 block text-[11px] text-muted-foreground">
-							Date
-						</Label>
+						<Label className="mb-1 block text-muted-foreground">Date</Label>
 						<Input
 							type="date"
 							value={date}
@@ -601,7 +590,7 @@ function CloseRoleDialog({
 					</div>
 					{how === "hired" && (
 						<div>
-							<Label className="mb-1 block text-[11px] text-muted-foreground">
+							<Label className="mb-1 block text-muted-foreground">
 								Hired Name
 							</Label>
 							<Input
@@ -856,7 +845,7 @@ function HiringPage() {
 					<DataTableColumnHeader column={column} title="Closed How" />
 				),
 				cell: ({ row }) => (
-					<Badge variant="outline" className="text-[10px] capitalize">
+					<Badge variant="outline" size="sm" className="capitalize">
 						{(row.getValue("closedHow") as string) ?? "—"}
 					</Badge>
 				),

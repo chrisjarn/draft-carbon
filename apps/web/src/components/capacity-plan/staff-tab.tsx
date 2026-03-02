@@ -82,7 +82,7 @@ function MetaDialog({
 				</DialogHeader>
 				<div className="space-y-3">
 					<div>
-						<Label className="mb-1 block text-[11px] text-muted-foreground">
+						<Label className="mb-1 block text-muted-foreground">
 							Role Override
 						</Label>
 						<Input
@@ -93,9 +93,7 @@ function MetaDialog({
 						/>
 					</div>
 					<div>
-						<Label className="mb-1 block text-[11px] text-muted-foreground">
-							Role Tag
-						</Label>
+						<Label className="mb-1 block text-muted-foreground">Role Tag</Label>
 						<Select
 							value={form.roleTag || "none"}
 							onValueChange={(v) => set("roleTag")(v === "none" ? "" : v)}
@@ -112,7 +110,7 @@ function MetaDialog({
 						</Select>
 					</div>
 					<div>
-						<Label className="mb-1 block text-[11px] text-muted-foreground">
+						<Label className="mb-1 block text-muted-foreground">
 							Billing Target ($)
 						</Label>
 						<Input
@@ -123,7 +121,7 @@ function MetaDialog({
 						/>
 					</div>
 					<div>
-						<Label className="mb-1 block text-[11px] text-muted-foreground">
+						<Label className="mb-1 block text-muted-foreground">
 							Billing Actual ($)
 						</Label>
 						<Input
@@ -134,7 +132,7 @@ function MetaDialog({
 						/>
 					</div>
 					<div>
-						<Label className="mb-1 block text-[11px] text-muted-foreground">
+						<Label className="mb-1 block text-muted-foreground">
 							Performance Rating
 						</Label>
 						<Select value={form.perfRating} onValueChange={set("perfRating")}>
@@ -150,7 +148,7 @@ function MetaDialog({
 						</Select>
 					</div>
 					<div>
-						<Label className="mb-1 block text-[11px] text-muted-foreground">
+						<Label className="mb-1 block text-muted-foreground">
 							Promotion Status
 						</Label>
 						<Select value={form.promoFlag} onValueChange={set("promoFlag")}>
@@ -166,7 +164,7 @@ function MetaDialog({
 					</div>
 					{form.promoFlag !== "no" && (
 						<div>
-							<Label className="mb-1 block text-[11px] text-muted-foreground">
+							<Label className="mb-1 block text-muted-foreground">
 								Promo ETA
 							</Label>
 							<Input

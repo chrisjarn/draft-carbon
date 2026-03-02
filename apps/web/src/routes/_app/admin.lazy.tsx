@@ -80,7 +80,7 @@ function RoleBadge({ role }: { role: string }) {
 	const label = ROLES.find((r) => r.value === role)?.label ?? role;
 	const cls = ROLE_STYLES[role] ?? ROLE_STYLES.read_only;
 	return (
-		<Badge variant="outline" className={`text-[10px] ${cls}`}>
+		<Badge variant="outline" size="sm" className={cls}>
 			{label}
 		</Badge>
 	);
@@ -315,7 +315,7 @@ function AdminPage() {
 										<TableCell>
 											<Badge
 												variant={u.emailVerified ? "outline" : "secondary"}
-												className="text-[10px]"
+												size="sm"
 											>
 												{u.emailVerified ? "Verified" : "Pending"}
 											</Badge>
@@ -386,9 +386,7 @@ function AdminPage() {
 					</DialogHeader>
 					<div className="space-y-3">
 						<div>
-							<Label className="mb-1 block text-[11px] text-muted-foreground">
-								Name *
-							</Label>
+							<Label className="mb-1 block text-muted-foreground">Name *</Label>
 							<Input
 								value={entityForm.biz}
 								onChange={(e) =>
@@ -399,7 +397,7 @@ function AdminPage() {
 							/>
 						</div>
 						<div>
-							<Label className="mb-1 block text-[11px] text-muted-foreground">
+							<Label className="mb-1 block text-muted-foreground">
 								State *
 							</Label>
 							<Select

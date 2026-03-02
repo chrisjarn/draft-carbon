@@ -7,7 +7,7 @@ export function DetailSection({
 }) {
 	return (
 		<div>
-			<p className="mb-2 font-semibold text-[11px] text-muted-foreground uppercase tracking-widest">
+			<p className="mb-2 font-semibold text-muted-foreground text-xs uppercase tracking-widest">
 				{title}
 			</p>
 			<div className="space-y-1.5">{children}</div>

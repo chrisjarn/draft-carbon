@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-
+import type { Carbonite, Filters, FormState } from "@/components/carbonites";
 import {
 	CarboniteCard,
 	CarboniteDetailSheet,
@@ -14,7 +14,6 @@ import {
 	EMPTY_FILTERS,
 	emptyForm,
 } from "@/components/carbonites";
-import type { Carbonite, Filters, FormState } from "@/components/carbonites";
 import { PageHeader } from "@/components/shared/page-header";
 import { Button } from "@/components/ui/button";
 import {

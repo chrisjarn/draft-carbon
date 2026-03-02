@@ -1,7 +1,4 @@
-import {
-	Delete02Icon,
-	PencilEdit01Icon,
-} from "@hugeicons/core-free-icons";
+import { Delete02Icon, PencilEdit01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 
 import { DetailRow, DetailSection } from "@/components/shared/detail-display";
@@ -10,6 +7,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import {
 	Sheet,
 	SheetContent,
+	SheetFooter,
 	SheetHeader,
 	SheetTitle,
 } from "@/components/ui/sheet";
@@ -90,7 +88,7 @@ export function CarboniteDetailSheet({
 							</div>
 						</ScrollArea>
 						{canWriteAccess && (
-							<div className="flex gap-2 pt-4">
+							<SheetFooter className="flex-row">
 								<Button
 									size="sm"
 									variant="outline"
@@ -112,7 +110,7 @@ export function CarboniteDetailSheet({
 										<HugeiconsIcon icon={Delete02Icon} className="size-3" />
 									</Button>
 								)}
-							</div>
+							</SheetFooter>
 						)}
 					</>
 				)}

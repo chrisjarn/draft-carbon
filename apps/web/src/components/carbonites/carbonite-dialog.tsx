@@ -61,9 +61,7 @@ export function CarboniteDialog({
 				<ScrollArea className="max-h-[60vh]">
 					<div className="grid grid-cols-2 gap-3 p-1">
 						<div className="col-span-2">
-							<Label className="mb-1 block text-[11px] text-muted-foreground">
-								Name *
-							</Label>
+							<Label className="mb-1 block text-muted-foreground">Name *</Label>
 							<Input
 								value={form.name}
 								onChange={(e) => set("name")(e.target.value)}
@@ -71,9 +69,7 @@ export function CarboniteDialog({
 							/>
 						</div>
 						<div>
-							<Label className="mb-1 block text-[11px] text-muted-foreground">
-								Role
-							</Label>
+							<Label className="mb-1 block text-muted-foreground">Role</Label>
 							<Input
 								value={form.role}
 								onChange={(e) => set("role")(e.target.value)}
@@ -81,7 +77,7 @@ export function CarboniteDialog({
 							/>
 						</div>
 						<div>
-							<Label className="mb-1 block text-[11px] text-muted-foreground">
+							<Label className="mb-1 block text-muted-foreground">
 								Service Line
 							</Label>
 							<Select
@@ -105,7 +101,7 @@ export function CarboniteDialog({
 							</Select>
 						</div>
 						<div>
-							<Label className="mb-1 block text-[11px] text-muted-foreground">
+							<Label className="mb-1 block text-muted-foreground">
 								Sub Group
 							</Label>
 							{sgOptions.length > 0 ? (
@@ -134,9 +130,7 @@ export function CarboniteDialog({
 							)}
 						</div>
 						<div>
-							<Label className="mb-1 block text-[11px] text-muted-foreground">
-								State
-							</Label>
+							<Label className="mb-1 block text-muted-foreground">State</Label>
 							<Select
 								value={form.state || "__none__"}
 								onValueChange={(v) => {
@@ -158,9 +152,7 @@ export function CarboniteDialog({
 							</Select>
 						</div>
 						<div>
-							<Label className="mb-1 block text-[11px] text-muted-foreground">
-								Office
-							</Label>
+							<Label className="mb-1 block text-muted-foreground">Office</Label>
 							{officeOptions.length > 0 ? (
 								<Select
 									value={form.office || "__none__"}
@@ -189,9 +181,7 @@ export function CarboniteDialog({
 							)}
 						</div>
 						<div>
-							<Label className="mb-1 block text-[11px] text-muted-foreground">
-								Pod
-							</Label>
+							<Label className="mb-1 block text-muted-foreground">Pod</Label>
 							<Input
 								value={form.pod}
 								onChange={(e) => set("pod")(e.target.value)}
@@ -199,9 +189,7 @@ export function CarboniteDialog({
 							/>
 						</div>
 						<div>
-							<Label className="mb-1 block text-[11px] text-muted-foreground">
-								Entity
-							</Label>
+							<Label className="mb-1 block text-muted-foreground">Entity</Label>
 							<Input
 								value={form.entity}
 								onChange={(e) => set("entity")(e.target.value)}
@@ -209,9 +197,7 @@ export function CarboniteDialog({
 							/>
 						</div>
 						<div>
-							<Label className="mb-1 block text-[11px] text-muted-foreground">
-								Type
-							</Label>
+							<Label className="mb-1 block text-muted-foreground">Type</Label>
 							<Select value={form.type} onValueChange={(v) => set("type")(v)}>
 								<SelectTrigger className="text-xs">
 									<SelectValue />
@@ -223,7 +209,7 @@ export function CarboniteDialog({
 							</Select>
 						</div>
 						<div>
-							<Label className="mb-1 block text-[11px] text-muted-foreground">
+							<Label className="mb-1 block text-muted-foreground">
 								Seniority (1-10)
 							</Label>
 							<Input
@@ -236,9 +222,7 @@ export function CarboniteDialog({
 							/>
 						</div>
 						<div>
-							<Label className="mb-1 block text-[11px] text-muted-foreground">
-								Salary
-							</Label>
+							<Label className="mb-1 block text-muted-foreground">Salary</Label>
 							<Input
 								type="number"
 								value={form.salary}
@@ -247,7 +231,7 @@ export function CarboniteDialog({
 							/>
 						</div>
 						<div>
-							<Label className="mb-1 block text-[11px] text-muted-foreground">
+							<Label className="mb-1 block text-muted-foreground">
 								Hours / week
 							</Label>
 							<Input
@@ -258,7 +242,7 @@ export function CarboniteDialog({
 							/>
 						</div>
 						<div className="col-span-2">
-							<Label className="mb-1 block text-[11px] text-muted-foreground">
+							<Label className="mb-1 block text-muted-foreground">
 								Location
 							</Label>
 							<Input
@@ -268,7 +252,7 @@ export function CarboniteDialog({
 							/>
 						</div>
 						<div className="col-span-2">
-							<Label className="mb-1 block text-[11px] text-muted-foreground">
+							<Label className="mb-1 block text-muted-foreground">
 								Reports To
 							</Label>
 							<Input

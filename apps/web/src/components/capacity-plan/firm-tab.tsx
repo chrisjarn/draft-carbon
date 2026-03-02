@@ -131,7 +131,7 @@ export function FirmTab({
 								<div className="flex items-center justify-between">
 									<span className="font-medium text-base">{ent.biz}</span>
 									{ent.state && (
-										<Badge variant="outline" className="text-[10px]">
+										<Badge variant="outline" size="sm">
 											{ent.state.toUpperCase()}
 										</Badge>
 									)}

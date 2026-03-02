@@ -22,7 +22,7 @@ export function PerfBadge({ rating }: { rating: string | null | undefined }) {
 	const r = rating ?? "N/A";
 	const cls = PERF_STYLES[r] ?? PERF_STYLES["N/A"];
 	return (
-		<Badge variant="outline" className={`text-[10px] ${cls}`}>
+		<Badge variant="outline" size="sm" className={cls}>
 			{r}
 		</Badge>
 	);

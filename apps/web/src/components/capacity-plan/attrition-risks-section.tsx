@@ -152,7 +152,7 @@ export function AttritionRisksSection({
 					<Button
 						variant="ghost"
 						size="sm"
-						className="h-6 text-[11px]"
+						className="h-6 text-xs"
 						onClick={() => {
 							resetForm();
 							setFlagOpen(true);
@@ -194,7 +194,8 @@ export function AttritionRisksSection({
 									<TableCell>
 										<Badge
 											variant="outline"
-											className={`text-[10px] ${RISK_STYLES[risk.riskLevel] ?? ""}`}
+											size="sm"
+											className={RISK_STYLES[risk.riskLevel] ?? ""}
 										>
 											{risk.riskLevel}
 										</Badge>
@@ -248,7 +249,7 @@ export function AttritionRisksSection({
 					</DialogHeader>
 					<div className="space-y-3">
 						<div>
-							<Label className="mb-1 block text-[11px] text-muted-foreground">
+							<Label className="mb-1 block text-muted-foreground">
 								Staff Member
 							</Label>
 							<Select
@@ -273,7 +274,7 @@ export function AttritionRisksSection({
 							</Select>
 						</div>
 						<div>
-							<Label className="mb-1 block text-[11px] text-muted-foreground">
+							<Label className="mb-1 block text-muted-foreground">
 								Risk Level
 							</Label>
 							<Select
@@ -295,9 +296,7 @@ export function AttritionRisksSection({
 							</Select>
 						</div>
 						<div>
-							<Label className="mb-1 block text-[11px] text-muted-foreground">
-								Reason
-							</Label>
+							<Label className="mb-1 block text-muted-foreground">Reason</Label>
 							<Textarea
 								value={formReason}
 								onChange={(e) => setFormReason(e.target.value)}
@@ -306,9 +305,7 @@ export function AttritionRisksSection({
 							/>
 						</div>
 						<div>
-							<Label className="mb-1 block text-[11px] text-muted-foreground">
-								Action
-							</Label>
+							<Label className="mb-1 block text-muted-foreground">Action</Label>
 							<Textarea
 								value={formAction}
 								onChange={(e) => setFormAction(e.target.value)}
@@ -351,7 +348,7 @@ export function AttritionRisksSection({
 					</DialogHeader>
 					<div className="space-y-3">
 						<div>
-							<Label className="mb-1 block text-[11px] text-muted-foreground">
+							<Label className="mb-1 block text-muted-foreground">
 								Risk Level
 							</Label>
 							<Select
@@ -373,9 +370,7 @@ export function AttritionRisksSection({
 							</Select>
 						</div>
 						<div>
-							<Label className="mb-1 block text-[11px] text-muted-foreground">
-								Reason
-							</Label>
+							<Label className="mb-1 block text-muted-foreground">Reason</Label>
 							<Textarea
 								value={formReason}
 								onChange={(e) => setFormReason(e.target.value)}
@@ -384,9 +379,7 @@ export function AttritionRisksSection({
 							/>
 						</div>
 						<div>
-							<Label className="mb-1 block text-[11px] text-muted-foreground">
-								Action
-							</Label>
+							<Label className="mb-1 block text-muted-foreground">Action</Label>
 							<Textarea
 								value={formAction}
 								onChange={(e) => setFormAction(e.target.value)}

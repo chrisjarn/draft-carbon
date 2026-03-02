@@ -41,6 +41,7 @@ import {
 	Sheet,
 	SheetContent,
 	SheetDescription,
+	SheetFooter,
 	SheetHeader,
 	SheetTitle,
 } from "@/components/ui/sheet";
@@ -150,7 +151,7 @@ function StatusBadge({ actual, budget }: { actual: number; budget: number }) {
 	};
 	const { label, className } = map[status];
 	return (
-		<Badge variant="outline" className={`text-[10px] ${className}`}>
+		<Badge variant="outline" size="sm" className={className}>
 			{label}
 		</Badge>
 	);
@@ -322,9 +323,7 @@ function AddPodDialog({
 				</DialogHeader>
 				<div className="grid gap-3">
 					<div>
-						<Label className="mb-1 block text-[11px] text-muted-foreground">
-							State
-						</Label>
+						<Label className="mb-1 block text-muted-foreground">State</Label>
 						<Select
 							value={state || "__none__"}
 							onValueChange={(v) => {
@@ -347,9 +346,7 @@ function AddPodDialog({
 						</Select>
 					</div>
 					<div>
-						<Label className="mb-1 block text-[11px] text-muted-foreground">
-							Office
-						</Label>
+						<Label className="mb-1 block text-muted-foreground">Office</Label>
 						{officeOptions.length > 0 ? (
 							<Select
 								value={office || "__none__"}
@@ -380,9 +377,7 @@ function AddPodDialog({
 						)}
 					</div>
 					<div>
-						<Label className="mb-1 block text-[11px] text-muted-foreground">
-							Pod Name
-						</Label>
+						<Label className="mb-1 block text-muted-foreground">Pod Name</Label>
 						<Input
 							value={podName}
 							onChange={(e) => setPodName(e.target.value)}
@@ -391,9 +386,7 @@ function AddPodDialog({
 						/>
 					</div>
 					<div>
-						<Label className="mb-1 block text-[11px] text-muted-foreground">
-							Budget
-						</Label>
+						<Label className="mb-1 block text-muted-foreground">Budget</Label>
 						<Input
 							type="number"
 							min={0}
@@ -509,7 +502,7 @@ function PodStaffSheet({
 												<p className="truncate font-medium text-sm">
 													{c.name ?? "Unknown"}
 												</p>
-												<p className="truncate text-[11px] text-muted-foreground">
+												<p className="truncate text-muted-foreground text-xs">
 													{c.role ?? "No role"}
 												</p>
 											</div>
@@ -517,7 +510,8 @@ function PodStaffSheet({
 												{c.sl && (
 													<Badge
 														variant="outline"
-														className="text-[10px] uppercase"
+														size="sm"
+														className="uppercase"
 													>
 														{c.sl}
 													</Badge>
@@ -532,7 +526,7 @@ function PodStaffSheet({
 							)}
 						</div>
 						{podStaff.length > 0 && (
-							<div className="border-border border-t px-4 py-3">
+							<SheetFooter className="border-border border-t">
 								<div className="flex items-center justify-between">
 									<span className="font-medium text-muted-foreground text-sm">
 										Total Salary
@@ -541,7 +535,7 @@ function PodStaffSheet({
 										{fmtDollar(totalSalary)}
 									</span>
 								</div>
-							</div>
+							</SheetFooter>
 						)}
 					</>
 				)}
@@ -567,19 +561,19 @@ function BudgetSummary({
 		<div className="grid grid-cols-4 gap-3 pb-4">
 			<Card size="sm">
 				<CardContent>
-					<p className="text-[11px] text-muted-foreground">Total Budget</p>
+					<p className="text-muted-foreground text-xs">Total Budget</p>
 					<p className="font-bold text-lg tabular-nums">{totalBudget}</p>
 				</CardContent>
 			</Card>
 			<Card size="sm">
 				<CardContent>
-					<p className="text-[11px] text-muted-foreground">Total Actual</p>
+					<p className="text-muted-foreground text-xs">Total Actual</p>
 					<p className="font-bold text-lg tabular-nums">{totalActual}</p>
 				</CardContent>
 			</Card>
 			<Card size="sm">
 				<CardContent>
-					<p className="text-[11px] text-muted-foreground">Variance</p>
+					<p className="text-muted-foreground text-xs">Variance</p>
 					<p
 						className={`font-bold text-lg tabular-nums ${
 							variance < 0
@@ -595,7 +589,7 @@ function BudgetSummary({
 			</Card>
 			<Card size="sm">
 				<CardContent>
-					<p className="text-[11px] text-muted-foreground">Utilisation</p>
+					<p className="text-muted-foreground text-xs">Utilisation</p>
 					<p
 						className={`font-bold text-lg tabular-nums ${
 							utilisation > 100
@@ -800,7 +794,7 @@ function OfficeSection({
 						/>
 					)}
 					<span className="font-semibold text-base">{office.office}</span>
-					<Badge variant="outline" className="text-[10px]">
+					<Badge variant="outline" size="sm">
 						{office.pods.length} pods
 					</Badge>
 				</div>
@@ -884,7 +878,7 @@ function StateSection({
 						/>
 					)}
 					<span className="font-bold">{group.state}</span>
-					<Badge variant="secondary" className="text-[10px]">
+					<Badge variant="secondary" size="sm">
 						{group.offices.length} offices
 					</Badge>
 				</div>
@@ -979,7 +973,7 @@ export function PodBudgetsTab({ fy: _fy }: { fy?: string }) {
 
 			{/* Legend */}
 			<div className="flex items-center gap-6 border-border border-b px-6 py-2.5">
-				<div className="grid w-full grid-cols-[1fr_80px_80px_80px_140px_120px] gap-4 font-semibold text-[11px] text-muted-foreground uppercase tracking-wider">
+				<div className="grid w-full grid-cols-[1fr_80px_80px_80px_140px_120px] gap-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider">
 					<span className="pl-4">Location</span>
 					<span>Budget</span>
 					<span>Actual</span>

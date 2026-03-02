@@ -27,7 +27,7 @@ export function CarboniteCard({
 				<div className="mt-1.5 flex flex-wrap gap-1">
 					<Badge
 						variant="outline"
-						className="text-[10px]"
+						size="sm"
 						style={{
 							borderColor: `${slColor(carbonite.sl)}40`,
 							color: slColor(carbonite.sl),
@@ -37,21 +37,21 @@ export function CarboniteCard({
 						{slLabel(carbonite.sl)}
 					</Badge>
 					{carbonite.state && (
-						<Badge variant="outline" className="text-[10px]">
+						<Badge variant="outline" size="sm">
 							{carbonite.state}
 						</Badge>
 					)}
 					{carbonite.office && (
-						<Badge variant="secondary" className="text-[10px]">
+						<Badge variant="secondary" size="sm">
 							{carbonite.office}
 						</Badge>
 					)}
-					<Badge variant="outline" className="text-[10px]">
+					<Badge variant="outline" size="sm">
 						{carbonite.type ?? "FT"}
 					</Badge>
 				</div>
 				{carbonite.salary != null && (
-					<div className="mt-1.5 text-[11px] text-muted-foreground tabular-nums">
+					<div className="mt-1.5 text-muted-foreground text-xs tabular-nums">
 						${carbonite.salary.toLocaleString()}
 					</div>
 				)}

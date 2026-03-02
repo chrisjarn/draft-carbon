@@ -85,12 +85,7 @@ export function HeadcountTargetsSection({
 					Headcount Targets
 				</h4>
 				{hasWriteAccess && (
-					<Button
-						variant="ghost"
-						size="sm"
-						className="h-6 text-[11px]"
-						onClick={() => setDialogOpen(true)}
-					>
+					<Button variant="ghost" size="xs" onClick={() => setDialogOpen(true)}>
 						<HugeiconsIcon icon={PlusSignIcon} className="mr-1 size-3" />
 						Set Target
 					</Button>
@@ -112,7 +107,7 @@ export function HeadcountTargetsSection({
 									/>
 									<span className="text-sm">{sl.short}</span>
 								</div>
-								<span className="text-[11px] text-muted-foreground tabular-nums">
+								<span className="text-muted-foreground text-xs tabular-nums">
 									{current} / {target || "--"}
 									{target > 0 && ` (${pctVal}%)`}
 								</span>
@@ -138,7 +133,7 @@ export function HeadcountTargetsSection({
 					</DialogHeader>
 					<div className="space-y-3">
 						<div>
-							<Label className="mb-1 block text-[11px] text-muted-foreground">
+							<Label className="mb-1 block text-muted-foreground">
 								Service Line
 							</Label>
 							<Select
@@ -163,7 +158,7 @@ export function HeadcountTargetsSection({
 							</Select>
 						</div>
 						<div>
-							<Label className="mb-1 block text-[11px] text-muted-foreground">
+							<Label className="mb-1 block text-muted-foreground">
 								Target Headcount
 							</Label>
 							<Input
@@ -175,7 +170,7 @@ export function HeadcountTargetsSection({
 							/>
 						</div>
 						<div>
-							<Label className="mb-1 block text-[11px] text-muted-foreground">
+							<Label className="mb-1 block text-muted-foreground">
 								Notes (optional)
 							</Label>
 							<Input

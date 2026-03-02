@@ -136,7 +136,7 @@ export function ScenarioWorkbenchSection({
 					<Button
 						variant="ghost"
 						size="sm"
-						className="h-6 text-[11px]"
+						className="h-6 text-xs"
 						onClick={() => {
 							resetScenarioForm();
 							setDialogOpen(true);
@@ -182,7 +182,7 @@ export function ScenarioWorkbenchSection({
 										)}
 									</div>
 									{sc.description && (
-										<p className="text-[11px] text-muted-foreground">
+										<p className="text-muted-foreground text-xs">
 											{sc.description}
 										</p>
 									)}
@@ -218,7 +218,7 @@ export function ScenarioWorkbenchSection({
 											</TableBody>
 										</Table>
 									)}
-									<div className="mt-2 flex items-center gap-4 text-[11px]">
+									<div className="mt-2 flex items-center gap-4 text-xs">
 										<span className="text-muted-foreground">
 											New Payroll:{" "}
 											<span className="font-medium text-foreground tabular-nums">
@@ -250,9 +250,7 @@ export function ScenarioWorkbenchSection({
 					</DialogHeader>
 					<div className="space-y-3">
 						<div>
-							<Label className="mb-1 block text-[11px] text-muted-foreground">
-								Name
-							</Label>
+							<Label className="mb-1 block text-muted-foreground">Name</Label>
 							<Input
 								value={formName}
 								onChange={(e) => setFormName(e.target.value)}
@@ -261,7 +259,7 @@ export function ScenarioWorkbenchSection({
 							/>
 						</div>
 						<div>
-							<Label className="mb-1 block text-[11px] text-muted-foreground">
+							<Label className="mb-1 block text-muted-foreground">
 								Description
 							</Label>
 							<Input
@@ -271,9 +269,7 @@ export function ScenarioWorkbenchSection({
 							/>
 						</div>
 						<div>
-							<Label className="mb-1 block text-[11px] text-muted-foreground">
-								Color
-							</Label>
+							<Label className="mb-1 block text-muted-foreground">Color</Label>
 							<div className="flex items-center gap-1.5">
 								{PRESET_COLORS.map((c) => (
 									<button
@@ -291,9 +287,7 @@ export function ScenarioWorkbenchSection({
 							</div>
 						</div>
 						<div>
-							<Label className="mb-1 block text-[11px] text-muted-foreground">
-								Roles
-							</Label>
+							<Label className="mb-1 block text-muted-foreground">Roles</Label>
 							<div className="space-y-2">
 								{formRoles.map((role, idx) => (
 									<div
@@ -305,7 +299,7 @@ export function ScenarioWorkbenchSection({
 											onChange={(e) =>
 												updateRole(idx, "roleTitle", e.target.value)
 											}
-											className="h-7 flex-1 text-[11px]"
+											className="h-7 flex-1 text-xs"
 											placeholder="Role title"
 										/>
 										<Select
@@ -314,7 +308,7 @@ export function ScenarioWorkbenchSection({
 												updateRole(idx, "sl", v === "__none__" ? "" : (v ?? ""))
 											}
 										>
-											<SelectTrigger size="sm" className="w-24 text-[11px]">
+											<SelectTrigger size="sm" className="w-24 text-xs">
 												<SelectValue placeholder="SL" />
 											</SelectTrigger>
 											<SelectContent>
@@ -332,14 +326,14 @@ export function ScenarioWorkbenchSection({
 											onChange={(e) =>
 												updateRole(idx, "salary", e.target.value)
 											}
-											className="h-7 w-20 text-[11px]"
+											className="h-7 w-20 text-xs"
 											placeholder="Salary"
 										/>
 										<Input
 											type="number"
 											value={role.count}
 											onChange={(e) => updateRole(idx, "count", e.target.value)}
-											className="h-7 w-12 text-[11px]"
+											className="h-7 w-12 text-xs"
 											placeholder="#"
 											min={1}
 										/>
@@ -358,7 +352,7 @@ export function ScenarioWorkbenchSection({
 								<Button
 									variant="outline"
 									size="sm"
-									className="h-6 text-[11px]"
+									className="h-6 text-xs"
 									onClick={() =>
 										setFormRoles((prev) => [
 											...prev,

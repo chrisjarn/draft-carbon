@@ -139,9 +139,7 @@ const columns: ColumnDef<Item>[] = [
 		cell: () => (
 			<div className="text-right">
 				<DropdownMenu>
-					<DropdownMenuTrigger
-						render={<Button variant="ghost" size="icon" className="h-8 w-8" />}
-					>
+					<DropdownMenuTrigger render={<Button variant="ghost" size="icon" />}>
 						<HugeiconsIcon icon={MoreHorizontalIcon} className="h-4 w-4" />
 						<span className="sr-only">Open menu</span>
 					</DropdownMenuTrigger>
@@ -351,7 +349,6 @@ export default function Table05() {
 					<Button
 						variant="outline"
 						size="icon"
-						className="h-8 w-8"
 						onClick={() => table.previousPage()}
 						disabled={!table.getCanPreviousPage()}
 						aria-label="Previous page"
@@ -364,7 +361,6 @@ export default function Table05() {
 							key={page}
 							variant={currentPage === page ? "default" : "outline"}
 							size="icon"
-							className="h-8 w-8"
 							onClick={() => table.setPageIndex(page - 1)}
 							aria-label={`Go to page ${page}`}
 						>
@@ -374,7 +370,6 @@ export default function Table05() {
 					<Button
 						variant="outline"
 						size="icon"
-						className="h-8 w-8"
 						onClick={() => table.nextPage()}
 						disabled={!table.getCanNextPage()}
 						aria-label="Next page"

@@ -1,9 +1,9 @@
 import type { AppRouter } from "@carbon-wfp/api/routers/index";
+import { env } from "@carbon-wfp/env/web";
 import type { inferRouterOutputs } from "@trpc/server";
 
-import { env } from "@carbon-wfp/env/web";
-
 export type RouterOutputs = inferRouterOutputs<AppRouter>;
+
 import { QueryCache, QueryClient } from "@tanstack/react-query";
 import { createTRPCClient, httpBatchLink } from "@trpc/client";
 import { createTRPCOptionsProxy } from "@trpc/tanstack-react-query";
