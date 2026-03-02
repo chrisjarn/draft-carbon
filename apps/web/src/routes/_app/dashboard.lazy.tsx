@@ -7,15 +7,24 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createLazyFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { motion, useMotionValueEvent, useSpring } from "motion/react";
 import * as React from "react";
 import { useMemo } from "react";
-import { Bar, BarChart, CartesianGrid, Cell, XAxis } from "recharts";
+import {
+	Bar,
+	BarChart,
+	CartesianGrid,
+	Cell,
+	ReferenceLine,
+	XAxis,
+} from "recharts";
 
 import { SearchBarTrigger } from "@/components/command-palette";
 import {
 	EntityCardGrid,
 	type EntitySummary,
 } from "@/components/dashboard/entity-card";
+
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -24,12 +33,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import {
-	type ChartConfig,
-	ChartContainer,
-	ChartTooltip,
-	ChartTooltipContent,
-} from "@/components/ui/chart";
+import { type ChartConfig, ChartContainer } from "@/components/ui/chart";
 import {
 	Select,
 	SelectContent,
@@ -64,9 +68,9 @@ export const Route = createLazyFileRoute("/_app/dashboard")({
 /* ─── Revenue color helpers ────────────────────────────────────────────── */
 
 function revColor(pct: number): string {
-	if (pct >= 95) return "var(--color-emerald-500, #10b981)";
-	if (pct >= 80) return "var(--color-amber-500, #f59e0b)";
-	return "var(--color-red-500, #ef4444)";
+	if (pct >= 95) return "#10b981";
+	if (pct >= 80) return "#f59e0b";
+	return "#ef4444";
 }
 
 function revTextColor(pct: number): string {
@@ -138,6 +142,46 @@ type RevenueEntry = {
 	pct: number;
 };
 
+/* ─── EvilCharts-style Reference Label ─────────────────────────────────── */
+
+const CHART_MARGIN = 40;
+
+interface CustomReferenceLabelProps {
+	viewBox?: { x?: number; y?: number };
+	value: string;
+}
+
+const CustomReferenceLabel: React.FC<CustomReferenceLabelProps> = ({
+	viewBox,
+	value,
+}) => {
+	const x = viewBox?.x ?? 0;
+	const y = viewBox?.y ?? 0;
+	const width = value.length * 7.5 + 12;
+	return (
+		<>
+			<rect
+				x={x - CHART_MARGIN}
+				y={y - 9}
+				width={width}
+				height={18}
+				fill="var(--foreground)"
+				rx={4}
+			/>
+			<text
+				fontWeight={600}
+				fontSize={11}
+				x={x - CHART_MARGIN + 6}
+				y={y + 4}
+				fill="var(--background)"
+				className="font-mono"
+			>
+				{value}
+			</text>
+		</>
+	);
+};
+
 const revenueChartConfig = {
 	target: {
 		label: "Target",
@@ -162,6 +206,45 @@ function RevenueChart({
 	const [activeChart, setActiveChart] = React.useState<"target" | "actual">(
 		"actual",
 	);
+	const [activeIndex, setActiveIndex] = React.useState<number | undefined>(
+		undefined,
+	);
+
+	const chartData = React.useMemo(
+		() =>
+			(data ?? []).map((d) => ({
+				...d,
+				name: d.biz.length > 14 ? `${d.biz.slice(0, 12)}…` : d.biz,
+				target: d.target,
+				actual: d.actual,
+			})),
+		[data],
+	);
+
+	const displayEntry = React.useMemo(() => {
+		if (activeIndex !== undefined && chartData[activeIndex])
+			return {
+				index: activeIndex,
+				value: chartData[activeIndex][activeChart],
+			};
+		return chartData.reduce(
+			(max, d, i) =>
+				d[activeChart] > max.value ? { index: i, value: d[activeChart] } : max,
+			{ index: 0, value: 0 },
+		);
+	}, [activeIndex, chartData, activeChart]);
+
+	const springValue = useSpring(displayEntry.value, {
+		stiffness: 100,
+		damping: 20,
+	});
+	const [animatedValue, setAnimatedValue] = React.useState(displayEntry.value);
+	useMotionValueEvent(springValue, "change", (v) =>
+		setAnimatedValue(Number(v.toFixed(0))),
+	);
+	React.useEffect(() => {
+		springValue.set(displayEntry.value);
+	}, [displayEntry.value, springValue]);
 
 	if (loading) {
 		return <Skeleton className="h-full min-h-[200px] w-full" />;
@@ -174,13 +257,6 @@ function RevenueChart({
 			</p>
 		);
 	}
-
-	const chartData = data.map((d) => ({
-		...d,
-		name: d.biz.length > 14 ? `${d.biz.slice(0, 12)}…` : d.biz,
-		target: d.target,
-		actual: d.actual,
-	}));
 
 	const totals = {
 		target: data.reduce((s, d) => s + d.target, 0),
@@ -215,15 +291,16 @@ function RevenueChart({
 					))}
 				</div>
 			</CardHeader>
-			<CardContent className="flex-1 px-4 pt-4 sm:px-6 sm:py-5">
+			<CardContent className="flex-1  ">
 				<ChartContainer
 					config={revenueChartConfig}
-					className="aspect-auto h-[220px] w-full"
+					className="aspect-auto h-full min-h-70 w-full"
 				>
 					<BarChart
 						accessibilityLayer
 						data={chartData}
-						margin={{ left: 4, right: 4 }}
+						margin={{ left: CHART_MARGIN, right: 4, top: 12, bottom: 4 }}
+						onMouseLeave={() => setActiveIndex(undefined)}
 					>
 						<CartesianGrid vertical={false} />
 						<XAxis
@@ -233,36 +310,12 @@ function RevenueChart({
 							tickMargin={8}
 							minTickGap={24}
 						/>
-						<ChartTooltip
-							content={
-								<ChartTooltipContent
-									className="w-[180px]"
-									formatter={(value, _name, item) => {
-										const entry = item.payload as (typeof chartData)[0];
-										return (
-											<div className="space-y-1">
-												<div className="font-semibold">{entry.biz}</div>
-												<div className="flex justify-between">
-													<span className="text-muted-foreground">
-														{activeChart === "target" ? "Target" : "Actual"}
-													</span>
-													<span className="font-medium font-mono tabular-nums">
-														{fmtDollar(value as number)}
-													</span>
-												</div>
-												<div className={`text-xs ${revTextColor(entry.pct)}`}>
-													{entry.pct}% to target
-												</div>
-											</div>
-										);
-									}}
-								/>
-							}
-						/>
 						<Bar
 							dataKey={activeChart}
-							radius={[4, 4, 0, 0]}
+							radius={4}
 							cursor="pointer"
+							animationDuration={300}
+							animationEasing="ease-out"
 							onClick={(_data: unknown, index: number) => {
 								const entry = chartData[index];
 								if (entry) {
@@ -273,17 +326,30 @@ function RevenueChart({
 								}
 							}}
 						>
-							{chartData.map((entry) => (
+							{chartData.map((entry, i) => (
 								<Cell
 									key={entry.id}
+									className="duration-200"
 									fill={
 										activeChart === "target"
-											? "hsl(var(--muted-foreground) / 0.3)"
+											? "color-mix(in oklch, var(--muted-foreground) 30%, transparent)"
 											: revColor(entry.pct)
 									}
+									opacity={i === displayEntry.index ? 1 : 0.2}
+									onMouseEnter={() => setActiveIndex(i)}
 								/>
 							))}
 						</Bar>
+						<ReferenceLine
+							y={animatedValue}
+							stroke="var(--foreground)"
+							strokeWidth={1}
+							strokeDasharray="3 3"
+							opacity={0.4}
+							label={
+								<CustomReferenceLabel value={fmtDollar(displayEntry.value)} />
+							}
+						/>
 					</BarChart>
 				</ChartContainer>
 			</CardContent>
@@ -651,8 +717,16 @@ function DashboardPage() {
 
 	return (
 		<div className="flex h-full flex-col">
+			<div className="flex items-center justify-center px-6 py-2">
+				<motion.div
+					whileTap={{ scale: 0.97 }}
+					transition={{ type: "spring", duration: 0.5, bounce: 0 }}
+				>
+					<SearchBarTrigger />
+				</motion.div>
+			</div>
 			<div className="scrollbar-hide flex-1 overflow-auto">
-				<div className="mx-auto w-full max-w-[968px] px-6 py-6">
+				<div className="mx-auto w-full max-w-[968px] px-6 pt-10 pb-6">
 					{/* Greeting */}
 					<h2 className="font-semibold text-2xl tracking-tight">
 						{firstName ? `Hi, ${firstName}` : "Hi"}
@@ -675,21 +749,18 @@ function DashboardPage() {
 								))}
 							</TabsList>
 						</Tabs>
-						<div className="flex items-center gap-2">
-							<SearchBarTrigger />
-							<Select value={activeFy} onValueChange={setFy}>
-								<SelectTrigger className="w-32">
-									<SelectValue />
-								</SelectTrigger>
-								<SelectContent>
-									{FY_OPTIONS.map((f) => (
-										<SelectItem key={f} value={f}>
-											{f}
-										</SelectItem>
-									))}
-								</SelectContent>
-							</Select>
-						</div>
+						<Select value={activeFy} onValueChange={setFy}>
+							<SelectTrigger className="w-32">
+								<SelectValue />
+							</SelectTrigger>
+							<SelectContent>
+								{FY_OPTIONS.map((f) => (
+									<SelectItem key={f} value={f}>
+										{f}
+									</SelectItem>
+								))}
+							</SelectContent>
+						</Select>
 					</div>
 
 					<div className="flex flex-col gap-5 pt-4">

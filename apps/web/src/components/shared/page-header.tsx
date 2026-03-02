@@ -14,9 +14,7 @@ export function PageHeader() {
 
 	return (
 		<div className="flex items-center justify-center border-border border-b bg-white px-6 py-2">
-			<h1 className="font-medium text-base tracking-tight">
-				{config.title}
-			</h1>
+			<h1 className="font-medium text-base tracking-tight">{config.title}</h1>
 		</div>
 	);
 }
