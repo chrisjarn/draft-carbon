@@ -643,7 +643,8 @@ function DashboardPage() {
 				<h1 className="font-medium text-base tracking-tight">Dashboard</h1>
 			</div>
 
-			<div className="mx-auto w-full max-w-[968px] flex-1 overflow-auto px-6 py-6">
+			<div className="flex-1 overflow-auto scrollbar-hide">
+			<div className="mx-auto w-full max-w-[968px] px-6 py-6">
 				{/* Greeting */}
 				<h2 className="font-semibold text-2xl tracking-tight">
 					{firstName ? `Hi, ${firstName}` : "Hi"}
@@ -760,6 +761,7 @@ function DashboardPage() {
 						/>
 					</div>
 				</div>
+			</div>
 			</div>
 		</div>
 	);
