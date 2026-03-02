@@ -371,7 +371,7 @@ function AddPodDialog({
 								value={office}
 								onChange={(e) => setOffice(e.target.value)}
 								placeholder="Select a state first"
-								className="h-8 text-sm"
+			
 								disabled={!state}
 							/>
 						)}

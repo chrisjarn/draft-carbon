@@ -818,7 +818,7 @@ function DashboardPage() {
 							/>
 							<Card>
 								<CardHeader>
-									<CardTitle className="font-semibold text-base">
+									<CardTitle>
 										Service Line Breakdown
 									</CardTitle>
 								</CardHeader>
@@ -836,7 +836,7 @@ function DashboardPage() {
 
 						{/* Entity Cards */}
 						<div>
-							<h2 className="mb-4 font-semibold text-base tracking-tight">
+							<h2 className="mb-4 font-semibold text-base ">
 								Entities
 							</h2>
 							<EntityCardGrid

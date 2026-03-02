@@ -140,10 +140,17 @@ function CarbonitesPage() {
 		<div className="flex h-full flex-col">
 			<PageHeader />
 
-			{hasWriteAccess && (
-				<div className="flex items-center justify-end border-border border-b bg-white px-6 py-2">
+
+
+			<div className=" px-6 flex border-b bg-white justify-between py-2">
+				<CarboniteFilters
+					filters={filters}
+					onChange={setFilters}
+					allData={allData}
+				/>
+							{hasWriteAccess && (
 					<Button
-						size="sm"
+		
 						onClick={() => {
 							setEditTarget(null);
 							setDialogOpen(true);
@@ -152,15 +159,8 @@ function CarbonitesPage() {
 						<HugeiconsIcon icon={PlusSignIcon} className="mr-1.5 size-3.5" />{" "}
 						Add Carbonite
 					</Button>
-				</div>
-			)}
 
-			<div className="border-border border-b px-6 py-3">
-				<CarboniteFilters
-					filters={filters}
-					onChange={setFilters}
-					allData={allData}
-				/>
+			)}
 			</div>
 
 			<div className="flex-1 overflow-auto p-6">

@@ -165,7 +165,7 @@ export function HeadcountTargetsSection({
 								type="number"
 								value={formTarget}
 								onChange={(e) => setFormTarget(e.target.value)}
-								className="h-8 text-sm"
+			
 								min={0}
 							/>
 						</div>
@@ -176,7 +176,7 @@ export function HeadcountTargetsSection({
 							<Input
 								value={formNotes}
 								onChange={(e) => setFormNotes(e.target.value)}
-								className="h-8 text-sm"
+
 							/>
 						</div>
 					</div>

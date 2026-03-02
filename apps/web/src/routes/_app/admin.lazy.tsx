@@ -393,7 +393,7 @@ function AdminPage() {
 									setEntityForm((f) => ({ ...f, biz: e.target.value }))
 								}
 								placeholder="e.g. Carbon Perth"
-								className="h-8 text-sm"
+	
 							/>
 						</div>
 						<div>

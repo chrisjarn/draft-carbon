@@ -744,7 +744,7 @@ function HiringPage() {
 					<DataTableColumnHeader column={column} title="Role" />
 				),
 				cell: ({ row }) => (
-					<span className="font-medium text-base">{row.getValue("role")}</span>
+					<span className="font-medium text-sm">{row.getValue("role")}</span>
 				),
 			},
 			{
@@ -921,7 +921,7 @@ function HiringPage() {
 							placeholder="Search roles..."
 							value={globalFilter}
 							onChange={(e) => setGlobalFilter(e.target.value)}
-							className="h-8 w-full sm:w-64"
+							className="w-full sm:w-80"
 						/>
 					</DataTable>
 				)}

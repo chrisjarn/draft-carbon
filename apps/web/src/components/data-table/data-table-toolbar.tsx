@@ -104,7 +104,7 @@ function DataTableToolbarFilter<TData>({ column }: { column: Column<TData> }) {
 			case "text":
 				return (
 					<Input
-						className="h-8 w-40 lg:w-56"
+						className="w-40 lg:w-56"
 						onChange={(event) => column.setFilterValue(event.target.value)}
 						placeholder={columnMeta.placeholder ?? columnMeta.label}
 						value={column.getFilterValue() as string}

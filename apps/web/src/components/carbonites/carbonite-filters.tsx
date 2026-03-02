@@ -25,7 +25,7 @@ export function CarboniteFilters({
 				placeholder="Search name, role, pod…"
 				value={filters.search}
 				onChange={(e) => onChange({ ...filters, search: e.target.value })}
-				className="h-8 w-52 text-xs"
+				className="w-52"
 			/>
 			<SelectFilter
 				placeholder="State"

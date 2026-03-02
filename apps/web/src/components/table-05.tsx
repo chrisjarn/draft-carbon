@@ -278,7 +278,7 @@ export default function Table05() {
 					placeholder="Search..."
 					value={globalFilter}
 					onChange={(e) => setGlobalFilter(e.target.value)}
-					className="h-8 w-full sm:w-64"
+					className="w-full sm:w-64"
 				/>
 			</div>
 
