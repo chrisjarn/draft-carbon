@@ -1,9 +1,10 @@
-import { PencilEdit01Icon, StarIcon } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 
+import { DataTable } from "@/components/data-table/data-table";
+import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton";
+import { DataTableToolbar } from "@/components/data-table/data-table-toolbar";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -21,21 +22,13 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from "@/components/ui/table";
 import { authClient } from "@/lib/auth-client";
 import { fmtDollar } from "@/lib/format";
 import { canWrite, getUserRole } from "@/lib/rbac";
 import { trpc } from "@/utils/trpc";
 
-import { EditableCell, fmtPromoEta, PerfBadge, pct, unique } from "./shared";
 import type { MetaForm, StaffWithMeta } from "./types";
+import { useStaffDataTable } from "./use-staff-data-table";
 
 // ── Staff meta edit dialog ────────────────────────────────────────────────────
 
@@ -82,8 +75,8 @@ function MetaDialog({
 		<Dialog open={!!staff} onOpenChange={(o) => !o && onClose()}>
 			<DialogContent className="max-w-sm">
 				<DialogHeader>
-					<DialogTitle className="text-sm">{staff?.name}</DialogTitle>
-					<p className="text-muted-foreground text-xs">
+					<DialogTitle className="text-base">{staff?.name}</DialogTitle>
+					<p className="text-muted-foreground text-sm">
 						{staff?.role} &middot; {staff?.office}
 					</p>
 				</DialogHeader>
@@ -95,7 +88,7 @@ function MetaDialog({
 						<Input
 							value={form.staffRole}
 							onChange={(e) => set("staffRole")(e.target.value)}
-							className="h-8 text-xs"
+							className="h-8 text-sm"
 							placeholder={staff?.role ?? ""}
 						/>
 					</div>
@@ -107,7 +100,7 @@ function MetaDialog({
 							value={form.roleTag || "none"}
 							onValueChange={(v) => set("roleTag")(v === "none" ? "" : v)}
 						>
-							<SelectTrigger className="h-8 text-xs">
+							<SelectTrigger className="text-sm">
 								<SelectValue />
 							</SelectTrigger>
 							<SelectContent>
@@ -126,7 +119,7 @@ function MetaDialog({
 							type="number"
 							value={form.billingTarget}
 							onChange={(e) => set("billingTarget")(e.target.value)}
-							className="h-8 text-xs"
+							className="h-8 text-sm"
 						/>
 					</div>
 					<div>
@@ -137,7 +130,7 @@ function MetaDialog({
 							type="number"
 							value={form.billingActual}
 							onChange={(e) => set("billingActual")(e.target.value)}
-							className="h-8 text-xs"
+							className="h-8 text-sm"
 						/>
 					</div>
 					<div>
@@ -145,7 +138,7 @@ function MetaDialog({
 							Performance Rating
 						</Label>
 						<Select value={form.perfRating} onValueChange={set("perfRating")}>
-							<SelectTrigger className="h-8 text-xs">
+							<SelectTrigger className="text-sm">
 								<SelectValue />
 							</SelectTrigger>
 							<SelectContent>
@@ -161,7 +154,7 @@ function MetaDialog({
 							Promotion Status
 						</Label>
 						<Select value={form.promoFlag} onValueChange={set("promoFlag")}>
-							<SelectTrigger className="h-8 text-xs">
+							<SelectTrigger className="text-sm">
 								<SelectValue />
 							</SelectTrigger>
 							<SelectContent>
@@ -180,7 +173,7 @@ function MetaDialog({
 								type="date"
 								value={form.promoEta}
 								onChange={(e) => set("promoEta")(e.target.value)}
-								className="h-8 text-xs"
+								className="h-8 text-sm"
 							/>
 						</div>
 					)}
@@ -209,9 +202,6 @@ export function StaffTab({ entityId }: { entityId?: string }) {
 
 	const qc = useQueryClient();
 	const [editStaff, setEditStaff] = useState<StaffWithMeta | null>(null);
-	const [filterSl, setFilterSl] = useState("");
-	const [filterOffice, setFilterOffice] = useState("");
-	const [filterPromo, setFilterPromo] = useState(false);
 
 	const query = useQuery(
 		trpc.wfp.getStaffWithMeta.queryOptions(entityId ? { entityId } : undefined),
@@ -233,41 +223,73 @@ export function StaffTab({ entityId }: { entityId?: string }) {
 		}),
 	);
 
-	const quickUpsert = (cbId: string, patch: Record<string, string>) => {
-		upsertMeta.mutate({ cbId, ...patch });
-	};
+	const quickUpsert = useCallback(
+		(cbId: string, patch: Record<string, string>) => {
+			upsertMeta.mutate({ cbId, ...patch });
+		},
+		[upsertMeta],
+	);
 
-	const filtered = allStaff.filter((s) => {
-		if (filterSl && s.sl !== filterSl) return false;
-		if (filterOffice && s.office !== filterOffice) return false;
-		if (
-			filterPromo &&
-			s.meta?.promoFlag !== "yes" &&
-			s.meta?.promoFlag !== "maybe"
-		)
-			return false;
-		return true;
+	const onEdit = useCallback((staff: StaffWithMeta) => {
+		setEditStaff(staff);
+	}, []);
+
+	const { table } = useStaffDataTable({
+		data: allStaff,
+		onQuickUpsert: quickUpsert,
+		onEdit,
+		canEdit: hasWriteAccess,
 	});
 
-	// Totals
-	const totalTarget = filtered.reduce(
-		(s, r) => s + Number(r.meta?.billingTarget ?? 0),
-		0,
+	// Compute summary from filtered rows (what the table shows after filters)
+	const filteredRows = table.getFilteredRowModel().rows;
+	const totalTarget = useMemo(
+		() =>
+			filteredRows.reduce(
+				(s, r) => s + Number(r.original.meta?.billingTarget ?? 0),
+				0,
+			),
+		[filteredRows],
 	);
-	const totalActual = filtered.reduce(
-		(s, r) => s + Number(r.meta?.billingActual ?? 0),
-		0,
+	const totalActual = useMemo(
+		() =>
+			filteredRows.reduce(
+				(s, r) => s + Number(r.original.meta?.billingActual ?? 0),
+				0,
+			),
+		[filteredRows],
 	);
-	const promoCount = filtered.filter(
-		(r) => r.meta?.promoFlag === "yes" || r.meta?.promoFlag === "maybe",
-	).length;
+	const promoCount = useMemo(
+		() =>
+			filteredRows.filter(
+				(r) =>
+					r.original.meta?.promoFlag === "yes" ||
+					r.original.meta?.promoFlag === "maybe",
+			).length,
+		[filteredRows],
+	);
+
+	if (query.isPending) {
+		return (
+			<div className="flex h-full flex-col">
+				<div className="px-6 py-4">
+					<DataTableSkeleton
+						columnCount={12}
+						rowCount={10}
+						filterCount={4}
+						withPagination
+					/>
+				</div>
+			</div>
+		);
+	}
 
 	return (
 		<div className="flex h-full flex-col">
-			{/* Subheader */}
+			{/* Summary bar */}
 			<div className="flex items-center justify-between border-border border-b px-6 py-3">
-				<p className="text-muted-foreground text-xs">
-					{filtered.length} staff &middot; {fmtDollar(String(totalTarget))}{" "}
+				<p className="text-muted-foreground text-sm">
+					{filteredRows.length} staff &middot; {fmtDollar(String(totalTarget))}{" "}
 					target &middot; {fmtDollar(String(totalActual))} actual
 					{promoCount > 0 && (
 						<span className="ml-2 text-amber-400">
@@ -277,166 +299,11 @@ export function StaffTab({ entityId }: { entityId?: string }) {
 				</p>
 			</div>
 
-			{/* Filters */}
-			<div className="flex items-center gap-2 border-border border-b px-6 py-3">
-				<Select
-					value={filterSl || "__all__"}
-					onValueChange={(v) => setFilterSl(v === "__all__" ? "" : (v ?? ""))}
-				>
-					<SelectTrigger className="h-8 w-40 text-xs">
-						<SelectValue placeholder="All SLs" />
-					</SelectTrigger>
-					<SelectContent>
-						<SelectItem value="__all__">All Service Lines</SelectItem>
-						{unique(allStaff, "sl").map((v) => (
-							<SelectItem key={v} value={v}>
-								{v}
-							</SelectItem>
-						))}
-					</SelectContent>
-				</Select>
-				<Select
-					value={filterOffice || "__all__"}
-					onValueChange={(v) =>
-						setFilterOffice(v === "__all__" ? "" : (v ?? ""))
-					}
-				>
-					<SelectTrigger className="h-8 w-36 text-xs">
-						<SelectValue placeholder="All Offices" />
-					</SelectTrigger>
-					<SelectContent>
-						<SelectItem value="__all__">All Offices</SelectItem>
-						{unique(allStaff, "office").map((v) => (
-							<SelectItem key={v} value={v}>
-								{v}
-							</SelectItem>
-						))}
-					</SelectContent>
-				</Select>
-				<button
-					type="button"
-					onClick={() => setFilterPromo((p) => !p)}
-					className={`flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-xs transition-colors ${filterPromo ? "border-amber-500/40 bg-amber-500/10 text-amber-400" : "border-border text-muted-foreground hover:text-foreground"}`}
-				>
-					<HugeiconsIcon icon={StarIcon} className="size-3" /> Promo only
-				</button>
-			</div>
-
-			{/* Table */}
-			<div className="flex-1 overflow-auto">
-				{query.isPending ? (
-					<div className="flex h-40 items-center justify-center text-muted-foreground text-xs">
-						Loading...
-					</div>
-				) : filtered.length === 0 ? (
-					<div className="flex h-40 items-center justify-center text-muted-foreground text-xs">
-						No staff found
-					</div>
-				) : (
-					<Table>
-						<TableHeader>
-							<TableRow>
-								<TableHead className="w-[180px]">Name</TableHead>
-								<TableHead>Role</TableHead>
-								<TableHead>Tag</TableHead>
-								<TableHead>SL</TableHead>
-								<TableHead>Office</TableHead>
-								<TableHead>Pod</TableHead>
-								<TableHead>Target</TableHead>
-								<TableHead>Actual</TableHead>
-								<TableHead>Attainment</TableHead>
-								<TableHead>Perf</TableHead>
-								<TableHead>Promo</TableHead>
-								{hasWriteAccess && <TableHead />}
-							</TableRow>
-						</TableHeader>
-						<TableBody>
-							{filtered.map((s) => (
-								<TableRow key={s.id}>
-									<TableCell className="font-medium text-sm">
-										{s.name}
-									</TableCell>
-									<TableCell className="text-muted-foreground text-xs">
-										{s.meta?.staffRole || s.role || "\u2014"}
-									</TableCell>
-									<TableCell className="text-xs capitalize">
-										{s.meta?.roleTag ?? "\u2014"}
-									</TableCell>
-									<TableCell className="text-xs">{s.sl ?? "\u2014"}</TableCell>
-									<TableCell className="text-xs">
-										{s.office ?? "\u2014"}
-									</TableCell>
-									<TableCell className="text-xs">{s.pod ?? "\u2014"}</TableCell>
-									<TableCell>
-										<EditableCell
-											value={s.meta?.billingTarget}
-											onSave={(v) => quickUpsert(s.id, { billingTarget: v })}
-											disabled={!hasWriteAccess}
-										/>
-									</TableCell>
-									<TableCell>
-										<EditableCell
-											value={s.meta?.billingActual}
-											onSave={(v) => quickUpsert(s.id, { billingActual: v })}
-											disabled={!hasWriteAccess}
-										/>
-									</TableCell>
-									<TableCell>
-										<span
-											className={`font-medium text-xs tabular-nums ${Number(s.meta?.billingActual) >= Number(s.meta?.billingTarget) && s.meta?.billingTarget ? "text-green-400" : ""}`}
-										>
-											{pct(
-												s.meta?.billingActual ?? null,
-												s.meta?.billingTarget ?? null,
-											)}
-										</span>
-									</TableCell>
-									<TableCell>
-										<PerfBadge rating={s.meta?.perfRating} />
-									</TableCell>
-									<TableCell>
-										{s.meta?.promoFlag === "yes" ||
-										s.meta?.promoFlag === "maybe" ? (
-											<div className="flex items-center gap-1">
-												<HugeiconsIcon
-													icon={StarIcon}
-													className={`size-3.5 ${s.meta.promoFlag === "yes" ? "fill-amber-400 text-amber-400" : "fill-amber-400/50 text-amber-400/50"}`}
-												/>
-												<span className="text-[10px] text-amber-400">
-													{s.meta.promoFlag === "maybe" ? "Maybe" : ""}
-													{s.meta.promoEta
-														? s.meta.promoFlag === "maybe"
-															? ` \u00B7 ${fmtPromoEta(s.meta.promoEta)}`
-															: fmtPromoEta(s.meta.promoEta)
-														: ""}
-												</span>
-											</div>
-										) : (
-											<span className="text-muted-foreground/40 text-xs">
-												{"\u2014"}
-											</span>
-										)}
-									</TableCell>
-									{hasWriteAccess && (
-										<TableCell>
-											<Button
-												variant="ghost"
-												size="sm"
-												className="h-6 w-6 p-0"
-												onClick={() => setEditStaff(s)}
-											>
-												<HugeiconsIcon
-													icon={PencilEdit01Icon}
-													className="size-3"
-												/>
-											</Button>
-										</TableCell>
-									)}
-								</TableRow>
-							))}
-						</TableBody>
-					</Table>
-				)}
+			{/* DataTable with toolbar */}
+			<div className="flex-1 overflow-auto px-6 py-4">
+				<DataTable table={table}>
+					<DataTableToolbar table={table} />
+				</DataTable>
 			</div>
 
 			{/* Edit dialog */}

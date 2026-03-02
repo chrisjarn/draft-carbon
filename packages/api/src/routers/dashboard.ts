@@ -130,6 +130,10 @@ export const dashboardRouter = router({
 				state: entities.state,
 				officeId: entities.officeId,
 				sl: entities.sl,
+				legalName: entities.legalName,
+				phone: entities.phone,
+				address: entities.address,
+				email: entities.email,
 			})
 			.from(entities)
 			.where(entWhere);
@@ -173,14 +177,52 @@ export const dashboardRouter = router({
 			slMap.set(row.entity, existing);
 		}
 
+		// Staff names + pods for initials list and pod count
+		const staffDetails = await db
+			.select({
+				entity: carbonites.entity,
+				name: carbonites.name,
+				pod: carbonites.pod,
+			})
+			.from(carbonites)
+			.where(cbWhere);
+
+		const initialsMap = new Map<string, string[]>();
+		const podSets = new Map<string, Set<string>>();
+		for (const row of staffDetails) {
+			if (!row.entity) continue;
+			const parts = row.name.trim().split(/\s+/).filter(Boolean);
+			if (parts.length === 0) continue;
+			const first = parts[0] ?? "";
+			const last = parts[parts.length - 1] ?? "";
+			const initials =
+				parts.length >= 2
+					? `${first.charAt(0)}${last.charAt(0)}`.toUpperCase()
+					: first.charAt(0).toUpperCase();
+			const arr = initialsMap.get(row.entity) ?? [];
+			arr.push(initials);
+			initialsMap.set(row.entity, arr);
+			if (row.pod) {
+				const set = podSets.get(row.entity) ?? new Set();
+				set.add(row.pod);
+				podSets.set(row.entity, set);
+			}
+		}
+
 		return allEntities.map((ent) => ({
 			id: ent.id,
 			biz: ent.biz,
 			state: ent.state,
 			officeId: ent.officeId,
+			legalName: ent.legalName,
+			phone: ent.phone,
+			address: ent.address,
+			email: ent.email,
 			headcount: staffMap.get(ent.id)?.headcount ?? 0,
 			totalSalary: staffMap.get(ent.id)?.totalSalary ?? 0,
 			sls: slMap.get(ent.id) ?? (ent.sl as string[]) ?? [],
+			staffInitials: initialsMap.get(ent.id) ?? [],
+			podCount: podSets.get(ent.id)?.size ?? 0,
 		}));
 	}),
 

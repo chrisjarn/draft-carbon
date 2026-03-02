@@ -144,7 +144,7 @@ export function AttritionRisksSection({
 	return (
 		<div>
 			<div className="mb-2 flex items-center justify-between">
-				<h4 className="flex items-center gap-1.5 font-medium text-muted-foreground text-xs">
+				<h4 className="flex items-center gap-1.5 font-medium text-muted-foreground text-sm">
 					<HugeiconsIcon icon={Alert02Icon} className="size-3.5" />
 					Attrition Risks
 				</h4>
@@ -165,7 +165,7 @@ export function AttritionRisksSection({
 			</div>
 
 			{(risks ?? []).length === 0 ? (
-				<p className="text-muted-foreground text-xs">
+				<p className="text-muted-foreground text-sm">
 					No attrition risks flagged
 				</p>
 			) : (
@@ -185,10 +185,10 @@ export function AttritionRisksSection({
 							const member = staffMap.get(risk.carboniteId);
 							return (
 								<TableRow key={risk.id}>
-									<TableCell className="text-sm">
+									<TableCell className="text-base">
 										{member?.name ?? risk.carboniteId}
 									</TableCell>
-									<TableCell className="text-muted-foreground text-xs">
+									<TableCell className="text-muted-foreground text-sm">
 										{member?.role ?? "--"}
 									</TableCell>
 									<TableCell>
@@ -199,10 +199,10 @@ export function AttritionRisksSection({
 											{risk.riskLevel}
 										</Badge>
 									</TableCell>
-									<TableCell className="max-w-[200px] truncate text-xs">
+									<TableCell className="max-w-[200px] truncate text-sm">
 										{risk.reason || "--"}
 									</TableCell>
-									<TableCell className="max-w-[200px] truncate text-xs">
+									<TableCell className="max-w-[200px] truncate text-sm">
 										{risk.action || "--"}
 									</TableCell>
 									{hasWriteAccess && (
@@ -244,7 +244,7 @@ export function AttritionRisksSection({
 			<Dialog open={flagOpen} onOpenChange={(o) => !o && setFlagOpen(false)}>
 				<DialogContent className="max-w-sm">
 					<DialogHeader>
-						<DialogTitle className="text-sm">Flag Attrition Risk</DialogTitle>
+						<DialogTitle className="text-base">Flag Attrition Risk</DialogTitle>
 					</DialogHeader>
 					<div className="space-y-3">
 						<div>
@@ -257,7 +257,7 @@ export function AttritionRisksSection({
 									setFormStaff(v === "__none__" ? "" : (v ?? ""))
 								}
 							>
-								<SelectTrigger className="h-8 text-xs">
+								<SelectTrigger className="text-sm">
 									<SelectValue placeholder="Select staff" />
 								</SelectTrigger>
 								<SelectContent>
@@ -284,7 +284,7 @@ export function AttritionRisksSection({
 									}
 								}}
 							>
-								<SelectTrigger className="h-8 text-xs">
+								<SelectTrigger className="text-sm">
 									<SelectValue />
 								</SelectTrigger>
 								<SelectContent>
@@ -301,7 +301,7 @@ export function AttritionRisksSection({
 							<Textarea
 								value={formReason}
 								onChange={(e) => setFormReason(e.target.value)}
-								className="text-xs"
+								className="text-sm"
 								rows={2}
 							/>
 						</div>
@@ -312,7 +312,7 @@ export function AttritionRisksSection({
 							<Textarea
 								value={formAction}
 								onChange={(e) => setFormAction(e.target.value)}
-								className="text-xs"
+								className="text-sm"
 								rows={2}
 							/>
 						</div>
@@ -347,7 +347,7 @@ export function AttritionRisksSection({
 			<Dialog open={!!editRisk} onOpenChange={(o) => !o && setEditRisk(null)}>
 				<DialogContent className="max-w-sm">
 					<DialogHeader>
-						<DialogTitle className="text-sm">Edit Attrition Risk</DialogTitle>
+						<DialogTitle className="text-base">Edit Attrition Risk</DialogTitle>
 					</DialogHeader>
 					<div className="space-y-3">
 						<div>
@@ -362,7 +362,7 @@ export function AttritionRisksSection({
 									}
 								}}
 							>
-								<SelectTrigger className="h-8 text-xs">
+								<SelectTrigger className="text-sm">
 									<SelectValue />
 								</SelectTrigger>
 								<SelectContent>
@@ -379,7 +379,7 @@ export function AttritionRisksSection({
 							<Textarea
 								value={formReason}
 								onChange={(e) => setFormReason(e.target.value)}
-								className="text-xs"
+								className="text-sm"
 								rows={2}
 							/>
 						</div>
@@ -390,7 +390,7 @@ export function AttritionRisksSection({
 							<Textarea
 								value={formAction}
 								onChange={(e) => setFormAction(e.target.value)}
-								className="text-xs"
+								className="text-sm"
 								rows={2}
 							/>
 						</div>

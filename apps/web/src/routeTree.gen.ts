@@ -13,6 +13,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppTodosRouteImport } from './routes/_app/todos'
+import { Route as AppScenariosRouteImport } from './routes/_app/scenarios'
 import { Route as AppHiringRouteImport } from './routes/_app/hiring'
 import { Route as AppFyPlanningRouteImport } from './routes/_app/fy-planning'
 import { Route as AppDashboardRouteImport } from './routes/_app/dashboard'
@@ -39,6 +40,13 @@ const AppTodosRoute = AppTodosRouteImport.update({
   path: '/todos',
   getParentRoute: () => AppRoute,
 } as any).lazy(() => import('./routes/_app/todos.lazy').then((d) => d.Route))
+const AppScenariosRoute = AppScenariosRouteImport.update({
+  id: '/scenarios',
+  path: '/scenarios',
+  getParentRoute: () => AppRoute,
+} as any).lazy(() =>
+  import('./routes/_app/scenarios.lazy').then((d) => d.Route),
+)
 const AppHiringRoute = AppHiringRouteImport.update({
   id: '/hiring',
   path: '/hiring',
@@ -87,6 +95,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AppDashboardRoute
   '/fy-planning': typeof AppFyPlanningRoute
   '/hiring': typeof AppHiringRoute
+  '/scenarios': typeof AppScenariosRoute
   '/todos': typeof AppTodosRoute
 }
 export interface FileRoutesByTo {
@@ -98,6 +107,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AppDashboardRoute
   '/fy-planning': typeof AppFyPlanningRoute
   '/hiring': typeof AppHiringRoute
+  '/scenarios': typeof AppScenariosRoute
   '/todos': typeof AppTodosRoute
 }
 export interface FileRoutesById {
@@ -111,6 +121,7 @@ export interface FileRoutesById {
   '/_app/dashboard': typeof AppDashboardRoute
   '/_app/fy-planning': typeof AppFyPlanningRoute
   '/_app/hiring': typeof AppHiringRoute
+  '/_app/scenarios': typeof AppScenariosRoute
   '/_app/todos': typeof AppTodosRoute
 }
 export interface FileRouteTypes {
@@ -124,6 +135,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/fy-planning'
     | '/hiring'
+    | '/scenarios'
     | '/todos'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -135,6 +147,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/fy-planning'
     | '/hiring'
+    | '/scenarios'
     | '/todos'
   id:
     | '__root__'
@@ -147,6 +160,7 @@ export interface FileRouteTypes {
     | '/_app/dashboard'
     | '/_app/fy-planning'
     | '/_app/hiring'
+    | '/_app/scenarios'
     | '/_app/todos'
   fileRoutesById: FileRoutesById
 }
@@ -184,6 +198,13 @@ declare module '@tanstack/react-router' {
       path: '/todos'
       fullPath: '/todos'
       preLoaderRoute: typeof AppTodosRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/scenarios': {
+      id: '/_app/scenarios'
+      path: '/scenarios'
+      fullPath: '/scenarios'
+      preLoaderRoute: typeof AppScenariosRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/hiring': {
@@ -238,6 +259,7 @@ interface AppRouteChildren {
   AppDashboardRoute: typeof AppDashboardRoute
   AppFyPlanningRoute: typeof AppFyPlanningRoute
   AppHiringRoute: typeof AppHiringRoute
+  AppScenariosRoute: typeof AppScenariosRoute
   AppTodosRoute: typeof AppTodosRoute
 }
 
@@ -248,6 +270,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppDashboardRoute: AppDashboardRoute,
   AppFyPlanningRoute: AppFyPlanningRoute,
   AppHiringRoute: AppHiringRoute,
+  AppScenariosRoute: AppScenariosRoute,
   AppTodosRoute: AppTodosRoute,
 }
 

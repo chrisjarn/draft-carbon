@@ -474,7 +474,7 @@ function CarboniteDialog({
 									set("sg")("");
 								}}
 							>
-								<SelectTrigger className="h-8 text-xs">
+								<SelectTrigger className="text-xs">
 									<SelectValue placeholder="Select…" />
 								</SelectTrigger>
 								<SelectContent>
@@ -496,7 +496,7 @@ function CarboniteDialog({
 									value={form.sg || "__none__"}
 									onValueChange={(v) => set("sg")(v === "__none__" ? "" : v)}
 								>
-									<SelectTrigger className="h-8 text-xs">
+									<SelectTrigger className="text-xs">
 										<SelectValue placeholder="Select…" />
 									</SelectTrigger>
 									<SelectContent>
@@ -527,7 +527,7 @@ function CarboniteDialog({
 									set("office")("");
 								}}
 							>
-								<SelectTrigger className="h-8 text-xs">
+								<SelectTrigger className="text-xs">
 									<SelectValue placeholder="Select…" />
 								</SelectTrigger>
 								<SelectContent>
@@ -551,7 +551,7 @@ function CarboniteDialog({
 										set("office")(v === "__none__" ? "" : v)
 									}
 								>
-									<SelectTrigger className="h-8 text-xs">
+									<SelectTrigger className="text-xs">
 										<SelectValue placeholder="Select…" />
 									</SelectTrigger>
 									<SelectContent>
@@ -596,7 +596,7 @@ function CarboniteDialog({
 								Type
 							</Label>
 							<Select value={form.type} onValueChange={(v) => set("type")(v)}>
-								<SelectTrigger className="h-8 text-xs">
+								<SelectTrigger className="text-xs">
 									<SelectValue />
 								</SelectTrigger>
 								<SelectContent>
@@ -787,19 +787,11 @@ function CarbonitesPage() {
 
 	return (
 		<div className="flex h-full flex-col">
-			<PageHeader
-				description={
-					<>
-						{query.isSuccess ? `${rows.length} staff` : "Loading…"}
-						{allData.length > 0 && rows.length !== allData.length && (
-							<span className="ml-1 text-muted-foreground/60">
-								(of {allData.length})
-							</span>
-						)}
-					</>
-				}
-			>
-				{hasWriteAccess && (
+			<PageHeader />
+
+			{/* Toolbar */}
+			{hasWriteAccess && (
+				<div className="flex items-center justify-end border-border border-b bg-white px-6 py-2">
 					<Button
 						size="sm"
 						onClick={() => {
@@ -810,8 +802,8 @@ function CarbonitesPage() {
 						<HugeiconsIcon icon={PlusSignIcon} className="mr-1.5 size-3.5" />{" "}
 						Add Carbonite
 					</Button>
-				)}
-			</PageHeader>
+				</div>
+			)}
 
 			{/* Filter bar */}
 			<div className="border-border border-b px-6 py-3">

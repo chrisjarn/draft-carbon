@@ -59,7 +59,7 @@ function SignInView({ onSwitch }: { onSwitch: () => void }) {
 			<h3 className="mt-6 text-balance font-semibold text-foreground text-lg">
 				Sign in to your account
 			</h3>
-			<p className="mt-2 text-pretty text-muted-foreground text-sm">
+			<p className="mt-2 text-pretty text-muted-foreground text-base">
 				Don&apos;t have an account?{" "}
 				<button
 					type="button"
@@ -82,7 +82,7 @@ function SignInView({ onSwitch }: { onSwitch: () => void }) {
 					<form.Field name="email">
 						{(field) => (
 							<>
-								<Label htmlFor={field.name} className="font-medium text-sm">
+								<Label htmlFor={field.name} className="font-medium text-base">
 									Email
 								</Label>
 								<Input
@@ -99,7 +99,7 @@ function SignInView({ onSwitch }: { onSwitch: () => void }) {
 								{field.state.meta.errors.map((error) => (
 									<p
 										key={error?.message}
-										className="mt-1 text-destructive text-xs"
+										className="mt-1 text-destructive text-sm"
 									>
 										{error?.message}
 									</p>
@@ -113,7 +113,7 @@ function SignInView({ onSwitch }: { onSwitch: () => void }) {
 					<form.Field name="password">
 						{(field) => (
 							<>
-								<Label htmlFor={field.name} className="font-medium text-sm">
+								<Label htmlFor={field.name} className="font-medium text-base">
 									Password
 								</Label>
 								<Input
@@ -130,7 +130,7 @@ function SignInView({ onSwitch }: { onSwitch: () => void }) {
 								{field.state.meta.errors.map((error) => (
 									<p
 										key={error?.message}
-										className="mt-1 text-destructive text-xs"
+										className="mt-1 text-destructive text-sm"
 									>
 										{error?.message}
 									</p>
@@ -191,7 +191,7 @@ function SignUpView({ onSwitch }: { onSwitch: () => void }) {
 			<h3 className="mt-6 text-balance font-semibold text-foreground text-lg">
 				Create your account
 			</h3>
-			<p className="mt-2 text-pretty text-muted-foreground text-sm">
+			<p className="mt-2 text-pretty text-muted-foreground text-base">
 				Already have an account?{" "}
 				<button
 					type="button"
@@ -214,7 +214,7 @@ function SignUpView({ onSwitch }: { onSwitch: () => void }) {
 					<form.Field name="name">
 						{(field) => (
 							<>
-								<Label htmlFor={field.name} className="font-medium text-sm">
+								<Label htmlFor={field.name} className="font-medium text-base">
 									Name
 								</Label>
 								<Input
@@ -230,7 +230,7 @@ function SignUpView({ onSwitch }: { onSwitch: () => void }) {
 								{field.state.meta.errors.map((error) => (
 									<p
 										key={error?.message}
-										className="mt-1 text-destructive text-xs"
+										className="mt-1 text-destructive text-sm"
 									>
 										{error?.message}
 									</p>
@@ -244,7 +244,7 @@ function SignUpView({ onSwitch }: { onSwitch: () => void }) {
 					<form.Field name="email">
 						{(field) => (
 							<>
-								<Label htmlFor={field.name} className="font-medium text-sm">
+								<Label htmlFor={field.name} className="font-medium text-base">
 									Email
 								</Label>
 								<Input
@@ -261,7 +261,7 @@ function SignUpView({ onSwitch }: { onSwitch: () => void }) {
 								{field.state.meta.errors.map((error) => (
 									<p
 										key={error?.message}
-										className="mt-1 text-destructive text-xs"
+										className="mt-1 text-destructive text-sm"
 									>
 										{error?.message}
 									</p>
@@ -275,7 +275,7 @@ function SignUpView({ onSwitch }: { onSwitch: () => void }) {
 					<form.Field name="password">
 						{(field) => (
 							<>
-								<Label htmlFor={field.name} className="font-medium text-sm">
+								<Label htmlFor={field.name} className="font-medium text-base">
 									Password
 								</Label>
 								<Input
@@ -292,7 +292,7 @@ function SignUpView({ onSwitch }: { onSwitch: () => void }) {
 								{field.state.meta.errors.map((error) => (
 									<p
 										key={error?.message}
-										className="mt-1 text-destructive text-xs"
+										className="mt-1 text-destructive text-sm"
 									>
 										{error?.message}
 									</p>

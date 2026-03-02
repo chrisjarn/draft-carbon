@@ -44,9 +44,9 @@ export function UserDropdown({ name, role }: { name: string; role: string }) {
 				<DropdownMenu>
 					<DropdownMenuTrigger>
 						<SidebarMenuButton>{initials}</SidebarMenuButton>
-						<div className="grid flex-1 text-left text-sm leading-tight">
+						<div className="grid flex-1 text-left text-base leading-tight">
 							<span className="truncate font-semibold">{name}</span>
-							<span className="truncate text-sidebar-foreground/50 text-xs">
+							<span className="truncate text-sidebar-foreground/50 text-sm">
 								{ROLE_LABELS[role] ?? role}
 							</span>
 						</div>

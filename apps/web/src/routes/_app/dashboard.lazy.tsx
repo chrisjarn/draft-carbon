@@ -10,22 +10,26 @@ import {
 import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createLazyFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import * as React from "react";
 import { useMemo, useState } from "react";
-import {
-	Bar,
-	BarChart,
-	CartesianGrid,
-	Cell,
-	ResponsiveContainer,
-	Tooltip,
-	XAxis,
-	YAxis,
-} from "recharts";
+import { Bar, BarChart, CartesianGrid, Cell, XAxis } from "recharts";
 
 import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
+import {
+	type ChartConfig,
+	ChartContainer,
+	ChartTooltip,
+	ChartTooltipContent,
+} from "@/components/ui/chart";
 import {
 	Select,
 	SelectContent,
@@ -89,21 +93,19 @@ function StatCard({
 	subtitleClass?: string;
 }) {
 	return (
-		<Card>
-			<CardHeader className="flex flex-row items-center justify-between pb-1">
+		<Card size="sm" className="flex h-full flex-col justify-between">
+			<CardHeader className="flex flex-row items-center justify-between pb-0">
 				<CardTitle className="font-medium text-muted-foreground text-xs uppercase tracking-widest">
 					{label}
 				</CardTitle>
-				<HugeiconsIcon icon={Icon} className="size-4 text-muted-foreground" />
+				<HugeiconsIcon icon={Icon} className="size-3.5 text-muted-foreground" />
 			</CardHeader>
 			<CardContent>
 				{loading ? (
-					<Skeleton className="h-8 w-24" />
+					<Skeleton className="h-6 w-20" />
 				) : (
 					<>
-						<div className="font-extrabold text-2xl tracking-tight">
-							{value}
-						</div>
+						<div className="font-bold text-xl tracking-tight">{value}</div>
 						{subtitle && (
 							<div
 								className={`mt-0.5 text-xs ${subtitleClass ?? "text-muted-foreground"}`}
@@ -138,7 +140,7 @@ function StateBadge({ stateId }: { stateId: string | null }) {
 	return (
 		<Badge
 			variant="outline"
-			className="text-[10px] uppercase"
+			className="absolute top-4 right-4 text-[10px] uppercase"
 			style={color ? { borderColor: color, color } : undefined}
 		>
 			{stateId}
@@ -184,7 +186,9 @@ function EntityCardsGrid({
 	}
 
 	if (!data || data.length === 0) {
-		return <p className="text-muted-foreground text-sm">No entities found.</p>;
+		return (
+			<p className="text-base text-muted-foreground">No entities found.</p>
+		);
 	}
 
 	return (
@@ -194,28 +198,28 @@ function EntityCardsGrid({
 					key={ent.id}
 					to="/capacity-plan"
 					search={{ entity: ent.id, fy }}
-					className="group"
+					className="group h-full"
 				>
-					<Card className="transition-colors group-hover:border-sidebar-primary/40">
-						<CardContent className="space-y-1.5 pt-4">
-							<div className="flex items-start justify-between gap-2">
-								<span className="font-semibold text-sm leading-tight">
-									{ent.biz}
-								</span>
-								<StateBadge stateId={ent.state} />
-							</div>
-							<div className="flex items-center gap-3 text-muted-foreground text-xs">
-								<span>{ent.headcount} staff</span>
-								<span className="text-border">|</span>
-								<span>{fmtDollar(ent.totalSalary)} salary</span>
-							</div>
-							{ent.sls.length > 0 && (
-								<div className="flex items-center gap-1 pt-0.5">
-									{ent.sls.map((sl) => (
-										<SlDot key={sl} sl={sl} />
-									))}
+					<Card className="relative flex h-full flex-col transition-colors group-hover:border-sidebar-primary/40">
+						<StateBadge stateId={ent.state} />
+						<CardContent className="flex flex-1 flex-col pt-4">
+							<span className="pr-12 font-semibold text-base leading-tight">
+								{ent.biz}
+							</span>
+							<div className="mt-auto flex flex-col gap-1.5 pt-3">
+								<div className="flex items-center gap-3 text-muted-foreground text-sm">
+									<span>{ent.headcount} staff</span>
+									<span className="text-border">|</span>
+									<span>{fmtDollar(ent.totalSalary)} salary</span>
 								</div>
-							)}
+								{ent.sls.length > 0 && (
+									<div className="flex items-center gap-1">
+										{ent.sls.map((sl) => (
+											<SlDot key={sl} sl={sl} />
+										))}
+									</div>
+								)}
+							</div>
 						</CardContent>
 					</Card>
 				</Link>
@@ -224,7 +228,7 @@ function EntityCardsGrid({
 	);
 }
 
-/* ─── Revenue Bar Chart ────────────────────────────────────────────────── */
+/* ─── Revenue Bar Chart (interactive, shadcn ChartContainer) ───────────── */
 
 type RevenueEntry = {
 	id: string;
@@ -234,6 +238,17 @@ type RevenueEntry = {
 	actual: number;
 	pct: number;
 };
+
+const revenueChartConfig = {
+	target: {
+		label: "Target",
+		color: "hsl(var(--muted-foreground))",
+	},
+	actual: {
+		label: "Actual",
+		color: "var(--color-emerald-500, #10b981)",
+	},
+} satisfies ChartConfig;
 
 function RevenueChart({
 	data,
@@ -245,14 +260,17 @@ function RevenueChart({
 	fy: string;
 }) {
 	const navigate = useNavigate();
+	const [activeChart, setActiveChart] = React.useState<"target" | "actual">(
+		"actual",
+	);
 
 	if (loading) {
-		return <Skeleton className="h-[350px] w-full" />;
+		return <Skeleton className="h-full min-h-[200px] w-full" />;
 	}
 
 	if (!data || data.length === 0) {
 		return (
-			<p className="py-8 text-center text-muted-foreground text-sm">
+			<p className="py-8 text-center text-base text-muted-foreground">
 				No revenue data for this FY.
 			</p>
 		);
@@ -260,85 +278,115 @@ function RevenueChart({
 
 	const chartData = data.map((d) => ({
 		...d,
-		name: d.biz.length > 18 ? `${d.biz.slice(0, 16)}...` : d.biz,
-		targetM: d.target / 1_000_000,
-		actualM: d.actual / 1_000_000,
+		name: d.biz.length > 14 ? `${d.biz.slice(0, 12)}…` : d.biz,
+		target: d.target,
+		actual: d.actual,
 	}));
 
+	const totals = {
+		target: data.reduce((s, d) => s + d.target, 0),
+		actual: data.reduce((s, d) => s + d.actual, 0),
+	};
+
 	return (
-		<ResponsiveContainer width="100%" height={350}>
-			<BarChart
-				data={chartData}
-				margin={{ top: 8, right: 16, left: 0, bottom: 60 }}
-			>
-				<CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-				<XAxis
-					dataKey="name"
-					angle={-45}
-					textAnchor="end"
-					tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
-					interval={0}
-					height={80}
-				/>
-				<YAxis
-					tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
-					tickFormatter={(v: number) => `$${v.toFixed(1)}m`}
-				/>
-				<Tooltip
-					content={({ active, payload }) => {
-						if (!active || !payload?.length) return null;
-						const item = payload[0]?.payload as (typeof chartData)[0];
-						return (
-							<div className="rounded-md border bg-popover px-3 py-2 shadow-md">
-								<div className="font-semibold text-sm">{item.biz}</div>
-								<div className="mt-1 space-y-0.5 text-xs">
-									<div>
-										Target:{" "}
-										<span className="font-medium">
-											{fmtDollar(item.target)}
-										</span>
-									</div>
-									<div>
-										Actual:{" "}
-										<span className="font-medium">
-											{fmtDollar(item.actual)}
-										</span>
-									</div>
-									<div className={revTextColor(item.pct)}>
-										{item.pct}% to target
-									</div>
-								</div>
-							</div>
-						);
-					}}
-				/>
-				<Bar
-					dataKey="targetM"
-					name="Target"
-					fill="hsl(var(--muted-foreground) / 0.3)"
-					radius={[2, 2, 0, 0]}
-				/>
-				<Bar
-					dataKey="actualM"
-					name="Actual"
-					radius={[2, 2, 0, 0]}
-					cursor="pointer"
-					onClick={(_data: unknown, index: number) => {
-						const entry = chartData[index];
-						if (entry) {
-							navigate({
-								to: "/capacity-plan",
-								search: { entity: entry.id, fy },
-							});
-						}
-					}}
-				>
-					{chartData.map((entry) => (
-						<Cell key={entry.id} fill={revColor(entry.pct)} />
+		<Card className="flex h-full flex-col py-0">
+			<CardHeader className="!p-0 flex flex-col items-stretch border-b sm:flex-row">
+				<div className="sm:!py-0 flex flex-1 flex-col justify-center gap-1 px-4 pt-3 pb-2">
+					<CardTitle className="text-sm">Revenue by Entity</CardTitle>
+					<CardDescription className="text-xs">{fy}</CardDescription>
+				</div>
+				<div className="flex">
+					{(["target", "actual"] as const).map((key) => (
+						<button
+							key={key}
+							type="button"
+							data-active={activeChart === key}
+							className="relative z-30 flex flex-1 flex-col justify-center gap-0.5 border-t px-4 py-2.5 text-left even:border-l data-[active=true]:bg-muted/50 sm:border-t-0 sm:border-l sm:px-6 sm:py-3"
+							onClick={() => setActiveChart(key)}
+						>
+							<span className="text-[10px] text-muted-foreground">
+								{revenueChartConfig[key].label}
+							</span>
+							<span className="font-bold text-base leading-none sm:text-lg">
+								{fmtDollar(totals[key])}
+							</span>
+						</button>
 					))}
-				</Bar>
-			</BarChart>
-		</ResponsiveContainer>
+				</div>
+			</CardHeader>
+			<CardContent className="flex-1 px-2 pt-3 sm:p-4">
+				<ChartContainer
+					config={revenueChartConfig}
+					className="aspect-auto h-[220px] w-full"
+				>
+					<BarChart
+						accessibilityLayer
+						data={chartData}
+						margin={{ left: 4, right: 4 }}
+					>
+						<CartesianGrid vertical={false} />
+						<XAxis
+							dataKey="name"
+							tickLine={false}
+							axisLine={false}
+							tickMargin={8}
+							minTickGap={24}
+						/>
+						<ChartTooltip
+							content={
+								<ChartTooltipContent
+									className="w-[180px]"
+									formatter={(value, _name, item) => {
+										const entry = item.payload as (typeof chartData)[0];
+										return (
+											<div className="space-y-1">
+												<div className="font-semibold">{entry.biz}</div>
+												<div className="flex justify-between">
+													<span className="text-muted-foreground">
+														{activeChart === "target" ? "Target" : "Actual"}
+													</span>
+													<span className="font-medium font-mono tabular-nums">
+														{fmtDollar(value as number)}
+													</span>
+												</div>
+												<div className={`text-xs ${revTextColor(entry.pct)}`}>
+													{entry.pct}% to target
+												</div>
+											</div>
+										);
+									}}
+								/>
+							}
+						/>
+						<Bar
+							dataKey={activeChart}
+							radius={[4, 4, 0, 0]}
+							cursor="pointer"
+							onClick={(_data: unknown, index: number) => {
+								const entry = chartData[index];
+								if (entry) {
+									navigate({
+										to: "/capacity-plan",
+										search: { entity: entry.id, fy },
+									});
+								}
+							}}
+						>
+							{chartData.map((entry) => (
+								<Cell
+									key={entry.id}
+									fill={
+										activeChart === "target"
+											? "hsl(var(--muted-foreground) / 0.3)"
+											: revColor(entry.pct)
+									}
+								/>
+							))}
+						</Bar>
+					</BarChart>
+				</ChartContainer>
+			</CardContent>
+		</Card>
 	);
 }
 
@@ -369,7 +417,9 @@ function SlBreakdownTable({
 	}
 
 	if (!data || data.length === 0) {
-		return <p className="text-muted-foreground text-sm">No data available.</p>;
+		return (
+			<p className="text-base text-muted-foreground">No data available.</p>
+		);
 	}
 
 	return (
@@ -434,7 +484,7 @@ function AlertsPanel({
 	return (
 		<Card>
 			<CardHeader>
-				<CardTitle className="text-sm">Alerts</CardTitle>
+				<CardTitle className="text-base">Alerts</CardTitle>
 			</CardHeader>
 			<CardContent className="space-y-3">
 				{data.map((alert) => (
@@ -448,8 +498,8 @@ function AlertsPanel({
 							className="mt-0.5 size-4 shrink-0 text-yellow-500"
 						/>
 						<div className="min-w-0">
-							<div className="font-medium text-sm">{alert.title}</div>
-							<div className="text-muted-foreground text-xs">
+							<div className="font-medium text-base">{alert.title}</div>
+							<div className="text-muted-foreground text-sm">
 								{alert.message}
 							</div>
 						</div>
@@ -640,7 +690,7 @@ function DashboardPage() {
 						/>
 						<div>
 							<h2 className="font-semibold text-lg">Connection Error</h2>
-							<p className="mt-1 text-muted-foreground text-sm">
+							<p className="mt-1 text-base text-muted-foreground">
 								Could not reach the API server. Make sure the backend is running
 								on port 3000.
 							</p>
@@ -669,7 +719,7 @@ function DashboardPage() {
 						/>
 						<div>
 							<h2 className="font-semibold text-lg">No Data Available</h2>
-							<p className="mt-1 text-muted-foreground text-sm">
+							<p className="mt-1 text-base text-muted-foreground">
 								The database is empty. Seed some data or add carbonites and
 								entities to get started.
 							</p>
@@ -689,25 +739,10 @@ function DashboardPage() {
 
 	return (
 		<div className="flex h-full flex-col">
-			<PageHeader>
-				<div className="flex items-center gap-3">
-					<Select value={activeFy} onValueChange={setFy}>
-						<SelectTrigger className="w-[130px]">
-							<SelectValue />
-						</SelectTrigger>
-						<SelectContent>
-							{FY_OPTIONS.map((f) => (
-								<SelectItem key={f} value={f}>
-									{f}
-								</SelectItem>
-							))}
-						</SelectContent>
-					</Select>
-				</div>
-			</PageHeader>
+			<PageHeader />
 
-			<div className="flex flex-1 flex-col gap-6 overflow-auto p-6">
-				{/* State filter tabs */}
+			{/* State filter tabs — attached below header */}
+			<div className="flex items-center justify-between border-border border-b bg-white px-6 pt-2">
 				<Tabs
 					value={stateFilter ?? "all"}
 					onValueChange={(val) => setStateFilter(val === "all" ? null : val)}
@@ -721,66 +756,76 @@ function DashboardPage() {
 						))}
 					</TabsList>
 				</Tabs>
+				<Select value={activeFy} onValueChange={setFy}>
+					<SelectTrigger className="w-32">
+						<SelectValue />
+					</SelectTrigger>
+					<SelectContent>
+						{FY_OPTIONS.map((f) => (
+							<SelectItem key={f} value={f}>
+								{f}
+							</SelectItem>
+						))}
+					</SelectContent>
+				</Select>
+			</div>
 
-				{/* KPI strip */}
-				<div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-					<StatCard
-						label="Total Carbonites"
-						value={filteredStats?.totalCarbonites ?? 0}
-						icon={UserGroupIcon}
-						loading={stats.isLoading}
-					/>
-					<StatCard
-						label="Total FTE"
-						value={filteredStats?.totalFte ?? 0}
-						icon={Briefcase01Icon}
-						loading={stats.isLoading}
-					/>
-					<StatCard
-						label="Revenue Target"
-						value={fmtDollar(filteredStats?.revenueTarget)}
-						icon={ChartLineData03Icon}
-						loading={stats.isLoading}
-						subtitle={activeFy}
-					/>
-					<StatCard
-						label="Revenue Actual"
-						value={fmtDollar(filteredStats?.revenueActual)}
-						icon={BarChartIcon}
-						loading={stats.isLoading}
-						subtitle={
-							filteredStats
-								? `${filteredStats.revenuePct}% to target`
-								: undefined
-						}
-						subtitleClass={
-							filteredStats ? revTextColor(filteredStats.revenuePct) : undefined
-						}
+			<div className="flex flex-1 flex-col gap-4 overflow-auto p-4">
+				{/* KPI + Revenue Chart — side by side */}
+				<div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+					{/* KPI cards — 2x2 grid */}
+					<div className="grid grid-cols-2 gap-3">
+						<StatCard
+							label="Total Carbonites"
+							value={filteredStats?.totalCarbonites ?? 0}
+							icon={UserGroupIcon}
+							loading={stats.isLoading}
+						/>
+						<StatCard
+							label="Total FTE"
+							value={filteredStats?.totalFte ?? 0}
+							icon={Briefcase01Icon}
+							loading={stats.isLoading}
+						/>
+						<StatCard
+							label="Revenue Target"
+							value={fmtDollar(filteredStats?.revenueTarget)}
+							icon={ChartLineData03Icon}
+							loading={stats.isLoading}
+							subtitle={activeFy}
+						/>
+						<StatCard
+							label="Revenue Actual"
+							value={fmtDollar(filteredStats?.revenueActual)}
+							icon={BarChartIcon}
+							loading={stats.isLoading}
+							subtitle={
+								filteredStats
+									? `${filteredStats.revenuePct}% to target`
+									: undefined
+							}
+							subtitleClass={
+								filteredStats
+									? revTextColor(filteredStats.revenuePct)
+									: undefined
+							}
+						/>
+					</div>
+
+					{/* Revenue Chart */}
+					<RevenueChart
+						data={filteredRevenue}
+						loading={revenueByEntity.isLoading}
+						fy={activeFy}
 					/>
 				</div>
-
-				{/* Revenue Chart */}
-				<Card>
-					<CardHeader>
-						<CardTitle className="text-sm">
-							Revenue by Entity — {activeFy}
-						</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<RevenueChart
-							data={filteredRevenue}
-							loading={revenueByEntity.isLoading}
-							fy={activeFy}
-						/>
-					</CardContent>
-				</Card>
 
 				{/* Alerts */}
 				<AlertsPanel data={alerts.data} loading={alerts.isLoading} />
 
 				{/* Entity Cards */}
 				<div>
-					<h2 className="mb-3 font-semibold text-sm tracking-tight">
+					<h2 className="mb-3 font-semibold text-base tracking-tight">
 						Entities
 					</h2>
 					<EntityCardsGrid
@@ -793,7 +838,7 @@ function DashboardPage() {
 				{/* SL Breakdown */}
 				<Card>
 					<CardHeader>
-						<CardTitle className="text-sm">Service Line Breakdown</CardTitle>
+						<CardTitle className="text-base">Service Line Breakdown</CardTitle>
 					</CardHeader>
 					<CardContent>
 						<SlBreakdownTable

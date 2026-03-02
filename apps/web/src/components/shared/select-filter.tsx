@@ -22,7 +22,7 @@ export function SelectFilter({
 			value={value || "__all__"}
 			onValueChange={(v) => onChange(v ?? "__all__")}
 		>
-			<SelectTrigger className="h-8 w-36 text-xs">
+			<SelectTrigger className="w-36 text-sm">
 				<SelectValue placeholder={placeholder} />
 			</SelectTrigger>
 			<SelectContent>

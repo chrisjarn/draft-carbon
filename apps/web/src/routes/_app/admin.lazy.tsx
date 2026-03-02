@@ -1,8 +1,4 @@
-import {
-	Delete02Icon,
-	PlusSignIcon,
-	Shield01Icon,
-} from "@hugeicons/core-free-icons";
+import { Delete02Icon, PlusSignIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createLazyFileRoute } from "@tanstack/react-router";
@@ -161,19 +157,12 @@ function AdminPage() {
 
 	return (
 		<div className="flex h-full flex-col">
-			<PageHeader
-				description={`${users.length} user${users.length !== 1 ? "s" : ""} · role management`}
-			>
-				<HugeiconsIcon
-					icon={Shield01Icon}
-					className="size-4 text-muted-foreground"
-				/>
-			</PageHeader>
+			<PageHeader />
 
 			{/* Table */}
 			<div className="flex-1 overflow-auto">
 				{query.isPending ? (
-					<div className="flex h-40 items-center justify-center text-muted-foreground text-xs">
+					<div className="flex h-40 items-center justify-center text-muted-foreground text-sm">
 						Loading…
 					</div>
 				) : (
@@ -201,7 +190,7 @@ function AdminPage() {
 													{initials(u.name)}
 												</div>
 												<div>
-													<p className="font-medium text-sm">{u.name}</p>
+													<p className="font-medium text-base">{u.name}</p>
 													{isMe && (
 														<span className="text-[10px] text-muted-foreground">
 															You
@@ -210,7 +199,7 @@ function AdminPage() {
 												</div>
 											</div>
 										</TableCell>
-										<TableCell className="text-muted-foreground text-xs">
+										<TableCell className="text-muted-foreground text-sm">
 											{u.email}
 										</TableCell>
 										<TableCell>
@@ -218,7 +207,7 @@ function AdminPage() {
 										</TableCell>
 										<TableCell>
 											{isMe ? (
-												<span className="text-muted-foreground text-xs">—</span>
+												<span className="text-muted-foreground text-sm">—</span>
 											) : (
 												<Select
 													value={u.role}
@@ -230,7 +219,7 @@ function AdminPage() {
 													}
 													disabled={updateRole.isPending}
 												>
-													<SelectTrigger className="h-7 w-44 text-xs">
+													<SelectTrigger size="sm" className="w-44 text-sm">
 														<span className="flex flex-1 truncate text-left">
 															{ROLES.find((r) => r.value === u.role)?.label ??
 																u.role}
@@ -241,7 +230,7 @@ function AdminPage() {
 															<SelectItem
 																key={r.value}
 																value={r.value}
-																className="text-xs"
+																className="text-sm"
 															>
 																{r.label}
 															</SelectItem>
@@ -263,7 +252,7 @@ function AdminPage() {
 													}
 													disabled={updateRole.isPending}
 												>
-													<SelectTrigger className="h-7 w-36 text-xs">
+													<SelectTrigger size="sm" className="w-36 text-sm">
 														<span className="flex flex-1 truncate text-left">
 															{STATES.find((s) => s.id === u.assignedState)
 																?.abbr ?? "Select state"}
@@ -275,7 +264,7 @@ function AdminPage() {
 															<SelectItem
 																key={s.id}
 																value={s.id}
-																className="text-xs"
+																className="text-sm"
 															>
 																{s.name}
 															</SelectItem>
@@ -294,7 +283,7 @@ function AdminPage() {
 													}
 													disabled={updateRole.isPending}
 												>
-													<SelectTrigger className="h-7 w-36 text-xs">
+													<SelectTrigger size="sm" className="w-36 text-sm">
 														<span className="flex flex-1 truncate text-left">
 															{SERVICE_LINES.find(
 																(sl) => sl.id === u.assignedServiceLine,
@@ -309,7 +298,7 @@ function AdminPage() {
 															<SelectItem
 																key={sl.id}
 																value={sl.id}
-																className="text-xs"
+																className="text-sm"
 															>
 																{sl.name}
 															</SelectItem>
@@ -317,10 +306,10 @@ function AdminPage() {
 													</SelectContent>
 												</Select>
 											) : (
-												<span className="text-muted-foreground text-xs">—</span>
+												<span className="text-muted-foreground text-sm">—</span>
 											)}
 										</TableCell>
-										<TableCell className="text-muted-foreground text-xs">
+										<TableCell className="text-muted-foreground text-sm">
 											{fmtDate(u.createdAt)}
 										</TableCell>
 										<TableCell>
@@ -358,8 +347,8 @@ function AdminPage() {
 			<div className="border-border border-t px-6 py-4">
 				<div className="mb-3 flex items-center justify-between">
 					<div>
-						<h2 className="font-semibold text-sm">Entities</h2>
-						<p className="text-muted-foreground text-xs">
+						<h2 className="font-semibold text-base">Entities</h2>
+						<p className="text-muted-foreground text-sm">
 							{entitiesQuery.data?.length ?? 0} entities
 						</p>
 					</div>
@@ -376,7 +365,7 @@ function AdminPage() {
 				</div>
 				<div className="flex flex-wrap gap-1.5">
 					{(entitiesQuery.data ?? []).map((e) => (
-						<Badge key={e.id} variant="outline" className="text-xs">
+						<Badge key={e.id} variant="outline" className="text-sm">
 							{e.biz}
 							{e.state && (
 								<span className="ml-1 text-muted-foreground">({e.state})</span>
@@ -406,7 +395,7 @@ function AdminPage() {
 									setEntityForm((f) => ({ ...f, biz: e.target.value }))
 								}
 								placeholder="e.g. Carbon Perth"
-								className="h-8 text-xs"
+								className="h-8 text-sm"
 							/>
 						</div>
 						<div>
@@ -422,7 +411,7 @@ function AdminPage() {
 									}))
 								}
 							>
-								<SelectTrigger className="h-8 text-xs">
+								<SelectTrigger className="text-sm">
 									<span className="flex flex-1 truncate text-left">
 										{STATES.find((s) => s.id === entityForm.state)?.name ??
 											"Select state"}
@@ -431,7 +420,7 @@ function AdminPage() {
 								<SelectContent>
 									<SelectItem value="__none__">Select state</SelectItem>
 									{STATES.map((s) => (
-										<SelectItem key={s.id} value={s.id} className="text-xs">
+										<SelectItem key={s.id} value={s.id} className="text-sm">
 											{s.name}
 										</SelectItem>
 									))}
@@ -469,7 +458,7 @@ function AdminPage() {
 					<DialogHeader>
 						<DialogTitle>Delete User</DialogTitle>
 					</DialogHeader>
-					<p className="text-muted-foreground text-sm">
+					<p className="text-muted-foreground text-base">
 						Delete <strong>{deleteTarget?.name}</strong> ({deleteTarget?.email}
 						)? This will remove their account and all sessions. This cannot be
 						undone.

@@ -57,7 +57,7 @@ function MenubarTrigger({
 		<DropdownMenuTrigger
 			data-slot="menubar-trigger"
 			className={cn(
-				"flex select-none items-center rounded-none px-1.5 py-[calc(--spacing(0.8))] font-medium text-xs outline-hidden hover:bg-muted aria-expanded:bg-muted",
+				"flex select-none items-center rounded-none px-1.5 py-[calc(--spacing(0.8))] font-medium text-sm outline-hidden hover:bg-muted aria-expanded:bg-muted",
 				className,
 			)}
 			{...props}
@@ -99,7 +99,7 @@ function MenubarItem({
 			data-inset={inset}
 			data-variant={variant}
 			className={cn(
-				"group/menubar-item gap-2 rounded-none px-2 py-2 text-xs focus:bg-accent focus:text-accent-foreground not-data-[variant=destructive]:focus:**:text-accent-foreground data-inset:pl-8 data-[variant=destructive]:text-destructive data-disabled:opacity-50 data-[variant=destructive]:focus:bg-destructive/10 data-[variant=destructive]:focus:text-destructive dark:data-[variant=destructive]:focus:bg-destructive/20 [&_svg:not([class*='size-'])]:size-4 data-[variant=destructive]:*:[svg]:text-destructive!",
+				"group/menubar-item gap-2 rounded-none px-2 py-2 text-sm focus:bg-accent focus:text-accent-foreground not-data-[variant=destructive]:focus:**:text-accent-foreground data-inset:pl-8 data-[variant=destructive]:text-destructive data-disabled:opacity-50 data-[variant=destructive]:focus:bg-destructive/10 data-[variant=destructive]:focus:text-destructive dark:data-[variant=destructive]:focus:bg-destructive/20 [&_svg:not([class*='size-'])]:size-4 data-[variant=destructive]:*:[svg]:text-destructive!",
 				className,
 			)}
 			{...props}
@@ -121,7 +121,7 @@ function MenubarCheckboxItem({
 			data-slot="menubar-checkbox-item"
 			data-inset={inset}
 			className={cn(
-				"relative flex cursor-default select-none items-center gap-2 rounded-none py-2 pr-28 pl-8 text-xs outline-hidden focus:bg-accent focus:text-accent-foreground focus:**:text-accent-foreground data-disabled:pointer-events-none data-inset:pl-8 data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+				"relative flex cursor-default select-none items-center gap-2 rounded-none py-2 pr-28 pl-8 text-sm outline-hidden focus:bg-accent focus:text-accent-foreground focus:**:text-accent-foreground data-disabled:pointer-events-none data-inset:pl-8 data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
 				className,
 			)}
 			checked={checked}
@@ -156,7 +156,7 @@ function MenubarRadioItem({
 			data-slot="menubar-radio-item"
 			data-inset={inset}
 			className={cn(
-				"relative flex cursor-default select-none items-center gap-2 rounded-none py-2 pr-2 pl-8 text-xs outline-hidden focus:bg-accent focus:text-accent-foreground focus:**:text-accent-foreground data-disabled:pointer-events-none data-inset:pl-8 data-disabled:opacity-50 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+				"relative flex cursor-default select-none items-center gap-2 rounded-none py-2 pr-2 pl-8 text-sm outline-hidden focus:bg-accent focus:text-accent-foreground focus:**:text-accent-foreground data-disabled:pointer-events-none data-inset:pl-8 data-disabled:opacity-50 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
 				className,
 			)}
 			{...props}
@@ -182,7 +182,7 @@ function MenubarLabel({
 		<DropdownMenuLabel
 			data-slot="menubar-label"
 			data-inset={inset}
-			className={cn("px-2 py-2 text-xs data-inset:pl-8", className)}
+			className={cn("px-2 py-2 text-sm data-inset:pl-8", className)}
 			{...props}
 		/>
 	);
@@ -209,7 +209,7 @@ function MenubarShortcut({
 		<DropdownMenuShortcut
 			data-slot="menubar-shortcut"
 			className={cn(
-				"ml-auto text-muted-foreground text-xs tracking-widest group-focus/menubar-item:text-accent-foreground",
+				"ml-auto text-muted-foreground text-sm tracking-widest group-focus/menubar-item:text-accent-foreground",
 				className,
 			)}
 			{...props}
@@ -235,7 +235,7 @@ function MenubarSubTrigger({
 			data-slot="menubar-sub-trigger"
 			data-inset={inset}
 			className={cn(
-				"gap-2 rounded-none px-2 py-2 text-xs focus:bg-accent focus:text-accent-foreground data-open:bg-accent data-inset:pl-8 data-open:text-accent-foreground [&_svg:not([class*='size-'])]:size-4",
+				"gap-2 rounded-none px-2 py-2 text-sm focus:bg-accent focus:text-accent-foreground data-open:bg-accent data-inset:pl-8 data-open:text-accent-foreground [&_svg:not([class*='size-'])]:size-4",
 				className,
 			)}
 			{...props}

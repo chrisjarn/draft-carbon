@@ -48,13 +48,13 @@ export function NotificationsPopover({
 							<AvatarFallback>{fallback}</AvatarFallback>
 						</Avatar>
 						<div className="flex flex-col">
-							<span className="font-medium text-sm">{text}</span>
-							<span className="text-muted-foreground text-xs">{time}</span>
+							<span className="font-medium text-base">{text}</span>
+							<span className="text-muted-foreground text-sm">{time}</span>
 						</div>
 					</DropdownMenuItem>
 				))}
 				<DropdownMenuSeparator />
-				<DropdownMenuItem className="justify-center text-muted-foreground text-sm hover:text-primary">
+				<DropdownMenuItem className="justify-center text-muted-foreground text-base hover:text-primary">
 					View all notifications
 				</DropdownMenuItem>
 			</DropdownMenuContent>

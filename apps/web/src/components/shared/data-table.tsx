@@ -89,12 +89,12 @@ export function DataTable<TData>({
 		<div className="w-full space-y-4">
 			<div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 				<div className="flex items-center gap-2">
-					<span className="text-muted-foreground text-sm">Show</span>
+					<span className="text-muted-foreground text-base">Show</span>
 					<Select
 						value={String(table.getState().pagination.pageSize)}
 						onValueChange={(value) => table.setPageSize(Number(value))}
 					>
-						<SelectTrigger className="h-8 w-16">
+						<SelectTrigger className="w-16">
 							<SelectValue />
 						</SelectTrigger>
 						<SelectContent>
@@ -105,7 +105,7 @@ export function DataTable<TData>({
 							))}
 						</SelectContent>
 					</Select>
-					<span className="text-muted-foreground text-sm">entries</span>
+					<span className="text-muted-foreground text-base">entries</span>
 				</div>
 				<Input
 					placeholder={searchPlaceholder}
@@ -168,7 +168,7 @@ export function DataTable<TData>({
 
 			{pageCount > 1 && (
 				<div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-					<p className="text-pretty text-muted-foreground text-sm">
+					<p className="text-pretty text-muted-foreground text-base">
 						Showing{" "}
 						{table.getState().pagination.pageIndex *
 							table.getState().pagination.pageSize +

@@ -90,7 +90,7 @@ function TodosPage() {
 									/>
 								</div>
 							) : todos.data?.length === 0 ? (
-								<p className="py-4 text-center text-muted-foreground text-sm">
+								<p className="py-4 text-center text-muted-foreground text-base">
 									No todos yet. Add one above!
 								</p>
 							) : (

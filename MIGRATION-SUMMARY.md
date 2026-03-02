@@ -250,7 +250,7 @@ shadcn config URL: https://ui.shadcn.com/create?base=base&style=maia&baseColor=z
 ### Core UI Components Rebuilt (from official base-maia source)
 | Component | Key Changes |
 |-----------|-------------|
-| `ui/card.tsx` | `rounded-2xl`, `gap-6`, `py-6`, `px-6`, `text-sm`, `text-base` title |
+| `ui/card.tsx` | `rounded-2xl`, `gap-6`, `py-6`, `px-6`, `text-base`, `text-base` title |
 | `ui/sidebar.tsx` | Proper radii (`rounded-lg` floating inner, `rounded-xl` SidebarInset), gaps, sizing, HugeiconsIcon trigger |
 
 ### Icon Migration: lucide-react → Hugeicons (all 37 icons)

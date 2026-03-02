@@ -144,12 +144,12 @@ function RevenueCell({
 	const [val, setVal] = useState(value ?? "");
 
 	if (disabled)
-		return <span className="text-xs tabular-nums">{fmt(value)}</span>;
+		return <span className="text-sm tabular-nums">{fmt(value)}</span>;
 
 	if (editing) {
 		return (
 			<div className="flex items-center gap-1">
-				<span className="text-muted-foreground text-xs">$</span>
+				<span className="text-muted-foreground text-sm">$</span>
 				<Input
 					type="number"
 					value={val}
@@ -161,7 +161,7 @@ function RevenueCell({
 						}
 						if (e.key === "Escape") setEditing(false);
 					}}
-					className="h-6 w-24 text-xs"
+					className="h-6 w-24 text-sm"
 					autoFocus
 				/>
 				<button
@@ -180,7 +180,7 @@ function RevenueCell({
 
 	return (
 		<div className="group flex items-center gap-1">
-			<span className="text-xs tabular-nums">{fmt(value)}</span>
+			<span className="text-sm tabular-nums">{fmt(value)}</span>
 			<button
 				type="button"
 				onClick={() => {
@@ -245,7 +245,7 @@ function EntityRow({
 
 	return (
 		<div className="grid grid-cols-[1fr_130px_130px_110px_160px_80px] items-center gap-4 px-4 py-2.5 hover:bg-muted/20">
-			<span className="pl-8 text-xs">{entity.biz}</span>
+			<span className="pl-8 text-sm">{entity.biz}</span>
 			<RevenueCell
 				value={target}
 				onSave={(v) => onSave(entity.id, "target", v)}
@@ -257,13 +257,13 @@ function EntityRow({
 				disabled={!canWriteAccess}
 			/>
 			<span
-				className={`font-medium text-xs tabular-nums ${v.positive === null ? "text-muted-foreground" : v.positive ? "text-green-400" : "text-red-400"}`}
+				className={`font-medium text-sm tabular-nums ${v.positive === null ? "text-muted-foreground" : v.positive ? "text-green-400" : "text-red-400"}`}
 			>
 				{v.val}
 			</span>
 			<RevenueBar target={target} actual={actual} />
 			<span
-				className={`font-medium text-xs tabular-nums ${pct === null ? "text-muted-foreground" : pct >= 100 ? "text-green-400" : pct >= 80 ? "text-amber-400" : "text-red-400"}`}
+				className={`font-medium text-sm tabular-nums ${pct === null ? "text-muted-foreground" : pct >= 100 ? "text-green-400" : pct >= 80 ? "text-amber-400" : "text-red-400"}`}
 			>
 				{pct !== null ? `${pct}%` : "\u2014"}
 			</span>
@@ -313,14 +313,14 @@ function StateSection({
 						{group.entities.length} entities
 					</Badge>
 				</div>
-				<span className="font-medium text-xs tabular-nums">
+				<span className="font-medium text-sm tabular-nums">
 					{fmt(String(group.totalTarget))}
 				</span>
-				<span className="font-medium text-xs tabular-nums">
+				<span className="font-medium text-sm tabular-nums">
 					{fmt(String(group.totalActual))}
 				</span>
 				<span
-					className={`font-medium text-xs tabular-nums ${v.positive === null ? "text-muted-foreground" : v.positive ? "text-green-400" : "text-red-400"}`}
+					className={`font-medium text-sm tabular-nums ${v.positive === null ? "text-muted-foreground" : v.positive ? "text-green-400" : "text-red-400"}`}
 				>
 					{v.val}
 				</span>
@@ -329,7 +329,7 @@ function StateSection({
 					actual={String(group.totalActual)}
 				/>
 				<span
-					className={`font-medium text-xs tabular-nums ${pct === null ? "text-muted-foreground" : pct >= 100 ? "text-green-400" : pct >= 80 ? "text-amber-400" : "text-red-400"}`}
+					className={`font-medium text-sm tabular-nums ${pct === null ? "text-muted-foreground" : pct >= 100 ? "text-green-400" : pct >= 80 ? "text-amber-400" : "text-red-400"}`}
 				>
 					{pct !== null ? `${pct}%` : "\u2014"}
 				</span>
@@ -446,7 +446,7 @@ function CsvImportDialog({
 					<DialogTitle>Import Prior Year Data ({fy})</DialogTitle>
 				</DialogHeader>
 
-				<p className="text-muted-foreground text-xs">
+				<p className="text-muted-foreground text-sm">
 					Paste CSV data with format:{" "}
 					<code className="rounded bg-muted px-1 py-0.5">
 						state,office,pod_name,budget
@@ -459,7 +459,7 @@ function CsvImportDialog({
 					placeholder={
 						"nsw,parramatta,Acc & Tax,150000\nvic,elsternwick,BKK,120000"
 					}
-					className="min-h-24 font-mono text-xs"
+					className="min-h-24 font-mono text-sm"
 				/>
 
 				{parsed.length > 0 && (
@@ -618,7 +618,7 @@ function PodComparisonTable({ priorFy }: { priorFy: string }) {
 
 	if (podBudgetsQuery.isPending || priorYearQuery.isPending) {
 		return (
-			<div className="flex h-24 items-center justify-center text-muted-foreground text-xs">
+			<div className="flex h-24 items-center justify-center text-muted-foreground text-sm">
 				Loading pod comparison...
 			</div>
 		);
@@ -626,7 +626,7 @@ function PodComparisonTable({ priorFy }: { priorFy: string }) {
 
 	if (comparison.length === 0) {
 		return (
-			<div className="flex h-24 items-center justify-center text-muted-foreground text-xs">
+			<div className="flex h-24 items-center justify-center text-muted-foreground text-sm">
 				No pod budgets available for comparison.
 			</div>
 		);
@@ -733,56 +733,43 @@ function FyPlanningPage() {
 
 	return (
 		<div className="flex h-full flex-col">
-			<PageHeader
-				description={
-					<>
-						Revenue targets vs actuals · {fmt(String(totalTarget))} target ·{" "}
-						{fmt(String(totalActual))} actual
-						{overallPct !== null && (
-							<span
-								className={`ml-2 font-semibold ${overallPct >= 100 ? "text-green-400" : overallPct >= 80 ? "text-amber-400" : "text-red-400"}`}
-							>
-								{overallPct}% attainment
-							</span>
-						)}
-					</>
-				}
-			>
-				<div className="flex items-center gap-2">
+			<PageHeader />
+
+			{/* Toolbar */}
+			<div className="flex items-center justify-end gap-2 border-border border-b bg-white px-6 py-2">
+				<Button
+					variant="outline"
+					size="sm"
+					onClick={() => exportRevenueCsv(rows, fy)}
+					className="gap-1.5 text-sm"
+				>
+					<HugeiconsIcon icon={Download01Icon} className="size-3.5" />
+					Export CSV
+				</Button>
+				{hasWriteAccess && (
 					<Button
 						variant="outline"
 						size="sm"
-						onClick={() => exportRevenueCsv(rows, fy)}
-						className="gap-1.5 text-xs"
+						onClick={() => setImportOpen(true)}
+						className="gap-1.5 text-sm"
 					>
-						<HugeiconsIcon icon={Download01Icon} className="size-3.5" />
-						Export CSV
+						<HugeiconsIcon icon={Upload01Icon} className="size-3.5" />
+						Import CSV
 					</Button>
-					{hasWriteAccess && (
-						<Button
-							variant="outline"
-							size="sm"
-							onClick={() => setImportOpen(true)}
-							className="gap-1.5 text-xs"
-						>
-							<HugeiconsIcon icon={Upload01Icon} className="size-3.5" />
-							Import CSV
-						</Button>
-					)}
-					<Select value={fy} onValueChange={(v) => v && setFy(v)}>
-						<SelectTrigger className="h-8 w-32 text-xs">
-							<SelectValue />
-						</SelectTrigger>
-						<SelectContent>
-							{FY_OPTIONS.map((f) => (
-								<SelectItem key={f} value={f}>
-									{f}
-								</SelectItem>
-							))}
-						</SelectContent>
-					</Select>
-				</div>
-			</PageHeader>
+				)}
+				<Select value={fy} onValueChange={(v) => v && setFy(v)}>
+					<SelectTrigger className="w-32 text-sm">
+						<SelectValue />
+					</SelectTrigger>
+					<SelectContent>
+						{FY_OPTIONS.map((f) => (
+							<SelectItem key={f} value={f}>
+								{f}
+							</SelectItem>
+						))}
+					</SelectContent>
+				</Select>
+			</div>
 
 			{/* Column headers */}
 			<div className="border-border border-b px-6 py-2.5">
@@ -799,11 +786,11 @@ function FyPlanningPage() {
 			{/* Content */}
 			<div className="flex-1 overflow-auto p-6">
 				{query.isPending ? (
-					<div className="flex h-40 items-center justify-center text-muted-foreground text-xs">
+					<div className="flex h-40 items-center justify-center text-muted-foreground text-sm">
 						Loading...
 					</div>
 				) : groups.length === 0 ? (
-					<div className="flex h-40 flex-col items-center justify-center gap-2 text-muted-foreground text-xs">
+					<div className="flex h-40 flex-col items-center justify-center gap-2 text-muted-foreground text-sm">
 						<p>No entities found.</p>
 						<p className="text-[11px]">
 							Seed entities data to see FY revenue planning.
@@ -835,7 +822,7 @@ function FyPlanningPage() {
 			{/* Footer totals */}
 			{groups.length > 0 && (
 				<div className="border-border border-t px-6 py-3">
-					<div className="grid grid-cols-[1fr_130px_130px_110px_160px_80px] gap-4 font-semibold text-xs">
+					<div className="grid grid-cols-[1fr_130px_130px_110px_160px_80px] gap-4 font-semibold text-sm">
 						<span className="text-muted-foreground">Total ({fy})</span>
 						<span className="tabular-nums">{fmt(String(totalTarget))}</span>
 						<span className="tabular-nums">{fmt(String(totalActual))}</span>

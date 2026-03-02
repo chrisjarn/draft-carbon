@@ -187,7 +187,7 @@ function DetailSheet({
 
 								{role.notes && (
 									<DetailSection title="Notes">
-										<p className="whitespace-pre-wrap text-muted-foreground text-xs">
+										<p className="whitespace-pre-wrap text-muted-foreground text-sm">
 											{role.notes}
 										</p>
 									</DetailSection>
@@ -355,7 +355,7 @@ function HiringDialog({
 							<Input
 								value={form.role}
 								onChange={(e) => set("role")(e.target.value)}
-								className="h-8 text-xs"
+								className="h-8 text-sm"
 							/>
 						</div>
 						<div>
@@ -365,7 +365,7 @@ function HiringDialog({
 							<Input
 								value={form.sl}
 								onChange={(e) => set("sl")(e.target.value)}
-								className="h-8 text-xs"
+								className="h-8 text-sm"
 							/>
 						</div>
 						<div>
@@ -375,7 +375,7 @@ function HiringDialog({
 							<Input
 								value={form.sg}
 								onChange={(e) => set("sg")(e.target.value)}
-								className="h-8 text-xs"
+								className="h-8 text-sm"
 							/>
 						</div>
 						<div>
@@ -385,7 +385,7 @@ function HiringDialog({
 							<Input
 								value={form.state}
 								onChange={(e) => set("state")(e.target.value)}
-								className="h-8 text-xs"
+								className="h-8 text-sm"
 							/>
 						</div>
 						<div>
@@ -395,7 +395,7 @@ function HiringDialog({
 							<Input
 								value={form.office}
 								onChange={(e) => set("office")(e.target.value)}
-								className="h-8 text-xs"
+								className="h-8 text-sm"
 							/>
 						</div>
 						<div>
@@ -405,7 +405,7 @@ function HiringDialog({
 							<Input
 								value={form.location}
 								onChange={(e) => set("location")(e.target.value)}
-								className="h-8 text-xs"
+								className="h-8 text-sm"
 							/>
 						</div>
 						<div>
@@ -417,7 +417,7 @@ function HiringDialog({
 								min={1}
 								value={form.positions}
 								onChange={(e) => set("positions")(e.target.value)}
-								className="h-8 text-xs"
+								className="h-8 text-sm"
 							/>
 						</div>
 						<div>
@@ -425,7 +425,7 @@ function HiringDialog({
 								Type
 							</Label>
 							<Select value={form.type} onValueChange={set("type")}>
-								<SelectTrigger className="h-8 text-xs">
+								<SelectTrigger className="text-sm">
 									<SelectValue />
 								</SelectTrigger>
 								<SelectContent>
@@ -440,7 +440,7 @@ function HiringDialog({
 								Priority
 							</Label>
 							<Select value={form.priority} onValueChange={set("priority")}>
-								<SelectTrigger className="h-8 text-xs">
+								<SelectTrigger className="text-sm">
 									<SelectValue />
 								</SelectTrigger>
 								<SelectContent>
@@ -459,7 +459,7 @@ function HiringDialog({
 								type="number"
 								value={form.salaryMin}
 								onChange={(e) => set("salaryMin")(e.target.value)}
-								className="h-8 text-xs"
+								className="h-8 text-sm"
 								placeholder="e.g. 65000"
 							/>
 						</div>
@@ -471,7 +471,7 @@ function HiringDialog({
 								type="number"
 								value={form.salaryMax}
 								onChange={(e) => set("salaryMax")(e.target.value)}
-								className="h-8 text-xs"
+								className="h-8 text-sm"
 								placeholder="e.g. 80000"
 							/>
 						</div>
@@ -482,7 +482,7 @@ function HiringDialog({
 							<Input
 								value={form.targetStart}
 								onChange={(e) => set("targetStart")(e.target.value)}
-								className="h-8 text-xs"
+								className="h-8 text-sm"
 								placeholder="e.g. Mar 2025"
 							/>
 						</div>
@@ -493,7 +493,7 @@ function HiringDialog({
 							<Input
 								value={form.approvedBy}
 								onChange={(e) => set("approvedBy")(e.target.value)}
-								className="h-8 text-xs"
+								className="h-8 text-sm"
 							/>
 						</div>
 						<div className="col-span-2">
@@ -503,7 +503,7 @@ function HiringDialog({
 							<Input
 								value={form.managedBy}
 								onChange={(e) => set("managedBy")(e.target.value)}
-								className="h-8 text-xs"
+								className="h-8 text-sm"
 							/>
 						</div>
 						<div className="col-span-2">
@@ -513,7 +513,7 @@ function HiringDialog({
 							<Textarea
 								value={form.notes}
 								onChange={(e) => set("notes")(e.target.value)}
-								className="text-xs"
+								className="text-sm"
 								rows={3}
 							/>
 						</div>
@@ -569,7 +569,7 @@ function CloseRoleDialog({
 							Outcome
 						</Label>
 						<Select value={how} onValueChange={(v) => setHow(v as typeof how)}>
-							<SelectTrigger className="h-8 text-xs">
+							<SelectTrigger className="text-sm">
 								<SelectValue />
 							</SelectTrigger>
 							<SelectContent>
@@ -587,7 +587,7 @@ function CloseRoleDialog({
 							type="date"
 							value={date}
 							onChange={(e) => setDate(e.target.value)}
-							className="h-8 text-xs"
+							className="h-8 text-sm"
 						/>
 					</div>
 					{how === "hired" && (
@@ -598,7 +598,7 @@ function CloseRoleDialog({
 							<Input
 								value={name}
 								onChange={(e) => setName(e.target.value)}
-								className="h-8 text-xs"
+								className="h-8 text-sm"
 								placeholder="Full name"
 							/>
 						</div>
@@ -747,14 +747,14 @@ function HiringPage() {
 				accessorKey: "role",
 				header: "Role",
 				cell: ({ row }) => (
-					<span className="font-medium text-sm">{row.getValue("role")}</span>
+					<span className="font-medium text-base">{row.getValue("role")}</span>
 				),
 			},
 			{
 				accessorKey: "sl",
 				header: "SL",
 				cell: ({ row }) => (
-					<span className="text-xs">
+					<span className="text-sm">
 						{(row.getValue("sl") as string) ?? "—"}
 					</span>
 				),
@@ -763,7 +763,7 @@ function HiringPage() {
 				accessorKey: "state",
 				header: "State",
 				cell: ({ row }) => (
-					<span className="text-xs">
+					<span className="text-sm">
 						{(row.getValue("state") as string) ?? "—"}
 					</span>
 				),
@@ -772,7 +772,7 @@ function HiringPage() {
 				accessorKey: "office",
 				header: "Office",
 				cell: ({ row }) => (
-					<span className="text-xs">
+					<span className="text-sm">
 						{(row.getValue("office") as string) ?? "—"}
 					</span>
 				),
@@ -781,7 +781,7 @@ function HiringPage() {
 				accessorKey: "positions",
 				header: "Pos.",
 				cell: ({ row }) => (
-					<span className="text-xs tabular-nums">
+					<span className="text-sm tabular-nums">
 						{(row.getValue("positions") as number) ?? 1}
 					</span>
 				),
@@ -802,7 +802,7 @@ function HiringPage() {
 				accessorKey: "targetStart",
 				header: "Target Start",
 				cell: ({ row }) => (
-					<span className="text-xs">
+					<span className="text-sm">
 						{(row.getValue("targetStart") as string) ?? "—"}
 					</span>
 				),
@@ -811,7 +811,7 @@ function HiringPage() {
 				id: "salary",
 				header: "Salary",
 				cell: ({ row }) => (
-					<span className="text-xs">
+					<span className="text-sm">
 						{salaryRange(row.original.salaryMin, row.original.salaryMax)}
 					</span>
 				),
@@ -835,38 +835,10 @@ function HiringPage() {
 
 	return (
 		<div className="flex h-full flex-col">
-			<PageHeader
-				description={
-					<>
-						{query.isSuccess
-							? `${rows.length} role${rows.length !== 1 ? "s" : ""}`
-							: "Loading…"}
-						{tab === "open" && rows.length > 0 && (
-							<span className="ml-2 space-x-1">
-								{(
-									[
-										"critical",
-										"urgent",
-										"high",
-										"medium",
-										"low",
-										"planned",
-									] as const
-								).map((p) =>
-									openByPriority[p] ? (
-										<span
-											key={p}
-											className={`inline-flex items-center gap-0.5 text-[10px] ${PRIORITY_STYLES[p]?.split(" ")[2]}`}
-										>
-											{openByPriority[p]} {p}
-										</span>
-									) : null,
-								)}
-							</span>
-						)}
-					</>
-				}
-			>
+			<PageHeader />
+
+			{/* Toolbar */}
+			<div className="flex items-center justify-between border-border border-b bg-white px-6 py-2">
 				<Tabs
 					value={tab}
 					onValueChange={(v) => {
@@ -874,13 +846,9 @@ function HiringPage() {
 						setSelected(null);
 					}}
 				>
-					<TabsList className="h-8">
-						<TabsTrigger value="open" className="px-3 text-xs">
-							Open
-						</TabsTrigger>
-						<TabsTrigger value="closed" className="px-3 text-xs">
-							Closed
-						</TabsTrigger>
+					<TabsList>
+						<TabsTrigger value="open">Open</TabsTrigger>
+						<TabsTrigger value="closed">Closed</TabsTrigger>
 					</TabsList>
 				</Tabs>
 				{hasWriteAccess && (
@@ -895,16 +863,16 @@ function HiringPage() {
 						Add Role
 					</Button>
 				)}
-			</PageHeader>
+			</div>
 
 			{/* Table */}
 			<div className="flex-1 overflow-auto px-6 py-4">
 				{query.isPending ? (
-					<div className="flex h-40 items-center justify-center text-muted-foreground text-xs">
+					<div className="flex h-40 items-center justify-center text-muted-foreground text-sm">
 						Loading…
 					</div>
 				) : rows.length === 0 ? (
-					<div className="flex h-40 flex-col items-center justify-center gap-2 text-muted-foreground text-xs">
+					<div className="flex h-40 flex-col items-center justify-center gap-2 text-muted-foreground text-sm">
 						<HugeiconsIcon
 							icon={Briefcase01Icon}
 							className="size-8 opacity-30"
@@ -971,7 +939,7 @@ function HiringPage() {
 					<DialogHeader>
 						<DialogTitle>Delete Role</DialogTitle>
 					</DialogHeader>
-					<p className="text-muted-foreground text-sm">
+					<p className="text-muted-foreground text-base">
 						Delete <strong>{deleteTarget?.role}</strong>? This cannot be undone.
 					</p>
 					<DialogFooter>

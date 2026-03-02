@@ -9,6 +9,7 @@ export const entities = pgTable("entities", {
 	phone: text("phone"),
 	address: text("address"),
 	email: text("email"),
+	legalName: text("legal_name"),
 	sl: json("sl").$type<string[]>().default([]),
 	partners: json("partners").$type<string[]>().default([]),
 	updatedAt: timestamp("updated_at").defaultNow(),

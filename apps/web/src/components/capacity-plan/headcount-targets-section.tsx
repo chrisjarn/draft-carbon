@@ -78,7 +78,7 @@ export function HeadcountTargetsSection({
 	return (
 		<div>
 			<div className="mb-2 flex items-center justify-between">
-				<h4 className="flex items-center gap-1.5 font-medium text-muted-foreground text-xs">
+				<h4 className="flex items-center gap-1.5 font-medium text-muted-foreground text-sm">
 					<HugeiconsIcon icon={Target01Icon} className="size-3.5" />
 					Headcount Targets
 				</h4>
@@ -108,7 +108,7 @@ export function HeadcountTargetsSection({
 										className="inline-block size-2 rounded-full"
 										style={{ backgroundColor: sl.color }}
 									/>
-									<span className="text-xs">{sl.short}</span>
+									<span className="text-sm">{sl.short}</span>
 								</div>
 								<span className="text-[11px] text-muted-foreground tabular-nums">
 									{current} / {target || "--"}
@@ -130,7 +130,7 @@ export function HeadcountTargetsSection({
 			>
 				<DialogContent className="max-w-xs">
 					<DialogHeader>
-						<DialogTitle className="text-sm">Set Headcount Target</DialogTitle>
+						<DialogTitle className="text-base">Set Headcount Target</DialogTitle>
 					</DialogHeader>
 					<div className="space-y-3">
 						<div>
@@ -143,7 +143,7 @@ export function HeadcountTargetsSection({
 									setFormSl(v === "__none__" ? "" : (v ?? ""))
 								}
 							>
-								<SelectTrigger className="h-8 text-xs">
+								<SelectTrigger className="text-sm">
 									<SelectValue placeholder="Select SL" />
 								</SelectTrigger>
 								<SelectContent>
@@ -166,7 +166,7 @@ export function HeadcountTargetsSection({
 								type="number"
 								value={formTarget}
 								onChange={(e) => setFormTarget(e.target.value)}
-								className="h-8 text-xs"
+								className="h-8 text-sm"
 								min={0}
 							/>
 						</div>
@@ -177,7 +177,7 @@ export function HeadcountTargetsSection({
 							<Input
 								value={formNotes}
 								onChange={(e) => setFormNotes(e.target.value)}
-								className="h-8 text-xs"
+								className="h-8 text-sm"
 							/>
 						</div>
 					</div>

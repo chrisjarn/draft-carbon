@@ -122,7 +122,7 @@ export function ScenarioWorkbenchSection({ entityId }: { entityId: string }) {
 	return (
 		<div>
 			<div className="mb-2 flex items-center justify-between">
-				<h4 className="flex items-center gap-1.5 font-medium text-muted-foreground text-xs">
+				<h4 className="flex items-center gap-1.5 font-medium text-muted-foreground text-sm">
 					<HugeiconsIcon icon={MagicWand01Icon} className="size-3.5" />
 					Scenario Workbench
 				</h4>
@@ -143,7 +143,7 @@ export function ScenarioWorkbenchSection({ entityId }: { entityId: string }) {
 			</div>
 
 			{(scenarioList ?? []).length === 0 ? (
-				<p className="text-muted-foreground text-xs">No scenarios created</p>
+				<p className="text-muted-foreground text-sm">No scenarios created</p>
 			) : (
 				<div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
 					{(scenarioList ?? []).map((sc) => {
@@ -163,7 +163,7 @@ export function ScenarioWorkbenchSection({ entityId }: { entityId: string }) {
 								/>
 								<CardHeader className="pb-2 pl-4">
 									<div className="flex items-center justify-between">
-										<CardTitle className="text-sm">{sc.name}</CardTitle>
+										<CardTitle className="text-base">{sc.name}</CardTitle>
 										{hasWriteAccess && (
 											<Button
 												variant="ghost"
@@ -195,16 +195,16 @@ export function ScenarioWorkbenchSection({ entityId }: { entityId: string }) {
 											<TableBody>
 												{sc.roles.map((role) => (
 													<TableRow key={role.id}>
-														<TableCell className="text-xs">
+														<TableCell className="text-sm">
 															{role.roleTitle}
 														</TableCell>
-														<TableCell className="text-muted-foreground text-xs">
+														<TableCell className="text-muted-foreground text-sm">
 															{role.sl || "--"}
 														</TableCell>
-														<TableCell className="text-right text-xs tabular-nums">
+														<TableCell className="text-right text-sm tabular-nums">
 															{fmtDollar(role.salary)}
 														</TableCell>
-														<TableCell className="text-right text-xs tabular-nums">
+														<TableCell className="text-right text-sm tabular-nums">
 															{role.count}
 														</TableCell>
 													</TableRow>
@@ -240,7 +240,7 @@ export function ScenarioWorkbenchSection({ entityId }: { entityId: string }) {
 			>
 				<DialogContent className="max-w-md">
 					<DialogHeader>
-						<DialogTitle className="text-sm">New Scenario</DialogTitle>
+						<DialogTitle className="text-base">New Scenario</DialogTitle>
 					</DialogHeader>
 					<div className="space-y-3">
 						<div>
@@ -250,7 +250,7 @@ export function ScenarioWorkbenchSection({ entityId }: { entityId: string }) {
 							<Input
 								value={formName}
 								onChange={(e) => setFormName(e.target.value)}
-								className="h-8 text-xs"
+								className="h-8 text-sm"
 								placeholder="e.g. Q3 Growth Plan"
 							/>
 						</div>
@@ -261,7 +261,7 @@ export function ScenarioWorkbenchSection({ entityId }: { entityId: string }) {
 							<Input
 								value={formDesc}
 								onChange={(e) => setFormDesc(e.target.value)}
-								className="h-8 text-xs"
+								className="h-8 text-sm"
 							/>
 						</div>
 						<div>
@@ -308,7 +308,7 @@ export function ScenarioWorkbenchSection({ entityId }: { entityId: string }) {
 												updateRole(idx, "sl", v === "__none__" ? "" : (v ?? ""))
 											}
 										>
-											<SelectTrigger className="h-7 w-24 text-[11px]">
+											<SelectTrigger size="sm" className="w-24 text-[11px]">
 												<SelectValue placeholder="SL" />
 											</SelectTrigger>
 											<SelectContent>

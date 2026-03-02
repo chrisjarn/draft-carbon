@@ -106,9 +106,9 @@ export function FirmTab({
 
 			{/* Entity Selector Grid */}
 			<div>
-				<h2 className="mb-3 font-semibold text-sm">Entities</h2>
+				<h2 className="mb-3 font-semibold text-base">Entities</h2>
 				{entityQuery.isPending ? (
-					<div className="flex h-24 items-center justify-center text-muted-foreground text-xs">
+					<div className="flex h-24 items-center justify-center text-muted-foreground text-sm">
 						Loading entities...
 					</div>
 				) : (
@@ -120,21 +120,21 @@ export function FirmTab({
 								onClick={() =>
 									setSelectedEntity(selectedEntity === ent.id ? null : ent.id)
 								}
-								className={`flex flex-col gap-2 rounded-sm border p-4 text-left transition-colors hover:bg-muted/50 ${
+								className={`flex flex-col gap-2 rounded-md border bg-white p-4 text-left transition-colors hover:bg-muted/50 ${
 									selectedEntity === ent.id
 										? "border-primary ring-1 ring-primary"
 										: "border-border"
 								}`}
 							>
 								<div className="flex items-center justify-between">
-									<span className="font-medium text-sm">{ent.biz}</span>
+									<span className="font-medium text-base">{ent.biz}</span>
 									{ent.state && (
 										<Badge variant="outline" className="text-[10px]">
 											{ent.state.toUpperCase()}
 										</Badge>
 									)}
 								</div>
-								<div className="flex items-center gap-4 text-muted-foreground text-xs">
+								<div className="flex items-center gap-4 text-muted-foreground text-sm">
 									<span>{ent.staffCount} staff</span>
 									<span>${fmtK(ent.totalPayroll)} payroll</span>
 									{ent.podCount > 0 && <span>{ent.podCount} pods</span>}
@@ -170,7 +170,7 @@ function EntityDetailPanel({
 }) {
 	if (loading) {
 		return (
-			<div className="flex h-32 items-center justify-center text-muted-foreground text-xs">
+			<div className="flex h-32 items-center justify-center text-muted-foreground text-sm">
 				Loading entity details...
 			</div>
 		);
@@ -178,7 +178,7 @@ function EntityDetailPanel({
 
 	if (!detail) {
 		return (
-			<div className="flex h-32 items-center justify-center text-muted-foreground text-xs">
+			<div className="flex h-32 items-center justify-center text-muted-foreground text-sm">
 				Entity not found
 			</div>
 		);
@@ -189,7 +189,7 @@ function EntityDetailPanel({
 	const revPct = revTarget > 0 ? Math.round((revActual / revTarget) * 100) : 0;
 
 	return (
-		<div className="space-y-4 rounded-sm border border-border p-5">
+		<div className="space-y-4 rounded-md border border-border bg-white p-5">
 			<div className="flex items-center justify-between">
 				<div className="flex items-center gap-3">
 					<HugeiconsIcon
@@ -197,8 +197,8 @@ function EntityDetailPanel({
 						className="size-5 text-muted-foreground"
 					/>
 					<div>
-						<h3 className="font-semibold text-sm">{detail.entity.biz}</h3>
-						<p className="text-muted-foreground text-xs">
+						<h3 className="font-semibold text-base">{detail.entity.biz}</h3>
+						<p className="text-muted-foreground text-sm">
 							{detail.entity.state?.toUpperCase()}
 							{detail.settings?.fy ? ` \u00B7 ${detail.settings.fy}` : ""}
 						</p>
@@ -217,7 +217,7 @@ function EntityDetailPanel({
 			{/* Revenue Strip */}
 			{detail.revenue && revTarget > 0 && (
 				<div className="space-y-2">
-					<div className="flex items-center justify-between text-xs">
+					<div className="flex items-center justify-between text-sm">
 						<span className="text-muted-foreground">Revenue</span>
 						<span className="tabular-nums">
 							{fmtDollar(revActual)} / {fmtDollar(revTarget)} ({revPct}%)
@@ -229,10 +229,10 @@ function EntityDetailPanel({
 
 			{/* Compensation Budget */}
 			<div className="flex items-center justify-between rounded-sm bg-muted/30 px-4 py-3">
-				<span className="text-muted-foreground text-xs">
+				<span className="text-muted-foreground text-sm">
 					Compensation Budget
 				</span>
-				<span className="font-semibold text-sm tabular-nums">
+				<span className="font-semibold text-base tabular-nums">
 					{fmtDollar(detail.totalPayroll)}
 				</span>
 			</div>
@@ -240,7 +240,7 @@ function EntityDetailPanel({
 			{/* Pods Table */}
 			{detail.pods.length > 0 && (
 				<div>
-					<h4 className="mb-2 font-medium text-muted-foreground text-xs">
+					<h4 className="mb-2 font-medium text-muted-foreground text-sm">
 						Pods
 					</h4>
 					<Table>
@@ -254,11 +254,11 @@ function EntityDetailPanel({
 						<TableBody>
 							{detail.pods.map((pod) => (
 								<TableRow key={pod.name}>
-									<TableCell className="text-sm">{pod.name}</TableCell>
-									<TableCell className="text-right text-xs tabular-nums">
+									<TableCell className="text-base">{pod.name}</TableCell>
+									<TableCell className="text-right text-sm tabular-nums">
 										{pod.headcount}
 									</TableCell>
-									<TableCell className="text-right text-xs tabular-nums">
+									<TableCell className="text-right text-sm tabular-nums">
 										{fmtDollar(pod.totalSalary)}
 									</TableCell>
 								</TableRow>

@@ -62,12 +62,12 @@ export function EditableCell({
 	const [editing, setEditing] = useState(false);
 	const [val, setVal] = useState(value ?? "");
 
-	if (disabled) return <span className="text-xs">{fmtDollar(value)}</span>;
+	if (disabled) return <span className="text-sm">{fmtDollar(value)}</span>;
 
 	if (editing) {
 		return (
 			<div className="flex items-center gap-1">
-				<span className="text-muted-foreground text-xs">{prefix}</span>
+				<span className="text-muted-foreground text-sm">{prefix}</span>
 				<Input
 					type="number"
 					value={val}
@@ -79,7 +79,7 @@ export function EditableCell({
 						}
 						if (e.key === "Escape") setEditing(false);
 					}}
-					className="h-6 w-20 text-xs"
+					className="h-6 w-20 text-sm"
 					autoFocus
 				/>
 				<button
@@ -98,7 +98,7 @@ export function EditableCell({
 
 	return (
 		<div className="group flex items-center gap-1">
-			<span className="text-xs">{fmtDollar(value)}</span>
+			<span className="text-sm">{fmtDollar(value)}</span>
 			<button
 				type="button"
 				onClick={() => {
@@ -144,14 +144,14 @@ export function KpiCard({
 	return (
 		<Card size="sm">
 			<CardHeader className="flex-row items-center justify-between pb-1">
-				<CardTitle className="font-normal text-muted-foreground text-xs">
+				<CardTitle className="font-normal text-muted-foreground text-sm">
 					{label}
 				</CardTitle>
 				{icon}
 			</CardHeader>
 			<CardContent>
 				{loading ? (
-					<span className="text-muted-foreground text-xs">Loading...</span>
+					<span className="text-muted-foreground text-sm">Loading...</span>
 				) : (
 					<span
 						className={`font-bold text-xl tabular-nums ${muted ? "text-muted-foreground" : ""}`}

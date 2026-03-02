@@ -3,6 +3,7 @@ import {
 	Calendar01Icon,
 	ChartLineData02Icon,
 	DashboardSquare01Icon,
+	FlowSquareIcon,
 	Settings01Icon,
 	UserGroupIcon,
 } from "@hugeicons/core-free-icons";
@@ -29,24 +30,30 @@ const NAV_ITEMS: NavItem[] = [
 		icon: DashboardSquare01Icon,
 		minRank: 10,
 	},
-	{ to: "/carbonites", label: "Carbonites", icon: UserGroupIcon, minRank: 10 },
-	{ to: "/hiring", label: "Hiring", icon: Briefcase01Icon, minRank: 10 },
 	{
 		to: "/capacity-plan",
 		label: "Capacity Plan",
 		icon: ChartLineData02Icon,
-		minRank: 50,
+		minRank: 10,
+	},
+	{ to: "/carbonites", label: "Carbonites", icon: UserGroupIcon, minRank: 10 },
+	{ to: "/hiring", label: "Hiring", icon: Briefcase01Icon, minRank: 10 },
+	{
+		to: "/scenarios",
+		label: "Scenarios",
+		icon: FlowSquareIcon,
+		minRank: 10,
 	},
 	{
 		to: "/fy-planning",
-		label: "FY Reports",
+		label: "FY Report",
 		icon: Calendar01Icon,
-		minRank: 80,
+		minRank: 10,
 	},
 ];
 
 const ADMIN_ITEMS: NavItem[] = [
-	{ to: "/admin", label: "Admin", icon: Settings01Icon, minRank: 100 },
+	{ to: "/admin", label: "Settings", icon: Settings01Icon, minRank: 100 },
 ];
 
 export function AppSidebar() {
@@ -64,7 +71,7 @@ export function AppSidebar() {
 				<div className="flex items-center gap-2">
 					<CarbonLogo className="size-7 shrink-0 text-sidebar-primary" />
 					<div className="flex flex-col group-data-[collapsible=icon]:hidden">
-						<span className="font-extrabold text-sidebar-foreground text-sm tracking-tight">
+						<span className="font-extrabold text-base text-sidebar-foreground tracking-tight">
 							Carbon Group
 						</span>
 						<span className="font-medium text-[10px] text-sidebar-foreground/50">

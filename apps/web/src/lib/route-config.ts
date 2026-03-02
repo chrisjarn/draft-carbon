@@ -22,12 +22,16 @@ export const ROUTE_CONFIG: Record<
 		description:
 			"Workforce planning — entity KPIs, staff meta, pod budgets, and scenarios.",
 	},
+	"/scenarios": {
+		title: "Scenarios",
+		description: "What-if planning scenarios for workforce and capacity.",
+	},
 	"/fy-planning": {
-		title: "FY Reports",
+		title: "FY Report",
 		description: "Revenue targets vs actuals by entity and financial year.",
 	},
 	"/admin": {
-		title: "Admin",
+		title: "Settings",
 		description: "User accounts and role management.",
 	},
 	"/todos": {

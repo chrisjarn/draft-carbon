@@ -191,7 +191,7 @@ function BudgetCell({
 						if (e.key === "Enter") save();
 						if (e.key === "Escape") setEditing(false);
 					}}
-					className="h-6 w-16 text-center text-xs"
+					className="h-6 w-16 text-center text-sm"
 					autoFocus
 				/>
 				<button
@@ -208,7 +208,7 @@ function BudgetCell({
 
 	return (
 		<div className="group flex items-center gap-1">
-			<span className="font-medium text-xs tabular-nums">{budget}</span>
+			<span className="font-medium text-sm tabular-nums">{budget}</span>
 			{canWriteAccess && (
 				<button
 					type="button"
@@ -293,7 +293,7 @@ function AddPodDialog({
 								setOffice("");
 							}}
 						>
-							<SelectTrigger className="h-8 w-full text-xs">
+							<SelectTrigger className="w-full text-sm">
 								<SelectValue placeholder="Select state..." />
 							</SelectTrigger>
 							<SelectContent>
@@ -317,7 +317,7 @@ function AddPodDialog({
 									setOffice(v === "__none__" ? "" : (v ?? ""))
 								}
 							>
-								<SelectTrigger className="h-8 w-full text-xs">
+								<SelectTrigger className="w-full text-sm">
 									<SelectValue placeholder="Select office..." />
 								</SelectTrigger>
 								<SelectContent>
@@ -334,7 +334,7 @@ function AddPodDialog({
 								value={office}
 								onChange={(e) => setOffice(e.target.value)}
 								placeholder="Select a state first"
-								className="h-8 text-xs"
+								className="h-8 text-sm"
 								disabled={!state}
 							/>
 						)}
@@ -347,7 +347,7 @@ function AddPodDialog({
 							value={podName}
 							onChange={(e) => setPodName(e.target.value)}
 							placeholder="e.g. Pod A"
-							className="h-8 text-xs"
+							className="h-8 text-sm"
 						/>
 					</div>
 					<div>
@@ -359,7 +359,7 @@ function AddPodDialog({
 							min={0}
 							value={budget}
 							onChange={(e) => setBudget(e.target.value)}
-							className="h-8 text-xs"
+							className="h-8 text-sm"
 						/>
 					</div>
 				</div>
@@ -368,7 +368,7 @@ function AddPodDialog({
 						variant="outline"
 						size="sm"
 						onClick={resetAndClose}
-						className="text-xs"
+						className="text-sm"
 					>
 						Cancel
 					</Button>
@@ -376,7 +376,7 @@ function AddPodDialog({
 						size="sm"
 						onClick={handleSave}
 						disabled={upsert.isPending}
-						className="text-xs"
+						className="text-sm"
 					>
 						{upsert.isPending ? "Saving..." : "Save"}
 					</Button>
@@ -425,7 +425,7 @@ function PodStaffSheet({
 						</SheetHeader>
 						<div className="flex-1 overflow-auto px-4 py-3">
 							{podStaff.length === 0 ? (
-								<p className="py-8 text-center text-muted-foreground text-xs">
+								<p className="py-8 text-center text-muted-foreground text-sm">
 									No staff assigned to this pod.
 								</p>
 							) : (
@@ -436,7 +436,7 @@ function PodStaffSheet({
 											className="flex items-center justify-between rounded-sm px-2 py-2 hover:bg-muted/40"
 										>
 											<div className="min-w-0 flex-1">
-												<p className="truncate font-medium text-xs">
+												<p className="truncate font-medium text-sm">
 													{c.name ?? "Unknown"}
 												</p>
 												<p className="truncate text-[11px] text-muted-foreground">
@@ -452,7 +452,7 @@ function PodStaffSheet({
 														{c.sl}
 													</Badge>
 												)}
-												<span className="min-w-[60px] text-right font-medium text-xs tabular-nums">
+												<span className="min-w-[60px] text-right font-medium text-sm tabular-nums">
 													{fmtDollar(c.salary)}
 												</span>
 											</div>
@@ -464,10 +464,10 @@ function PodStaffSheet({
 						{podStaff.length > 0 && (
 							<div className="border-border border-t px-4 py-3">
 								<div className="flex items-center justify-between">
-									<span className="font-medium text-muted-foreground text-xs">
+									<span className="font-medium text-muted-foreground text-sm">
 										Total Salary
 									</span>
-									<span className="font-semibold text-sm tabular-nums">
+									<span className="font-semibold text-base tabular-nums">
 										{fmtDollar(totalSalary)}
 									</span>
 								</div>
@@ -628,11 +628,11 @@ function PodRowComponent({
 	onSelect: (pod: SelectedPod) => void;
 }) {
 	return (
-		<div className="grid grid-cols-[1fr_80px_80px_80px_140px_120px] items-center gap-4 px-4 py-2 text-sm hover:bg-muted/30">
+		<div className="grid grid-cols-[1fr_80px_80px_80px_140px_120px] items-center gap-4 px-4 py-2 text-base hover:bg-muted/30">
 			<button
 				type="button"
 				onClick={() => onSelect({ state, office, podName: pod.podName })}
-				className="pl-10 text-left text-muted-foreground text-xs hover:text-foreground hover:underline"
+				className="pl-10 text-left text-muted-foreground text-sm hover:text-foreground hover:underline"
 			>
 				{pod.podName}
 			</button>
@@ -643,9 +643,9 @@ function PodRowComponent({
 				budget={pod.budget}
 				canWriteAccess={canWriteAccess}
 			/>
-			<span className="font-medium text-xs tabular-nums">{pod.actual}</span>
+			<span className="font-medium text-sm tabular-nums">{pod.actual}</span>
 			<span
-				className={`font-medium text-xs tabular-nums ${pod.actual > pod.budget && pod.budget > 0 ? "text-red-400" : "text-muted-foreground"}`}
+				className={`font-medium text-sm tabular-nums ${pod.actual > pod.budget && pod.budget > 0 ? "text-red-400" : "text-muted-foreground"}`}
 			>
 				{pod.budget > 0
 					? pod.budget > pod.actual
@@ -694,19 +694,19 @@ function OfficeSection({
 							className="size-3.5 text-muted-foreground"
 						/>
 					)}
-					<span className="font-semibold text-sm">{office.office}</span>
+					<span className="font-semibold text-base">{office.office}</span>
 					<Badge variant="outline" className="text-[10px]">
 						{office.pods.length} pods
 					</Badge>
 				</div>
-				<span className="text-muted-foreground text-xs tabular-nums">
+				<span className="text-muted-foreground text-sm tabular-nums">
 					{office.totalBudget}
 				</span>
-				<span className="text-muted-foreground text-xs tabular-nums">
+				<span className="text-muted-foreground text-sm tabular-nums">
 					{office.totalActual}
 				</span>
 				<span
-					className={`text-xs tabular-nums ${office.totalActual > office.totalBudget && office.totalBudget > 0 ? "text-red-400" : "text-muted-foreground"}`}
+					className={`text-sm tabular-nums ${office.totalActual > office.totalBudget && office.totalBudget > 0 ? "text-red-400" : "text-muted-foreground"}`}
 				>
 					{office.totalBudget > 0
 						? office.totalBudget > office.totalActual
@@ -768,14 +768,14 @@ function StateSection({
 						{group.offices.length} offices
 					</Badge>
 				</div>
-				<span className="font-medium text-xs tabular-nums">
+				<span className="font-medium text-sm tabular-nums">
 					{group.totalBudget}
 				</span>
-				<span className="font-medium text-xs tabular-nums">
+				<span className="font-medium text-sm tabular-nums">
 					{group.totalActual}
 				</span>
 				<span
-					className={`font-medium text-xs tabular-nums ${group.totalActual > group.totalBudget && group.totalBudget > 0 ? "text-red-400" : "text-muted-foreground"}`}
+					className={`font-medium text-sm tabular-nums ${group.totalActual > group.totalBudget && group.totalBudget > 0 ? "text-red-400" : "text-muted-foreground"}`}
 				>
 					{group.totalBudget > 0
 						? group.totalBudget > group.totalActual
@@ -834,11 +834,11 @@ export function PodBudgetsTab() {
 		<div className="flex h-full flex-col">
 			{/* Subheader */}
 			<div className="flex items-center justify-between border-border border-b px-6 py-3">
-				<p className="text-muted-foreground text-xs">
+				<p className="text-muted-foreground text-sm">
 					Pod headcount vs budget — {groups.length} states &middot;{" "}
 					{groups.reduce((s, g) => s + g.offices.length, 0)} offices
 				</p>
-				<div className="flex items-center gap-4 text-muted-foreground text-xs">
+				<div className="flex items-center gap-4 text-muted-foreground text-sm">
 					<span>
 						<span className="font-semibold text-foreground">{totalActual}</span>{" "}
 						/ {totalBudget} headcount
@@ -849,7 +849,7 @@ export function PodBudgetsTab() {
 							size="sm"
 							variant="outline"
 							onClick={() => setAddPodOpen(true)}
-							className="text-xs"
+							className="text-sm"
 						>
 							<HugeiconsIcon icon={PlusSignIcon} className="mr-1 size-3.5" />
 							Add Pod
@@ -873,11 +873,11 @@ export function PodBudgetsTab() {
 			{/* Content */}
 			<div className="flex-1 overflow-auto p-6">
 				{isLoading ? (
-					<div className="flex h-40 items-center justify-center text-muted-foreground text-xs">
+					<div className="flex h-40 items-center justify-center text-muted-foreground text-sm">
 						Loading...
 					</div>
 				) : groups.length === 0 ? (
-					<div className="flex h-40 flex-col items-center justify-center gap-2 text-muted-foreground text-xs">
+					<div className="flex h-40 flex-col items-center justify-center gap-2 text-muted-foreground text-sm">
 						<p>No capacity data yet.</p>
 						<p className="text-[11px]">
 							Add staff to Carbonites or seed pod budgets to see this view.
