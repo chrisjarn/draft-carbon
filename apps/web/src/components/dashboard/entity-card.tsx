@@ -156,12 +156,12 @@ export function EntityCard({
 		>
 			<Card
 				size="sm"
-				className="flex h-full flex-col gap-0 py-0 transition-colors group-hover:ring-foreground/25"
+				className="flex h-full flex-col gap-0 py-0 group-hover:shadow-card-hover"
 			>
 				{/* Header */}
-				<div className="flex items-start justify-between gap-2 px-4 pt-4 pb-1">
+				<div className="flex items-start justify-between gap-2 px-5 pt-5 pb-1">
 					<div className="min-w-0">
-						<h3 className="truncate font-semibold text-sm leading-tight">
+						<h3 className="truncate font-semibold text-sm leading-tight tracking-tight">
 							{entity.biz}
 						</h3>
 						{entity.legalName && (
@@ -175,7 +175,7 @@ export function EntityCard({
 
 				{/* Contact */}
 				{hasContact && (
-					<div className="space-y-1 px-4 pt-2">
+					<div className="space-y-1 px-5 pt-2">
 						{entity.address && (
 							<ContactRow
 								icon={({ className }) => (
@@ -222,7 +222,7 @@ export function EntityCard({
 				)}
 
 				{/* Staff + SL tags */}
-				<div className="mt-auto space-y-2.5 px-4 pt-3 pb-4">
+				<div className="mt-auto space-y-2.5 px-5 pt-3 pb-5">
 					<StaffAvatars
 						initials={entity.staffInitials}
 						headcount={entity.headcount}
@@ -232,7 +232,7 @@ export function EntityCard({
 					{/* Footer stats */}
 					<div className="flex items-center justify-between border-t border-border pt-2.5">
 						<div>
-							<span className="font-semibold text-sm tabular-nums">
+							<span className="font-bold text-sm tabular-nums">
 								{fmtDollar(entity.totalSalary)}
 							</span>
 							<span className="ml-1 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
@@ -269,7 +269,7 @@ export function EntityCardGrid({
 }) {
 	if (loading) {
 		return (
-			<div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+			<div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
 				{Array.from({ length: 6 }).map((_, i) => (
 					<Card key={`skel-${i.toString()}`} size="sm">
 						<div className="space-y-3 p-4">
@@ -308,7 +308,7 @@ export function EntityCardGrid({
 	}
 
 	return (
-		<div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+		<div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
 			{data.map((entity) => (
 				<EntityCard key={entity.id} entity={entity} fy={fy} />
 			))}

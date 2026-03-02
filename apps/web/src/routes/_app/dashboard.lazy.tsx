@@ -2,12 +2,9 @@ import {
 	Alert02Icon,
 	ArrowReloadHorizontalIcon,
 	BarChartIcon,
-	Briefcase01Icon,
-	ChartLineData03Icon,
-	UserGroupIcon,
 	WifiOff01Icon,
 } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react";
+import { HugeiconsIcon } from "@hugeicons/react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createLazyFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import * as React from "react";
@@ -77,48 +74,41 @@ function revTextColor(pct: number): string {
 	return "text-red-500";
 }
 
-/* ─── Stat Card ────────────────────────────────────────────────────────── */
+/* ─── Mercury Inline Stat ──────────────────────────────────────────────── */
 
-function StatCard({
+function InlineStat({
 	label,
 	value,
-	icon: Icon,
 	loading,
 	subtitle,
 	subtitleClass,
 }: {
 	label: string;
 	value: string | number;
-	icon: IconSvgElement;
 	loading?: boolean;
 	subtitle?: string;
 	subtitleClass?: string;
 }) {
 	return (
-		<Card size="sm" className="flex h-full flex-col justify-between">
-			<CardHeader className="flex flex-row items-center justify-between pb-0">
-				<CardTitle className="font-medium text-muted-foreground text-xs uppercase tracking-widest">
-					{label}
-				</CardTitle>
-				<HugeiconsIcon icon={Icon} className="size-3.5 text-muted-foreground" />
-			</CardHeader>
-			<CardContent>
-				{loading ? (
-					<Skeleton className="h-6 w-20" />
-				) : (
-					<>
-						<div className="font-bold text-xl tracking-tight">{value}</div>
-						{subtitle && (
-							<div
-								className={`mt-0.5 text-xs ${subtitleClass ?? "text-muted-foreground"}`}
-							>
-								{subtitle}
-							</div>
-						)}
-					</>
-				)}
-			</CardContent>
-		</Card>
+		<div className="flex flex-col gap-1">
+			<span className="font-medium text-muted-foreground text-xs uppercase tracking-widest">
+				{label}
+			</span>
+			{loading ? (
+				<Skeleton className="h-8 w-24" />
+			) : (
+				<>
+					<span className="font-bold text-3xl tracking-tight">{value}</span>
+					{subtitle && (
+						<span
+							className={`text-xs ${subtitleClass ?? "text-muted-foreground"}`}
+						>
+							{subtitle}
+						</span>
+					)}
+				</>
+			)}
+		</div>
 	);
 }
 
@@ -198,9 +188,9 @@ function RevenueChart({
 
 	return (
 		<Card className="flex h-full flex-col py-0">
-			<CardHeader className="!p-0 flex flex-col items-stretch border-b sm:flex-row">
-				<div className="sm:!py-0 flex flex-1 flex-col justify-center gap-1 px-4 pt-3 pb-2">
-					<CardTitle className="text-sm">Revenue by Entity</CardTitle>
+			<CardHeader className="!p-0 flex flex-col items-stretch border-b border-zinc-100 sm:flex-row">
+				<div className="sm:!py-0 flex flex-1 flex-col justify-center gap-1 px-6 pt-4 pb-3">
+					<CardTitle className="font-semibold text-sm">Revenue by Entity</CardTitle>
 					<CardDescription className="text-xs">{fy}</CardDescription>
 				</div>
 				<div className="flex">
@@ -222,7 +212,7 @@ function RevenueChart({
 					))}
 				</div>
 			</CardHeader>
-			<CardContent className="flex-1 px-2 pt-3 sm:p-4">
+			<CardContent className="flex-1 px-4 pt-4 sm:px-6 sm:py-5">
 				<ChartContainer
 					config={revenueChartConfig}
 					className="aspect-auto h-[220px] w-full"
@@ -399,7 +389,7 @@ function AlertsPanel({
 					<Link
 						key={`${alert.type}-${alert.title}`}
 						to={alert.link}
-						className="flex items-start gap-3 rounded-md border border-yellow-500/20 bg-yellow-500/5 p-3 transition-colors hover:border-yellow-500/40"
+						className="flex items-start gap-3 rounded-lg border border-yellow-500/20 bg-yellow-500/5 p-4 transition-colors hover:border-yellow-500/40"
 					>
 						<HugeiconsIcon
 							icon={Alert02Icon}
@@ -649,13 +639,13 @@ function DashboardPage() {
 		<div className="flex h-full flex-col">
 			<PageHeader />
 
-			{/* State filter tabs — attached below header */}
-			<div className="flex items-center justify-between border-border border-b bg-white px-6 pt-2">
+			{/* State filter tabs + FY selector */}
+			<div className="flex items-center justify-between bg-white px-6 pt-3 pb-2">
 				<Tabs
 					value={stateFilter ?? "all"}
 					onValueChange={(val) => setStateFilter(val === "all" ? null : val)}
 				>
-					<TabsList variant="line">
+					<TabsList variant="pill">
 						<TabsTrigger value="all">All States</TabsTrigger>
 						{STATES.map((s) => (
 							<TabsTrigger key={s.id} value={s.id}>
@@ -678,46 +668,50 @@ function DashboardPage() {
 				</Select>
 			</div>
 
-			<div className="flex flex-1 flex-col gap-4 overflow-auto p-4">
-				{/* KPI + Revenue Chart — side by side */}
-				<div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
-					{/* KPI cards — 2x2 grid */}
-					<div className="grid grid-cols-2 gap-3">
-						<StatCard
-							label="Total Carbonites"
-							value={filteredStats?.totalCarbonites ?? 0}
-							icon={UserGroupIcon}
-							loading={stats.isLoading}
-						/>
-						<StatCard
-							label="Total FTE"
-							value={filteredStats?.totalFte ?? 0}
-							icon={Briefcase01Icon}
-							loading={stats.isLoading}
-						/>
-						<StatCard
-							label="Revenue Target"
-							value={fmtDollar(filteredStats?.revenueTarget)}
-							icon={ChartLineData03Icon}
-							loading={stats.isLoading}
-							subtitle={activeFy}
-						/>
-						<StatCard
-							label="Revenue Actual"
-							value={fmtDollar(filteredStats?.revenueActual)}
-							icon={BarChartIcon}
-							loading={stats.isLoading}
-							subtitle={
-								filteredStats
-									? `${filteredStats.revenuePct}% to target`
-									: undefined
-							}
-							subtitleClass={
-								filteredStats
-									? revTextColor(filteredStats.revenuePct)
-									: undefined
-							}
-						/>
+			<div className="flex flex-1 flex-col gap-6 overflow-auto p-6">
+				{/* KPI stats (Mercury inline) + Revenue Chart — side by side */}
+				<div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+					{/* Mercury inline stats — flat row with vertical dividers */}
+					<div className="flex items-start divide-x divide-zinc-200">
+						<div className="pr-6">
+							<InlineStat
+								label="Total Carbonites"
+								value={filteredStats?.totalCarbonites ?? 0}
+								loading={stats.isLoading}
+							/>
+						</div>
+						<div className="px-6">
+							<InlineStat
+								label="Total FTE"
+								value={filteredStats?.totalFte ?? 0}
+								loading={stats.isLoading}
+							/>
+						</div>
+						<div className="px-6">
+							<InlineStat
+								label="Revenue Target"
+								value={fmtDollar(filteredStats?.revenueTarget)}
+								loading={stats.isLoading}
+								subtitle={activeFy}
+							/>
+						</div>
+						<div className="px-6">
+							<InlineStat
+								label="Revenue Actual"
+								value={fmtDollar(filteredStats?.revenueActual)}
+								loading={stats.isLoading}
+								subtitle={
+									filteredStats
+										? `${filteredStats.revenuePct}% to target`
+										: undefined
+								}
+								subtitleClass={
+									filteredStats
+										? revTextColor(filteredStats.revenuePct)
+										: undefined
+								}
+							/>
+						</div>
 					</div>
 
 					{/* Revenue Chart */}
@@ -733,7 +727,7 @@ function DashboardPage() {
 
 				{/* Entity Cards */}
 				<div>
-					<h2 className="mb-3 font-semibold text-base tracking-tight">
+					<h2 className="mb-4 font-semibold text-base tracking-tight">
 						Entities
 					</h2>
 					<EntityCardGrid
@@ -746,7 +740,9 @@ function DashboardPage() {
 				{/* SL Breakdown */}
 				<Card>
 					<CardHeader>
-						<CardTitle className="text-base">Service Line Breakdown</CardTitle>
+						<CardTitle className="font-semibold text-base">
+							Service Line Breakdown
+						</CardTitle>
 					</CardHeader>
 					<CardContent>
 						<SlBreakdownTable
