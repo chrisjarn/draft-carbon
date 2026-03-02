@@ -4,7 +4,7 @@ import {
 	SmartPhone01Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Link } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
@@ -77,7 +77,10 @@ function StateBadge({ stateId }: { stateId: string | null }) {
 function StaffAvatars({
 	initials,
 	headcount,
-}: { initials: string[]; headcount: number }) {
+}: {
+	initials: string[];
+	headcount: number;
+}) {
 	if (headcount === 0) {
 		return (
 			<span className="text-muted-foreground text-xs">No staff assigned</span>
@@ -92,14 +95,14 @@ function StaffAvatars({
 			{shown.map((ini, i) => (
 				<span
 					key={`${ini}-${i.toString()}`}
-					className="flex size-7 items-center justify-center rounded-full text-xs font-medium text-white"
+					className="flex size-7 items-center justify-center rounded-full font-medium text-white text-xs"
 					style={{ backgroundColor: avatarColor(ini) }}
 				>
 					{ini}
 				</span>
 			))}
 			{overflow > 0 && (
-				<span className="flex size-7 items-center justify-center rounded-full bg-muted text-xs font-medium text-muted-foreground">
+				<span className="flex size-7 items-center justify-center rounded-full bg-muted font-medium text-muted-foreground text-xs">
 					+{overflow}
 				</span>
 			)}
@@ -117,7 +120,7 @@ function SlTags({ sls }: { sls: string[] }) {
 				return (
 					<span
 						key={sl}
-						className="rounded-md border border-border bg-muted/50 px-1.5 py-px text-xs font-medium text-muted-foreground"
+						className="rounded-md border border-border bg-muted/50 px-1.5 py-px font-medium text-muted-foreground text-xs"
 					>
 						{meta?.short ?? sl}
 					</span>
@@ -130,7 +133,10 @@ function SlTags({ sls }: { sls: string[] }) {
 function ContactRow({
 	icon,
 	children,
-}: { icon: React.ComponentType<{ className?: string }>; children: React.ReactNode }) {
+}: {
+	icon: React.ComponentType<{ className?: string }>;
+	children: React.ReactNode;
+}) {
 	const Icon = icon;
 	return (
 		<div className="flex items-start gap-1.5 text-muted-foreground text-sm leading-tight">
@@ -145,14 +151,34 @@ function ContactRow({
 export function EntityCard({
 	entity,
 	fy,
-}: { entity: EntitySummary; fy: string }) {
+}: {
+	entity: EntitySummary;
+	fy: string;
+}) {
+	const navigate = useNavigate();
 	const hasContact = entity.address || entity.phone || entity.email;
 
 	return (
-		<Link
-			to="/capacity-plan"
-			search={{ entity: entity.id, fy }}
-			className="group h-full"
+		// biome-ignore lint/a11y/useSemanticElements: Cannot use <a> because card contains nested <a> (mailto) links
+		<div
+			role="link"
+			tabIndex={0}
+			onClick={() =>
+				navigate({
+					to: "/capacity-plan",
+					search: { entity: entity.id, fy },
+				})
+			}
+			onKeyDown={(e) => {
+				if (e.key === "Enter" || e.key === " ") {
+					e.preventDefault();
+					navigate({
+						to: "/capacity-plan",
+						search: { entity: entity.id, fy },
+					});
+				}
+			}}
+			className="group h-full cursor-pointer"
 		>
 			<Card
 				size="sm"
@@ -165,7 +191,7 @@ export function EntityCard({
 							{entity.biz}
 						</h3>
 						{entity.legalName && (
-							<p className="mt-0.5 truncate text-sm text-muted-foreground">
+							<p className="mt-0.5 truncate text-muted-foreground text-sm">
 								{entity.legalName}
 							</p>
 						)}
@@ -179,10 +205,7 @@ export function EntityCard({
 						{entity.address && (
 							<ContactRow
 								icon={({ className }) => (
-									<HugeiconsIcon
-										icon={Location01Icon}
-										className={className}
-									/>
+									<HugeiconsIcon icon={Location01Icon} className={className} />
 								)}
 							>
 								{entity.address}
@@ -203,10 +226,7 @@ export function EntityCard({
 						{entity.email && (
 							<ContactRow
 								icon={({ className }) => (
-									<HugeiconsIcon
-										icon={Mail01Icon}
-										className={className}
-									/>
+									<HugeiconsIcon icon={Mail01Icon} className={className} />
 								)}
 							>
 								<a
@@ -230,12 +250,12 @@ export function EntityCard({
 					<SlTags sls={entity.sls} />
 
 					{/* Footer stats */}
-					<div className="flex items-center justify-between border-t border-border pt-2.5">
+					<div className="flex items-center justify-between border-border border-t pt-2.5">
 						<div>
 							<span className="font-semibold text-base tabular-nums">
 								{fmtDollar(entity.totalSalary)}
 							</span>
-							<span className="ml-1 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+							<span className="ml-1 font-medium text-muted-foreground text-xs uppercase tracking-wider">
 								payroll/yr
 							</span>
 						</div>
@@ -252,7 +272,7 @@ export function EntityCard({
 					</div>
 				</div>
 			</Card>
-		</Link>
+		</div>
 	);
 }
 

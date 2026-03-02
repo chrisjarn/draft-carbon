@@ -115,7 +115,7 @@ export function DataTable<TData>({
 				/>
 			</div>
 
-			<div className="rounded-lg border">
+			<div className="rounded-lg bg-white shadow-card">
 				<Table>
 					<TableHeader>
 						{table.getHeaderGroups().map((headerGroup) => (
@@ -133,7 +133,7 @@ export function DataTable<TData>({
 							</TableRow>
 						))}
 					</TableHeader>
-					<TableBody>
+					<TableBody className="">
 						{table.getRowModel().rows.length ? (
 							table.getRowModel().rows.map((row) => (
 								<TableRow

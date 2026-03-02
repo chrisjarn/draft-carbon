@@ -239,12 +239,14 @@ function RevenueChart({
 		damping: 20,
 	});
 	const [animatedValue, setAnimatedValue] = React.useState(displayEntry.value);
-	useMotionValueEvent(springValue, "change", (v) =>
-		setAnimatedValue(Number(v.toFixed(0))),
-	);
+	useMotionValueEvent(springValue, "change", (v) => {
+		const rounded = Number(v.toFixed(0));
+		setAnimatedValue((prev) => (prev === rounded ? prev : rounded));
+	});
 	React.useEffect(() => {
 		springValue.set(displayEntry.value);
-	}, [displayEntry.value, springValue]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [displayEntry.value]);
 
 	if (loading) {
 		return <Skeleton className="h-full min-h-[200px] w-full" />;
@@ -291,7 +293,7 @@ function RevenueChart({
 					))}
 				</div>
 			</CardHeader>
-			<CardContent className="flex-1  ">
+			<CardContent className="min-h-70 flex-1">
 				<ChartContainer
 					config={revenueChartConfig}
 					className="aspect-auto h-full min-h-70 w-full"

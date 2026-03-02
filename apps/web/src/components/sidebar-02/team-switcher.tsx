@@ -42,8 +42,8 @@ export function UserDropdown({ name, role }: { name: string; role: string }) {
 		<SidebarMenu>
 			<SidebarMenuItem>
 				<DropdownMenu>
-					<DropdownMenuTrigger>
-						<SidebarMenuButton>{initials}</SidebarMenuButton>
+					<DropdownMenuTrigger render={<SidebarMenuButton />}>
+						{initials}
 						<div className="grid flex-1 text-left text-base leading-tight">
 							<span className="truncate font-semibold">{name}</span>
 							<span className="truncate text-sidebar-foreground/50 text-sm">
