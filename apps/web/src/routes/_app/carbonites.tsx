@@ -1,3 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { z } from "zod";
 
-export const Route = createFileRoute("/_app/carbonites")({});
+const searchSchema = z.object({
+	search: z.string().optional(),
+});
+
+export const Route = createFileRoute("/_app/carbonites")({
+	validateSearch: searchSchema,
+});

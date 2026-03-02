@@ -694,13 +694,17 @@ function CarboniteDialog({
 // ── Main page ─────────────────────────────────────────────────────────────────
 
 function CarbonitesPage() {
+	const { search: searchParam } = Route.useSearch();
 	const { data: session } = authClient.useSession();
 	const userRole = getUserRole(session?.user);
 	const hasWriteAccess = canWrite(userRole);
 	const hasAdminAccess = canAdminWrite(userRole);
 
 	const qc = useQueryClient();
-	const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
+	const [filters, setFilters] = useState<Filters>({
+		...EMPTY_FILTERS,
+		search: searchParam ?? "",
+	});
 	const [selected, setSelected] = useState<Carbonite | null>(null);
 	const [dialogOpen, setDialogOpen] = useState(false);
 	const [editTarget, setEditTarget] = useState<Carbonite | null>(null);

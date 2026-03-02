@@ -8,14 +8,14 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createLazyFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import * as React from "react";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { Bar, BarChart, CartesianGrid, Cell, XAxis } from "recharts";
 
+import { SearchBarTrigger } from "@/components/command-palette";
 import {
 	EntityCardGrid,
 	type EntitySummary,
 } from "@/components/dashboard/entity-card";
-import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -47,6 +47,7 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { authClient } from "@/lib/auth-client";
 import {
 	FY_OPTIONS,
 	SERVICE_LINES,
@@ -188,9 +189,11 @@ function RevenueChart({
 
 	return (
 		<Card className="flex h-full flex-col py-0">
-			<CardHeader className="!p-0 flex flex-col items-stretch border-b border-zinc-100 sm:flex-row">
+			<CardHeader className="!p-0 flex flex-col items-stretch border-zinc-100 border-b sm:flex-row">
 				<div className="sm:!py-0 flex flex-1 flex-col justify-center gap-1 px-6 pt-4 pb-3">
-					<CardTitle className="font-semibold text-sm">Revenue by Entity</CardTitle>
+					<CardTitle className="font-semibold text-sm">
+						Revenue by Entity
+					</CardTitle>
 					<CardDescription className="text-xs">{fy}</CardDescription>
 				</div>
 				<div className="flex">
@@ -530,12 +533,21 @@ function DashboardPage() {
 	const navigate = useNavigate({ from: "/dashboard" });
 	const queryClient = useQueryClient();
 	const { data: session } = authClient.useSession();
-	const { fy } = Route.useSearch();
+	const { fy, state: stateParam } = Route.useSearch();
 	const activeFy = fy ?? "FY25-26";
 	const firstName = session?.user?.name?.split(" ")[0];
 
-	// State filter is local — no URL param, no server re-fetch
-	const [stateFilter, setStateFilter] = useState<string | null>(null);
+	// State filter derived from URL param — no local state needed
+	const stateFilter = stateParam ?? null;
+
+	const setStateFilter = (val: string | null) => {
+		void navigate({
+			search: (prev: Record<string, unknown>) => ({
+				...prev,
+				state: val ?? undefined,
+			}),
+		});
+	};
 
 	// ── Server queries (no state param — RBAC only) ──────────────────────
 	const health = useQuery(trpc.healthCheck.queryOptions());
@@ -639,129 +651,130 @@ function DashboardPage() {
 
 	return (
 		<div className="flex h-full flex-col">
-			<div className="flex items-center justify-center border-border border-b bg-white px-6 py-2">
-				<h1 className="font-medium text-base tracking-tight">Dashboard</h1>
-			</div>
+			<div className="scrollbar-hide flex-1 overflow-auto">
+				<div className="mx-auto w-full max-w-[968px] px-6 py-6">
+					{/* Greeting */}
+					<h2 className="font-semibold text-2xl tracking-tight">
+						{firstName ? `Hi, ${firstName}` : "Hi"}
+					</h2>
 
-			<div className="flex-1 overflow-auto scrollbar-hide">
-			<div className="mx-auto w-full max-w-[968px] px-6 py-6">
-				{/* Greeting */}
-				<h2 className="font-semibold text-2xl tracking-tight">
-					{firstName ? `Hi, ${firstName}` : "Hi"}
-				</h2>
-
-				{/* State filter tabs + FY selector */}
-				<div className="flex items-center justify-between pt-5 pb-2">
-					<Tabs
-						value={stateFilter ?? "all"}
-						onValueChange={(val) => setStateFilter(val === "all" ? null : val)}
-					>
-						<TabsList variant="pill">
-							<TabsTrigger value="all">All States</TabsTrigger>
-							{STATES.map((s) => (
-								<TabsTrigger key={s.id} value={s.id}>
-									{s.abbr}
-								</TabsTrigger>
-							))}
-						</TabsList>
-					</Tabs>
-					<Select value={activeFy} onValueChange={setFy}>
-						<SelectTrigger className="w-32">
-							<SelectValue />
-						</SelectTrigger>
-						<SelectContent>
-							{FY_OPTIONS.map((f) => (
-								<SelectItem key={f} value={f}>
-									{f}
-								</SelectItem>
-							))}
-						</SelectContent>
-					</Select>
-				</div>
-
-				<div className="flex flex-col gap-5 pt-4">
-					{/* Mercury inline stats */}
-					<div className="grid grid-cols-4 divide-x divide-zinc-200">
-						<div className="pr-6">
-							<InlineStat
-								label="Total Carbonites"
-								value={filteredStats?.totalCarbonites ?? 0}
-								loading={stats.isLoading}
-							/>
-						</div>
-						<div className="px-6">
-							<InlineStat
-								label="Total FTE"
-								value={filteredStats?.totalFte ?? 0}
-								loading={stats.isLoading}
-							/>
-						</div>
-						<div className="px-6">
-							<InlineStat
-								label="Revenue Target"
-								value={fmtDollar(filteredStats?.revenueTarget)}
-								loading={stats.isLoading}
-								subtitle={activeFy}
-							/>
-						</div>
-						<div className="pl-6">
-							<InlineStat
-								label="Revenue Actual"
-								value={fmtDollar(filteredStats?.revenueActual)}
-								loading={stats.isLoading}
-								subtitle={
-									filteredStats
-										? `${filteredStats.revenuePct}% to target`
-										: undefined
-								}
-								subtitleClass={
-									filteredStats
-										? revTextColor(filteredStats.revenuePct)
-										: undefined
-								}
-							/>
+					{/* State filter tabs + FY selector */}
+					<div className="flex items-center justify-between pt-5 pb-2">
+						<Tabs
+							value={stateFilter ?? "all"}
+							onValueChange={(val) =>
+								setStateFilter(val === "all" ? null : val)
+							}
+						>
+							<TabsList variant="pill">
+								<TabsTrigger value="all">All States</TabsTrigger>
+								{STATES.map((s) => (
+									<TabsTrigger key={s.id} value={s.id}>
+										{s.abbr}
+									</TabsTrigger>
+								))}
+							</TabsList>
+						</Tabs>
+						<div className="flex items-center gap-2">
+							<SearchBarTrigger />
+							<Select value={activeFy} onValueChange={setFy}>
+								<SelectTrigger className="w-32">
+									<SelectValue />
+								</SelectTrigger>
+								<SelectContent>
+									{FY_OPTIONS.map((f) => (
+										<SelectItem key={f} value={f}>
+											{f}
+										</SelectItem>
+									))}
+								</SelectContent>
+							</Select>
 						</div>
 					</div>
 
-					{/* Revenue Chart + SL Breakdown */}
-					<div className="grid grid-cols-2 gap-5">
-						<RevenueChart
-							data={filteredRevenue}
-							loading={revenueByEntity.isLoading}
-							fy={activeFy}
-						/>
-						<Card>
-							<CardHeader>
-								<CardTitle className="font-semibold text-base">
-									Service Line Breakdown
-								</CardTitle>
-							</CardHeader>
-							<CardContent>
-								<SlBreakdownTable
-									data={filteredSl}
-									loading={slBreakdown.isLoading}
+					<div className="flex flex-col gap-5 pt-4">
+						{/* Mercury inline stats */}
+						<div className="grid grid-cols-4 divide-x divide-zinc-200">
+							<div className="pr-6">
+								<InlineStat
+									label="Total Carbonites"
+									value={filteredStats?.totalCarbonites ?? 0}
+									loading={stats.isLoading}
 								/>
-							</CardContent>
-						</Card>
-					</div>
+							</div>
+							<div className="px-6">
+								<InlineStat
+									label="Total FTE"
+									value={filteredStats?.totalFte ?? 0}
+									loading={stats.isLoading}
+								/>
+							</div>
+							<div className="px-6">
+								<InlineStat
+									label="Revenue Target"
+									value={fmtDollar(filteredStats?.revenueTarget)}
+									loading={stats.isLoading}
+									subtitle={activeFy}
+								/>
+							</div>
+							<div className="pl-6">
+								<InlineStat
+									label="Revenue Actual"
+									value={fmtDollar(filteredStats?.revenueActual)}
+									loading={stats.isLoading}
+									subtitle={
+										filteredStats
+											? `${filteredStats.revenuePct}% to target`
+											: undefined
+									}
+									subtitleClass={
+										filteredStats
+											? revTextColor(filteredStats.revenuePct)
+											: undefined
+									}
+								/>
+							</div>
+						</div>
 
-					{/* Alerts */}
-					<AlertsPanel data={alerts.data} loading={alerts.isLoading} />
+						{/* Revenue Chart + SL Breakdown */}
+						<div className="grid grid-cols-2 gap-5">
+							<RevenueChart
+								data={filteredRevenue}
+								loading={revenueByEntity.isLoading}
+								fy={activeFy}
+							/>
+							<Card>
+								<CardHeader>
+									<CardTitle className="font-semibold text-base">
+										Service Line Breakdown
+									</CardTitle>
+								</CardHeader>
+								<CardContent>
+									<SlBreakdownTable
+										data={filteredSl}
+										loading={slBreakdown.isLoading}
+									/>
+								</CardContent>
+							</Card>
+						</div>
 
-					{/* Entity Cards */}
-					<div>
-						<h2 className="mb-4 font-semibold text-base tracking-tight">
-							Entities
-						</h2>
-						<EntityCardGrid
-							data={filteredEntities}
-							loading={entitySummaries.isLoading}
-							fy={activeFy}
-							columns={2}
-						/>
+						{/* Alerts */}
+						<AlertsPanel data={alerts.data} loading={alerts.isLoading} />
+
+						{/* Entity Cards */}
+						<div>
+							<h2 className="mb-4 font-semibold text-base tracking-tight">
+								Entities
+							</h2>
+							<EntityCardGrid
+								data={filteredEntities}
+								loading={entitySummaries.isLoading}
+								fy={activeFy}
+								columns={2}
+							/>
+						</div>
 					</div>
 				</div>
-			</div>
 			</div>
 		</div>
 	);
