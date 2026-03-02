@@ -14,8 +14,11 @@ import * as React from "react";
 import { useMemo, useState } from "react";
 import { Bar, BarChart, CartesianGrid, Cell, XAxis } from "recharts";
 
+import {
+	EntityCardGrid,
+	type EntitySummary,
+} from "@/components/dashboard/entity-card";
 import { PageHeader } from "@/components/shared/page-header";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -51,7 +54,6 @@ import {
 	FY_OPTIONS,
 	SERVICE_LINES,
 	SL_COLOR_MAP,
-	STATE_COLOR_MAP,
 	STATES,
 } from "@/lib/constants";
 import { fmtDollar } from "@/lib/format";
@@ -120,7 +122,7 @@ function StatCard({
 	);
 }
 
-/* ─── SL dot + State badge ─────────────────────────────────────────────── */
+/* ─── SL dot (still used by SL breakdown table) ──────────────────────── */
 
 function SlDot({ sl }: { sl: string }) {
 	const color = SL_COLOR_MAP[sl] ?? "#888";
@@ -131,100 +133,6 @@ function SlDot({ sl }: { sl: string }) {
 			className="inline-block size-2.5 rounded-full"
 			style={{ backgroundColor: color }}
 		/>
-	);
-}
-
-function StateBadge({ stateId }: { stateId: string | null }) {
-	if (!stateId) return null;
-	const color = STATE_COLOR_MAP[stateId];
-	return (
-		<Badge
-			variant="outline"
-			className="absolute top-4 right-4 text-[10px] uppercase"
-			style={color ? { borderColor: color, color } : undefined}
-		>
-			{stateId}
-		</Badge>
-	);
-}
-
-/* ─── Entity Card Grid ─────────────────────────────────────────────────── */
-
-type EntitySummary = {
-	id: string;
-	biz: string;
-	state: string | null;
-	officeId: string | null;
-	headcount: number;
-	totalSalary: number;
-	sls: string[];
-};
-
-function EntityCardsGrid({
-	data,
-	loading,
-	fy,
-}: {
-	data: EntitySummary[] | undefined;
-	loading: boolean;
-	fy: string;
-}) {
-	if (loading) {
-		return (
-			<div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-				{Array.from({ length: 8 }).map((_, i) => (
-					<Card key={`skel-${i.toString()}`}>
-						<CardContent className="space-y-2 pt-4">
-							<Skeleton className="h-4 w-32" />
-							<Skeleton className="h-3 w-20" />
-							<Skeleton className="h-3 w-24" />
-						</CardContent>
-					</Card>
-				))}
-			</div>
-		);
-	}
-
-	if (!data || data.length === 0) {
-		return (
-			<p className="text-base text-muted-foreground">No entities found.</p>
-		);
-	}
-
-	return (
-		<div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-			{data.map((ent) => (
-				<Link
-					key={ent.id}
-					to="/capacity-plan"
-					search={{ entity: ent.id, fy }}
-					className="group h-full"
-				>
-					<Card className="relative flex h-full flex-col transition-colors group-hover:border-sidebar-primary/40">
-						<StateBadge stateId={ent.state} />
-						<CardContent className="flex flex-1 flex-col pt-4">
-							<span className="pr-12 font-semibold text-base leading-tight">
-								{ent.biz}
-							</span>
-							<div className="mt-auto flex flex-col gap-1.5 pt-3">
-								<div className="flex items-center gap-3 text-muted-foreground text-sm">
-									<span>{ent.headcount} staff</span>
-									<span className="text-border">|</span>
-									<span>{fmtDollar(ent.totalSalary)} salary</span>
-								</div>
-								{ent.sls.length > 0 && (
-									<div className="flex items-center gap-1">
-										{ent.sls.map((sl) => (
-											<SlDot key={sl} sl={sl} />
-										))}
-									</div>
-								)}
-							</div>
-						</CardContent>
-					</Card>
-				</Link>
-			))}
-		</div>
 	);
 }
 
@@ -828,7 +736,7 @@ function DashboardPage() {
 					<h2 className="mb-3 font-semibold text-base tracking-tight">
 						Entities
 					</h2>
-					<EntityCardsGrid
+					<EntityCardGrid
 						data={filteredEntities}
 						loading={entitySummaries.isLoading}
 						fy={activeFy}
