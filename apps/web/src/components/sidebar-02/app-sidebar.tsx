@@ -15,7 +15,6 @@ import {
 	SidebarFooter,
 	SidebarHeader,
 	SidebarSeparator,
-	SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { authClient } from "@/lib/auth-client";
 import { getRank, getUserRole } from "@/lib/rbac";
@@ -67,7 +66,7 @@ export function AppSidebar() {
 
 	return (
 		<Sidebar variant="sidebar" collapsible="icon">
-			<SidebarHeader className="flex flex-row items-center justify-between md:pt-3.5">
+			<SidebarHeader className="flex flex-row items-center md:pt-3.5">
 				<div className="flex items-center gap-2">
 					<CarbonLogo className="size-7 shrink-0 text-sidebar-primary" />
 					<div className="flex flex-col group-data-[collapsible=icon]:hidden">
@@ -79,7 +78,6 @@ export function AppSidebar() {
 						</span>
 					</div>
 				</div>
-				<SidebarTrigger />
 			</SidebarHeader>
 
 			<SidebarContent className="px-2 py-4">

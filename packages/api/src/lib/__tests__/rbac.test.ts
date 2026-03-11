@@ -4,6 +4,8 @@ import { describe, expect, it } from "vitest";
 import {
 	ADMIN_WRITE_ROLES,
 	assertAdmin,
+	assertEntityScope,
+	assertResourceScope,
 	assertWriter,
 	getRoleFilter,
 	getUserRole,
@@ -182,5 +184,183 @@ describe("getRoleFilter", () => {
 	it("returns empty filter for read_only", () => {
 		const filter = getRoleFilter(mockUser({ role: "read_only" }));
 		expect(filter).toEqual({});
+	});
+});
+
+// ── assertResourceScope ─────────────────────────────────────────────────────
+
+describe("assertResourceScope", () => {
+	it("allows admin to access any resource", () => {
+		expect(() =>
+			assertResourceScope(mockUser({ role: "admin" }), {
+				state: "qld",
+				sl: "tax",
+			}),
+		).not.toThrow();
+	});
+
+	it("allows practice_manager to access any resource", () => {
+		expect(() =>
+			assertResourceScope(mockUser({ role: "practice_manager" }), {
+				state: "qld",
+				sl: "tax",
+			}),
+		).not.toThrow();
+	});
+
+	it("allows state_manager to access resource in their assigned state", () => {
+		expect(() =>
+			assertResourceScope(
+				mockUser({ role: "state_manager", assignedState: "qld" }),
+				{ state: "qld", sl: "tax" },
+			),
+		).not.toThrow();
+	});
+
+	it("blocks state_manager from accessing resource in different state", () => {
+		expect(() =>
+			assertResourceScope(
+				mockUser({ role: "state_manager", assignedState: "qld" }),
+				{ state: "nsw", sl: "tax" },
+			),
+		).toThrow(TRPCError);
+		try {
+			assertResourceScope(
+				mockUser({ role: "state_manager", assignedState: "qld" }),
+				{ state: "nsw", sl: "tax" },
+			);
+		} catch (e) {
+			expect((e as TRPCError).code).toBe("FORBIDDEN");
+		}
+	});
+
+	it("allows service_line_lead to access resource in their assigned SL", () => {
+		expect(() =>
+			assertResourceScope(
+				mockUser({
+					role: "service_line_lead",
+					assignedServiceLine: "acc",
+				}),
+				{ state: "qld", sl: "acc" },
+			),
+		).not.toThrow();
+	});
+
+	it("blocks service_line_lead from accessing resource in different SL", () => {
+		expect(() =>
+			assertResourceScope(
+				mockUser({
+					role: "service_line_lead",
+					assignedServiceLine: "acc",
+				}),
+				{ state: "qld", sl: "tax" },
+			),
+		).toThrow(TRPCError);
+		try {
+			assertResourceScope(
+				mockUser({
+					role: "service_line_lead",
+					assignedServiceLine: "acc",
+				}),
+				{ state: "qld", sl: "tax" },
+			);
+		} catch (e) {
+			expect((e as TRPCError).code).toBe("FORBIDDEN");
+		}
+	});
+
+	it("allows access when resource has no state/sl (null fields)", () => {
+		expect(() =>
+			assertResourceScope(
+				mockUser({ role: "state_manager", assignedState: "qld" }),
+				{ state: null, sl: null },
+			),
+		).not.toThrow();
+	});
+});
+
+// ── assertEntityScope ───────────────────────────────────────────────────────
+
+describe("assertEntityScope", () => {
+	it("allows admin to access any entity", () => {
+		expect(() =>
+			assertEntityScope(mockUser({ role: "admin" }), {
+				state: "nsw",
+				sl: ["tax", "audit"],
+			}),
+		).not.toThrow();
+	});
+
+	it("allows state_manager to access entity in their assigned state", () => {
+		expect(() =>
+			assertEntityScope(
+				mockUser({ role: "state_manager", assignedState: "qld" }),
+				{ state: "qld", sl: ["tax"] },
+			),
+		).not.toThrow();
+	});
+
+	it("blocks state_manager from accessing entity in different state", () => {
+		expect(() =>
+			assertEntityScope(
+				mockUser({ role: "state_manager", assignedState: "qld" }),
+				{ state: "nsw", sl: ["tax"] },
+			),
+		).toThrow(TRPCError);
+		try {
+			assertEntityScope(
+				mockUser({ role: "state_manager", assignedState: "qld" }),
+				{ state: "nsw", sl: ["tax"] },
+			);
+		} catch (e) {
+			expect((e as TRPCError).code).toBe("FORBIDDEN");
+		}
+	});
+
+	it("allows service_line_lead to access entity containing their SL", () => {
+		expect(() =>
+			assertEntityScope(
+				mockUser({
+					role: "service_line_lead",
+					assignedServiceLine: "acc",
+				}),
+				{ state: "qld", sl: ["acc", "tax"] },
+			),
+		).not.toThrow();
+	});
+
+	it("blocks service_line_lead from accessing entity without their SL", () => {
+		expect(() =>
+			assertEntityScope(
+				mockUser({
+					role: "service_line_lead",
+					assignedServiceLine: "acc",
+				}),
+				{ state: "qld", sl: ["tax", "audit"] },
+			),
+		).toThrow(TRPCError);
+		try {
+			assertEntityScope(
+				mockUser({
+					role: "service_line_lead",
+					assignedServiceLine: "acc",
+				}),
+				{ state: "qld", sl: ["tax", "audit"] },
+			);
+		} catch (e) {
+			expect((e as TRPCError).code).toBe("FORBIDDEN");
+		}
+	});
+
+	it("allows access when entity has empty SL array", () => {
+		expect(() =>
+			assertEntityScope(
+				mockUser({
+					role: "service_line_lead",
+					assignedServiceLine: "acc",
+				}),
+				{ state: "qld", sl: [] },
+			),
+		).not.toThrow();
 	});
 });

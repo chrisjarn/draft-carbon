@@ -23,6 +23,7 @@ export const carbonites = pgTable("carbonites", {
 	seniority: integer("seniority").default(5),
 	location: text("location"),
 	hours: integer("hours"),
+	startDate: text("start_date"),
 	isPartner: boolean("is_partner").default(false),
 	entity: text("entity").references(() => entities.id, {
 		onDelete: "set null",

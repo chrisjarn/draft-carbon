@@ -2,6 +2,12 @@
 
 import * as React from "react";
 import * as RechartsPrimitive from "recharts";
+import type { LegendPayload } from "recharts/types/component/DefaultLegendContent";
+import type {
+	NameType,
+	Payload,
+	ValueType,
+} from "recharts/types/component/DefaultTooltipContent";
 
 import { cn } from "@/lib/utils";
 
@@ -118,14 +124,30 @@ function ChartTooltipContent({
 	color,
 	nameKey,
 	labelKey,
-}: React.ComponentProps<typeof RechartsPrimitive.Tooltip> &
-	React.ComponentProps<"div"> & {
-		hideLabel?: boolean;
-		hideIndicator?: boolean;
-		indicator?: "line" | "dot" | "dashed";
-		nameKey?: string;
-		labelKey?: string;
-	}) {
+}: {
+	active?: boolean;
+	payload?: ReadonlyArray<Payload<ValueType, NameType>>;
+	className?: string;
+	indicator?: "line" | "dot" | "dashed";
+	hideLabel?: boolean;
+	hideIndicator?: boolean;
+	label?: React.ReactNode;
+	labelFormatter?: (
+		label: React.ReactNode,
+		payload: ReadonlyArray<Payload<ValueType, NameType>>,
+	) => React.ReactNode;
+	labelClassName?: string;
+	formatter?: (
+		value: ValueType | undefined,
+		name: NameType | undefined,
+		item: Payload<ValueType, NameType>,
+		index: number,
+		payload: ReadonlyArray<Payload<ValueType, NameType>>,
+	) => React.ReactNode;
+	color?: string;
+	nameKey?: string;
+	labelKey?: string;
+}) {
 	const { config } = useChart();
 
 	const tooltipLabel = React.useMemo(() => {
@@ -188,7 +210,7 @@ function ChartTooltipContent({
 
 						return (
 							<div
-								key={item.dataKey}
+								key={`${item.dataKey}`}
 								className={cn(
 									"flex w-full flex-wrap items-stretch gap-2 [&>svg]:h-2.5 [&>svg]:w-2.5 [&>svg]:text-muted-foreground",
 									indicator === "dot" && "items-center",
@@ -258,11 +280,13 @@ function ChartLegendContent({
 	payload,
 	verticalAlign = "bottom",
 	nameKey,
-}: React.ComponentProps<"div"> &
-	Pick<RechartsPrimitive.LegendProps, "payload" | "verticalAlign"> & {
-		hideIcon?: boolean;
-		nameKey?: string;
-	}) {
+}: {
+	className?: string;
+	hideIcon?: boolean;
+	payload?: LegendPayload[];
+	verticalAlign?: "top" | "bottom" | "middle";
+	nameKey?: string;
+}) {
 	const { config } = useChart();
 
 	if (!payload?.length) {

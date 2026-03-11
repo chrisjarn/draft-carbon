@@ -1,6 +1,6 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
-
-import { CommandPalette } from "@/components/command-palette";
+import { AppTopBar } from "@/components/organisms/app-top-bar";
+import { CommandPalette } from "@/components/organisms/command-palette";
 import { AppSidebar } from "@/components/sidebar-02/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -8,11 +8,13 @@ import { authClient } from "@/lib/auth-client";
 
 export const Route = createFileRoute("/_app")({
 	beforeLoad: async () => {
-		const session = await authClient.getSession();
-		if (!session.data) {
+		// Always fetch fresh session — no module-level cache
+		const result = await authClient.getSession();
+		const session = result.data;
+		if (!session) {
 			throw redirect({ to: "/login" });
 		}
-		return { session: session.data };
+		return { session };
 	},
 	component: AppLayout,
 });
@@ -24,6 +26,7 @@ function AppLayout() {
 				<div className="relative flex h-dvh w-full">
 					<AppSidebar />
 					<SidebarInset className="flex flex-col overflow-auto">
+						{/* <AppTopBar /> */}
 						<Outlet />
 					</SidebarInset>
 					<CommandPalette />

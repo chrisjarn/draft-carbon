@@ -333,12 +333,55 @@ export default function Login04() {
 	}
 
 	return (
-		<div className="flex min-h-dvh items-center justify-center">
-			<div className="flex flex-1 flex-col justify-center px-4 py-10 lg:px-6">
-				<div className="sm:mx-auto sm:w-full sm:max-w-md">
-					<div className="flex items-center space-x-2">
+		<div className="flex min-h-dvh">
+			{/* Left panel — dark brand strip */}
+			<div
+				className="hidden flex-col justify-between p-10 lg:flex lg:w-[42%]"
+				style={{ background: "oklch(0.21 0.006 285.885)" }}
+			>
+				<div className="flex items-center gap-2">
+					<CarbonLogo />
+					<span
+						className="font-extrabold text-base tracking-tight"
+						style={{ color: "oklch(0.985 0 0)" }}
+					>
+						Carbon Group
+					</span>
+				</div>
+				<div>
+					<p
+						className="mb-2 font-medium text-[10px] uppercase tracking-widest"
+						style={{ color: "oklch(0.648 0.2 163.1)" }}
+					>
+						Workforce Planner
+					</p>
+					<h2
+						className="font-semibold text-2xl leading-snug tracking-tight"
+						style={{ color: "oklch(0.985 0 0)" }}
+					>
+						Plan smarter.
+						<br />
+						Grow the right team.
+					</h2>
+					<p
+						className="mt-3 text-sm"
+						style={{ color: "oklch(0.985 0 0 / 45%)" }}
+					>
+						Headcount, capacity, and hiring — all in one place.
+					</p>
+				</div>
+				<p className="text-[10px]" style={{ color: "oklch(0.985 0 0 / 25%)" }}>
+					© {new Date().getFullYear()} Carbon Group
+				</p>
+			</div>
+
+			{/* Right panel — form */}
+			<div className="flex flex-1 flex-col justify-center bg-background px-8 py-10 lg:px-12">
+				<div className="mx-auto w-full max-w-sm">
+					{/* Mobile logo */}
+					<div className="mb-6 flex items-center space-x-2 lg:hidden">
 						<CarbonLogo />
-						<p className="text-pretty font-semibold text-foreground text-lg">
+						<p className="font-semibold text-foreground text-lg">
 							Carbon Group
 						</p>
 					</div>

@@ -1,28 +1,39 @@
-import { PlusSignIcon, UserGroupIcon } from "@hugeicons/core-free-icons";
+import {
+	Delete01Icon,
+	Download01Icon,
+	PlusSignIcon,
+} from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createLazyFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
-import type { Carbonite, Filters, FormState } from "@/components/carbonites";
+
+import type { Carbonite, FormState } from "@/components/features/carbonites";
 import {
-	CarboniteCard,
+	CarboniteCreateDialog,
 	CarboniteDetailSheet,
 	CarboniteDialog,
-	CarboniteFilters,
 	carboniteToForm,
-	EMPTY_FILTERS,
-	emptyForm,
-} from "@/components/carbonites";
-import { PageHeader } from "@/components/shared/page-header";
-import { Button } from "@/components/ui/button";
+} from "@/components/features/carbonites";
+import { seniorityLabel } from "@/components/features/carbonites/types";
+import { useCarboniteDataTable } from "@/components/features/carbonites/use-carbonite-data-table";
+import { ConfirmDialog } from "@/components/molecules/confirm-dialog";
 import {
-	Dialog,
-	DialogContent,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
-} from "@/components/ui/dialog";
+	KpiCard,
+	KpiLegend,
+	KpiLegendItem,
+} from "@/components/molecules/kpi-card";
+import { SearchInput } from "@/components/molecules/search-input";
+import { DataTable } from "@/components/organisms/data-table/data-table";
+import {
+	DataTableActionBar,
+	DataTableActionBarAction,
+	DataTableActionBarSelection,
+} from "@/components/organisms/data-table/data-table-action-bar";
+import { PageHeader } from "@/components/organisms/page-header";
+import { Page, PageBody, PageSection, PageToolbar } from "@/components/templates/page";
+import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
 import { canAdminWrite, canWrite, getUserRole } from "@/lib/rbac";
 import { trpc } from "@/utils/trpc";
@@ -30,6 +41,45 @@ import { trpc } from "@/utils/trpc";
 export const Route = createLazyFileRoute("/_app/carbonites")({
 	component: CarbonitesPage,
 });
+
+// ── CSV export helper ─────────────────────────────────────────────────────────
+
+function exportCsv(rows: Carbonite[]) {
+	const headers = [
+		"Name",
+		"Role",
+		"Service Line",
+		"State",
+		"Office",
+		"Pod",
+		"Type",
+		"Salary",
+	];
+	const csvRows = [
+		headers.join(","),
+		...rows.map((c) =>
+			[
+				`"${c.name}"`,
+				`"${c.role ?? ""}"`,
+				`"${c.sl ?? ""}"`,
+				`"${c.state ?? ""}"`,
+				`"${c.office ?? ""}"`,
+				`"${c.pod ?? ""}"`,
+				`"${c.type ?? "FT"}"`,
+				c.salary ?? 0,
+			].join(","),
+		),
+	];
+	const blob = new Blob([csvRows.join("\n")], { type: "text/csv" });
+	const url = URL.createObjectURL(blob);
+	const a = document.createElement("a");
+	a.href = url;
+	a.download = `carbonites-${new Date().toISOString().slice(0, 10)}.csv`;
+	a.click();
+	URL.revokeObjectURL(url);
+}
+
+// ── Page component ────────────────────────────────────────────────────────────
 
 function CarbonitesPage() {
 	const { search: searchParam } = Route.useSearch();
@@ -39,36 +89,112 @@ function CarbonitesPage() {
 	const hasAdminAccess = canAdminWrite(userRole);
 
 	const qc = useQueryClient();
-	const [filters, setFilters] = useState<Filters>({
-		...EMPTY_FILTERS,
-		search: searchParam ?? "",
-	});
+
+	// Detail sheet
 	const [selected, setSelected] = useState<Carbonite | null>(null);
+
+	// Edit / Create dialogs
 	const [dialogOpen, setDialogOpen] = useState(false);
 	const [editTarget, setEditTarget] = useState<Carbonite | null>(null);
+
+	// Bulk deactivation
+	const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
+
+	// Single deactivation (from detail sheet)
 	const [deleteTarget, setDeleteTarget] = useState<Carbonite | null>(null);
 
-	// Single unfiltered query — client-side filtering via useMemo
+	// ── Data fetching ─────────────────────────────────────────────────────────
+
 	const query = useQuery(trpc.carbonites.getAll.queryOptions({}));
 	const allData = query.data ?? [];
 
-	const filteredRows = useMemo(() => {
-		return allData.filter((c) => {
-			if (filters.search) {
-				const q = filters.search.toLowerCase();
-				const match =
-					c.name.toLowerCase().includes(q) ||
-					c.role?.toLowerCase().includes(q) ||
-					c.pod?.toLowerCase().includes(q);
-				if (!match) return false;
-			}
-			if (filters.state && c.state !== filters.state) return false;
-			if (filters.sl && c.sl !== filters.sl) return false;
-			if (filters.office && c.office !== filters.office) return false;
-			if (filters.type && c.type !== filters.type) return false;
-			return true;
-		});
-	}, [allData, filters]);
+	// Entities (for resolving entity names in detail sheet)
+	const entitiesQuery = useQuery(trpc.entities.getAll.queryOptions());
+
+	// Staff meta (perf ratings) + attrition risks
+	const staffMetaQuery = useQuery(trpc.wfp.getStaffWithMeta.queryOptions({}));
+	const riskQuery = useQuery(
+		trpc.wfpExtended.getAllAttritionRisks.queryOptions(),
+	);
+
+	const perfMap = useMemo(() => {
+		const map = new Map<string, string | null>();
+		for (const s of staffMetaQuery.data ?? []) {
+			map.set(s.id, s.meta?.perfRating ?? null);
+		}
+		return map;
+	}, [staffMetaQuery.data]);
+
+	const riskMap = useMemo(() => {
+		const map = new Map<string, string | null>();
+		for (const r of riskQuery.data ?? []) {
+			map.set(r.carboniteId, r.riskLevel);
+		}
+		return map;
+	}, [riskQuery.data]);
+
+	const ftCount = useMemo(
+		() => allData.filter((c) => !c.type || c.type === "FT").length,
+		[allData],
+	);
+
+	const ptCount = useMemo(
+		() => allData.filter((c) => c.type && c.type !== "FT").length,
+		[allData],
+	);
+
+	const highRiskCount = useMemo(() => {
+		let count = 0;
+		for (const level of riskMap.values()) {
+			if (level === "high") count++;
+		}
+		return count;
+	}, [riskMap]);
+
+	const avgSeniorityLabel = useMemo(() => {
+		const vals = allData
+			.map((c) => c.seniority)
+			.filter((s): s is number => s != null);
+		if (vals.length === 0) return "—";
+		const avg = vals.reduce((a, b) => a + b, 0) / vals.length;
+		return seniorityLabel(Math.round(avg));
+	}, [allData]);
+
+	// entity id → biz name
+	const entitiesMap = useMemo(() => {
+		const map = new Map<string, string>();
+		for (const e of entitiesQuery.data ?? []) {
+			map.set(e.id, e.biz);
+		}
+		return map;
+	}, [entitiesQuery.data]);
+
+	// carbonite id → name (for reportsTo resolution)
+	const carbonitesMap = useMemo(() => {
+		const map = new Map<string, string>();
+		for (const c of allData) {
+			map.set(c.id, c.name);
+		}
+		return map;
+	}, [allData]);
+
+	// ── Table hook ────────────────────────────────────────────────────────────
+
+	const handleEdit = useCallback((c: Carbonite) => {
+		setEditTarget(c);
+		setDialogOpen(true);
+	}, []);
+
+	const { table, globalFilter, setGlobalFilter } = useCarboniteDataTable({
+		data: allData,
+		onEdit: handleEdit,
+		canEdit: hasWriteAccess,
+		initialSearch: searchParam ?? "",
+		perfMap,
+		riskMap,
+	});
+
+	// ── Mutations ─────────────────────────────────────────────────────────────
 
 	function invalidate() {
 		qc.invalidateQueries({ queryKey: trpc.carbonites.getAll.queryKey() });
@@ -103,7 +229,7 @@ function CarbonitesPage() {
 				invalidate();
 				setDeleteTarget(null);
 				setSelected(null);
-				toast.success("Carbonite deactivated");
+				toast.success("Carbonite deleted");
 			},
 			onError: (e) => toast.error(e.message),
 		}),
@@ -136,16 +262,34 @@ function CarbonitesPage() {
 
 	const saving = createMut.isPending || updateMut.isPending;
 
-	return (
-		<div className="flex h-full flex-col">
-			<PageHeader />
+	// ── Bulk actions ──────────────────────────────────────────────────────────
 
-			<div className="flex justify-between border-b bg-white px-6 py-2">
-				<CarboniteFilters
-					filters={filters}
-					onChange={setFilters}
-					allData={allData}
-				/>
+	const selectedRows = table.getFilteredSelectedRowModel().rows;
+	const selectedCarbonites = selectedRows.map((r) => r.original);
+
+	const [bulkDeleting, setBulkDeleting] = useState(false);
+
+	async function handleBulkDeactivate() {
+		setBulkDeleting(true);
+		try {
+			await Promise.all(
+				selectedCarbonites.map((c) => deleteMut.mutateAsync({ id: c.id })),
+			);
+			table.toggleAllRowsSelected(false);
+			setBulkDeleteOpen(false);
+			toast.success(`${selectedCarbonites.length} carbonites deactivated`);
+		} catch {
+			// individual errors handled by deleteMut.onError
+		} finally {
+			setBulkDeleting(false);
+		}
+	}
+
+	// ── Render ────────────────────────────────────────────────────────────────
+
+	return (
+		<Page>
+			<PageHeader>
 				{hasWriteAccess && (
 					<Button
 						onClick={() => {
@@ -153,35 +297,117 @@ function CarbonitesPage() {
 							setDialogOpen(true);
 						}}
 					>
-						<HugeiconsIcon icon={PlusSignIcon} className="mr-1.5 size-3.5" />{" "}
-						Add Carbonite
+						<HugeiconsIcon
+							icon={PlusSignIcon}
+							className="mr-1 size-3.5"
+							aria-hidden="true"
+						/>
+						Add
 					</Button>
 				)}
-			</div>
+			</PageHeader>
 
-			<div className="flex-1 overflow-auto p-6">
-				{query.isPending ? (
-					<div className="flex h-40 items-center justify-center text-muted-foreground text-xs">
-						Loading…
-					</div>
-				) : filteredRows.length === 0 ? (
-					<div className="flex h-40 flex-col items-center justify-center gap-2 text-muted-foreground text-xs">
-						<HugeiconsIcon icon={UserGroupIcon} className="size-8 opacity-30" />
-						No carbonites found
-					</div>
-				) : (
-					<div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-						{filteredRows.map((c) => (
-							<CarboniteCard
-								key={c.id}
-								carbonite={c}
-								onClick={() => setSelected(c)}
+			<PageToolbar>
+				<SearchInput
+					placeholder="Search name, role, pod…"
+					value={globalFilter}
+					onChange={setGlobalFilter}
+				/>
+			</PageToolbar>
+
+			<PageSection className="border-b">
+				<dl className="grid grid-cols-4 gap-4">
+					<KpiCard
+						title="Total Staff"
+						value={allData.length}
+						loading={query.isPending}
+					>
+						<KpiLegend>
+							<KpiLegendItem
+								color="bg-primary"
+								label={`${table.getFilteredRowModel().rows.length} shown`}
 							/>
-						))}
-					</div>
-				)}
-			</div>
+						</KpiLegend>
+					</KpiCard>
 
+					<KpiCard
+						title="Employment Type"
+						value={ftCount}
+						loading={query.isPending}
+					>
+						<KpiLegend>
+							<KpiLegendItem
+								color="bg-emerald-500"
+								label="Full Time"
+								value={ftCount}
+							/>
+							<KpiLegendItem
+								color="bg-amber-500"
+								label="Part Time / Contract"
+								value={ptCount}
+							/>
+						</KpiLegend>
+					</KpiCard>
+
+					<KpiCard
+						title="High Attrition Risk"
+						value={highRiskCount}
+						valueClass={highRiskCount > 0 ? "text-red-500" : undefined}
+						loading={riskQuery.isPending}
+					>
+						<KpiLegend>
+							<KpiLegendItem
+								color="bg-red-500"
+								label={`of ${riskMap.size} assessed`}
+							/>
+						</KpiLegend>
+					</KpiCard>
+
+					<KpiCard
+						title="Avg Seniority"
+						value={avgSeniorityLabel}
+						loading={query.isPending}
+					/>
+				</dl>
+			</PageSection>
+
+			<PageBody>
+				<DataTable table={table} onRowClick={setSelected} />
+			</PageBody>
+
+			{/* ── Bulk action bar ──────────────────────────────────────────────── */}
+			<DataTableActionBar table={table}>
+				<DataTableActionBarSelection table={table} />
+
+				<DataTableActionBarAction
+					tooltip="Export selected as CSV"
+					onClick={() => exportCsv(selectedCarbonites)}
+				>
+					<HugeiconsIcon
+						icon={Download01Icon}
+						className="size-3.5"
+						aria-hidden="true"
+					/>
+					Export
+				</DataTableActionBarAction>
+
+				{hasAdminAccess && (
+					<DataTableActionBarAction
+						tooltip="Deactivate selected carbonites"
+						variant="destructive"
+						onClick={() => setBulkDeleteOpen(true)}
+					>
+						<HugeiconsIcon
+							icon={Delete01Icon}
+							className="size-3.5"
+							aria-hidden="true"
+						/>
+						Deactivate
+					</DataTableActionBarAction>
+				)}
+			</DataTableActionBar>
+
+			{/* ── Detail sheet ──────────────────────────────────────────────────── */}
 			<CarboniteDetailSheet
 				carbonite={selected}
 				onClose={() => setSelected(null)}
@@ -192,51 +418,82 @@ function CarbonitesPage() {
 				onDelete={setDeleteTarget}
 				canWriteAccess={hasWriteAccess}
 				canAdminAccess={hasAdminAccess}
+				staffMeta={
+					selected
+						? (staffMetaQuery.data?.find((s) => s.id === selected.id)?.meta ??
+							null)
+						: null
+				}
+				attritionRisk={
+					selected
+						? (riskQuery.data?.find((r) => r.carboniteId === selected.id) ??
+							null)
+						: null
+				}
+				entitiesMap={entitiesMap}
+				carbonitesMap={carbonitesMap}
 			/>
 
-			<CarboniteDialog
-				key={editTarget?.id ?? "create"}
-				open={dialogOpen}
-				onClose={() => setDialogOpen(false)}
-				initial={editTarget ? carboniteToForm(editTarget) : emptyForm()}
-				onSave={handleSave}
-				saving={saving}
-			/>
+			{/* ── Edit / Create dialogs ────────────────────────────────────────── */}
+			{editTarget ? (
+				<CarboniteDialog
+					key={editTarget.id}
+					open={dialogOpen}
+					onClose={() => setDialogOpen(false)}
+					initial={carboniteToForm(editTarget)}
+					onSave={handleSave}
+					saving={saving}
+				/>
+			) : (
+				<CarboniteCreateDialog
+					key={String(dialogOpen)}
+					open={dialogOpen}
+					onOpenChange={(o) => {
+						if (!o) setDialogOpen(false);
+					}}
+					onSave={(payload) => createMut.mutate(payload)}
+					saving={createMut.isPending}
+					allData={allData}
+				/>
+			)}
 
-			<Dialog
+			{/* ── Single deactivation dialog ───────────────────────────────────── */}
+			<ConfirmDialog
 				open={!!deleteTarget}
 				onOpenChange={(o) => !o && setDeleteTarget(null)}
-			>
-				<DialogContent className="max-w-sm">
-					<DialogHeader>
-						<DialogTitle>Deactivate Carbonite</DialogTitle>
-					</DialogHeader>
-					<p className="text-muted-foreground text-sm">
+				title="Deactivate Carbonite"
+				description={
+					<>
 						Are you sure you want to deactivate{" "}
 						<strong>{deleteTarget?.name}</strong>? They will be removed from all
 						active views.
-					</p>
-					<DialogFooter>
-						<Button
-							variant="outline"
-							size="sm"
-							onClick={() => setDeleteTarget(null)}
-						>
-							Cancel
-						</Button>
-						<Button
-							variant="destructive"
-							size="sm"
-							disabled={deleteMut.isPending}
-							onClick={() =>
-								deleteTarget && deleteMut.mutate({ id: deleteTarget.id })
-							}
-						>
-							{deleteMut.isPending ? "Deactivating…" : "Deactivate"}
-						</Button>
-					</DialogFooter>
-				</DialogContent>
-			</Dialog>
-		</div>
+					</>
+				}
+				confirmLabel="Deactivate"
+				pendingLabel="Deactivating…"
+				loading={deleteMut.isPending}
+				onConfirm={() =>
+					deleteTarget && deleteMut.mutate({ id: deleteTarget.id })
+				}
+			/>
+
+			{/* ── Bulk deactivation dialog ──────────────────────────────────────── */}
+			<ConfirmDialog
+				open={bulkDeleteOpen}
+				onOpenChange={(o) => !o && setBulkDeleteOpen(false)}
+				title={`Deactivate ${selectedCarbonites.length} carbonites`}
+				description={
+					<>
+						Are you sure you want to deactivate{" "}
+						<strong>{selectedCarbonites.length} carbonites</strong>? They will
+						be removed from all active views.
+					</>
+				}
+				confirmLabel="Deactivate all"
+				pendingLabel="Deactivating…"
+				loading={bulkDeleting}
+				onConfirm={handleBulkDeactivate}
+			/>
+		</Page>
 	);
 }

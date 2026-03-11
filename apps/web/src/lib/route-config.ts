@@ -10,7 +10,7 @@ export const ROUTE_CONFIG: Record<
 	},
 	"/carbonites": {
 		title: "Carbonites",
-		description: "Staff directory — search, filter, and manage team members.",
+		description: "Staff directory - search, filter, and manage team members.",
 	},
 	"/hiring": {
 		title: "Hiring",

@@ -35,7 +35,9 @@ export function UserDropdown({ name, role }: { name: string; role: string }) {
 
 	async function handleSignOut() {
 		await authClient.signOut();
-		navigate({ to: "/login" });
+		// Force full page reload to clear all in-memory state (TanStack Query cache,
+		// route context, etc.) so the next login starts fresh
+		window.location.href = "/login";
 	}
 
 	return (

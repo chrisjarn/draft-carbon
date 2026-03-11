@@ -7,4 +7,7 @@ const searchSchema = z.object({
 
 export const Route = createFileRoute("/_app/carbonites")({
 	validateSearch: searchSchema,
+	loader: ({ context: { trpc, queryClient } }) => {
+		void queryClient.ensureQueryData(trpc.carbonites.getAll.queryOptions({}));
+	},
 });

@@ -5,13 +5,22 @@ import { asc, eq } from "drizzle-orm";
 import z from "zod";
 
 import { protectedProcedure, router } from "../index";
-import { ADMIN_WRITE_ROLES, assertWriter } from "../lib/rbac";
+import {
+	ADMIN_WRITE_ROLES,
+	assertEntityScope,
+	assertWriter,
+	entityRoleWhere,
+	getRoleFilter,
+} from "../lib/rbac";
 
 export const entitiesRouter = router({
-	getAll: protectedProcedure.query(async () => {
+	getAll: protectedProcedure.query(async ({ ctx }) => {
+		const rf = getRoleFilter(ctx.session.user);
+		const rbacWhere = entityRoleWhere(rf);
 		return await db
 			.select()
 			.from(entities)
+			.where(rbacWhere)
 			.orderBy(asc(entities.state), asc(entities.biz));
 	}),
 
@@ -31,6 +40,10 @@ export const entitiesRouter = router({
 		)
 		.mutation(async ({ ctx, input }) => {
 			assertWriter(ctx.session.user, ADMIN_WRITE_ROLES);
+			assertEntityScope(ctx.session.user, {
+				state: input.state,
+				sl: input.sl,
+			});
 			// Generate ID from business name: "ent-" + slugified name
 			const slug = input.biz
 				.toLowerCase()
@@ -73,6 +86,21 @@ export const entitiesRouter = router({
 		)
 		.mutation(async ({ ctx, input }) => {
 			assertWriter(ctx.session.user, ADMIN_WRITE_ROLES);
+			// Fetch existing entity and verify scope before mutating
+			const [existing] = await db
+				.select()
+				.from(entities)
+				.where(eq(entities.id, input.id));
+			if (!existing) throw new TRPCError({ code: "NOT_FOUND" });
+			assertEntityScope(ctx.session.user, {
+				state: existing.state,
+				sl: existing.sl,
+			});
+			// Validate post-update scope: reject reassignment outside caller's scope
+			assertEntityScope(ctx.session.user, {
+				state: input.state ?? existing.state,
+				sl: input.sl ?? existing.sl,
+			});
 			const { id, ...fields } = input;
 			const [row] = await db
 				.update(entities)
@@ -81,5 +109,27 @@ export const entitiesRouter = router({
 				.returning();
 			if (!row) throw new TRPCError({ code: "NOT_FOUND" });
 			return row;
+		}),
+
+	delete: protectedProcedure
+		.input(z.object({ id: z.string() }))
+		.mutation(async ({ ctx, input }) => {
+			assertWriter(ctx.session.user, ADMIN_WRITE_ROLES);
+			// Fetch existing entity and verify scope before deleting
+			const [existing] = await db
+				.select()
+				.from(entities)
+				.where(eq(entities.id, input.id));
+			if (!existing) throw new TRPCError({ code: "NOT_FOUND" });
+			assertEntityScope(ctx.session.user, {
+				state: existing.state,
+				sl: existing.sl,
+			});
+			const [row] = await db
+				.delete(entities)
+				.where(eq(entities.id, input.id))
+				.returning();
+			if (!row) throw new TRPCError({ code: "NOT_FOUND" });
+			return { deleted: input.id };
 		}),
 });

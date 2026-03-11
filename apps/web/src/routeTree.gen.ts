@@ -63,9 +63,7 @@ const AppDashboardRoute = AppDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
   getParentRoute: () => AppRoute,
-} as any).lazy(() =>
-  import('./routes/_app/dashboard.lazy').then((d) => d.Route),
-)
+} as any)
 const AppCarbonitesRoute = AppCarbonitesRouteImport.update({
   id: '/carbonites',
   path: '/carbonites',

@@ -10,14 +10,23 @@ import {
 } from "./src/schema/index.js";
 import type { NewSalaryBracket } from "./src/schema/salary-brackets.js";
 
-// ── Password hashing (matches Better Auth's scrypt format) ──────────────────
+// ── Password hashing (matches Better Auth's scrypt config exactly) ──────────
+// Better Auth uses: N=16384, r=16, p=1, dkLen=64
+// Node crypto.scrypt defaults to r=8, so we must pass explicit options.
 function hashPassword(password: string): Promise<string> {
 	return new Promise((resolve, reject) => {
 		const salt = crypto.randomBytes(16).toString("hex");
-		crypto.scrypt(password, salt, 64, (err, derivedKey) => {
-			if (err) reject(err);
-			resolve(`${salt}:${derivedKey.toString("hex")}`);
-		});
+		const normalized = password.normalize("NFKC");
+		crypto.scrypt(
+			normalized,
+			salt,
+			64,
+			{ N: 16384, r: 16, p: 1, maxmem: 128 * 16384 * 16 * 2 },
+			(err, derivedKey) => {
+				if (err) reject(err);
+				resolve(`${salt}:${derivedKey.toString("hex")}`);
+			},
+		);
 	});
 }
 
@@ -35,6 +44,13 @@ function generateId(length = 32): string {
 // ── Test Users (for RBAC testing) ───────────────────────────────────────────
 // Password for all test users: Test1234!
 const TEST_USERS = [
+	{
+		name: "Chris Admin",
+		email: "chris@carbon.test",
+		role: "admin" as const,
+		assignedState: null,
+		assignedServiceLine: null,
+	},
 	{
 		name: "WA State Manager",
 		email: "wa-manager@carbon.test",

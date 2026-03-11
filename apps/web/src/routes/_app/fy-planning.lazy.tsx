@@ -1,27 +1,49 @@
-import {
-	ArrowDown01Icon,
-	ArrowRight01Icon,
-	Download01Icon,
-	PencilEdit01Icon,
-	Tick01Icon,
-	Upload01Icon,
-} from "@hugeicons/core-free-icons";
+import { Download01Icon, Upload01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createLazyFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
+import type { ExpandedState, Row } from "@tanstack/react-table";
+import {
+	getCoreRowModel,
+	getExpandedRowModel,
+	getFilteredRowModel,
+	getGroupedRowModel,
+	getSortedRowModel,
+	useReactTable,
+} from "@tanstack/react-table";
+import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { PageHeader } from "@/components/shared/page-header";
-import { Badge } from "@/components/ui/badge";
+import {
+	attainmentPct,
+	buildGroupCells,
+	CsvImportDialog,
+	derivePriorFy,
+	type EntityWithRevenue,
+	exportRevenueCsv,
+	fmt,
+	makeRevenueColumns,
+	PodComparisonTable,
+	type RevenueRow,
+	TotalsFooter,
+} from "@/components/features/fy-planning";
+import { SearchInput } from "@/components/molecules/search-input";
+import { DataTable } from "@/components/organisms/data-table/data-table";
+import { PageHeader } from "@/components/organisms/page-header";
+import { PageStatsBar } from "@/components/organisms/page-stats-bar";
+import {
+	Page,
+	PageBody,
+	PageSection,
+	PageToolbar,
+} from "@/components/templates/page";
 import { Button } from "@/components/ui/button";
 import {
-	Dialog,
-	DialogContent,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
+	Empty,
+	EmptyDescription,
+	EmptyHeader,
+	EmptyTitle,
+} from "@/components/ui/empty";
+
 import {
 	Select,
 	SelectContent,
@@ -29,18 +51,8 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from "@/components/ui/table";
-import { Textarea } from "@/components/ui/textarea";
 import { authClient } from "@/lib/auth-client";
 import { FY_OPTIONS } from "@/lib/constants";
-import { fmtDollar } from "@/lib/format";
 import { canAdminWrite, getUserRole } from "@/lib/rbac";
 import { trpc } from "@/utils/trpc";
 
@@ -48,648 +60,11 @@ export const Route = createLazyFileRoute("/_app/fy-planning")({
 	component: FyPlanningPage,
 });
 
-// -- Types --------------------------------------------------------------------
-
-type EntityWithRevenue = {
-	id: string;
-	biz: string;
-	state: string | null;
-	officeId: string | null;
-	revenue: { target: string | null; actual: string | null } | null;
-};
-
-// -- Helpers ------------------------------------------------------------------
-
-function fmt(v: string | null | undefined): string {
-	const n = Number(v);
-	if (!v || Number.isNaN(n) || n === 0) return "\u2014";
-	if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(2)}m`;
-	if (n >= 1_000) return `$${Math.round(n / 1_000)}k`;
-	return `$${n}`;
-}
-
-function variance(
-	target: string | null,
-	actual: string | null,
-): { val: string; positive: boolean | null } {
-	const t = Number(target);
-	const a = Number(actual);
-	if (!t || !a) return { val: "\u2014", positive: null };
-	const diff = a - t;
-	const positive = diff >= 0;
-	const abs = Math.abs(diff);
-	const label =
-		abs >= 1_000_000
-			? `${(abs / 1_000_000).toFixed(2)}m`
-			: abs >= 1_000
-				? `${Math.round(abs / 1_000)}k`
-				: String(abs);
-	return { val: `${positive ? "+" : "-"}$${label}`, positive };
-}
-
-function attainmentPct(
-	target: string | null,
-	actual: string | null,
-): number | null {
-	const t = Number(target);
-	const a = Number(actual);
-	if (!t || !a) return null;
-	return Math.round((a / t) * 100);
-}
-
-function derivePriorFy(fy: string): string {
-	const match = fy.match(/^FY(\d{2})-(\d{2})$/);
-	if (!match) return fy;
-	const start = Number(match[1]) - 1;
-	const end = Number(match[2]) - 1;
-	return `FY${String(start).padStart(2, "0")}-${String(end).padStart(2, "0")}`;
-}
-
-// -- Progress bar -------------------------------------------------------------
-
-function RevenueBar({
-	target,
-	actual,
-}: {
-	target: string | null;
-	actual: string | null;
-}) {
-	const t = Number(target);
-	const a = Number(actual);
-	if (!t) return <div className="h-1.5 w-full rounded-full bg-muted" />;
-	const pct = Math.min((a / t) * 100, 100);
-	const over = a > t;
-	return (
-		<div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
-			<div
-				className={`h-full rounded-full transition-all ${over ? "bg-green-500" : pct >= 80 ? "bg-amber-500" : "bg-blue-500"}`}
-				style={{ width: `${pct}%` }}
-			/>
-		</div>
-	);
-}
-
-// -- Inline editable dollar cell ----------------------------------------------
-
-function RevenueCell({
-	value,
-	onSave,
-	disabled,
-}: {
-	value: string | null | undefined;
-	onSave: (v: string) => void;
-	disabled?: boolean;
-}) {
-	const [editing, setEditing] = useState(false);
-	const [val, setVal] = useState(value ?? "");
-
-	if (disabled)
-		return <span className="text-sm tabular-nums">{fmt(value)}</span>;
-
-	if (editing) {
-		return (
-			<div className="flex items-center gap-1">
-				<span className="text-muted-foreground text-sm">$</span>
-				<Input
-					type="number"
-					value={val}
-					onChange={(e) => setVal(e.target.value)}
-					onKeyDown={(e) => {
-						if (e.key === "Enter") {
-							onSave(val);
-							setEditing(false);
-						}
-						if (e.key === "Escape") setEditing(false);
-					}}
-					className="h-6 w-24 text-sm"
-				/>
-				<button
-					type="button"
-					onClick={() => {
-						onSave(val);
-						setEditing(false);
-					}}
-					className="text-green-400 hover:text-green-300"
-				>
-					<HugeiconsIcon icon={Tick01Icon} className="size-3.5" />
-				</button>
-			</div>
-		);
-	}
-
-	return (
-		<div className="group flex items-center gap-1">
-			<span className="text-sm tabular-nums">{fmt(value)}</span>
-			<button
-				type="button"
-				onClick={() => {
-					setVal(value ?? "");
-					setEditing(true);
-				}}
-				className="text-muted-foreground opacity-0 transition-opacity hover:text-foreground group-hover:opacity-100"
-			>
-				<HugeiconsIcon icon={PencilEdit01Icon} className="size-3" />
-			</button>
-		</div>
-	);
-}
-
-// -- State group --------------------------------------------------------------
-
-type StateGroup = {
-	state: string;
-	entities: EntityWithRevenue[];
-	totalTarget: number;
-	totalActual: number;
-};
-
-function buildStateGroups(rows: EntityWithRevenue[]): StateGroup[] {
-	const map = new Map<string, EntityWithRevenue[]>();
-	for (const r of rows) {
-		const s = r.state ?? "Unknown";
-		if (!map.has(s)) map.set(s, []);
-		map.get(s)?.push(r);
-	}
-	return [...map.entries()]
-		.sort(([a], [b]) => a.localeCompare(b))
-		.map(([state, entities]) => ({
-			state,
-			entities,
-			totalTarget: entities.reduce(
-				(s, e) => s + Number(e.revenue?.target ?? 0),
-				0,
-			),
-			totalActual: entities.reduce(
-				(s, e) => s + Number(e.revenue?.actual ?? 0),
-				0,
-			),
-		}));
-}
-
-function EntityRow({
-	entity,
-	fy: _fy,
-	canWriteAccess,
-	onSave,
-}: {
-	entity: EntityWithRevenue;
-	fy: string;
-	canWriteAccess: boolean;
-	onSave: (entId: string, field: "target" | "actual", value: string) => void;
-}) {
-	const target = entity.revenue?.target ?? null;
-	const actual = entity.revenue?.actual ?? null;
-	const v = variance(target, actual);
-	const pct = attainmentPct(target, actual);
-
-	return (
-		<div className="grid grid-cols-[1fr_130px_130px_110px_160px_80px] items-center gap-4 px-4 py-2.5 hover:bg-muted/20">
-			<span className="pl-8 text-sm">{entity.biz}</span>
-			<RevenueCell
-				value={target}
-				onSave={(v) => onSave(entity.id, "target", v)}
-				disabled={!canWriteAccess}
-			/>
-			<RevenueCell
-				value={actual}
-				onSave={(v) => onSave(entity.id, "actual", v)}
-				disabled={!canWriteAccess}
-			/>
-			<span
-				className={`font-medium text-sm tabular-nums ${v.positive === null ? "text-muted-foreground" : v.positive ? "text-green-400" : "text-red-400"}`}
-			>
-				{v.val}
-			</span>
-			<RevenueBar target={target} actual={actual} />
-			<span
-				className={`font-medium text-sm tabular-nums ${pct === null ? "text-muted-foreground" : pct >= 100 ? "text-green-400" : pct >= 80 ? "text-amber-400" : "text-red-400"}`}
-			>
-				{pct !== null ? `${pct}%` : "\u2014"}
-			</span>
-		</div>
-	);
-}
-
-function StateSection({
-	group,
-	fy,
-	canWriteAccess,
-	onSave,
-}: {
-	group: StateGroup;
-	fy: string;
-	canWriteAccess: boolean;
-	onSave: (entId: string, field: "target" | "actual", value: string) => void;
-}) {
-	const [open, setOpen] = useState(true);
-	const v = variance(String(group.totalTarget), String(group.totalActual));
-	const pct = attainmentPct(
-		String(group.totalTarget),
-		String(group.totalActual),
-	);
-
-	return (
-		<div className="overflow-hidden rounded-lg border border-border">
-			<button
-				type="button"
-				onClick={() => setOpen((o) => !o)}
-				className="grid w-full grid-cols-[1fr_130px_130px_110px_160px_80px] items-center gap-4 bg-muted/40 px-4 py-3 text-left hover:bg-muted/60"
-			>
-				<div className="flex items-center gap-2">
-					{open ? (
-						<HugeiconsIcon
-							icon={ArrowDown01Icon}
-							className="size-4 text-muted-foreground"
-						/>
-					) : (
-						<HugeiconsIcon
-							icon={ArrowRight01Icon}
-							className="size-4 text-muted-foreground"
-						/>
-					)}
-					<span className="font-bold">{group.state}</span>
-					<Badge variant="outline" size="sm">
-						{group.entities.length} entities
-					</Badge>
-				</div>
-				<span className="font-medium text-sm tabular-nums">
-					{fmt(String(group.totalTarget))}
-				</span>
-				<span className="font-medium text-sm tabular-nums">
-					{fmt(String(group.totalActual))}
-				</span>
-				<span
-					className={`font-medium text-sm tabular-nums ${v.positive === null ? "text-muted-foreground" : v.positive ? "text-green-400" : "text-red-400"}`}
-				>
-					{v.val}
-				</span>
-				<RevenueBar
-					target={String(group.totalTarget)}
-					actual={String(group.totalActual)}
-				/>
-				<span
-					className={`font-medium text-sm tabular-nums ${pct === null ? "text-muted-foreground" : pct >= 100 ? "text-green-400" : pct >= 80 ? "text-amber-400" : "text-red-400"}`}
-				>
-					{pct !== null ? `${pct}%` : "\u2014"}
-				</span>
-			</button>
-			{open && (
-				<div className="divide-y divide-border/50">
-					{group.entities.map((e) => (
-						<EntityRow
-							key={e.id}
-							entity={e}
-							fy={fy}
-							canWriteAccess={canWriteAccess}
-							onSave={onSave}
-						/>
-					))}
-				</div>
-			)}
-		</div>
-	);
-}
-
-// -- CSV Parsing --------------------------------------------------------------
-
-type CsvRow = {
-	state: string;
-	office: string;
-	podName: string;
-	budget: number;
-};
-
-function parseCsvRows(raw: string): CsvRow[] {
-	const lines = raw
-		.split("\n")
-		.map((l) => l.trim())
-		.filter((l) => l.length > 0);
-
-	if (lines.length === 0) return [];
-
-	const rows: CsvRow[] = [];
-	for (let i = 0; i < lines.length; i++) {
-		const line = lines[i];
-		if (!line) continue;
-		const parts = line.split(",").map((p) => p.trim());
-		if (parts.length < 4) continue;
-
-		const budgetVal = Number(parts[3]);
-		if (Number.isNaN(budgetVal)) continue;
-
-		rows.push({
-			state: parts[0] ?? "",
-			office: parts[1] ?? "",
-			podName: parts[2] ?? "",
-			budget: Math.round(budgetVal),
-		});
-	}
-
-	return rows;
-}
-
-// -- CSV Import Modal ---------------------------------------------------------
-
-function CsvImportDialog({
-	open,
-	onClose,
-	fy,
-}: {
-	open: boolean;
-	onClose: () => void;
-	fy: string;
-}) {
-	const qc = useQueryClient();
-	const [csvText, setCsvText] = useState("");
-	const parsed = parseCsvRows(csvText);
-
-	const batchUpsert = useMutation(
-		trpc.priorYear.batchUpsert.mutationOptions({
-			onSuccess: (data) => {
-				qc.invalidateQueries({
-					queryKey: trpc.priorYear.getByYear.queryKey({ year: fy }),
-				});
-				toast.success(`Imported ${data.length} rows`);
-				setCsvText("");
-				onClose();
-			},
-			onError: (e) => toast.error(e.message),
-		}),
-	);
-
-	function handleImport() {
-		if (parsed.length === 0) return;
-		batchUpsert.mutate({
-			year: fy,
-			rows: parsed.map((r) => ({
-				state: r.state,
-				office: r.office,
-				podName: r.podName,
-				budget: r.budget,
-			})),
-		});
-	}
-
-	return (
-		<Dialog
-			open={open}
-			onOpenChange={(o) => {
-				if (!o) {
-					setCsvText("");
-					onClose();
-				}
-			}}
-		>
-			<DialogContent className="sm:max-w-lg">
-				<DialogHeader>
-					<DialogTitle>Import Prior Year Data ({fy})</DialogTitle>
-				</DialogHeader>
-
-				<p className="text-muted-foreground text-sm">
-					Paste CSV data with format:{" "}
-					<code className="rounded bg-muted px-1 py-0.5">
-						state,office,pod_name,budget
-					</code>
-				</p>
-
-				<Textarea
-					value={csvText}
-					onChange={(e) => setCsvText(e.target.value)}
-					placeholder={
-						"nsw,parramatta,Acc & Tax,150000\nvic,elsternwick,BKK,120000"
-					}
-					className="min-h-24 font-mono text-sm"
-				/>
-
-				{parsed.length > 0 && (
-					<div className="max-h-48 overflow-auto rounded border border-border">
-						<Table>
-							<TableHeader>
-								<TableRow>
-									<TableHead>State</TableHead>
-									<TableHead>Office</TableHead>
-									<TableHead>Pod</TableHead>
-									<TableHead className="text-right">Budget</TableHead>
-								</TableRow>
-							</TableHeader>
-							<TableBody>
-								{parsed.map((r, i) => (
-									<TableRow key={`${r.state}-${r.office}-${r.podName}`}>
-										<TableCell>{r.state}</TableCell>
-										<TableCell>{r.office}</TableCell>
-										<TableCell>{r.podName}</TableCell>
-										<TableCell className="text-right tabular-nums">
-											{fmtDollar(r.budget)}
-										</TableCell>
-									</TableRow>
-								))}
-							</TableBody>
-						</Table>
-					</div>
-				)}
-
-				<DialogFooter>
-					<Button
-						variant="outline"
-						size="sm"
-						onClick={() => {
-							setCsvText("");
-							onClose();
-						}}
-					>
-						Cancel
-					</Button>
-					<Button
-						size="sm"
-						onClick={handleImport}
-						disabled={parsed.length === 0 || batchUpsert.isPending}
-					>
-						{batchUpsert.isPending
-							? "Importing..."
-							: `Import ${parsed.length} rows`}
-					</Button>
-				</DialogFooter>
-			</DialogContent>
-		</Dialog>
-	);
-}
-
-// -- CSV Export ----------------------------------------------------------------
-
-function exportRevenueCsv(rows: EntityWithRevenue[], fy: string) {
-	const header = "entity,state,target,actual,variance,attainment%";
-	const lines = rows.map((r) => {
-		const target = r.revenue?.target ?? "";
-		const actual = r.revenue?.actual ?? "";
-		const t = Number(target);
-		const a = Number(actual);
-		const diff = t && a ? a - t : 0;
-		const pct = t ? Math.round((a / t) * 100) : 0;
-		return `"${r.biz}","${r.state ?? ""}",${target},${actual},${diff},${pct}`;
-	});
-
-	const csv = [header, ...lines].join("\n");
-	const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-	const url = URL.createObjectURL(blob);
-	const link = document.createElement("a");
-	link.href = url;
-	link.download = `fy-${fy}-revenue.csv`;
-	link.click();
-	URL.revokeObjectURL(url);
-}
-
-// -- Pod Comparison Table -----------------------------------------------------
-
-type PodBudgetRow = {
-	state: string;
-	office: string;
-	podName: string;
-	budget: number;
-};
-
-type PriorYearRow = {
-	state: string;
-	office: string;
-	podName: string;
-	year: string;
-	budget: number | null;
-	headcount: number | null;
-};
-
-type ComparisonRow = {
-	state: string;
-	office: string;
-	podName: string;
-	currentBudget: number;
-	priorBudget: number | null;
-	yoyChange: number | null;
-	yoyPct: number | null;
-};
-
-function buildComparison(
-	current: PodBudgetRow[],
-	prior: PriorYearRow[],
-): ComparisonRow[] {
-	const priorMap = new Map<string, PriorYearRow>();
-	for (const p of prior) {
-		priorMap.set(`${p.state}|${p.office}|${p.podName}`, p);
-	}
-
-	return current
-		.map((c) => {
-			const key = `${c.state}|${c.office}|${c.podName}`;
-			const p = priorMap.get(key);
-			const priorBudget = p?.budget ?? null;
-			const yoyChange = priorBudget !== null ? c.budget - priorBudget : null;
-			const yoyPct =
-				priorBudget !== null && priorBudget !== 0
-					? Math.round(((c.budget - priorBudget) / priorBudget) * 100)
-					: null;
-
-			return {
-				state: c.state,
-				office: c.office,
-				podName: c.podName,
-				currentBudget: c.budget,
-				priorBudget,
-				yoyChange,
-				yoyPct,
-			};
-		})
-		.sort((a, b) => {
-			const s = a.state.localeCompare(b.state);
-			if (s !== 0) return s;
-			const o = a.office.localeCompare(b.office);
-			if (o !== 0) return o;
-			return a.podName.localeCompare(b.podName);
-		});
-}
-
-function PodComparisonTable({ priorFy }: { priorFy: string }) {
-	const podBudgetsQuery = useQuery(trpc.podBudgets.getAll.queryOptions());
-	const priorYearQuery = useQuery(
-		trpc.priorYear.getByYear.queryOptions({ year: priorFy }),
-	);
-
-	const podBudgets = (podBudgetsQuery.data ?? []) as PodBudgetRow[];
-	const priorYear = (priorYearQuery.data ?? []) as PriorYearRow[];
-	const comparison = buildComparison(podBudgets, priorYear);
-
-	if (podBudgetsQuery.isPending || priorYearQuery.isPending) {
-		return (
-			<div className="flex h-24 items-center justify-center text-muted-foreground text-sm">
-				Loading pod comparison...
-			</div>
-		);
-	}
-
-	if (comparison.length === 0) {
-		return (
-			<div className="flex h-24 items-center justify-center text-muted-foreground text-sm">
-				No pod budgets available for comparison.
-			</div>
-		);
-	}
-
-	return (
-		<div className="overflow-auto rounded-lg border border-border">
-			<Table>
-				<TableHeader>
-					<TableRow>
-						<TableHead>State</TableHead>
-						<TableHead>Office</TableHead>
-						<TableHead>Pod</TableHead>
-						<TableHead className="text-right">Current Budget</TableHead>
-						<TableHead className="text-right">Prior Year ({priorFy})</TableHead>
-						<TableHead className="text-right">YoY Change</TableHead>
-						<TableHead className="text-right">YoY %</TableHead>
-					</TableRow>
-				</TableHeader>
-				<TableBody>
-					{comparison.map((r) => (
-						<TableRow key={`${r.state}-${r.office}-${r.podName}`}>
-							<TableCell>{r.state}</TableCell>
-							<TableCell>{r.office}</TableCell>
-							<TableCell>{r.podName}</TableCell>
-							<TableCell className="text-right tabular-nums">
-								{fmtDollar(r.currentBudget)}
-							</TableCell>
-							<TableCell className="text-right tabular-nums">
-								{r.priorBudget !== null ? fmtDollar(r.priorBudget) : "\u2014"}
-							</TableCell>
-							<TableCell
-								className={`text-right font-medium tabular-nums ${
-									r.yoyChange === null
-										? "text-muted-foreground"
-										: r.yoyChange >= 0
-											? "text-green-400"
-											: "text-red-400"
-								}`}
-							>
-								{r.yoyChange !== null
-									? `${r.yoyChange >= 0 ? "+" : ""}${fmtDollar(r.yoyChange)}`
-									: "\u2014"}
-							</TableCell>
-							<TableCell
-								className={`text-right font-medium tabular-nums ${
-									r.yoyPct === null
-										? "text-muted-foreground"
-										: r.yoyPct >= 0
-											? "text-green-400"
-											: "text-red-400"
-								}`}
-							>
-								{r.yoyPct !== null
-									? `${r.yoyPct >= 0 ? "+" : ""}${r.yoyPct}%`
-									: "\u2014"}
-							</TableCell>
-						</TableRow>
-					))}
-				</TableBody>
-			</Table>
-		</div>
-	);
-}
+// Stable reference — must not be defined inline in useReactTable({ state })
+// because TanStack Table's internal memo uses === comparison on grouping deps.
+// A new array every render causes getGroupedRowModel to recompute, which fires
+// _autoResetExpanded, which calls setExpanded, which triggers another render → loop.
+const GROUPING: string[] = ["stateGroup"];
 
 // -- Page ---------------------------------------------------------------------
 
@@ -699,20 +74,33 @@ function FyPlanningPage() {
 	const hasWriteAccess = canAdminWrite(userRole);
 
 	const qc = useQueryClient();
-	const [fy, setFy] = useState("FY25-26");
+	const { fy: fyParam } = Route.useSearch();
+	const navigate = useNavigate({ from: "/fy-planning" });
+	const fy = fyParam ?? "FY25-26";
+	const setFy = (value: string) => {
+		void navigate({ search: (prev) => ({ ...prev, fy: value }) });
+	};
 	const [importOpen, setImportOpen] = useState(false);
+	const [globalFilter, setGlobalFilter] = useState("");
+	const [expanded, setExpanded] = useState<ExpandedState>(true);
 
 	const priorFy = derivePriorFy(fy);
 
+	// -- Data -----------------------------------------------------------------
+
 	const query = useQuery(trpc.wfp.getRevenue.queryOptions({ fy }));
-	const rows = (query.data ?? []) as EntityWithRevenue[];
-	const groups = buildStateGroups(rows);
+	const rawRows = (query.data ?? []) as EntityWithRevenue[];
 
-	const totalTarget = groups.reduce((s, g) => s + g.totalTarget, 0);
-	const totalActual = groups.reduce((s, g) => s + g.totalActual, 0);
-	const overallPct = attainmentPct(String(totalTarget), String(totalActual));
+	const tableData: RevenueRow[] = useMemo(
+		() =>
+			rawRows.map((r) => ({
+				...r,
+				stateGroup: r.state ?? "Unknown",
+			})),
+		[rawRows],
+	);
 
-	const upsert = useMutation(
+	const { mutate: upsertRevenue } = useMutation(
 		trpc.wfp.upsertRevenue.mutationOptions({
 			onSuccess: () =>
 				qc.invalidateQueries({
@@ -722,146 +110,193 @@ function FyPlanningPage() {
 		}),
 	);
 
-	function handleSave(
-		entId: string,
-		field: "target" | "actual",
-		value: string,
-	) {
-		upsert.mutate({ entId, fy, [field]: value });
-	}
+	const handleSave = useCallback(
+		(entId: string, field: "target" | "actual", value: string) => {
+			upsertRevenue({ entId, fy, [field]: value });
+		},
+		[upsertRevenue, fy],
+	);
+
+	// -- Table ----------------------------------------------------------------
+
+	const columns = useMemo(
+		() => makeRevenueColumns(hasWriteAccess, handleSave),
+		[hasWriteAccess, handleSave],
+	);
+
+	const table = useReactTable({
+		data: tableData,
+		columns,
+		state: {
+			grouping: GROUPING,
+			expanded,
+			globalFilter,
+		},
+		onExpandedChange: setExpanded,
+		onGlobalFilterChange: setGlobalFilter,
+		// Prevent _autoResetExpanded from firing when grouping recomputes,
+		// which would call setExpanded → re-render → recompute → infinite loop.
+		autoResetExpanded: false,
+		getExpandedRowModel: getExpandedRowModel(),
+		getGroupedRowModel: getGroupedRowModel(),
+		getCoreRowModel: getCoreRowModel(),
+		getSortedRowModel: getSortedRowModel(),
+		getFilteredRowModel: getFilteredRowModel(),
+		initialState: {
+			columnVisibility: { stateGroup: false },
+		},
+	});
+
+	// -- Stats ----------------------------------------------------------------
+
+	const { totalTarget, totalActual, overallPct } = useMemo(() => {
+		let target = 0;
+		let actual = 0;
+		for (const r of rawRows) {
+			target += Number(r.revenue?.target ?? 0);
+			actual += Number(r.revenue?.actual ?? 0);
+		}
+		return {
+			totalTarget: target,
+			totalActual: actual,
+			overallPct: attainmentPct(String(target), String(actual)),
+		};
+	}, [rawRows]);
+
+	const renderGroupCells = useCallback(
+		(row: Row<RevenueRow>) => buildGroupCells(row),
+		[],
+	);
+
+	const attainmentClass =
+		overallPct === null
+			? undefined
+			: overallPct >= 95
+				? "text-emerald-500"
+				: overallPct >= 80
+					? "text-amber-500"
+					: "text-red-500";
+
+	// -- Render ---------------------------------------------------------------
 
 	return (
-		<div className="flex h-full flex-col">
+		<Page>
 			<PageHeader />
 
-			{/* Toolbar */}
-			<div className="flex items-center justify-end gap-2 border-border border-b bg-white px-6 py-2">
-				<Button
-					variant="outline"
-					size="sm"
-					onClick={() => exportRevenueCsv(rows, fy)}
-					className="gap-1.5 text-sm"
-				>
-					<HugeiconsIcon icon={Download01Icon} className="size-3.5" />
-					Export CSV
-				</Button>
-				{hasWriteAccess && (
+			<PageToolbar>
+				<div className="flex items-center gap-3">
+					<Select value={fy} onValueChange={(v) => v && setFy(v)}>
+						<SelectTrigger className="w-32 text-sm">
+							<SelectValue />
+						</SelectTrigger>
+						<SelectContent>
+							{FY_OPTIONS.map((f) => (
+								<SelectItem key={f} value={f}>
+									{f}
+								</SelectItem>
+							))}
+						</SelectContent>
+					</Select>
+					<SearchInput
+						placeholder="Search entities…"
+						value={globalFilter}
+						onChange={setGlobalFilter}
+					/>
+				</div>
+				<div className="ml-auto flex items-center gap-2">
 					<Button
 						variant="outline"
 						size="sm"
-						onClick={() => setImportOpen(true)}
-						className="gap-1.5 text-sm"
+						onClick={() => exportRevenueCsv(rawRows, fy)}
 					>
-						<HugeiconsIcon icon={Upload01Icon} className="size-3.5" />
-						Import CSV
+						<HugeiconsIcon
+							icon={Download01Icon}
+							className="size-3.5"
+							aria-hidden="true"
+						/>
+						Export CSV
 					</Button>
-				)}
-				<Select value={fy} onValueChange={(v) => v && setFy(v)}>
-					<SelectTrigger className="w-32 text-sm">
-						<SelectValue />
-					</SelectTrigger>
-					<SelectContent>
-						{FY_OPTIONS.map((f) => (
-							<SelectItem key={f} value={f}>
-								{f}
-							</SelectItem>
-						))}
-					</SelectContent>
-				</Select>
-			</div>
-
-			{/* Column headers */}
-			<div className="border-border border-b px-6 py-2.5">
-				<div className="grid grid-cols-[1fr_130px_130px_110px_160px_80px] gap-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider">
-					<span className="pl-8">Entity</span>
-					<span>Target</span>
-					<span>Actual</span>
-					<span>Variance</span>
-					<span>Progress</span>
-					<span>Attainment</span>
+					{hasWriteAccess && (
+						<Button
+							variant="outline"
+							size="sm"
+							onClick={() => setImportOpen(true)}
+						>
+							<HugeiconsIcon
+								icon={Upload01Icon}
+								className="size-3.5"
+								aria-hidden="true"
+							/>
+							Import CSV
+						</Button>
+					)}
 				</div>
-			</div>
+			</PageToolbar>
 
-			{/* Content */}
-			<div className="flex-1 overflow-auto p-6">
+			<PageStatsBar
+				stats={[
+					{
+						label: "Total Target",
+						value: fmt(String(totalTarget)),
+						loading: query.isPending,
+					},
+					{
+						label: "Total Actual",
+						value: fmt(String(totalActual)),
+						loading: query.isPending,
+					},
+					{
+						label: "Attainment",
+						value: overallPct !== null ? `${overallPct}%` : "\u2014",
+						valueClass: attainmentClass,
+						loading: query.isPending,
+					},
+				]}
+			/>
+
+			<PageBody>
 				{query.isPending ? (
 					<div className="flex h-40 items-center justify-center text-muted-foreground text-sm">
 						Loading...
 					</div>
-				) : groups.length === 0 ? (
-					<div className="flex h-40 flex-col items-center justify-center gap-2 text-muted-foreground text-sm">
-						<p>No entities found.</p>
-						<p className="text-xs">
-							Seed entities data to see FY revenue planning.
-						</p>
-					</div>
+				) : rawRows.length === 0 ? (
+					<Empty className="min-h-[10rem]">
+						<EmptyHeader>
+							<EmptyTitle className="text-base">No entities found</EmptyTitle>
+							<EmptyDescription>
+								Seed entities data to see FY revenue planning.
+							</EmptyDescription>
+						</EmptyHeader>
+					</Empty>
 				) : (
-					<div className="space-y-4">
-						{groups.map((g) => (
-							<StateSection
-								key={g.state}
-								group={g}
+					<DataTable
+						table={table}
+						fixedLayout
+						renderGroupCells={renderGroupCells}
+						footer={
+							<TotalsFooter
+								totalTarget={totalTarget}
+								totalActual={totalActual}
 								fy={fy}
-								canWriteAccess={hasWriteAccess}
-								onSave={handleSave}
 							/>
-						))}
-					</div>
+						}
+					/>
 				)}
+			</PageBody>
 
-				{/* Pod Budget Comparison */}
-				<div className="mt-8">
-					<h2 className="mb-4 font-bold text-base tracking-tight">
-						Pod Budget Comparison
-					</h2>
-					<PodComparisonTable priorFy={priorFy} />
-				</div>
-			</div>
+			<PageSection className="border-t">
+				<h2 className="mb-4 font-bold text-base tracking-tight">
+					Pod Budget Comparison
+				</h2>
+				<PodComparisonTable priorFy={priorFy} />
+			</PageSection>
 
-			{/* Footer totals */}
-			{groups.length > 0 && (
-				<div className="border-border border-t px-6 py-3">
-					<div className="grid grid-cols-[1fr_130px_130px_110px_160px_80px] gap-4 font-semibold text-sm">
-						<span className="text-muted-foreground">Total ({fy})</span>
-						<span className="tabular-nums">{fmt(String(totalTarget))}</span>
-						<span className="tabular-nums">{fmt(String(totalActual))}</span>
-						{(() => {
-							const v = variance(String(totalTarget), String(totalActual));
-							return (
-								<span
-									className={`tabular-nums ${v.positive === null ? "text-muted-foreground" : v.positive ? "text-green-400" : "text-red-400"}`}
-								>
-									{v.val}
-								</span>
-							);
-						})()}
-						<RevenueBar
-							target={String(totalTarget)}
-							actual={String(totalActual)}
-						/>
-						<span
-							className={
-								overallPct === null
-									? "text-muted-foreground"
-									: overallPct >= 100
-										? "text-green-400"
-										: overallPct >= 80
-											? "text-amber-400"
-											: "text-red-400"
-							}
-						>
-							{overallPct !== null ? `${overallPct}%` : "\u2014"}
-						</span>
-					</div>
-				</div>
-			)}
-
-			{/* CSV Import Dialog */}
 			<CsvImportDialog
+				key={String(importOpen)}
 				open={importOpen}
 				onClose={() => setImportOpen(false)}
 				fy={priorFy}
 			/>
-		</div>
+		</Page>
 	);
 }
