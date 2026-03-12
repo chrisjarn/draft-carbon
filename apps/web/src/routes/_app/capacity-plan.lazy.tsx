@@ -13,6 +13,7 @@ import {
 } from "@/components/features/capacity-plan/staff-table-columns";
 import type { StaffWithMeta } from "@/components/features/capacity-plan/types";
 import { useStaffDataTable } from "@/components/features/capacity-plan/use-staff-data-table";
+import { stateLabel } from "@/components/features/carbonites/types";
 import { DataTableFacetedFilter } from "@/components/organisms/data-table/data-table-faceted-filter";
 import { DataTableViewOptions } from "@/components/organisms/data-table/data-table-view-options";
 import { PageHeader } from "@/components/organisms/page-header";
@@ -307,7 +308,7 @@ function CapacityPlanPage() {
 								All Entities
 							</SelectItem>
 							{entitiesList.map((e) => {
-								const displayLabel = `${e.biz}${e.state ? ` (${e.state.toUpperCase()})` : ""}`;
+								const displayLabel = `${e.biz}${e.state ? ` (${stateLabel(e.state)})` : ""}`;
 								return (
 									<SelectItem key={e.id} value={e.id} label={displayLabel}>
 										{displayLabel}
@@ -373,7 +374,7 @@ function CapacityPlanPage() {
 					)}
 				</div>
 
-				<Tabs value={tab} onValueChange={(v) => setTab(v as TabValue)}>
+				<Tabs className="ml-auto" value={tab} onValueChange={(v) => setTab(v as TabValue)}>
 					<TabsList variant="underline">
 						<TabsTrigger value="firm">Firm</TabsTrigger>
 						<TabsTrigger value="staff">Staff</TabsTrigger>

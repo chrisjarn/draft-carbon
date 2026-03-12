@@ -8,15 +8,16 @@ import {
 } from "drizzle-orm/pg-core";
 
 import { entities } from "./entities";
+import { officeEnum, slEnum, stateEnum } from "./enums";
 
 export const carbonites = pgTable("carbonites", {
 	id: text("id").primaryKey(),
 	name: text("name").notNull(),
 	role: text("role"),
-	sl: text("sl"),
+	sl: slEnum("sl"),
 	sg: text("sg"),
-	state: text("state"),
-	office: text("office"),
+	state: stateEnum("state"),
+	office: officeEnum("office"),
 	pod: text("pod"),
 	salary: integer("salary").default(0),
 	type: text("type").default("FT"), // FT | PT

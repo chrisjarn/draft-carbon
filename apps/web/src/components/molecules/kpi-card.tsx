@@ -40,8 +40,7 @@ export function KpiCard({
 	return (
 		<div
 			className={cn(
-				"relative w-full overflow-hidden rounded-lg border border-border bg-card p-5 text-left",
-				"border-l-[3px] border-l-emerald-500",
+				"relative w-full overflow-hidden rounded-lg border border-border bg-card shadow-card p-5 text-left",
 				className,
 			)}
 		>

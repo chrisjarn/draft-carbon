@@ -1,4 +1,9 @@
 import type {
+	OFFICE_VALUES,
+	SL_VALUES,
+	STATE_VALUES,
+} from "@carbon-wfp/db/schema/enums";
+import type {
 	FormAsyncValidateOrFn,
 	FormValidateOrFn,
 	ReactFormExtendedApi,
@@ -11,10 +16,10 @@ import type {
 export type CreatePayload = {
 	name: string;
 	role?: string;
-	sl?: string;
+	sl?: (typeof SL_VALUES)[number];
 	sg?: string;
-	state?: string;
-	office?: string;
+	state?: (typeof STATE_VALUES)[number];
+	office?: (typeof OFFICE_VALUES)[number];
 	pod?: string;
 	salary?: number;
 	type?: "FT" | "PT";

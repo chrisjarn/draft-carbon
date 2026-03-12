@@ -21,7 +21,6 @@ import {
 	HiringDetailSheet,
 	HiringDrawer,
 	type HiringNeed,
-	HiringStatusTabs,
 	roleToForm,
 	type TabStatus,
 	TthDrawer,
@@ -33,6 +32,7 @@ import { DataTable } from "@/components/organisms/data-table/data-table";
 import { PageHeader } from "@/components/organisms/page-header";
 import { PageStatsBar } from "@/components/organisms/page-stats-bar";
 import { Page, PageBody, PageToolbar } from "@/components/templates/page";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
 	Empty,
@@ -41,6 +41,7 @@ import {
 	EmptyTitle,
 } from "@/components/ui/empty";
 import { Input } from "@/components/ui/input";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { authClient } from "@/lib/auth-client";
 import { canWrite, getUserRole } from "@/lib/rbac";
 import { trpc } from "@/utils/trpc";
@@ -196,16 +197,49 @@ function HiringPage() {
 					onChange={(e) => setGlobalFilter(e.target.value)}
 					className="w-48 lg:w-64"
 				/>
-				<div className="ml-auto">
-					<HiringStatusTabs
-						value={tab}
-						counts={counts}
-						onValueChange={(v) => {
-							setTab(v);
-							setSelected(null);
-						}}
-					/>
-				</div>
+				<Tabs
+					className="ml-auto"
+					value={tab}
+					onValueChange={(v) => {
+						setTab(v as TabStatus);
+						setSelected(null);
+					}}
+				>
+					<TabsList variant="underline">
+						<TabsTrigger value="open" className="gap-1.5">
+							Open
+							{counts.open > 0 && (
+								<Badge variant="secondary" size="sm" className="tabular-nums">
+									{counts.open}
+								</Badge>
+							)}
+						</TabsTrigger>
+						<TabsTrigger value="active" className="gap-1.5">
+							Active
+							{counts.active > 0 && (
+								<Badge variant="secondary" size="sm" className="tabular-nums">
+									{counts.active}
+								</Badge>
+							)}
+						</TabsTrigger>
+						<TabsTrigger value="offer" className="gap-1.5">
+							Offer
+							{counts.offer > 0 && (
+								<Badge variant="secondary" size="sm" className="tabular-nums">
+									{counts.offer}
+								</Badge>
+							)}
+						</TabsTrigger>
+						<TabsTrigger value="closed" className="gap-1.5">
+							Closed
+							{counts.closed > 0 && (
+								<Badge variant="secondary" size="sm" className="tabular-nums">
+									{counts.closed}
+								</Badge>
+							)}
+						</TabsTrigger>
+					</TabsList>
+				</Tabs>
 			</PageToolbar>
 
 			<PageStatsBar

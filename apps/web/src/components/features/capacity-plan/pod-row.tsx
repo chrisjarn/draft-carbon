@@ -3,31 +3,10 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
-
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { getSL } from "@/lib/constants";
 import { fmtDollar } from "@/lib/format";
 import { trpc } from "@/utils/trpc";
-
-import type { PodRow, SelectedPod } from "./types";
-
-// ── SL badge colour mapping ──────────────────────────────────────────────────
-
-const SL_BADGE_COLORS: Record<string, string> = {
-	acc: "bg-[#4CAF50]/15 text-[#4CAF50]",
-	bkcfo: "bg-[#2196F3]/15 text-[#2196F3]",
-	fin: "bg-[#FF8C00]/15 text-[#FF8C00]",
-	wm: "bg-[#7B2FBE]/15 text-[#7B2FBE]",
-	rd: "bg-[#F76707]/15 text-[#F76707]",
-	ins: "bg-[#F5C518]/15 text-[#F5C518]",
-	admin: "bg-[#9E9E9E]/15 text-[#9E9E9E]",
-};
-
-function slBadgeClass(sl: string): string {
-	const color = SL_BADGE_COLORS[sl] ?? "bg-muted text-muted-foreground";
-	return `inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-medium uppercase leading-none ${color}`;
-}
 
 // ── Status logic ─────────────────────────────────────────────────────────────
 
@@ -184,71 +163,6 @@ export function BudgetCell({
 					<HugeiconsIcon icon={PencilEdit01Icon} className="size-3" />
 				</button>
 			)}
-		</div>
-	);
-}
-
-// ── Pod row ──────────────────────────────────────────────────────────────────
-
-export function PodRowComponent({
-	pod,
-	state,
-	office,
-	canWriteAccess,
-	onSelect,
-}: {
-	pod: PodRow;
-	state: string;
-	office: string;
-	canWriteAccess: boolean;
-	onSelect: (pod: SelectedPod) => void;
-}) {
-	const variance = pod.budget - pod.totalSalary;
-	return (
-		<div className="grid grid-cols-[1fr_100px_100px_100px_140px_120px] items-center gap-4 px-4 py-2 text-base hover:bg-muted/30">
-			<div className="flex min-w-0 flex-col gap-0.5 pl-10">
-				<div className="flex items-center gap-2">
-					<button
-						type="button"
-						onClick={() => onSelect({ state, office, podName: pod.podName })}
-						className="truncate text-left text-muted-foreground text-sm hover:text-foreground hover:underline"
-					>
-						{pod.podName}
-					</button>
-					{pod.dominantSl && (
-						<span className={slBadgeClass(pod.dominantSl)}>
-							{getSL(pod.dominantSl)?.short ?? pod.dominantSl}
-						</span>
-					)}
-				</div>
-				<span className="text-[11px] text-muted-foreground tabular-nums">
-					{pod.actual} staff
-				</span>
-			</div>
-			<BudgetCell
-				state={state}
-				office={office}
-				podName={pod.podName}
-				budget={pod.budget}
-				canWriteAccess={canWriteAccess}
-				hasBudgetSet={pod.hasBudgetSet}
-			/>
-			<span className="font-medium text-sm tabular-nums">
-				{fmtDollar(pod.totalSalary)}
-			</span>
-			<span
-				className={`font-medium text-sm tabular-nums ${pod.hasBudgetSet && variance < 0 ? "text-red-400" : pod.hasBudgetSet && variance > 0 ? "text-green-400" : "text-muted-foreground"}`}
-			>
-				{pod.hasBudgetSet
-					? variance > 0
-						? `+${fmtDollar(variance)}`
-						: variance === 0
-							? "—"
-							: fmtDollar(variance)
-					: "—"}
-			</span>
-			<CapacityBar actual={pod.totalSalary} budget={pod.budget} />
-			<StatusBadge actual={pod.totalSalary} budget={pod.budget} />
 		</div>
 	);
 }

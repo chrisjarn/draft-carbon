@@ -1,9 +1,13 @@
 import type { auth } from "@carbon-wfp/auth";
 import { carbonites } from "@carbon-wfp/db/schema/carbonites";
 import { entities } from "@carbon-wfp/db/schema/entities";
+import type { SL_VALUES, STATE_VALUES } from "@carbon-wfp/db/schema/enums";
 import { hiringNeeds } from "@carbon-wfp/db/schema/hiring-needs";
 import { TRPCError } from "@trpc/server";
 import { eq, type SQL, sql } from "drizzle-orm";
+
+type State = (typeof STATE_VALUES)[number];
+type ServiceLine = (typeof SL_VALUES)[number];
 
 type SessionUser = typeof auth.$Infer.Session.user;
 
@@ -86,8 +90,9 @@ export function getRoleFilter(user: SessionUser): RoleFilter {
  * Returns `undefined` when no filtering is needed (can be spread into `and()`).
  */
 export function carboniteRoleWhere(filter: RoleFilter): SQL | undefined {
-	if (filter.state) return eq(carbonites.state, filter.state);
-	if (filter.serviceLine) return eq(carbonites.sl, filter.serviceLine);
+	if (filter.state) return eq(carbonites.state, filter.state as State);
+	if (filter.serviceLine)
+		return eq(carbonites.sl, filter.serviceLine as ServiceLine);
 	return undefined;
 }
 
@@ -97,7 +102,7 @@ export function carboniteRoleWhere(filter: RoleFilter): SQL | undefined {
  * For service line filtering, checks if the JSON `sl` array contains the value.
  */
 export function entityRoleWhere(filter: RoleFilter): SQL | undefined {
-	if (filter.state) return eq(entities.state, filter.state);
+	if (filter.state) return eq(entities.state, filter.state as State);
 	if (filter.serviceLine) {
 		// entities.sl is a JSON array — use SQL containment check
 		return sql`${entities.sl}::jsonb @> ${JSON.stringify([filter.serviceLine])}::jsonb`;
@@ -109,8 +114,9 @@ export function entityRoleWhere(filter: RoleFilter): SQL | undefined {
  * Returns a Drizzle WHERE condition to filter the `hiring_needs` table by role.
  */
 export function hiringRoleWhere(filter: RoleFilter): SQL | undefined {
-	if (filter.state) return eq(hiringNeeds.state, filter.state);
-	if (filter.serviceLine) return eq(hiringNeeds.sl, filter.serviceLine);
+	if (filter.state) return eq(hiringNeeds.state, filter.state as State);
+	if (filter.serviceLine)
+		return eq(hiringNeeds.sl, filter.serviceLine as ServiceLine);
 	return undefined;
 }
 

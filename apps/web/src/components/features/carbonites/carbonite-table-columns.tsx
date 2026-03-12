@@ -35,7 +35,11 @@ export function buildCarboniteSlOptions(data: Carbonite[]): Option[] {
 	}
 	return [...counts.entries()]
 		.sort((a, b) => a[0].localeCompare(b[0]))
-		.map(([value, count]) => ({ label: slLabel(value), value, count }));
+		.map(([value, count]) => ({
+			label: slLabel(value, "short"),
+			value,
+			count,
+		}));
 }
 
 export function buildCarboniteStateOptions(data: Carbonite[]): Option[] {
@@ -167,7 +171,7 @@ export function getCarboniteTableColumns(
 			enableSorting: true,
 			filterFn: arrIncludesFilter,
 			header: ({ column }) => (
-				<DataTableColumnHeader column={column} title="SL" />
+				<DataTableColumnHeader column={column} title="Service Line" />
 			),
 			cell: ({ getValue }) => {
 				const sl = getValue() as string | null;
@@ -187,7 +191,7 @@ export function getCarboniteTableColumns(
 							backgroundColor: `${color}10`,
 						}}
 					>
-						{slLabel(sl)}
+						{slLabel(sl, "short")}
 					</Badge>
 				);
 			},
@@ -239,7 +243,7 @@ export function getCarboniteTableColumns(
 			id: "perf",
 			enableSorting: true,
 			header: ({ column }) => (
-				<DataTableColumnHeader column={column} title="Perf" />
+				<DataTableColumnHeader column={column} title="Performance" />
 			),
 			accessorFn: (row) => opts.perfMap?.get(row.id) ?? null,
 			cell: ({ row }) => {
@@ -254,7 +258,7 @@ export function getCarboniteTableColumns(
 			id: "risk",
 			enableSorting: true,
 			header: ({ column }) => (
-				<DataTableColumnHeader column={column} title="Risk" />
+				<DataTableColumnHeader column={column} title="Attrition Risk" />
 			),
 			accessorFn: (row) => opts.riskMap?.get(row.id) ?? null,
 			cell: ({ row }) => {

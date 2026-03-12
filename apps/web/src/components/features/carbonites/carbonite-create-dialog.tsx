@@ -51,9 +51,9 @@ export function CarboniteCreateDialog({
 				hours:
 					value.type === "PT" && value.hours ? Number(value.hours) : undefined,
 				location: value.location || undefined,
-				state: value.state || undefined,
-				office: value.office || undefined,
-				sl: value.sl || undefined,
+				state: (value.state || undefined) as CreatePayload["state"],
+				office: (value.office || undefined) as CreatePayload["office"],
+				sl: (value.sl || undefined) as CreatePayload["sl"],
 				sg: value.sg || undefined,
 				role: value.role || undefined,
 				seniority: value.seniority ? Number(value.seniority) : undefined,

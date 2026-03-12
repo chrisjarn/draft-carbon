@@ -1,14 +1,15 @@
 import { integer, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 
 import { carbonites } from "./carbonites";
+import { officeEnum, slEnum, stateEnum } from "./enums";
 
 export const hiringNeeds = pgTable("hiring_needs", {
 	id: text("id").primaryKey(),
 	role: text("role").notNull(),
-	sl: text("sl"),
+	sl: slEnum("sl"),
 	sg: text("sg"),
-	state: text("state"),
-	office: text("office"),
+	state: stateEnum("state"),
+	office: officeEnum("office"),
 	location: text("location"),
 	positions: integer("positions").default(1),
 	type: text("type"), // FT | PT | Contract

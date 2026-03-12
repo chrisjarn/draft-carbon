@@ -8,7 +8,6 @@ import {
 	BudgetPayrollChart,
 	DashboardEmptyState,
 	DashboardErrorState,
-	DashboardGreeting,
 	EntityCardGrid,
 	KpiSection,
 	RevenueChart,
@@ -20,16 +19,29 @@ import {
 	useFilteredSlBreakdown,
 	useFilteredStats,
 } from "@/components/features/dashboard";
+import { PageHeader } from "@/components/organisms/page-header";
 import {
 	DashboardChartRow,
 	DashboardSection,
-	DashboardTemplate,
 } from "@/components/templates/dashboard-template";
+import { Page, PageBody, PageToolbar } from "@/components/templates/page";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Divider } from "@/components/ui/divider";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { authClient } from "@/lib/auth-client";
-import { SERVICE_LINES, SL_COLOR_MAP, STATES } from "@/lib/constants";
+import {
+	FY_OPTIONS,
+	SERVICE_LINES,
+	SL_COLOR_MAP,
+	STATES,
+} from "@/lib/constants";
 import { trpc } from "@/utils/trpc";
 
 /* ─── Route definition ─────────────────────────────────────────────────── */
@@ -164,81 +176,96 @@ function DashboardPage() {
 		!stateFilter;
 	const handleRetry = () => queryClient.invalidateQueries();
 
+	const greetingTitle = firstName ? `Hi, ${firstName}` : "Hi";
+
 	// ── Render ───────────────────────────────────────────────────────────
 	return (
-		<DashboardTemplate
-			greeting={
-				<DashboardGreeting
-					firstName={firstName}
-					activeFy={activeFy}
-					onFyChange={setFy}
-				/>
-			}
-			filters={
-				<>
-					<Tabs
-						value={stateFilter ?? "all"}
-						onValueChange={(val) => setStateFilter(val === "all" ? null : val)}
-					>
-						<TabsList variant="pill">
-							<TabsTrigger value="all">All States</TabsTrigger>
-							{STATES.map((s) => (
-								<TabsTrigger key={s.id} value={s.id}>
-									{s.abbr}
-								</TabsTrigger>
-							))}
-						</TabsList>
-					</Tabs>
+		<Page>
+			<PageHeader
+				titleOverride={greetingTitle}
+				description="Carbon Group \u00B7 Workforce Planner"
+			>
+				<Select value={activeFy} onValueChange={setFy}>
+					<SelectTrigger className="h-8 w-28 text-xs">
+						<SelectValue />
+					</SelectTrigger>
+					<SelectContent>
+						{FY_OPTIONS.map((f) => (
+							<SelectItem key={f} value={f}>
+								{f}
+							</SelectItem>
+						))}
+					</SelectContent>
+				</Select>
+			</PageHeader>
+
+			<PageToolbar>
+				<Tabs
+					value={stateFilter ?? "all"}
+					onValueChange={(val) => setStateFilter(val === "all" ? null : val)}
+				>
+					<TabsList variant="pill">
+						<TabsTrigger value="all">All States</TabsTrigger>
+						{STATES.map((s) => (
+							<TabsTrigger key={s.id} value={s.id}>
+								{s.abbr}
+							</TabsTrigger>
+						))}
+					</TabsList>
+				</Tabs>
+				<div className="ml-auto">
 					<SlFilterPills activeSlId={slFilter} onToggle={setSlFilter} />
-				</>
-			}
-		>
-			{isError ? (
-				<DashboardErrorState onRetry={handleRetry} />
-			) : isEmpty ? (
-				<DashboardEmptyState onRetry={handleRetry} />
-			) : (
-				<>
-					<KpiSection
-						stats={filteredStats}
-						loading={stats.isLoading}
-						activeFy={activeFy}
-					/>
-					<Divider />
-					<DashboardChartRow>
-						<RevenueChart
-							data={filteredRevenue}
-							loading={revenueByEntity.isLoading}
-							fy={activeFy}
+				</div>
+			</PageToolbar>
+
+			<PageBody padded constrain="max-w-[968px]">
+				{isError ? (
+					<DashboardErrorState onRetry={handleRetry} />
+				) : isEmpty ? (
+					<DashboardEmptyState onRetry={handleRetry} />
+				) : (
+					<div className="flex flex-col gap-5">
+						<KpiSection
+							stats={filteredStats}
+							loading={stats.isLoading}
+							activeFy={activeFy}
 						/>
-						<Card>
-							<CardHeader>
-								<CardTitle>Service Line Breakdown</CardTitle>
-							</CardHeader>
-							<CardContent>
-								<SlBreakdownBars
-									data={filteredSl}
-									loading={slBreakdown.isLoading}
-								/>
-							</CardContent>
-						</Card>
-					</DashboardChartRow>
-					<BudgetPayrollChart
-						data={budgetPayrollData}
-						loading={slBreakdown.isLoading}
-					/>
-					<AlertsPanel data={alerts.data} loading={alerts.isLoading} />
-					<DashboardSection title="Entities">
-						<EntityCardGrid
-							data={filteredEntities}
-							loading={entitySummaries.isLoading}
-							fy={activeFy}
-							columns={2}
-							revenueMap={revenueMap}
+						<Divider />
+						<DashboardChartRow>
+							<RevenueChart
+								data={filteredRevenue}
+								loading={revenueByEntity.isLoading}
+								fy={activeFy}
+							/>
+							<Card>
+								<CardHeader>
+									<CardTitle>Service Line Breakdown</CardTitle>
+								</CardHeader>
+								<CardContent>
+									<SlBreakdownBars
+										data={filteredSl}
+										loading={slBreakdown.isLoading}
+									/>
+								</CardContent>
+							</Card>
+						</DashboardChartRow>
+						<BudgetPayrollChart
+							data={budgetPayrollData}
+							loading={slBreakdown.isLoading}
 						/>
-					</DashboardSection>
-				</>
-			)}
-		</DashboardTemplate>
+						<AlertsPanel data={alerts.data} loading={alerts.isLoading} />
+						<DashboardSection title="Entities">
+							<EntityCardGrid
+								data={filteredEntities}
+								loading={entitySummaries.isLoading}
+								fy={activeFy}
+								columns={2}
+								revenueMap={revenueMap}
+							/>
+						</DashboardSection>
+					</div>
+				)}
+			</PageBody>
+		</Page>
 	);
 }

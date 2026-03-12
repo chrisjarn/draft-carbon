@@ -2,6 +2,10 @@ import { Download01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
+import {
+	officeLabel,
+	stateLabel,
+} from "@/components/features/carbonites/types";
 import { Button } from "@/components/ui/button";
 import {
 	Empty,
@@ -99,8 +103,8 @@ function exportPodReportCsv(
 				: 0;
 		const cols = [
 			`"${r.podName}"`,
-			`"${r.office}"`,
-			`"${r.state}"`,
+			`"${officeLabel(r.office)}"`,
+			`"${stateLabel(r.state)}"`,
 			staff.headcount,
 			r.currentBudget,
 			staff.staffCost,
@@ -280,8 +284,8 @@ export function PodComparisonTable({ priorFy }: { priorFy: string }) {
 									: 0;
 							return (
 								<TableRow key={`${r.state}-${r.office}-${r.podName}`}>
-									<TableCell>{r.state}</TableCell>
-									<TableCell>{r.office}</TableCell>
+									<TableCell>{stateLabel(r.state)}</TableCell>
+									<TableCell>{officeLabel(r.office)}</TableCell>
 									<TableCell>{r.podName}</TableCell>
 									<TableCell className="text-right tabular-nums">
 										{staff.headcount}

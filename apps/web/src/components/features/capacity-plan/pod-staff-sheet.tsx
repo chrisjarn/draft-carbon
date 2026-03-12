@@ -3,7 +3,11 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
-
+import {
+	officeLabel,
+	slLabel,
+	stateLabel,
+} from "@/components/features/carbonites/types";
 import { ConfirmDialog } from "@/components/molecules/confirm-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Empty, EmptyHeader, EmptyTitle } from "@/components/ui/empty";
@@ -20,7 +24,6 @@ import { authClient } from "@/lib/auth-client";
 import { fmtDollar } from "@/lib/format";
 import { canWrite, getUserRole } from "@/lib/rbac";
 import { trpc } from "@/utils/trpc";
-
 import { StatusBadge } from "./pod-row";
 import type { Carbonite, PodBudget, SelectedPod } from "./types";
 
@@ -44,7 +47,7 @@ function StaffRow({
 			<div className="flex items-center gap-2">
 				{c.sl && (
 					<Badge variant="outline" size="sm" className="uppercase">
-						{c.sl}
+						{slLabel(c.sl, "short")}
 					</Badge>
 				)}
 				<span className="min-w-[60px] text-right font-medium text-sm tabular-nums">
@@ -147,8 +150,9 @@ export function PodStaffSheet({
 									{selectedPod.podName}
 								</SheetTitle>
 								<SheetDescription>
-									{selectedPod.office} &middot; {selectedPod.state} &middot;{" "}
-									{podStaff.length} staff
+									{officeLabel(selectedPod.office)} &middot;{" "}
+									{stateLabel(selectedPod.state)} &middot; {podStaff.length}{" "}
+									staff
 								</SheetDescription>
 							</SheetHeader>
 							<div className="flex items-center gap-6 border-border border-b px-4 py-3">

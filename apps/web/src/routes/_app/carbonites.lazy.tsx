@@ -1,6 +1,14 @@
+import type {
+	OFFICE_VALUES,
+	SL_VALUES,
+	STATE_VALUES,
+} from "@carbon-wfp/db/schema/enums";
 import {
+	Cancel01Icon,
 	Delete01Icon,
 	Download01Icon,
+	GridTableIcon,
+	ListViewIcon,
 	PlusSignIcon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -8,7 +16,6 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
-
 import type { Carbonite, FormState } from "@/components/features/carbonites";
 import {
 	CarboniteCreateDialog,
@@ -16,14 +23,11 @@ import {
 	CarboniteDialog,
 	carboniteToForm,
 } from "@/components/features/carbonites";
+import { CarboniteCard } from "@/components/features/carbonites/carbonite-card";
 import { seniorityLabel } from "@/components/features/carbonites/types";
 import { useCarboniteDataTable } from "@/components/features/carbonites/use-carbonite-data-table";
 import { ConfirmDialog } from "@/components/molecules/confirm-dialog";
-import {
-	KpiCard,
-	KpiLegend,
-	KpiLegendItem,
-} from "@/components/molecules/kpi-card";
+import { PageStatsBar } from "@/components/organisms/page-stats-bar";
 import { SearchInput } from "@/components/molecules/search-input";
 import { DataTable } from "@/components/organisms/data-table/data-table";
 import {
@@ -32,9 +36,18 @@ import {
 	DataTableActionBarSelection,
 } from "@/components/organisms/data-table/data-table-action-bar";
 import { PageHeader } from "@/components/organisms/page-header";
-import { Page, PageBody, PageSection, PageToolbar } from "@/components/templates/page";
+import {
+	Page,
+	PageBody,
+	PageSection,
+	PageToolbar,
+} from "@/components/templates/page";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { authClient } from "@/lib/auth-client";
+import { SERVICE_LINES } from "@/lib/constants";
 import { canAdminWrite, canWrite, getUserRole } from "@/lib/rbac";
 import { trpc } from "@/utils/trpc";
 
@@ -89,6 +102,9 @@ function CarbonitesPage() {
 	const hasAdminAccess = canAdminWrite(userRole);
 
 	const qc = useQueryClient();
+
+	// View mode
+	const [view, setView] = useState<"table" | "cards">("table");
 
 	// Detail sheet
 	const [selected, setSelected] = useState<Carbonite | null>(null);
@@ -158,6 +174,46 @@ function CarbonitesPage() {
 		if (vals.length === 0) return "—";
 		const avg = vals.reduce((a, b) => a + b, 0) / vals.length;
 		return seniorityLabel(Math.round(avg));
+	}, [allData]);
+
+	const slBreakdown = useMemo(() => {
+		const total = allData.length;
+		if (total === 0) return [];
+
+		const result: {
+			id: string;
+			label: string;
+			name: string;
+			color: string;
+			count: number;
+		}[] = [];
+
+		for (const sl of SERVICE_LINES) {
+			const count = allData.filter((c) => c.sl === sl.id).length;
+			if (count > 0) {
+				result.push({
+					id: sl.id,
+					label: sl.short,
+					name: sl.name,
+					color: sl.color,
+					count,
+				});
+			}
+		}
+
+		// Unassigned bucket
+		const unassigned = allData.filter((c) => !c.sl).length;
+		if (unassigned > 0) {
+			result.push({
+				id: "unassigned",
+				label: "Unassigned",
+				name: "Unassigned",
+				color: "#9E9E9E",
+				count: unassigned,
+			});
+		}
+
+		return result;
 	}, [allData]);
 
 	// entity id → biz name
@@ -239,10 +295,14 @@ function CarbonitesPage() {
 		const payload = {
 			name: form.name,
 			role: form.role || undefined,
-			sl: form.sl || undefined,
+			sl: (form.sl || undefined) as (typeof SL_VALUES)[number] | undefined,
 			sg: form.sg || undefined,
-			state: form.state || undefined,
-			office: form.office || undefined,
+			state: (form.state || undefined) as
+				| (typeof STATE_VALUES)[number]
+				| undefined,
+			office: (form.office || undefined) as
+				| (typeof OFFICE_VALUES)[number]
+				| undefined,
 			pod: form.pod || undefined,
 			salary: form.salary ? Number(form.salary) : undefined,
 			type: (form.type as "FT" | "PT") || undefined,
@@ -307,105 +367,186 @@ function CarbonitesPage() {
 				)}
 			</PageHeader>
 
-			<PageToolbar>
-				<SearchInput
-					placeholder="Search name, role, pod…"
-					value={globalFilter}
-					onChange={setGlobalFilter}
-				/>
-			</PageToolbar>
+			<PageStatsBar
+				stats={[
+					{
+						label: "Total Staff",
+						value: allData.length,
+						loading: query.isPending,
+					},
+					{
+						label: "Full Time",
+						value: ftCount,
+						fraction: `${ptCount} PT`,
+						loading: query.isPending,
+					},
+					{
+						label: "High Attrition Risk",
+						value: highRiskCount,
+						valueClass: highRiskCount > 0 ? "text-red-500" : undefined,
+						loading: riskQuery.isPending,
+					},
+					{
+						label: "Avg Seniority",
+						value: avgSeniorityLabel,
+						loading: query.isPending,
+					},
+				]}
+			/>
 
 			<PageSection className="border-b">
-				<dl className="grid grid-cols-4 gap-4">
-					<KpiCard
-						title="Total Staff"
-						value={allData.length}
-						loading={query.isPending}
-					>
-						<KpiLegend>
-							<KpiLegendItem
-								color="bg-primary"
-								label={`${table.getFilteredRowModel().rows.length} shown`}
+				<p className="section-label mb-2">
+					Service Line Distribution
+				</p>
+				{query.isPending ? (
+					<Skeleton className="h-3 w-full rounded-full" />
+				) : allData.length === 0 ? (
+					<div className="h-3 w-full rounded-full bg-muted" />
+				) : (
+					<div className="flex h-3 w-full overflow-hidden rounded-full">
+						{slBreakdown.map((sl) => {
+							const pct = Math.round((sl.count / allData.length) * 100);
+							return (
+								<div
+									key={sl.id}
+									style={{
+										width: `${(sl.count / allData.length) * 100}%`,
+										backgroundColor: sl.color,
+									}}
+									title={`${sl.name}: ${sl.count} (${pct}%)`}
+								/>
+							);
+						})}
+					</div>
+				)}
+				<ul className="mt-3 flex flex-wrap gap-x-6 gap-y-2">
+					{slBreakdown.map((sl) => (
+						<li key={sl.id} className="flex items-center gap-1.5">
+							<span
+								className="size-2 shrink-0 rounded-sm"
+								style={{ backgroundColor: sl.color }}
+								aria-hidden="true"
 							/>
-						</KpiLegend>
-					</KpiCard>
-
-					<KpiCard
-						title="Employment Type"
-						value={ftCount}
-						loading={query.isPending}
-					>
-						<KpiLegend>
-							<KpiLegendItem
-								color="bg-emerald-500"
-								label="Full Time"
-								value={ftCount}
-							/>
-							<KpiLegendItem
-								color="bg-amber-500"
-								label="Part Time / Contract"
-								value={ptCount}
-							/>
-						</KpiLegend>
-					</KpiCard>
-
-					<KpiCard
-						title="High Attrition Risk"
-						value={highRiskCount}
-						valueClass={highRiskCount > 0 ? "text-red-500" : undefined}
-						loading={riskQuery.isPending}
-					>
-						<KpiLegend>
-							<KpiLegendItem
-								color="bg-red-500"
-								label={`of ${riskMap.size} assessed`}
-							/>
-						</KpiLegend>
-					</KpiCard>
-
-					<KpiCard
-						title="Avg Seniority"
-						value={avgSeniorityLabel}
-						loading={query.isPending}
-					/>
-				</dl>
+							<span className="text-muted-foreground text-xs">
+								{sl.label} ({sl.count})
+							</span>
+						</li>
+					))}
+				</ul>
 			</PageSection>
 
+			<PageToolbar>
+				<div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
+					<SearchInput
+						placeholder="Search name, role, pod…"
+						value={globalFilter}
+						onChange={setGlobalFilter}
+					/>
+					{table.getState().columnFilters.map((filter) => {
+						const col = table.getColumn(filter.id);
+						const meta = col?.columnDef.meta as
+							| { label?: string; options?: { label: string; value: string }[] }
+							| undefined;
+						const label = meta?.label ?? filter.id;
+						const options = meta?.options;
+						const valStr = Array.isArray(filter.value)
+							? (filter.value as string[])
+									.map((v) => options?.find((o) => o.value === v)?.label ?? v)
+									.join(", ")
+							: (options?.find((o) => o.value === filter.value)?.label ??
+								String(filter.value));
+						return (
+							<Badge key={filter.id} variant="outline">
+								{label}: {valStr}
+								<button
+									type="button"
+									className="ml-1 rounded-sm opacity-70 hover:opacity-100"
+									onClick={() => col?.setFilterValue(undefined)}
+								>
+									<HugeiconsIcon
+										icon={Cancel01Icon}
+										className="size-3"
+										aria-hidden="true"
+									/>
+									<span className="sr-only">Remove {label} filter</span>
+								</button>
+							</Badge>
+						);
+					})}
+					{table.getState().columnFilters.length > 0 && (
+						<Button
+							variant="ghost"
+							size="sm"
+							onClick={() => table.resetColumnFilters()}
+						>
+							Clear all
+						</Button>
+					)}
+				</div>
+				<ToggleGroup
+					value={[view]}
+					onValueChange={(v) => {
+						if (v.length > 0) setView(v[v.length - 1] as "table" | "cards");
+					}}
+				>
+					<ToggleGroupItem value="table" aria-label="Table view">
+						<HugeiconsIcon icon={ListViewIcon} className="size-4" />
+					</ToggleGroupItem>
+					<ToggleGroupItem value="cards" aria-label="Card view">
+						<HugeiconsIcon icon={GridTableIcon} className="size-4" />
+					</ToggleGroupItem>
+				</ToggleGroup>
+			</PageToolbar>
+
 			<PageBody>
-				<DataTable table={table} onRowClick={setSelected} />
+				{view === "table" ? (
+					<DataTable table={table} onRowClick={setSelected} />
+				) : (
+					<div className="grid grid-cols-3 gap-3 p-6">
+						{table.getFilteredRowModel().rows.map((row) => (
+							<CarboniteCard
+								key={row.id}
+								carbonite={row.original}
+								onClick={() => setSelected(row.original)}
+							/>
+						))}
+					</div>
+				)}
 			</PageBody>
 
 			{/* ── Bulk action bar ──────────────────────────────────────────────── */}
-			<DataTableActionBar table={table}>
-				<DataTableActionBarSelection table={table} />
+			{view === "table" && (
+				<DataTableActionBar table={table}>
+					<DataTableActionBarSelection table={table} />
 
-				<DataTableActionBarAction
-					tooltip="Export selected as CSV"
-					onClick={() => exportCsv(selectedCarbonites)}
-				>
-					<HugeiconsIcon
-						icon={Download01Icon}
-						className="size-3.5"
-						aria-hidden="true"
-					/>
-					Export
-				</DataTableActionBarAction>
-
-				{hasAdminAccess && (
 					<DataTableActionBarAction
-						tooltip="Deactivate selected carbonites"
-						variant="destructive"
-						onClick={() => setBulkDeleteOpen(true)}
+						tooltip="Export selected as CSV"
+						onClick={() => exportCsv(selectedCarbonites)}
 					>
 						<HugeiconsIcon
-							icon={Delete01Icon}
+							icon={Download01Icon}
 							className="size-3.5"
 							aria-hidden="true"
 						/>
-						Deactivate
+						Export
 					</DataTableActionBarAction>
-				)}
-			</DataTableActionBar>
+
+					{hasAdminAccess && (
+						<DataTableActionBarAction
+							tooltip="Deactivate selected carbonites"
+							variant="destructive"
+							onClick={() => setBulkDeleteOpen(true)}
+						>
+							<HugeiconsIcon
+								icon={Delete01Icon}
+								className="size-3.5"
+								aria-hidden="true"
+							/>
+							Deactivate
+						</DataTableActionBarAction>
+					)}
+				</DataTableActionBar>
+			)}
 
 			{/* ── Detail sheet ──────────────────────────────────────────────────── */}
 			<CarboniteDetailSheet

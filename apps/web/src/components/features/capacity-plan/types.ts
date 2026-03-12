@@ -54,6 +54,21 @@ export type SelectedPod = {
 	podName: string;
 };
 
+export type PodTableRow = {
+	stateGroup: string;
+	officeGroup: string;
+	podName: string;
+	budget: number;
+	totalSalary: number;
+	actual: number;
+	hasBudgetSet: boolean;
+	dominantSl: string | null;
+	variance: number;
+	utilisation: number;
+	/** Sentinel flag — when true, the row renders an "Add Pod" button instead of data */
+	isAddPodRow?: boolean;
+};
+
 // ── Risk types ────────────────────────────────────────────────────────────────
 
 export type RiskLevel = "low" | "medium" | "high";

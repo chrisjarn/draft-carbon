@@ -1,5 +1,10 @@
 import { db } from "@carbon-wfp/db";
 import { carbonites } from "@carbon-wfp/db/schema/carbonites";
+import {
+	OFFICE_VALUES,
+	SL_VALUES,
+	STATE_VALUES,
+} from "@carbon-wfp/db/schema/enums";
 import { hiringNeeds } from "@carbon-wfp/db/schema/hiring-needs";
 import { TRPCError } from "@trpc/server";
 import { and, asc, eq } from "drizzle-orm";
@@ -15,10 +20,10 @@ import {
 
 const hiringInput = z.object({
 	role: z.string().min(1),
-	sl: z.string().optional(),
+	sl: z.enum(SL_VALUES, { message: "Invalid service line" }).optional(),
 	sg: z.string().optional(),
-	state: z.string().optional(),
-	office: z.string().optional(),
+	state: z.enum(STATE_VALUES, { message: "Invalid state" }).optional(),
+	office: z.enum(OFFICE_VALUES, { message: "Invalid office" }).optional(),
 	location: z.string().optional(),
 	positions: z.number().int().min(1).optional(),
 	type: z

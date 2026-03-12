@@ -1,5 +1,10 @@
 import { db } from "@carbon-wfp/db";
 import { entities } from "@carbon-wfp/db/schema/entities";
+import {
+	OFFICE_VALUES,
+	SL_VALUES,
+	STATE_VALUES,
+} from "@carbon-wfp/db/schema/enums";
 import { TRPCError } from "@trpc/server";
 import { asc, eq } from "drizzle-orm";
 import z from "zod";
@@ -13,6 +18,31 @@ import {
 	getRoleFilter,
 } from "../lib/rbac";
 
+const entityCreateInput = z.object({
+	biz: z.string().min(1, "Name is required"),
+	state: z.enum(STATE_VALUES, { message: "Invalid state" }),
+	tan: z.string().optional(),
+	officeId: z.enum(OFFICE_VALUES).optional(),
+	phone: z.string().optional(),
+	address: z.string().optional(),
+	email: z.string().optional(),
+	sl: z.array(z.enum(SL_VALUES)).optional(),
+	partners: z.array(z.string()).optional(),
+});
+
+const entityUpdateInput = z.object({
+	id: z.string(),
+	biz: z.string().optional(),
+	tan: z.string().optional(),
+	officeId: z.enum(OFFICE_VALUES).optional(),
+	state: z.enum(STATE_VALUES).optional(),
+	phone: z.string().optional(),
+	address: z.string().optional(),
+	email: z.string().optional(),
+	sl: z.array(z.enum(SL_VALUES)).optional(),
+	partners: z.array(z.string()).optional(),
+});
+
 export const entitiesRouter = router({
 	getAll: protectedProcedure.query(async ({ ctx }) => {
 		const rf = getRoleFilter(ctx.session.user);
@@ -25,19 +55,7 @@ export const entitiesRouter = router({
 	}),
 
 	create: protectedProcedure
-		.input(
-			z.object({
-				biz: z.string().min(1, "Name is required"),
-				state: z.string().min(1, "State is required"),
-				tan: z.string().optional(),
-				officeId: z.string().optional(),
-				phone: z.string().optional(),
-				address: z.string().optional(),
-				email: z.string().optional(),
-				sl: z.array(z.string()).optional(),
-				partners: z.array(z.string()).optional(),
-			}),
-		)
+		.input(entityCreateInput)
 		.mutation(async ({ ctx, input }) => {
 			assertWriter(ctx.session.user, ADMIN_WRITE_ROLES);
 			assertEntityScope(ctx.session.user, {
@@ -70,20 +88,7 @@ export const entitiesRouter = router({
 		}),
 
 	update: protectedProcedure
-		.input(
-			z.object({
-				id: z.string(),
-				biz: z.string().optional(),
-				tan: z.string().optional(),
-				officeId: z.string().optional(),
-				state: z.string().optional(),
-				phone: z.string().optional(),
-				address: z.string().optional(),
-				email: z.string().optional(),
-				sl: z.array(z.string()).optional(),
-				partners: z.array(z.string()).optional(),
-			}),
-		)
+		.input(entityUpdateInput)
 		.mutation(async ({ ctx, input }) => {
 			assertWriter(ctx.session.user, ADMIN_WRITE_ROLES);
 			// Fetch existing entity and verify scope before mutating

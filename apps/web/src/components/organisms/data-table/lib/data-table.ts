@@ -21,7 +21,7 @@ export function getCommonPinningStyles<TData>({
 		isPinned === "right" && column.getIsFirstColumn("right");
 
 	return {
-		background: isPinned ? "var(--primary-foreground)" : undefined,
+		background: isPinned ? "var(--background)" : undefined,
 		boxShadow: withBorder
 			? isLastLeftPinnedColumn
 				? "-4px 0 4px -4px var(--border) inset"

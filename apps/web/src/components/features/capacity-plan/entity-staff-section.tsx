@@ -5,7 +5,7 @@ import {
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useState } from "react";
-
+import { PersonNameCell } from "@/components/molecules/person-name-cell";
 import { Badge } from "@/components/ui/badge";
 import {
 	Collapsible,
@@ -109,7 +109,9 @@ export function EntityStaffSection({
 
 								return (
 									<TableRow key={s.id}>
-										<TableCell className="text-sm">{s.name}</TableCell>
+										<TableCell>
+											<PersonNameCell name={s.name} />
+										</TableCell>
 										<TableCell className="text-muted-foreground text-sm">
 											{s.role ?? "\u2014"}
 										</TableCell>

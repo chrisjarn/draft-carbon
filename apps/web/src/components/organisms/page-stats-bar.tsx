@@ -88,15 +88,15 @@ export function PageStatsBar({
 	return (
 		<div
 			className={cn(
-				"flex items-center justify-between gap-6 border-b bg-white px-6 py-2.5",
+				"flex items-center justify-between gap-6 border-b bg-background px-6 py-2.5",
 				className,
 			)}
 		>
 			{/* Stats — left side */}
 			<div className="flex items-center divide-x divide-border">
-				{stats.map((stat) => (
+				{stats.map((stat, i) => (
 					<div
-						key={stat.label}
+						key={`${stat.label}-${i}`}
 						className="flex flex-col gap-0.5 pr-10 pl-10 first:pl-0"
 					>
 						<span className="font-medium text-[10px] text-muted-foreground uppercase tracking-widest">

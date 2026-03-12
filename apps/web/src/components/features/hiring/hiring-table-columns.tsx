@@ -185,7 +185,7 @@ export function useHiringColumns(tab: TabStatus) {
 				accessorKey: "sl",
 				enableSorting: true,
 				header: ({ column }) => (
-					<DataTableColumnHeader column={column} title="SL" />
+					<DataTableColumnHeader column={column} title="Service Line" />
 				),
 				cell: ({ row }) => {
 					const val = row.getValue("sl") as string | null | undefined;

@@ -1,3 +1,4 @@
+import type { SL_VALUES, STATE_VALUES } from "@carbon-wfp/db/schema/enums";
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -121,7 +122,10 @@ export function EntityDialog({
 			mode === "edit" && entity ? entityToForm(entity) : EMPTY_FORM,
 		onSubmit: ({ value }) => {
 			if (isCreate) {
-				createEntity.mutate({ biz: value.biz, state: value.state });
+				createEntity.mutate({
+					biz: value.biz,
+					state: value.state as (typeof STATE_VALUES)[number],
+				});
 			} else if (entity) {
 				updateEntity.mutate({
 					id: entity.id,
@@ -130,8 +134,8 @@ export function EntityDialog({
 					phone: value.phone || undefined,
 					email: value.email || undefined,
 					address: value.address || undefined,
-					state: value.state,
-					sl: value.sl,
+					state: value.state as (typeof STATE_VALUES)[number],
+					sl: value.sl as (typeof SL_VALUES)[number][],
 				});
 			}
 		},

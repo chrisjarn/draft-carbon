@@ -48,7 +48,7 @@ export function DataTable<TData>({
 		<div className={cn("flex w-full flex-col", className)} {...props}>
 			{children}
 
-			<div className="overflow-hidden bg-background">
+			<div className="overflow-x-auto bg-background">
 				<Table className={fixedLayout ? "table-fixed" : undefined}>
 					{fixedLayout && (
 						<colgroup>
@@ -57,7 +57,7 @@ export function DataTable<TData>({
 							))}
 						</colgroup>
 					)}
-					<TableHeader className="sticky top-0 z-10 bg-zinc-100 dark:bg-zinc-800/60">
+					<TableHeader className="sticky top-0 z-10 bg-muted/80 backdrop-blur-sm">
 						{table.getHeaderGroups().map((headerGroup) => (
 							<TableRow key={headerGroup.id}>
 								{headerGroup.headers.map((header) => (
@@ -103,10 +103,7 @@ export function DataTable<TData>({
 									<TableRow
 										data-state={row.getIsSelected() && "selected"}
 										key={row.id}
-										className={cn(
-											"bg-white dark:bg-zinc-900",
-											onRowClick ? "cursor-pointer" : undefined,
-										)}
+										className={cn(onRowClick ? "cursor-pointer" : undefined)}
 										onClick={() => onRowClick?.(row.original)}
 									>
 										{row.getVisibleCells().map((cell) => (

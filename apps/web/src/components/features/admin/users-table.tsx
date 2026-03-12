@@ -4,8 +4,6 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { ConfirmDialog } from "@/components/molecules/confirm-dialog";
-import { PageStatsBar } from "@/components/organisms/page-stats-bar";
-import { PageBody } from "@/components/templates/page";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -56,6 +54,21 @@ function fmtDate(d: Date | string) {
 	});
 }
 
+// ── Hook for user stats (consumed by AdminPage for PageStatsBar) ──────────
+
+export function useUserStats() {
+	const query = useQuery(trpc.admin.listUsers.queryOptions());
+	const users = (query.data ?? []) as AppUser[];
+
+	const stats = useMemo(() => {
+		const admins = users.filter((u) => u.role === "admin").length;
+		const pending = users.filter((u) => !u.emailVerified).length;
+		return { total: users.length, admins, pending };
+	}, [users]);
+
+	return { stats, isPending: query.isPending };
+}
+
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export function UsersTable({ currentUserId }: { currentUserId?: string }) {
@@ -64,12 +77,6 @@ export function UsersTable({ currentUserId }: { currentUserId?: string }) {
 
 	const query = useQuery(trpc.admin.listUsers.queryOptions());
 	const users = (query.data ?? []) as AppUser[];
-
-	const userStats = useMemo(() => {
-		const admins = users.filter((u) => u.role === "admin").length;
-		const pending = users.filter((u) => !u.emailVerified).length;
-		return { total: users.length, admins, pending };
-	}, [users]);
 
 	const updateRole = useMutation(
 		trpc.admin.updateRole.mutationOptions({
@@ -96,218 +103,193 @@ export function UsersTable({ currentUserId }: { currentUserId?: string }) {
 
 	return (
 		<>
-			<PageStatsBar
-				stats={[
-					{
-						label: "Total Users",
-						value: userStats.total,
-						loading: query.isPending,
-					},
-					{
-						label: "Admins",
-						value: userStats.admins,
-						loading: query.isPending,
-					},
-					{
-						label: "Pending Verification",
-						value: userStats.pending,
-						loading: query.isPending,
-					},
-				]}
-			/>
-
-			<PageBody padded>
-				{query.isPending ? (
-					<div className="flex h-40 items-center justify-center text-muted-foreground text-sm">
-						Loading…
-					</div>
-				) : (
-					<Table>
-						<TableHeader>
-							<TableRow>
-								<TableHead className="w-[220px]">User</TableHead>
-								<TableHead>Email</TableHead>
-								<TableHead>Current Role</TableHead>
-								<TableHead className="w-[200px]">Change Role</TableHead>
-								<TableHead className="w-[180px]">Assignment</TableHead>
-								<TableHead>Joined</TableHead>
-								<TableHead>Verified</TableHead>
-								<TableHead />
-							</TableRow>
-						</TableHeader>
-						<TableBody>
-							{users.map((u) => {
-								const isMe = u.id === currentUserId;
-								return (
-									<TableRow key={u.id} className={isMe ? "bg-muted/20" : ""}>
-										<TableCell>
-											<div className="flex items-center gap-2">
-												<div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-foreground font-semibold text-[10px] text-background">
-													{initials(u.name)}
-												</div>
-												<div>
-													<p className="font-medium text-base">{u.name}</p>
-													{isMe && (
-														<span className="text-[10px] text-muted-foreground">
-															You
-														</span>
-													)}
-												</div>
+			{query.isPending ? (
+				<div className="flex h-40 items-center justify-center text-muted-foreground text-sm">
+					Loading…
+				</div>
+			) : (
+				<Table>
+					<TableHeader>
+						<TableRow>
+							<TableHead className="w-[220px]">User</TableHead>
+							<TableHead>Email</TableHead>
+							<TableHead>Current Role</TableHead>
+							<TableHead className="w-[200px]">Change Role</TableHead>
+							<TableHead className="w-[180px]">Assignment</TableHead>
+							<TableHead>Joined</TableHead>
+							<TableHead>Verified</TableHead>
+							<TableHead />
+						</TableRow>
+					</TableHeader>
+					<TableBody>
+						{users.map((u) => {
+							const isMe = u.id === currentUserId;
+							return (
+								<TableRow key={u.id} className={isMe ? "bg-muted/20" : ""}>
+									<TableCell>
+										<div className="flex items-center gap-2">
+											<div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-foreground font-semibold text-[10px] text-background">
+												{initials(u.name)}
 											</div>
-										</TableCell>
-										<TableCell className="text-muted-foreground text-sm">
-											{u.email}
-										</TableCell>
-										<TableCell>
-											<RoleBadge role={u.role} />
-										</TableCell>
-										<TableCell>
-											{isMe ? (
-												<span className="text-muted-foreground text-sm">—</span>
-											) : (
-												<Select
-													value={u.role}
-													onValueChange={(v) =>
-														updateRole.mutate({
-															userId: u.id,
-															role: v as ValidRole,
-														})
-													}
-													disabled={updateRole.isPending}
-												>
-													<SelectTrigger size="sm" className="w-44 text-sm">
-														<span className="flex flex-1 truncate text-left">
-															{ROLES.find((r) => r.value === u.role)?.label ??
-																u.role}
-														</span>
-													</SelectTrigger>
-													<SelectContent>
-														{ROLES.map((r) => (
-															<SelectItem
-																key={r.value}
-																value={r.value}
-																label={r.label}
-																className="text-sm"
-															>
-																{r.label}
-															</SelectItem>
-														))}
-													</SelectContent>
-												</Select>
-											)}
-										</TableCell>
-										<TableCell>
-											{!isMe && u.role === "state_manager" ? (
-												<Select
-													value={u.assignedState ?? "__none__"}
-													onValueChange={(v) =>
-														updateRole.mutate({
-															userId: u.id,
-															role: u.role as ValidRole,
-															assignedState: v === "__none__" ? null : v,
-														})
-													}
-													disabled={updateRole.isPending}
-												>
-													<SelectTrigger size="sm" className="w-36 text-sm">
-														<span className="flex flex-1 truncate text-left">
-															{STATES.find((s) => s.id === u.assignedState)
-																?.abbr ?? "Select state"}
-														</span>
-													</SelectTrigger>
-													<SelectContent>
-														<SelectItem value="__none__" label="No state">
-															No state
-														</SelectItem>
-														{STATES.map((s) => (
-															<SelectItem
-																key={s.id}
-																value={s.id}
-																label={s.name}
-																className="text-sm"
-															>
-																{s.name}
-															</SelectItem>
-														))}
-													</SelectContent>
-												</Select>
-											) : !isMe && u.role === "service_line_lead" ? (
-												<Select
-													value={u.assignedServiceLine ?? "__none__"}
-													onValueChange={(v) =>
-														updateRole.mutate({
-															userId: u.id,
-															role: u.role as ValidRole,
-															assignedServiceLine: v === "__none__" ? null : v,
-														})
-													}
-													disabled={updateRole.isPending}
-												>
-													<SelectTrigger size="sm" className="w-36 text-sm">
-														<span className="flex flex-1 truncate text-left">
-															{SERVICE_LINES.find(
-																(sl) => sl.id === u.assignedServiceLine,
-															)?.short ?? "Select SL"}
-														</span>
-													</SelectTrigger>
-													<SelectContent>
-														<SelectItem
-															value="__none__"
-															label="No service line"
-														>
-															No service line
-														</SelectItem>
-														{SERVICE_LINES.map((sl) => (
-															<SelectItem
-																key={sl.id}
-																value={sl.id}
-																label={sl.name}
-																className="text-sm"
-															>
-																{sl.name}
-															</SelectItem>
-														))}
-													</SelectContent>
-												</Select>
-											) : (
-												<span className="text-muted-foreground text-sm">—</span>
-											)}
-										</TableCell>
-										<TableCell className="text-muted-foreground text-sm">
-											{fmtDate(u.createdAt)}
-										</TableCell>
-										<TableCell>
-											<Badge
-												variant={u.emailVerified ? "outline" : "secondary"}
-												size="sm"
+											<div>
+												<p className="font-medium text-base">{u.name}</p>
+												{isMe && (
+													<span className="text-[10px] text-muted-foreground">
+														You
+													</span>
+												)}
+											</div>
+										</div>
+									</TableCell>
+									<TableCell className="text-muted-foreground text-sm">
+										{u.email}
+									</TableCell>
+									<TableCell>
+										<RoleBadge role={u.role} />
+									</TableCell>
+									<TableCell>
+										{isMe ? (
+											<span className="text-muted-foreground text-sm">—</span>
+										) : (
+											<Select
+												value={u.role}
+												onValueChange={(v) =>
+													updateRole.mutate({
+														userId: u.id,
+														role: v as ValidRole,
+													})
+												}
+												disabled={updateRole.isPending}
 											>
-												{u.emailVerified ? "Verified" : "Pending"}
-											</Badge>
-										</TableCell>
-										<TableCell>
-											{!isMe && (
-												<Button
-													variant="ghost"
-													size="icon-sm"
-													className="text-muted-foreground hover:text-destructive"
-													onClick={() => setDeleteTarget(u)}
-													aria-label={`Delete user ${u.name}`}
-												>
-													<HugeiconsIcon
-														icon={Delete02Icon}
-														className="size-3.5"
-														aria-hidden="true"
-													/>
-												</Button>
-											)}
-										</TableCell>
-									</TableRow>
-								);
-							})}
-						</TableBody>
-					</Table>
-				)}
-			</PageBody>
+												<SelectTrigger size="sm" className="w-44 text-sm">
+													<span className="flex flex-1 truncate text-left">
+														{ROLES.find((r) => r.value === u.role)?.label ??
+															u.role}
+													</span>
+												</SelectTrigger>
+												<SelectContent>
+													{ROLES.map((r) => (
+														<SelectItem
+															key={r.value}
+															value={r.value}
+															label={r.label}
+															className="text-sm"
+														>
+															{r.label}
+														</SelectItem>
+													))}
+												</SelectContent>
+											</Select>
+										)}
+									</TableCell>
+									<TableCell>
+										{!isMe && u.role === "state_manager" ? (
+											<Select
+												value={u.assignedState ?? "__none__"}
+												onValueChange={(v) =>
+													updateRole.mutate({
+														userId: u.id,
+														role: u.role as ValidRole,
+														assignedState: v === "__none__" ? null : v,
+													})
+												}
+												disabled={updateRole.isPending}
+											>
+												<SelectTrigger size="sm" className="w-36 text-sm">
+													<span className="flex flex-1 truncate text-left">
+														{STATES.find((s) => s.id === u.assignedState)
+															?.name ?? "Select state"}
+													</span>
+												</SelectTrigger>
+												<SelectContent>
+													<SelectItem value="__none__" label="No state">
+														No state
+													</SelectItem>
+													{STATES.map((s) => (
+														<SelectItem
+															key={s.id}
+															value={s.id}
+															label={s.name}
+															className="text-sm"
+														>
+															{s.name}
+														</SelectItem>
+													))}
+												</SelectContent>
+											</Select>
+										) : !isMe && u.role === "service_line_lead" ? (
+											<Select
+												value={u.assignedServiceLine ?? "__none__"}
+												onValueChange={(v) =>
+													updateRole.mutate({
+														userId: u.id,
+														role: u.role as ValidRole,
+														assignedServiceLine: v === "__none__" ? null : v,
+													})
+												}
+												disabled={updateRole.isPending}
+											>
+												<SelectTrigger size="sm" className="w-36 text-sm">
+													<span className="flex flex-1 truncate text-left">
+														{SERVICE_LINES.find(
+															(sl) => sl.id === u.assignedServiceLine,
+														)?.name ?? "Select SL"}
+													</span>
+												</SelectTrigger>
+												<SelectContent>
+													<SelectItem value="__none__" label="No service line">
+														No service line
+													</SelectItem>
+													{SERVICE_LINES.map((sl) => (
+														<SelectItem
+															key={sl.id}
+															value={sl.id}
+															label={sl.name}
+															className="text-sm"
+														>
+															{sl.name}
+														</SelectItem>
+													))}
+												</SelectContent>
+											</Select>
+										) : (
+											<span className="text-muted-foreground text-sm">—</span>
+										)}
+									</TableCell>
+									<TableCell className="text-muted-foreground text-sm">
+										{fmtDate(u.createdAt)}
+									</TableCell>
+									<TableCell>
+										<Badge
+											variant={u.emailVerified ? "outline" : "secondary"}
+											size="sm"
+										>
+											{u.emailVerified ? "Verified" : "Pending"}
+										</Badge>
+									</TableCell>
+									<TableCell>
+										{!isMe && (
+											<Button
+												variant="ghost"
+												size="icon-sm"
+												className="text-muted-foreground hover:text-destructive"
+												onClick={() => setDeleteTarget(u)}
+												aria-label={`Delete user ${u.name}`}
+											>
+												<HugeiconsIcon
+													icon={Delete02Icon}
+													className="size-3.5"
+													aria-hidden="true"
+												/>
+											</Button>
+										)}
+									</TableCell>
+								</TableRow>
+							);
+						})}
+					</TableBody>
+				</Table>
+			)}
 
 			<ConfirmDialog
 				open={!!deleteTarget}

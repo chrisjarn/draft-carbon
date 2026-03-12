@@ -47,6 +47,7 @@
         "@base-ui/react": "^1.2.0",
         "@carbon-wfp/api": "workspace:*",
         "@carbon-wfp/auth": "workspace:*",
+        "@carbon-wfp/db": "workspace:*",
         "@carbon-wfp/env": "workspace:*",
         "@fontsource-variable/outfit": "^5.2.8",
         "@hugeicons/core-free-icons": "^3.3.0",

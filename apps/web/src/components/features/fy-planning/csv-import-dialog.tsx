@@ -2,6 +2,10 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
 import {
+	officeLabel,
+	stateLabel,
+} from "@/components/features/carbonites/types";
+import {
 	AppDialog,
 	AppDialogContent,
 	AppDialogFooter,
@@ -107,8 +111,8 @@ export function CsvImportDialog({
 							<TableBody>
 								{parsed.map((r) => (
 									<TableRow key={`${r.state}-${r.office}-${r.podName}`}>
-										<TableCell>{r.state}</TableCell>
-										<TableCell>{r.office}</TableCell>
+										<TableCell>{stateLabel(r.state)}</TableCell>
+										<TableCell>{officeLabel(r.office)}</TableCell>
 										<TableCell>{r.podName}</TableCell>
 										<TableCell className="text-right tabular-nums">
 											{fmtDollar(r.budget)}

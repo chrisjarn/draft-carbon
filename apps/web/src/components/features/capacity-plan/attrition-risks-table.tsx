@@ -1,6 +1,7 @@
 import { Delete02Icon, PencilEdit01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 
+import { PersonNameCell } from "@/components/molecules/person-name-cell";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -57,8 +58,14 @@ export function AttritionRisksTable({
 					const member = staffMap.get(risk.carboniteId);
 					return (
 						<TableRow key={risk.id}>
-							<TableCell className="text-base">
-								{member?.name ?? risk.carboniteId}
+							<TableCell>
+								{member?.name ? (
+									<PersonNameCell name={member.name} />
+								) : (
+									<span className="text-muted-foreground text-sm">
+										{risk.carboniteId}
+									</span>
+								)}
 							</TableCell>
 							<TableCell className="text-muted-foreground text-sm">
 								{member?.role ?? "--"}

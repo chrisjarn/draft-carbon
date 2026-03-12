@@ -1,3 +1,8 @@
+import type {
+	OFFICE_VALUES,
+	SL_VALUES,
+	STATE_VALUES,
+} from "@carbon-wfp/db/schema/enums";
 import { useForm } from "@tanstack/react-form";
 import { useState } from "react";
 import { z } from "zod";
@@ -96,10 +101,14 @@ export function roleToForm(r: HiringNeed): FormState {
 export function formToPayload(form: FormState) {
 	return {
 		role: form.role,
-		sl: form.sl || undefined,
+		sl: (form.sl || undefined) as (typeof SL_VALUES)[number] | undefined,
 		sg: form.sg || undefined,
-		state: form.state || undefined,
-		office: form.office || undefined,
+		state: (form.state || undefined) as
+			| (typeof STATE_VALUES)[number]
+			| undefined,
+		office: (form.office || undefined) as
+			| (typeof OFFICE_VALUES)[number]
+			| undefined,
 		location: form.location || undefined,
 		positions: form.positions ? Number(form.positions) : undefined,
 		type: (form.type as "FT" | "PT" | "Contract") || undefined,

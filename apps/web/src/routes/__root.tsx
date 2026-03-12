@@ -51,7 +51,7 @@ function RootComponent() {
 			<HeadContent />
 			<ThemeProvider
 				attribute="class"
-				forcedTheme="light"
+				forcedTheme="dark"
 				disableTransitionOnChange
 				storageKey="carbon-wfp-theme"
 			>

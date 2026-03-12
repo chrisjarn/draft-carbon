@@ -1,7 +1,8 @@
 import { PencilEdit01Icon, StarIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import type { ColumnDef, FilterFn, Row } from "@tanstack/react-table";
+import type { ColumnDef, FilterFn } from "@tanstack/react-table";
 import { officeLabel, slLabel } from "@/components/features/carbonites/types";
+import { PersonNameCell } from "@/components/molecules/person-name-cell";
 import { DataTableColumnHeader } from "@/components/organisms/data-table/data-table-column-header";
 import type { Option } from "@/components/organisms/data-table/types/data-table";
 import { Button } from "@/components/ui/button";
@@ -125,9 +126,7 @@ export function getStaffTableColumns(
 			header: ({ column }) => (
 				<DataTableColumnHeader column={column} title="Name" />
 			),
-			cell: ({ row }) => (
-				<span className="font-medium text-sm">{row.getValue("name")}</span>
-			),
+			cell: ({ row }) => <PersonNameCell name={row.getValue("name")} />,
 			size: 180,
 			meta: { label: "Name" },
 		},
@@ -168,7 +167,7 @@ export function getStaffTableColumns(
 			enableSorting: true,
 			filterFn: arrIncludesFilter,
 			header: ({ column }) => (
-				<DataTableColumnHeader column={column} title="SL" />
+				<DataTableColumnHeader column={column} title="Service Line" />
 			),
 			cell: ({ getValue }) => {
 				const val = getValue() as string | null;
@@ -344,7 +343,7 @@ export function getStaffTableColumns(
 			enableSorting: true,
 			enableColumnFilter: false,
 			header: ({ column }) => (
-				<DataTableColumnHeader column={column} title="Perf" />
+				<DataTableColumnHeader column={column} title="Performance" />
 			),
 			cell: ({ row }) => <PerfBadge rating={row.original.meta?.perfRating} />,
 			meta: { label: "Performance" },
@@ -355,7 +354,7 @@ export function getStaffTableColumns(
 			enableSorting: false,
 			filterFn: promoFilter,
 			header: ({ column }) => (
-				<DataTableColumnHeader column={column} title="Promo" />
+				<DataTableColumnHeader column={column} title="Promotion" />
 			),
 			cell: ({ row }) => {
 				const meta = row.original.meta;

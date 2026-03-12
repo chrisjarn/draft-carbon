@@ -40,7 +40,7 @@ export function PageToolbar({ children, className }: PageToolbarProps) {
 
 interface PageBodyProps {
 	children: ReactNode;
-	/** Apply standard page padding (px-6 py-4 bg-zinc-50). Default: false (no padding). */
+	/** Apply standard page padding (px-6 py-4 bg-muted/30). Default: false (no padding). */
 	padded?: boolean;
 	/**
 	 * Constrain content to a max width and center it.
@@ -57,17 +57,17 @@ interface PageSectionProps {
 
 /**
  * Non-scrolling page section (e.g. secondary panel below the main content area).
- * Applies standard `px-6 py-4 bg-zinc-50` padding. Use `border-t` via `className` if needed.
+ * Applies standard `px-6 py-4 bg-muted/30` padding. Use `border-t` via `className` if needed.
  */
 export function PageSection({ children, className }: PageSectionProps) {
 	return (
-		<div className={cn("bg-zinc-50 px-6 py-4", className)}>{children}</div>
+		<div className={cn("bg-muted/30 px-6 py-4", className)}>{children}</div>
 	);
 }
 
 /**
  * Scrollable page content area.
- * - `padded` adds standard dashboard padding (px-6 py-4 bg-zinc-50)
+ * - `padded` adds standard dashboard padding (px-6 py-4 bg-muted/30)
  * - `constrain` wraps content in a centered max-width container
  */
 export function PageBody({
@@ -86,7 +86,7 @@ export function PageBody({
 		<div
 			className={cn(
 				"flex-1 overflow-auto",
-				padded && "bg-zinc-50 px-6 py-4",
+				padded && "bg-muted/30 px-6 py-4",
 				className,
 			)}
 		>

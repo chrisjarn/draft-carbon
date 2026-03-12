@@ -8,11 +8,10 @@ import { toast } from "sonner";
 import { NewScenarioWizard } from "@/components/features/scenarios/new-scenario-wizard";
 import { ScenarioCard } from "@/components/features/scenarios/scenario-card";
 import { ScenarioFilters } from "@/components/features/scenarios/scenario-filters";
-import { ScenarioKpiSection } from "@/components/features/scenarios/scenario-kpi-section";
 import { PageHeader } from "@/components/organisms/page-header";
-import { Page, PageBody } from "@/components/templates/page";
+import { PageStatsBar } from "@/components/organisms/page-stats-bar";
+import { Page, PageBody, PageToolbar } from "@/components/templates/page";
 import { Button } from "@/components/ui/button";
-import { Divider } from "@/components/ui/divider";
 import {
 	Empty,
 	EmptyDescription,
@@ -21,6 +20,7 @@ import {
 	EmptyTitle,
 } from "@/components/ui/empty";
 import { authClient } from "@/lib/auth-client";
+import { fmtDollar } from "@/lib/format";
 import { canWrite, getUserRole } from "@/lib/rbac";
 import { trpc } from "@/utils/trpc";
 
@@ -116,7 +116,7 @@ function ScenariosPage() {
 				)}
 			</PageHeader>
 
-			<PageBody padded>
+			<PageToolbar>
 				<ScenarioFilters
 					entity={entity}
 					fy={fy}
@@ -124,39 +124,46 @@ function ScenariosPage() {
 					onEntityChange={setEntity}
 					onFyChange={setFy}
 				/>
+			</PageToolbar>
 
+			{!!entity && (
+				<PageStatsBar
+					stats={[
+						{
+							label: "Billing Capacity",
+							value: fmtDollar(baseBillingCapacity),
+							loading: detailLoading,
+						},
+						{
+							label: "Revenue",
+							value: fmtDollar(revenueActual),
+							fraction: `/ ${fmtDollar(revenueTarget)} target`,
+							loading: detailLoading,
+						},
+						{
+							label: "Billing Multiple",
+							value: `${baseMultiple.toFixed(2)}\u00D7`,
+							loading: detailLoading,
+						},
+					]}
+				/>
+			)}
+
+			<PageBody padded>
 				{!entity ? (
-					<>
-						<Divider />
-						<Empty className="py-16 md:py-16">
-							<EmptyHeader>
-								<EmptyMedia variant="icon">
-									<HugeiconsIcon icon={FlowSquareIcon} />
-								</EmptyMedia>
-								<EmptyTitle>Select an entity above</EmptyTitle>
-								<EmptyDescription>
-									Choose an entity to view and create hiring scenarios.
-								</EmptyDescription>
-							</EmptyHeader>
-						</Empty>
-					</>
+					<Empty className="py-16 md:py-16">
+						<EmptyHeader>
+							<EmptyMedia variant="icon">
+								<HugeiconsIcon icon={FlowSquareIcon} />
+							</EmptyMedia>
+							<EmptyTitle>Select an entity above</EmptyTitle>
+							<EmptyDescription>
+								Choose an entity to view and create hiring scenarios.
+							</EmptyDescription>
+						</EmptyHeader>
+					</Empty>
 				) : (
 					<>
-						<Divider />
-
-						<ScenarioKpiSection
-							baseBillingCapacity={baseBillingCapacity}
-							basePayroll={basePayroll}
-							baseMultiple={baseMultiple}
-							baseRevGap={baseRevGap}
-							revenueTarget={revenueTarget}
-							revenueActual={revenueActual}
-							scenarioCount={scenarios.length}
-							loading={detailLoading}
-						/>
-
-						<Divider />
-
 						{scenarios.length === 0 ? (
 							<Empty className="py-12 md:py-12">
 								<EmptyHeader>

@@ -21,9 +21,14 @@ export function slColor(slId: string | null): string {
 	return SERVICE_LINES.find((s) => s.id === slId)?.color ?? "#9E9E9E";
 }
 
-export function slLabel(slId: string | null): string {
+export function slLabel(
+	slId: string | null,
+	mode: "full" | "short" = "full",
+): string {
 	if (!slId) return "—";
-	return SERVICE_LINES.find((s) => s.id === slId)?.short ?? slId;
+	const sl = SERVICE_LINES.find((s) => s.id === slId);
+	if (!sl) return slId;
+	return mode === "short" ? sl.short : sl.name;
 }
 
 export function slName(slId: string | null): string {

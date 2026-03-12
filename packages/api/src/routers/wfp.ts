@@ -1,6 +1,7 @@
 import { db } from "@carbon-wfp/db";
 import { carbonites } from "@carbon-wfp/db/schema/carbonites";
 import { entities } from "@carbon-wfp/db/schema/entities";
+import type { STATE_VALUES } from "@carbon-wfp/db/schema/enums";
 import { hiringNeeds } from "@carbon-wfp/db/schema/hiring-needs";
 import {
 	wfpEntitySettings,
@@ -54,9 +55,7 @@ export const wfpRouter = router({
 				? db
 						.select({ value: count() })
 						.from(attritionRisks)
-						.where(
-							inArray(attritionRisks.carboniteId, visibleStaffIds),
-						)
+						.where(inArray(attritionRisks.carboniteId, visibleStaffIds))
 				: db.select({ value: count() }).from(attritionRisks),
 		]);
 		return {
@@ -204,7 +203,10 @@ export const wfpRouter = router({
 				.from(hiringNeeds)
 				.where(
 					and(
-						eq(hiringNeeds.state, entity.state ?? ""),
+						eq(
+							hiringNeeds.state,
+							(entity.state ?? "") as (typeof STATE_VALUES)[number],
+						),
 						ne(hiringNeeds.status, "closed"),
 					),
 				);

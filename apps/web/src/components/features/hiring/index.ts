@@ -7,7 +7,6 @@ export {
 	HiringDrawer,
 	roleToForm,
 } from "./hiring-dialog";
-export { HiringStatusTabs } from "./hiring-status-tabs";
 export {
 	daysOpen,
 	daysOpenColor,

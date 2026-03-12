@@ -1,6 +1,11 @@
 import { db } from "@carbon-wfp/db";
 import { carbonites } from "@carbon-wfp/db/schema/carbonites";
 import { entities } from "@carbon-wfp/db/schema/entities";
+import {
+	OFFICE_VALUES,
+	SL_VALUES,
+	STATE_VALUES,
+} from "@carbon-wfp/db/schema/enums";
 import { TRPCError } from "@trpc/server";
 import { and, asc, eq, ilike, or } from "drizzle-orm";
 import z from "zod";
@@ -17,10 +22,10 @@ import {
 const carboniteInput = z.object({
 	name: z.string().min(1),
 	role: z.string().optional(),
-	sl: z.string().optional(),
+	sl: z.enum(SL_VALUES, { message: "Invalid service line" }).optional(),
 	sg: z.string().optional(),
-	state: z.string().optional(),
-	office: z.string().optional(),
+	state: z.enum(STATE_VALUES, { message: "Invalid state" }).optional(),
+	office: z.enum(OFFICE_VALUES, { message: "Invalid office" }).optional(),
 	pod: z.string().nullable().optional(),
 	salary: z.number().int().optional(),
 	type: z.enum(["FT", "PT"]).optional(),
@@ -39,9 +44,11 @@ export const carbonitesRouter = router({
 			z
 				.object({
 					search: z.string().optional(),
-					state: z.string().optional(),
-					sl: z.string().optional(),
-					office: z.string().optional(),
+					state: z.enum(STATE_VALUES, { message: "Invalid state" }).optional(),
+					sl: z.enum(SL_VALUES, { message: "Invalid service line" }).optional(),
+					office: z
+						.enum(OFFICE_VALUES, { message: "Invalid office" })
+						.optional(),
 					type: z.string().optional(),
 				})
 				.optional(),

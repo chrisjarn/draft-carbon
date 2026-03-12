@@ -1,8 +1,16 @@
 import { PlusSignIcon, UserGroupIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import type { ExpandedState, Row } from "@tanstack/react-table";
+import {
+	getCoreRowModel,
+	getExpandedRowModel,
+	getGroupedRowModel,
+	useReactTable,
+} from "@tanstack/react-table";
+import { useCallback, useMemo, useState } from "react";
 
+import { DataTable } from "@/components/organisms/data-table/data-table";
 import { Button } from "@/components/ui/button";
 import {
 	Empty,
@@ -17,12 +25,17 @@ import { trpc } from "@/utils/trpc";
 
 import { AddPodDialog } from "./add-pod-dialog";
 import { BudgetSummary } from "./budget-summary";
-import { StateSection } from "./pod-sections";
+import {
+	buildPodGroupCells,
+	makePodBudgetColumns,
+	PodBudgetsTotalsFooter,
+} from "./pod-budgets-columns";
 import { PodStaffSheet } from "./pod-staff-sheet";
 import type {
 	Carbonite,
 	PodBudget,
 	PodRow,
+	PodTableRow,
 	SelectedPod,
 	StateGroup,
 } from "./types";
@@ -137,6 +150,35 @@ function buildGroups(
 	return states;
 }
 
+// ── Flatten StateGroup[] → PodTableRow[] ─────────────────────────────────────
+
+function flattenToRows(groups: StateGroup[]): PodTableRow[] {
+	const rows: PodTableRow[] = [];
+	for (const sg of groups) {
+		for (const og of sg.offices) {
+			for (const pod of og.pods) {
+				rows.push({
+					stateGroup: sg.state,
+					officeGroup: og.office,
+					podName: pod.podName,
+					budget: pod.budget,
+					totalSalary: pod.totalSalary,
+					actual: pod.actual,
+					hasBudgetSet: pod.hasBudgetSet,
+					dominantSl: pod.dominantSl,
+					variance: pod.budget - pod.totalSalary,
+					utilisation:
+						pod.budget > 0 ? pod.totalSalary / pod.budget : 0,
+				});
+			}
+		}
+	}
+	return rows;
+}
+
+// Stable reference — must not be defined inline in useReactTable({ state })
+const GROUPING: string[] = ["stateGroup", "officeGroup"];
+
 // ══════════════════════════════════════════════════════════════════════════════
 // ── Pod Budgets Tab ──────────────────────────────────────────────────────────
 // ══════════════════════════════════════════════════════════════════════════════
@@ -152,6 +194,7 @@ export function PodBudgetsTab({ fy: _fy }: { fy?: string }) {
 		office: string;
 	} | null>(null);
 	const [selectedPod, setSelectedPod] = useState<SelectedPod | null>(null);
+	const [expanded, setExpanded] = useState<ExpandedState>(true);
 
 	function handleAddPod(state: string, office: string) {
 		setAddPodDefaults({ state, office });
@@ -170,71 +213,99 @@ export function PodBudgetsTab({ fy: _fy }: { fy?: string }) {
 	const totalBudget = groups.reduce((s, g) => s + g.totalBudget, 0);
 	const totalSalary = groups.reduce((s, g) => s + g.totalSalary, 0);
 
+	// ── Flat data for TanStack Table ──────────────────────────────────────────
+
+	const tableData = useMemo(() => flattenToRows(groups), [groups]);
+
+	const columns = useMemo(
+		() => makePodBudgetColumns(hasWriteAccess, setSelectedPod),
+		[hasWriteAccess],
+	);
+
+	const table = useReactTable({
+		data: tableData,
+		columns,
+		state: {
+			grouping: GROUPING,
+			expanded,
+		},
+		onExpandedChange: setExpanded,
+		autoResetExpanded: false,
+		getExpandedRowModel: getExpandedRowModel(),
+		getGroupedRowModel: getGroupedRowModel(),
+		getCoreRowModel: getCoreRowModel(),
+		initialState: {
+			columnVisibility: { stateGroup: false, officeGroup: false },
+		},
+	});
+
+	const renderGroupCells = useCallback(
+		(row: Row<PodTableRow>) =>
+			buildPodGroupCells(row, handleAddPod, hasWriteAccess),
+		[hasWriteAccess],
+	);
+
+	// ── Render ────────────────────────────────────────────────────────────────
+
+	if (isLoading) {
+		return (
+			<div className="flex h-40 items-center justify-center text-muted-foreground text-sm">
+				Loading...
+			</div>
+		);
+	}
+
+	if (groups.length === 0) {
+		return (
+			<div className="flex h-full flex-col items-center justify-center p-6">
+				<Empty>
+					<EmptyHeader>
+						<EmptyMedia variant="icon">
+							<HugeiconsIcon icon={UserGroupIcon} />
+						</EmptyMedia>
+						<EmptyTitle>No pod budgets yet</EmptyTitle>
+						<EmptyDescription>
+							Set headcount budgets for your pods to start tracking capacity
+							across states and offices.
+						</EmptyDescription>
+					</EmptyHeader>
+					{hasWriteAccess && (
+						<Button
+							size="sm"
+							onClick={() => {
+								setAddPodDefaults(null);
+								setAddPodOpen(true);
+							}}
+						>
+							<HugeiconsIcon icon={PlusSignIcon} className="mr-1 size-3.5" />
+							Add your first pod
+						</Button>
+					)}
+				</Empty>
+			</div>
+		);
+	}
+
 	return (
 		<div className="flex h-full flex-col">
-			{/* Legend */}
-			<div className="flex items-center gap-6 border-border border-b px-6 py-2.5">
-				<div className="grid w-full grid-cols-[1fr_100px_100px_100px_140px_120px] gap-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider">
-					<span className="pl-4">Location</span>
-					<span>Budget</span>
-					<span>Staff Cost</span>
-					<span>Variance</span>
-					<span>Utilisation</span>
-					<span>Status</span>
-				</div>
+			<div className="p-6 pb-2">
+				<BudgetSummary totalBudget={totalBudget} totalActual={totalSalary} />
 			</div>
 
-			{/* Content */}
-			<div className="flex-1 overflow-auto p-6">
-				{isLoading ? (
-					<div className="flex h-40 items-center justify-center text-muted-foreground text-sm">
-						Loading...
-					</div>
-				) : groups.length === 0 ? (
-					<Empty>
-						<EmptyHeader>
-							<EmptyMedia variant="icon">
-								<HugeiconsIcon icon={UserGroupIcon} />
-							</EmptyMedia>
-							<EmptyTitle>No pod budgets yet</EmptyTitle>
-							<EmptyDescription>
-								Set headcount budgets for your pods to start tracking capacity
-								across states and offices.
-							</EmptyDescription>
-						</EmptyHeader>
-						{hasWriteAccess && (
-							<Button
-								size="sm"
-								onClick={() => {
-									setAddPodDefaults(null);
-									setAddPodOpen(true);
-								}}
-							>
-								<HugeiconsIcon icon={PlusSignIcon} className="mr-1 size-3.5" />
-								Add your first pod
-							</Button>
-						)}
-					</Empty>
-				) : (
-					<div className="space-y-4">
-						<BudgetSummary
+			<div className="flex-1 overflow-auto px-6 pb-6">
+				<DataTable
+					table={table}
+					fixedLayout
+					renderGroupCells={renderGroupCells}
+					footer={
+						<PodBudgetsTotalsFooter
 							totalBudget={totalBudget}
-							totalActual={totalSalary}
+							totalSalary={totalSalary}
 						/>
-						{groups.map((group) => (
-							<StateSection
-								key={group.state}
-								group={group}
-								canWriteAccess={hasWriteAccess}
-								onSelectPod={setSelectedPod}
-								onAddPod={handleAddPod}
-							/>
-						))}
-					</div>
-				)}
+					}
+				/>
 			</div>
 
-			{/* Add Pod Dialog */}
 			<AddPodDialog
 				key={`${addPodDefaults?.state}-${addPodDefaults?.office}`}
 				open={addPodOpen}
@@ -246,7 +317,6 @@ export function PodBudgetsTab({ fy: _fy }: { fy?: string }) {
 				defaultOffice={addPodDefaults?.office}
 			/>
 
-			{/* Pod Staff Sheet */}
 			<PodStaffSheet
 				selectedPod={selectedPod}
 				onClose={() => setSelectedPod(null)}
