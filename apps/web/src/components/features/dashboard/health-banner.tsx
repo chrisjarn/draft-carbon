@@ -11,25 +11,32 @@ interface ZonePillProps {
 	variant: "green" | "amber" | "red";
 }
 
-const zonePillClasses: Record<
-	ZonePillProps["variant"],
-	string
-> = {
-	green: "bg-green-100 text-green-700 border-green-200",
-	amber: "bg-yellow-100 text-yellow-700 border-yellow-200",
-	red: "bg-red-100 text-red-700 border-red-200",
+const dotClass: Record<ZonePillProps["variant"], string> = {
+	green: "bg-emerald-500",
+	amber: "bg-amber-500",
+	red: "bg-red-500",
+};
+
+const valueClass: Record<ZonePillProps["variant"], string> = {
+	green: "text-emerald-700",
+	amber: "text-amber-600",
+	red: "text-red-600",
 };
 
 function ZonePill({ label, states, variant }: ZonePillProps) {
 	return (
-		<div
-			className={cn(
-				"rounded-lg border px-3 py-2 flex items-center gap-2",
-				zonePillClasses[variant],
-			)}
-		>
-			<span className="font-medium text-xs uppercase">{label}</span>
-			<span className="text-sm tabular-nums">
+		<div className="flex items-center gap-2">
+			<span
+				className={cn("size-2 shrink-0 rounded-full", dotClass[variant])}
+				aria-hidden="true"
+			/>
+			<span className="text-text-soft-400 text-xs">{label}</span>
+			<span
+				className={cn(
+					"font-medium text-xs tabular-nums",
+					states.length > 0 ? valueClass[variant] : "text-text-soft-400",
+				)}
+			>
 				{states.length > 0 ? states.join(", ") : "—"}
 			</span>
 		</div>
@@ -87,37 +94,45 @@ export function HealthBanner({ data, loading }: HealthBannerProps) {
 	const overallPct =
 		totalTarget > 0 ? Math.round((totalActual / totalTarget) * 100) : 0;
 
+	const overallColorClass =
+		overallPct >= 90
+			? "text-emerald-600"
+			: overallPct >= 75
+				? "text-amber-600"
+				: "text-red-600";
+
 	const nonGreenCount = redStates.length + amberStates.length;
 	const plural = nonGreenCount === 1 ? "" : "s";
-	const summaryText = `Overall business is tracking at ${overallPct}% — ${nonGreenCount} state${plural} need attention.`;
-
-	// Determine worst zone for background tint
-	const worstZone =
-		redStates.length > 0
-			? "red"
-			: amberStates.length > 0
-				? "amber"
-				: "green";
-	const stripBg =
-		worstZone === "red"
-			? "bg-red-50"
-			: worstZone === "amber"
-				? "bg-yellow-50"
-				: "bg-green-50";
+	const summaryText =
+		nonGreenCount === 0
+			? "All states on track."
+			: `${nonGreenCount} state${plural} need${nonGreenCount === 1 ? "s" : ""} attention.`;
 
 	return (
-		<div
-			className={cn(
-				"flex items-center justify-between gap-4 rounded-xl px-4 py-3",
-				stripBg,
-			)}
-		>
-			<div className="flex items-center gap-3">
+		<div className="flex items-center gap-5 rounded-xl border border-stroke-soft-200 bg-bg-white-0 px-5 py-3">
+			{/* Attainment % */}
+			<div className="flex shrink-0 items-baseline gap-1.5">
+				<span
+					className={cn(
+						"font-bold text-2xl tabular-nums leading-none",
+						overallColorClass,
+					)}
+				>
+					{overallPct}%
+				</span>
+				<span className="text-text-soft-400 text-xs">attainment</span>
+			</div>
+
+			<div className="h-8 w-px shrink-0 bg-stroke-soft-200" />
+
+			{/* Zone pills */}
+			<div className="flex flex-1 items-center gap-5">
 				<ZonePill label="On Track" states={greenStates} variant="green" />
 				<ZonePill label="Watch" states={amberStates} variant="amber" />
 				<ZonePill label="Shortfall" states={redStates} variant="red" />
 			</div>
-			<p className="text-sm italic text-text-soft-400 text-pretty">
+
+			<p className="hidden shrink-0 text-right text-text-soft-400 text-xs italic xl:block">
 				{summaryText}
 			</p>
 		</div>

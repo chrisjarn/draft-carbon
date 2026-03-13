@@ -107,7 +107,7 @@ export function SalaryBracketsPanel() {
 	return (
 		<Collapsible open={open} onOpenChange={setOpen}>
 			<CollapsibleTrigger className="flex w-full items-center justify-between rounded-sm px-1 py-1.5 hover:bg-bg-weak-50/30">
-				<h4 className="flex items-center gap-1.5 font-medium text-text-soft-400 text-sm">
+				<h4 className="flex items-center gap-1.5 font-medium text-sm text-text-soft-400">
 					Salary Brackets Reference
 				</h4>
 				<HugeiconsIcon
@@ -143,7 +143,7 @@ export function SalaryBracketsPanel() {
 						{brackets.map((bracket) => (
 							<TableRow key={`${activeTab}-${bracket.role}`}>
 								<TableCell className="text-sm">{bracket.role}</TableCell>
-								<TableCell className="text-center text-text-soft-400 text-sm tabular-nums">
+								<TableCell className="text-center text-sm text-text-soft-400 tabular-nums">
 									{bracket.level}
 								</TableCell>
 								<TableCell className="text-right text-sm tabular-nums">

@@ -20,6 +20,7 @@ import { Route as AppDashboardRouteImport } from './routes/_app/dashboard'
 import { Route as AppCarbonitesRouteImport } from './routes/_app/carbonites'
 import { Route as AppCapacityPlanRouteImport } from './routes/_app/capacity-plan'
 import { Route as AppAdminRouteImport } from './routes/_app/admin'
+import { Route as AppScenariosIdRouteImport } from './routes/_app/scenarios.$id'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -83,6 +84,13 @@ const AppAdminRoute = AppAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AppRoute,
 } as any).lazy(() => import('./routes/_app/admin.lazy').then((d) => d.Route))
+const AppScenariosIdRoute = AppScenariosIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AppScenariosRoute,
+} as any).lazy(() =>
+  import('./routes/_app/scenarios.$id.lazy').then((d) => d.Route),
+)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -93,8 +101,9 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AppDashboardRoute
   '/fy-planning': typeof AppFyPlanningRoute
   '/hiring': typeof AppHiringRoute
-  '/scenarios': typeof AppScenariosRoute
+  '/scenarios': typeof AppScenariosRouteWithChildren
   '/todos': typeof AppTodosRoute
+  '/scenarios/$id': typeof AppScenariosIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -105,8 +114,9 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AppDashboardRoute
   '/fy-planning': typeof AppFyPlanningRoute
   '/hiring': typeof AppHiringRoute
-  '/scenarios': typeof AppScenariosRoute
+  '/scenarios': typeof AppScenariosRouteWithChildren
   '/todos': typeof AppTodosRoute
+  '/scenarios/$id': typeof AppScenariosIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -119,8 +129,9 @@ export interface FileRoutesById {
   '/_app/dashboard': typeof AppDashboardRoute
   '/_app/fy-planning': typeof AppFyPlanningRoute
   '/_app/hiring': typeof AppHiringRoute
-  '/_app/scenarios': typeof AppScenariosRoute
+  '/_app/scenarios': typeof AppScenariosRouteWithChildren
   '/_app/todos': typeof AppTodosRoute
+  '/_app/scenarios/$id': typeof AppScenariosIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -135,6 +146,7 @@ export interface FileRouteTypes {
     | '/hiring'
     | '/scenarios'
     | '/todos'
+    | '/scenarios/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -147,6 +159,7 @@ export interface FileRouteTypes {
     | '/hiring'
     | '/scenarios'
     | '/todos'
+    | '/scenarios/$id'
   id:
     | '__root__'
     | '/'
@@ -160,6 +173,7 @@ export interface FileRouteTypes {
     | '/_app/hiring'
     | '/_app/scenarios'
     | '/_app/todos'
+    | '/_app/scenarios/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -247,8 +261,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdminRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/scenarios/$id': {
+      id: '/_app/scenarios/$id'
+      path: '/$id'
+      fullPath: '/scenarios/$id'
+      preLoaderRoute: typeof AppScenariosIdRouteImport
+      parentRoute: typeof AppScenariosRoute
+    }
   }
 }
+
+interface AppScenariosRouteChildren {
+  AppScenariosIdRoute: typeof AppScenariosIdRoute
+}
+
+const AppScenariosRouteChildren: AppScenariosRouteChildren = {
+  AppScenariosIdRoute: AppScenariosIdRoute,
+}
+
+const AppScenariosRouteWithChildren = AppScenariosRoute._addFileChildren(
+  AppScenariosRouteChildren,
+)
 
 interface AppRouteChildren {
   AppAdminRoute: typeof AppAdminRoute
@@ -257,7 +290,7 @@ interface AppRouteChildren {
   AppDashboardRoute: typeof AppDashboardRoute
   AppFyPlanningRoute: typeof AppFyPlanningRoute
   AppHiringRoute: typeof AppHiringRoute
-  AppScenariosRoute: typeof AppScenariosRoute
+  AppScenariosRoute: typeof AppScenariosRouteWithChildren
   AppTodosRoute: typeof AppTodosRoute
 }
 
@@ -268,7 +301,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppDashboardRoute: AppDashboardRoute,
   AppFyPlanningRoute: AppFyPlanningRoute,
   AppHiringRoute: AppHiringRoute,
-  AppScenariosRoute: AppScenariosRoute,
+  AppScenariosRoute: AppScenariosRouteWithChildren,
   AppTodosRoute: AppTodosRoute,
 }
 

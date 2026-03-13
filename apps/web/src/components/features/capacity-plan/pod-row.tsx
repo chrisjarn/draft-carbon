@@ -56,19 +56,68 @@ export function StatusBadge({
 export function CapacityBar({
 	actual,
 	budget,
+	projectedYearEnd,
 }: {
 	actual: number;
 	budget: number;
+	projectedYearEnd?: number;
 }) {
 	if (budget === 0)
 		return <div className="h-1.5 w-full rounded-full bg-bg-weak-50" />;
-	const pct = Math.min((actual / budget) * 100, 100);
+
 	const over = actual > budget;
+	const fillColor = over
+		? "bg-red-500"
+		: actual / budget >= 0.9
+			? "bg-amber-500"
+			: "bg-green-500";
+
+	const hasProjection =
+		projectedYearEnd != null && projectedYearEnd > actual;
+
+	if (!hasProjection) {
+		const spentPct = Math.min((actual / budget) * 100, 100);
+		return (
+			<div className="h-1.5 w-full overflow-hidden rounded-full bg-bg-weak-50">
+				<div
+					className={`h-full rounded-full transition-all ${fillColor}`}
+					style={{ width: `${spentPct}%` }}
+				/>
+			</div>
+		);
+	}
+
+	const proj = projectedYearEnd as number;
+	const trackMax = proj > budget ? proj : budget;
+	const spentPct = Math.min((actual / trackMax) * 100, 100);
+	const projEndPct = Math.min((proj / trackMax) * 100, 100);
+	const projWidth = projEndPct - spentPct;
+	const budgetMarkerPct = (budget / trackMax) * 100;
+
+	const projFillColor = over
+		? "bg-red-500/40"
+		: actual / budget >= 0.9
+			? "bg-amber-500/40"
+			: "bg-green-500/40";
+
 	return (
-		<div className="h-1.5 w-full overflow-hidden rounded-full bg-bg-weak-50">
+		<div className="relative h-1.5 w-full overflow-hidden rounded-full bg-bg-weak-50">
+			{/* Spent fill */}
 			<div
-				className={`h-full rounded-full transition-all ${over ? "bg-red-500" : pct >= 90 ? "bg-amber-500" : "bg-green-500"}`}
-				style={{ width: `${pct}%` }}
+				className={`absolute left-0 top-0 h-full ${fillColor}`}
+				style={{ width: `${spentPct}%` }}
+			/>
+			{/* Projected extension */}
+			{projWidth > 0 && (
+				<div
+					className={`absolute top-0 h-full ${projFillColor}`}
+					style={{ left: `${spentPct}%`, width: `${projWidth}%` }}
+				/>
+			)}
+			{/* Budget limit marker — always shown */}
+			<div
+				className="absolute top-0 h-full w-px border-l border-dashed border-text-soft-400/60"
+				style={{ left: `${budgetMarkerPct}%` }}
 			/>
 		</div>
 	);

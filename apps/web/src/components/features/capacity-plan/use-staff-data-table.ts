@@ -25,6 +25,14 @@ interface UseStaffDataTableOpts {
 	onQuickUpsert: (cbId: string, patch: Record<string, string>) => void;
 	onEdit: (staff: StaffWithMeta) => void;
 	canEdit: boolean;
+	attritionRiskMap?: Map<
+		string,
+		{
+			riskLevel: string;
+			score: number;
+			factors: { label: string; impact: number }[];
+		}
+	>;
 }
 
 export function useStaffDataTable({
@@ -32,6 +40,7 @@ export function useStaffDataTable({
 	onQuickUpsert,
 	onEdit,
 	canEdit,
+	attritionRiskMap,
 }: UseStaffDataTableOpts) {
 	const [sorting, setSorting] = useState<SortingState>([]);
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -47,6 +56,20 @@ export function useStaffDataTable({
 	const tagOptions = useMemo(() => buildTagOptions(data), [data]);
 	const promoOptions = useMemo(() => buildPromoOptions(data), [data]);
 
+	const stableRiskMap = useMemo(
+		() =>
+			attritionRiskMap ??
+			new Map<
+				string,
+				{
+					riskLevel: string;
+					score: number;
+					factors: { label: string; impact: number }[];
+				}
+			>(),
+		[attritionRiskMap],
+	);
+
 	const columns = useMemo(
 		() =>
 			getStaffTableColumns({
@@ -57,6 +80,7 @@ export function useStaffDataTable({
 				officeOptions,
 				tagOptions,
 				promoOptions,
+				attritionRiskMap: stableRiskMap,
 			}),
 		[
 			onQuickUpsert,
@@ -66,6 +90,7 @@ export function useStaffDataTable({
 			officeOptions,
 			tagOptions,
 			promoOptions,
+			stableRiskMap,
 		],
 	);
 

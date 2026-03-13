@@ -81,7 +81,7 @@ export function ScenarioKpiSection({
 									className="size-2.5 shrink-0 rounded-sm bg-emerald-500"
 									aria-hidden="true"
 								/>
-								<span className="text-text-soft-400 text-sm">Actual</span>
+								<span className="text-sm text-text-soft-400">Actual</span>
 							</div>
 							<span className="mt-0.5 block font-semibold text-xl tabular-nums">
 								{fmtDollar(revenueActual)}
@@ -93,7 +93,7 @@ export function ScenarioKpiSection({
 									className="size-2.5 shrink-0 rounded-sm bg-blue-500"
 									aria-hidden="true"
 								/>
-								<span className="text-text-soft-400 text-sm">Target</span>
+								<span className="text-sm text-text-soft-400">Target</span>
 							</div>
 							<span className="mt-0.5 block font-semibold text-xl tabular-nums">
 								{fmtDollar(revenueTarget)}

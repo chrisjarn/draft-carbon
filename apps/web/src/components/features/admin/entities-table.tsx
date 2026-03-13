@@ -46,11 +46,11 @@ export function EntitiesTable() {
 	return (
 		<>
 			{entitiesQuery.isPending ? (
-				<div className="flex h-40 items-center justify-center text-text-soft-400 text-sm">
+				<div className="flex h-40 items-center justify-center text-sm text-text-soft-400">
 					Loading…
 				</div>
 			) : entitiesData.length === 0 ? (
-				<div className="flex h-40 items-center justify-center text-text-soft-400 text-sm">
+				<div className="flex h-40 items-center justify-center text-sm text-text-soft-400">
 					No entities. Add one to get started.
 				</div>
 			) : (

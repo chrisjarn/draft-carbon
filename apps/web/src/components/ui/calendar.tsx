@@ -51,8 +51,7 @@ function Calendar({
 			"*:after:pointer-events-none *:after:absolute *:after:bottom-1 *:after:start-1/2 *:after:z-1 *:after:size-[3px] *:after:-translate-x-1/2 *:after:rounded-full *:after:bg-primary [&[data-selected]:not(.range-middle)>*]:after:bg-background [&[data-disabled]>*]:after:bg-foreground/30 *:after:transition-colors",
 		week_number:
 			"size-(--cell-size) p-0 text-xs font-medium text-text-soft-400/70",
-		weekday:
-			"size-(--cell-size) p-0 text-xs font-medium text-text-soft-400/70",
+		weekday: "size-(--cell-size) p-0 text-xs font-medium text-text-soft-400/70",
 	};
 	const mergedClassNames: typeof defaultClassNames = Object.keys(
 		defaultClassNames,

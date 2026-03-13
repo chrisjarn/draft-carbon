@@ -18,7 +18,7 @@ const Checkbox = React.forwardRef<
 		<CheckboxPrimitive.Root
 			ref={ref}
 			className={cn(
-				"group relative inline-flex size-4.5 shrink-0 items-center justify-center rounded-[.25rem] border border-stroke-soft-200 bg-bg-white-0 shadow-xs/5 outline-none transition-shadow data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600 data-[state=indeterminate]:bg-green-600 data-[state=indeterminate]:border-green-600 focus-visible:ring-2 focus-visible:ring-green-600/20 focus-visible:ring-offset-1 aria-invalid:border-destructive/36 data-[disabled]:pointer-events-none data-[disabled]:opacity-64 sm:size-4",
+				"group relative inline-flex size-4.5 shrink-0 items-center justify-center rounded-[.25rem] border border-stroke-soft-200 bg-bg-white-0 shadow-xs/5 outline-none transition-shadow focus-visible:ring-2 focus-visible:ring-green-600/20 focus-visible:ring-offset-1 aria-invalid:border-destructive/36 data-[disabled]:pointer-events-none data-[state=checked]:border-green-600 data-[state=indeterminate]:border-green-600 data-[state=checked]:bg-green-600 data-[state=indeterminate]:bg-green-600 data-[disabled]:opacity-64 sm:size-4",
 				className,
 			)}
 			data-slot="checkbox"
@@ -31,7 +31,7 @@ const Checkbox = React.forwardRef<
 			>
 				{/* Dash icon — shown when indeterminate */}
 				<svg
-					className="size-3.5 sm:size-3 hidden group-data-[state=indeterminate]:block"
+					className="hidden size-3.5 group-data-[state=indeterminate]:block sm:size-3"
 					fill="none"
 					height="24"
 					stroke="currentColor"
@@ -46,7 +46,7 @@ const Checkbox = React.forwardRef<
 				</svg>
 				{/* Check icon — shown when checked */}
 				<svg
-					className="size-3.5 sm:size-3 block group-data-[state=indeterminate]:hidden"
+					className="block size-3.5 group-data-[state=indeterminate]:hidden sm:size-3"
 					fill="none"
 					height="24"
 					stroke="currentColor"

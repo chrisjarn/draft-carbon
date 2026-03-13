@@ -299,6 +299,7 @@ export const dashboardRouter = router({
 					id: entities.id,
 					biz: entities.biz,
 					state: entities.state,
+					sl: entities.sl,
 				})
 				.from(entities)
 				.where(entWhere);
@@ -336,6 +337,7 @@ export const dashboardRouter = router({
 						id: ent.id,
 						biz: ent.biz,
 						state: ent.state,
+						sl: (ent.sl ?? []) as string[],
 						target: rev.target,
 						actual: rev.actual,
 						pct,

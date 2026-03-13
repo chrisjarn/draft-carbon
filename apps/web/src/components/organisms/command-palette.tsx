@@ -111,7 +111,7 @@ export function CommandPalette() {
 			title="Command Palette"
 			description="Search or jump to..."
 			showCloseButton={false}
-			className="top-[40%] max-w-[560px] overflow-hidden rounded-lg border /60 shadow-lg supports-backdrop-filter:backdrop-blur-sm md:left-[calc(50%+8rem)]"
+			className="/60 top-[40%] max-w-[560px] overflow-hidden rounded-lg border shadow-lg supports-backdrop-filter:backdrop-blur-sm md:left-[calc(50%+8rem)]"
 		>
 			<Command shouldFilter={!shouldSearch} loop>
 				<CommandInput
@@ -225,7 +225,7 @@ export function SearchBarTrigger({ className }: { className?: string }) {
 					}),
 				);
 			}}
-			className={`group inline-flex h-10 w-full max-w-sm items-center gap-2.5 rounded-full bg-zinc-100 px-3.5 font-medium text-text-soft-400 text-sm transition-colors hover:bg-zinc-200/70 ${className ?? ""}`}
+			className={`group inline-flex h-10 w-full max-w-sm items-center gap-2.5 rounded-full bg-zinc-100 px-3.5 font-medium text-sm text-text-soft-400 transition-colors hover:bg-zinc-200/70 ${className ?? ""}`}
 		>
 			<HugeiconsIcon
 				icon={Search01Icon}
@@ -234,7 +234,7 @@ export function SearchBarTrigger({ className }: { className?: string }) {
 			<span className="flex-1 text-left text-sm opacity-60">
 				Search or jump to...
 			</span>
-			<kbd className="pointer-events-none hidden h-5 select-none items-center gap-0.5 rounded border /60 bg-bg-white-0 px-1.5 font-medium font-mono text-[11px] text-text-soft-400/70 sm:inline-flex">
+			<kbd className="/60 pointer-events-none hidden h-5 select-none items-center gap-0.5 rounded border bg-bg-white-0 px-1.5 font-medium font-mono text-[11px] text-text-soft-400/70 sm:inline-flex">
 				<span className="text-xs">⌘</span>K
 			</kbd>
 		</button>

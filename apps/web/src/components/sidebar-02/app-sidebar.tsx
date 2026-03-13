@@ -133,7 +133,9 @@ export function AppSidebar({
 						type="button"
 						onClick={toggle}
 						className="hidden size-7 shrink-0 items-center justify-center rounded-md text-text-soft-400 transition-colors hover:bg-bg-weak-50 md:flex"
-						aria-label={effectiveCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+						aria-label={
+							effectiveCollapsed ? "Expand sidebar" : "Collapse sidebar"
+						}
 					>
 						<HugeiconsIcon icon={SidebarLeft01Icon} className="size-4" />
 					</button>
@@ -177,7 +179,6 @@ export function AppSidebar({
 							<NavMain items={visibleAdmin} isCollapsed={effectiveCollapsed} />
 						</>
 					)}
-
 
 					{/* Recent views — hidden in collapsed mode */}
 					{!effectiveCollapsed && recentViews.length > 0 && (

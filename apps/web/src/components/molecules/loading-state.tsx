@@ -17,7 +17,7 @@ export function LoadingState({ children, className }: LoadingStateProps) {
 	return (
 		<div
 			className={cn(
-				"flex h-40 items-center justify-center text-text-soft-400 text-sm",
+				"flex h-40 items-center justify-center text-sm text-text-soft-400",
 				className,
 			)}
 		>

@@ -14,7 +14,7 @@ const Card = React.forwardRef<
 	<div
 		ref={ref}
 		className={cn(
-			"relative flex flex-col rounded-20 shadow-custom-input bg-bg-white-0 not-dark:bg-clip-padding text-card-foreground",
+			"relative flex flex-col rounded-20 bg-bg-white-0 not-dark:bg-clip-padding text-card-foreground shadow-custom-input",
 			size === "sm" && "rounded-xl",
 			flushFooter && "[&>[data-slot=card-footer]]:p-0",
 			className,
@@ -77,7 +77,7 @@ const CardFrameDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
 	<div
 		ref={ref}
-		className={cn("text-text-soft-400 text-sm", className)}
+		className={cn("text-sm text-text-soft-400", className)}
 		data-slot="card-frame-description"
 		{...props}
 	/>
@@ -148,7 +148,7 @@ const CardDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
 	<div
 		ref={ref}
-		className={cn("text-text-soft-400 text-sm", className)}
+		className={cn("text-sm text-text-soft-400", className)}
 		data-slot="card-description"
 		{...props}
 	/>

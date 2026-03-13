@@ -42,6 +42,7 @@ import {
 	SL_COLOR_MAP,
 	STATES,
 } from "@/lib/constants";
+import { cn } from "@/lib/utils";
 import { trpc } from "@/utils/trpc";
 
 /* ─── Route definition ─────────────────────────────────────────────────── */
@@ -238,39 +239,72 @@ function DashboardPage() {
 					<DashboardEmptyState onRetry={handleRetry} />
 				) : (
 					<div className="flex flex-col gap-5">
-						<div className="flex items-center justify-between rounded-20 bg-zinc-900 px-8 py-6">
-							<div className="flex flex-col gap-1">
-								<h2 className="font-semibold text-xl text-white text-balance">
-									Carbonite Workforce Overview
-								</h2>
-								<p className="text-white/50 text-sm text-pretty">
-									{activeFy} &middot; {bannerStats.states} States &middot;{" "}
-									{bannerStats.offices} Offices &middot;{" "}
-									{bannerStats.serviceLines} Service Lines
-								</p>
+						<div className="overflow-hidden rounded-20 bg-zinc-900">
+							<div className="flex items-center justify-between px-7 py-5">
+								{/* Hero stat */}
+								<div className="flex flex-col gap-2">
+									<p className="text-[11px] font-medium text-white/30">
+										{activeFy} &middot; Carbon Group
+									</p>
+									<div className="flex items-baseline gap-2.5">
+										<span className="font-bold text-5xl text-white leading-none tabular-nums">
+											{bannerStats.carbonites}
+										</span>
+										<span className="font-medium text-lg text-white/40 leading-none">
+											Carbonites
+										</span>
+									</div>
+								</div>
+
+								{/* Supporting stats */}
+								<div className="flex items-center gap-6">
+									<div className="flex flex-col items-end gap-0.5">
+										<span className="font-semibold text-2xl text-white leading-none tabular-nums">
+											{bannerStats.offices}
+										</span>
+										<span className="text-[10px] font-medium text-white/30">
+											Offices
+										</span>
+									</div>
+									<div className="h-8 w-px bg-white/10" />
+									<div className="flex flex-col items-end gap-0.5">
+										<span className="font-semibold text-2xl text-white leading-none tabular-nums">
+											{bannerStats.states}
+										</span>
+										<span className="text-[10px] font-medium text-white/30">
+											States
+										</span>
+									</div>
+									<div className="h-8 w-px bg-white/10" />
+									<div className="flex flex-col items-end gap-0.5">
+										<span className="font-semibold text-2xl text-white leading-none tabular-nums">
+											{bannerStats.serviceLines}
+										</span>
+										<span className="text-[10px] font-medium text-white/30">
+											Svc Lines
+										</span>
+									</div>
+								</div>
 							</div>
-							<div className="flex items-center gap-8">
-								<div className="flex flex-col items-center gap-1">
-									<span className="font-semibold text-2xl text-white tabular-nums">
-										{bannerStats.carbonites}
-									</span>
-									<span className="text-white/50 text-xs">Carbonites</span>
+
+							{/* Revenue attainment indicator bar */}
+							{(filteredStats?.revenuePct ?? 0) > 0 && (
+								<div className="h-[3px] w-full bg-white/5">
+									<div
+										className={cn(
+											"h-full transition-all duration-500",
+											(filteredStats?.revenuePct ?? 0) >= 90
+												? "bg-emerald-500"
+												: (filteredStats?.revenuePct ?? 0) >= 75
+													? "bg-amber-500"
+													: "bg-red-500",
+										)}
+										style={{
+											width: `${Math.min(filteredStats?.revenuePct ?? 0, 100)}%`,
+										}}
+									/>
 								</div>
-								<div className="h-10 w-px bg-white/20" />
-								<div className="flex flex-col items-center gap-1">
-									<span className="font-semibold text-2xl text-white tabular-nums">
-										{bannerStats.offices}
-									</span>
-									<span className="text-white/50 text-xs">Offices</span>
-								</div>
-								<div className="h-10 w-px bg-white/20" />
-								<div className="flex flex-col items-center gap-1">
-									<span className="font-semibold text-2xl text-white tabular-nums">
-										{bannerStats.serviceLines}
-									</span>
-									<span className="text-white/50 text-xs">Service Lines</span>
-								</div>
-							</div>
+							)}
 						</div>
 						<HealthBanner
 							data={filteredRevenue}

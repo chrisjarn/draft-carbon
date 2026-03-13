@@ -40,11 +40,11 @@ export function KpiCard({
 	return (
 		<div
 			className={cn(
-				"relative w-full overflow-hidden bg-bg-white-0 shadow-custom-input rounded-20 p-5 hover:bg-bg-weak-50 hover:shadow-none transition-all duration-200 text-left",
+				"relative w-full overflow-hidden rounded-20 bg-bg-white-0 p-5 text-left shadow-custom-input transition-all duration-200 hover:bg-bg-weak-50 hover:shadow-none",
 				className,
 			)}
 		>
-			<dt className="font-medium text-text-soft-400 text-xs uppercase">
+			<dt className="font-medium text-text-soft-400 text-xs uppercase tracking-widest">
 				{title}
 			</dt>
 			{loading ? (
@@ -52,7 +52,7 @@ export function KpiCard({
 			) : (
 				<dd
 					className={cn(
-						"mt-2 font-semibold text-2xl tabular-nums tracking-tight",
+						"mt-2 font-semibold text-2xl tabular-nums tracking-tight text-text-strong-950",
 						valueClass,
 					)}
 				>
@@ -60,7 +60,9 @@ export function KpiCard({
 				</dd>
 			)}
 			{children && (
-				<div className="mt-4 border-t border-stroke-soft-200/60 pt-3">{children}</div>
+				<div className="mt-4 border-stroke-soft-200/60 border-t pt-3">
+					{children}
+				</div>
 			)}
 		</div>
 	);

@@ -14,7 +14,7 @@ export function CarboniteCard({
 		<button
 			type="button"
 			onClick={onClick}
-			className="flex items-start gap-3 rounded-lg border  bg-bg-white-0 p-3 text-left transition-colors hover:bg-bg-weak-50/40"
+			className="flex items-start gap-3 rounded-lg border bg-bg-white-0 p-3 text-left transition-colors hover:bg-bg-weak-50/40"
 		>
 			<div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-green-600 font-bold text-primary-foreground text-xs">
 				{initials(carbonite.name)}

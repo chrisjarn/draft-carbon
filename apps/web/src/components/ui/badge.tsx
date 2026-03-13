@@ -23,11 +23,10 @@ const badgeVariants = cva(
 					"bg-bg-surface-800 text-text-white-0 [button&,a&]:hover:bg-bg-surface-800/90",
 				destructive:
 					"bg-error-light text-error-dark [button&,a&]:hover:bg-error-light/90",
-				error:
-					"bg-error-light text-error-dark",
+				error: "bg-error-light text-error-dark",
 				info: "bg-information-light text-information-dark",
 				outline:
-					"ring-1 ring-stroke-soft-200 text-text-sub-600 bg-bg-white-0 [button&,a&]:hover:bg-bg-weak-50",
+					"bg-bg-white-0 text-text-sub-600 ring-1 ring-stroke-soft-200 [button&,a&]:hover:bg-bg-weak-50",
 				secondary:
 					"bg-bg-weak-50 text-text-sub-600 [button&,a&]:hover:bg-bg-weak-50/90",
 				success: "bg-success-light text-success-dark",

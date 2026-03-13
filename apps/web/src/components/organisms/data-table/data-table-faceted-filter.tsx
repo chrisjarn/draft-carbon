@@ -77,7 +77,7 @@ export function DataTableFacetedFilter<TData, TValue>({
 
 	return (
 		<Popover onOpenChange={setOpen} open={open}>
-			<PopoverTrigger className="inline-flex h-8 items-center justify-center gap-1.5 rounded-md bg-bg-white-0 px-2.5 font-medium text-sm  transition-colors hover:bg-bg-weak-50 hover:text-text-sub-600">
+			<PopoverTrigger className="inline-flex h-8 items-center justify-center gap-1.5 rounded-md bg-bg-white-0 px-2.5 font-medium text-sm transition-colors hover:bg-bg-weak-50 hover:text-text-sub-600">
 				{selectedValues.size > 0 ? (
 					<button
 						type="button"

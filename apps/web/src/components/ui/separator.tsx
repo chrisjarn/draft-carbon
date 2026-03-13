@@ -1,4 +1,4 @@
-import * as React from "react";
+import type * as React from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -17,9 +17,7 @@ function Separator({
 			aria-orientation={decorative ? undefined : orientation}
 			className={cn(
 				"shrink-0 bg-stroke-soft-200",
-				orientation === "horizontal"
-					? "h-px w-full"
-					: "w-px self-stretch",
+				orientation === "horizontal" ? "h-px w-full" : "w-px self-stretch",
 				className,
 			)}
 			data-slot="separator"

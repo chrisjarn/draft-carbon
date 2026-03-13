@@ -136,7 +136,7 @@ export function SalaryBenchmarksSection({
 	return (
 		<Collapsible open={open} onOpenChange={setOpen}>
 			<CollapsibleTrigger className="flex w-full items-center justify-between rounded-sm px-1 py-1.5 hover:bg-bg-weak-50/30">
-				<h4 className="flex items-center gap-1.5 font-medium text-text-soft-400 text-sm">
+				<h4 className="flex items-center gap-1.5 font-medium text-sm text-text-soft-400">
 					<HugeiconsIcon icon={ChartLineData02Icon} className="size-3.5" />
 					Salary Benchmarks
 					<Badge variant="outline" size="sm" className="ml-1">
@@ -151,11 +151,11 @@ export function SalaryBenchmarksSection({
 
 			<CollapsiblePanel>
 				{bracketsQuery.isPending ? (
-					<p className="py-4 text-center text-text-soft-400 text-sm">
+					<p className="py-4 text-center text-sm text-text-soft-400">
 						Loading benchmarks...
 					</p>
 				) : brackets.length === 0 ? (
-					<p className="py-4 text-center text-text-soft-400 text-sm">
+					<p className="py-4 text-center text-sm text-text-soft-400">
 						No benchmark data available for this entity&apos;s service lines
 					</p>
 				) : (
@@ -184,7 +184,7 @@ export function SalaryBenchmarksSection({
 										<TableCell className="text-sm">
 											{slLabel(bracket.sl)}
 										</TableCell>
-										<TableCell className="text-text-soft-400 text-sm">
+										<TableCell className="text-sm text-text-soft-400">
 											{bracket.role}
 										</TableCell>
 										<TableCell className="text-right text-sm tabular-nums">

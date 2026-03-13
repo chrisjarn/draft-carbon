@@ -69,7 +69,7 @@ export function HiringDetailSheet({
 										{role.role}
 									</SheetTitle>
 								</div>
-								<span className="shrink-0 font-semibold text-text-strong-950 text-sm tabular-nums">
+								<span className="shrink-0 font-semibold text-sm text-text-strong-950 tabular-nums">
 									{salaryRange(role.salaryMin, role.salaryMax)}
 								</span>
 							</div>

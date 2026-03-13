@@ -188,6 +188,8 @@ export interface AutoDetectedRisk {
 	riskLevel: "high" | "medium";
 	reason: string;
 	impact: string;
+	score: number;
+	factors: { label: string; impact: number }[];
 }
 
 /**
@@ -196,6 +198,12 @@ export interface AutoDetectedRisk {
  * Thresholds (from legacy app):
  * - **High**: isPartner OR (seniority >= 7 AND salary >= $120,000)
  * - **Medium**: (seniority >= 5 AND salary >= $95,000) OR salary >= $120,000
+ *
+ * Score factors:
+ * - Key person / partner: +3
+ * - Senior staff (7+ years): +2
+ * - High salary — counteroffers likely (>= $120k): +2
+ * - Mid-senior + competitive salary (seniority >= 5, salary >= $95k): +1
  */
 export function detectAttritionRisks(
 	candidates: AttritionCandidate[],
@@ -211,27 +219,42 @@ export function detectAttritionRisks(
 		const midSeniorMidSalary = seniority >= 5 && salary >= 95_000;
 		const highSalary = salary >= 120_000;
 
+		// Determine risk level (unchanged thresholds)
+		let riskLevel: "high" | "medium" | null = null;
 		if (isPartner || highSeniorHighSalary) {
-			risks.push({
-				carboniteId: cb.id,
-				name: cb.name,
-				riskLevel: "high",
-				reason: isPartner
-					? "Key person / partner dependency"
-					: "Senior staff — high market demand",
-				impact: "Critical",
-			});
+			riskLevel = "high";
 		} else if (midSeniorMidSalary || highSalary) {
-			risks.push({
-				carboniteId: cb.id,
-				name: cb.name,
-				riskLevel: "medium",
-				reason: highSalary
-					? "Above-market salary — counteroffers likely"
-					: "Mid-senior staff — competitive market",
-				impact: "Significant",
-			});
+			riskLevel = "medium";
 		}
+		if (!riskLevel) continue;
+
+		// Compute contributing factors and numeric score
+		const factors: { label: string; impact: number }[] = [];
+		if (isPartner) factors.push({ label: "Key person / partner", impact: 3 });
+		if (seniority >= 7)
+			factors.push({ label: "Senior staff (7+ years)", impact: 2 });
+		if (salary >= 120_000)
+			factors.push({ label: "High salary — counteroffers likely", impact: 2 });
+		if (seniority >= 5 && salary >= 95_000)
+			factors.push({ label: "Mid-senior + competitive salary", impact: 1 });
+		const score = factors.reduce((sum, f) => sum + f.impact, 0);
+
+		risks.push({
+			carboniteId: cb.id,
+			name: cb.name,
+			riskLevel,
+			reason:
+				isPartner
+					? "Key person / partner dependency"
+					: highSeniorHighSalary
+						? "Senior staff — high market demand"
+						: highSalary
+							? "Above-market salary — counteroffers likely"
+							: "Mid-senior staff — competitive market",
+			impact: riskLevel === "high" ? "Critical" : "Significant",
+			score,
+			factors,
+		});
 	}
 
 	return risks;

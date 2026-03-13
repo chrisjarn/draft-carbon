@@ -2,6 +2,7 @@ import {
 	ArrowDown01Icon,
 	ArrowUp01Icon,
 	Delete02Icon,
+	PencilEdit01Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useMemo } from "react";
@@ -30,6 +31,8 @@ export type ScenarioRole = {
 	sl: string | null;
 	salary: number;
 	count: number;
+	employmentType?: string | null;
+	startMonth?: string | null;
 };
 
 export type ScenarioData = {
@@ -216,6 +219,7 @@ export function ScenarioCard({
 	billingMultiplier,
 	hasWriteAccess,
 	onDelete,
+	onEdit,
 }: {
 	scenario: ScenarioData;
 	basePayroll: number;
@@ -227,6 +231,7 @@ export function ScenarioCard({
 	billingMultiplier: string | null;
 	hasWriteAccess: boolean;
 	onDelete: () => void;
+	onEdit?: () => void;
 }) {
 	const impact = useMemo(
 		() =>
@@ -288,16 +293,23 @@ export function ScenarioCard({
 			<CardHeader className="pb-2 pl-4">
 				<div className="flex items-center justify-between">
 					<CardTitle className="text-base">{sc.name}</CardTitle>
-					{hasWriteAccess && (
-						<Button
-							variant="ghost"
-							size="icon-xs"
-							className="text-red-400 hover:text-red-300"
-							onClick={onDelete}
-						>
-							<HugeiconsIcon icon={Delete02Icon} className="size-3" />
-						</Button>
-					)}
+					<div className="flex items-center gap-1">
+						{onEdit && (
+							<Button variant="ghost" size="icon-xs" onClick={onEdit}>
+								<HugeiconsIcon icon={PencilEdit01Icon} className="size-3" />
+							</Button>
+						)}
+						{hasWriteAccess && (
+							<Button
+								variant="ghost"
+								size="icon-xs"
+								className="text-red-400 hover:text-red-300"
+								onClick={onDelete}
+							>
+								<HugeiconsIcon icon={Delete02Icon} className="size-3" />
+							</Button>
+						)}
+					</div>
 				</div>
 				{sc.description && (
 					<p className="text-text-soft-400 text-xs">{sc.description}</p>
@@ -306,9 +318,9 @@ export function ScenarioCard({
 
 			<CardContent className="space-y-3 pl-4">
 				{/* Split-Panel Comparison */}
-				<div className="rounded-md border ">
+				<div className="rounded-md border">
 					{/* Column Headers */}
-					<div className="grid grid-cols-2 gap-4  border-b bg-bg-weak-50/30 px-3 py-1.5">
+					<div className="grid grid-cols-2 gap-4 border-b bg-bg-weak-50/30 px-3 py-1.5">
 						<span className="font-medium text-text-soft-400 text-xs uppercase tracking-wider">
 							Current State
 						</span>
@@ -351,7 +363,7 @@ export function ScenarioCard({
 					</div>
 
 					{/* CategoryBar comparison */}
-					<div className="grid grid-cols-2 gap-4  border-t px-3 py-2.5">
+					<div className="grid grid-cols-2 gap-4 border-t px-3 py-2.5">
 						<div>
 							<CategoryBar
 								values={currentBarValues}
@@ -416,7 +428,7 @@ export function ScenarioCard({
 							{sc.roles.map((role) => (
 								<TableRow key={role.id}>
 									<TableCell className="text-sm">{role.roleTitle}</TableCell>
-									<TableCell className="text-text-soft-400 text-sm">
+									<TableCell className="text-sm text-text-soft-400">
 										{role.sl || "\u2014"}
 									</TableCell>
 									<TableCell className="text-right text-sm tabular-nums">

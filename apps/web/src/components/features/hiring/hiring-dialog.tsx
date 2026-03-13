@@ -160,7 +160,7 @@ export function HiringDrawer({
 					<SheetTitle className="text-lg">
 						{isEdit ? "Edit Role" : "Log a Hiring Role"}
 					</SheetTitle>
-					<p className="text-text-soft-400 text-sm">
+					<p className="text-sm text-text-soft-400">
 						{page === 1
 							? "Role information & classification"
 							: "Compensation & additional details"}

@@ -1,8 +1,11 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { useMemo } from "react";
-import { slLabel, stateName } from "@/components/features/carbonites/types";
+import { stateName } from "@/components/features/carbonites/types";
 import { DataTableColumnHeader } from "@/components/organisms/data-table/data-table-column-header";
 import { Badge } from "@/components/ui/badge";
+import { SERVICE_LINES, SL_COLOR_MAP, STATE_COLOR_MAP } from "@/lib/constants";
+import { fmtK } from "@/lib/format";
+import { cn } from "@/lib/utils";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -33,56 +36,160 @@ export type HiringNeed = {
 
 export type TabStatus = "open" | "active" | "offer" | "closed";
 
-// ── Badge helpers ─────────────────────────────────────────────────────────────
+// ── Service Line badge ────────────────────────────────────────────────────────
+
+export function SlBadge({ sl }: { sl: string | null }) {
+	if (!sl)
+		return <span className="text-text-soft-400 text-sm tabular-nums">—</span>;
+	const meta = SERVICE_LINES.find((s) => s.id === sl);
+	const color = SL_COLOR_MAP[sl] ?? "#888";
+	return (
+		<span className="inline-flex items-center gap-1.5">
+			<span
+				className="size-2 shrink-0 rounded-full"
+				style={{ backgroundColor: color }}
+				aria-hidden="true"
+			/>
+			<span className="text-sm font-medium">{meta?.short ?? sl}</span>
+		</span>
+	);
+}
+
+// ── State badge ───────────────────────────────────────────────────────────────
+
+export function HiringStateBadge({ state }: { state: string | null }) {
+	if (!state)
+		return <span className="text-text-soft-400 text-sm tabular-nums">—</span>;
+	const color = STATE_COLOR_MAP[state];
+	return (
+		<Badge
+			variant="outline"
+			size="sm"
+			className="font-medium uppercase"
+			style={color ? { borderColor: color, color } : undefined}
+		>
+			{state.toUpperCase()}
+		</Badge>
+	);
+}
+
+// ── Priority badge ────────────────────────────────────────────────────────────
 
 export const PRIORITY_STYLES: Record<string, string> = {
-	critical: "border-red-500/40 bg-red-500/10 text-red-400",
-	urgent: "border-red-500/40 bg-red-500/10 text-red-400",
-	high: "border-orange-500/40 bg-orange-500/10 text-orange-400",
-	medium: "border-yellow-500/40 bg-yellow-500/10 text-yellow-400",
-	low: " bg-bg-weak-50/40 text-text-soft-400",
-	planned: " bg-bg-weak-50/40 text-text-soft-400",
+	critical: "border-red-200 bg-red-50 text-red-700",
+	urgent: "border-red-200 bg-red-50 text-red-700",
+	high: "border-orange-200 bg-orange-50 text-orange-700",
+	medium: "border-yellow-200 bg-yellow-50 text-yellow-700",
+	low: "border-stroke-soft-200 bg-bg-weak-50 text-text-soft-400",
+	planned: "border-stroke-soft-200 bg-bg-weak-50 text-text-soft-400",
 };
 
 export function PriorityBadge({ priority }: { priority: string | null }) {
-	const cls = PRIORITY_STYLES[priority ?? "low"] ?? PRIORITY_STYLES.low;
+	const key = (priority ?? "low").toLowerCase();
+	const cls = PRIORITY_STYLES[key] ?? PRIORITY_STYLES.low;
 	return (
-		<Badge variant="outline" size="sm" className={`capitalize ${cls}`}>
-			{priority ?? "\u2014"}
+		<Badge variant="outline" size="sm" className={cn("capitalize", cls)}>
+			{priority ?? "—"}
 		</Badge>
 	);
 }
+
+// ── Type badge ────────────────────────────────────────────────────────────────
+
+const TYPE_LABELS: Record<string, string> = {
+	FT: "Full Time",
+	PT: "Part Time",
+	Contract: "Contract",
+};
+
+const TYPE_STYLES: Record<string, string> = {
+	FT: "border-stroke-soft-200 bg-bg-weak-50 text-text-soft-400",
+	PT: "border-violet-200 bg-violet-50 text-violet-700",
+	Contract: "border-amber-200 bg-amber-50 text-amber-700",
+};
 
 export function TypeBadge({ type }: { type: string | null }) {
+	if (!type) return null;
+	const cls = TYPE_STYLES[type] ?? TYPE_STYLES.FT;
 	return (
-		<Badge variant="outline" size="sm">
-			{type ?? "\u2014"}
+		<Badge variant="outline" size="sm" className={cls}>
+			{TYPE_LABELS[type] ?? type}
 		</Badge>
 	);
 }
 
+// ── Status badge ──────────────────────────────────────────────────────────────
+
 export const STATUS_STYLES: Record<string, string> = {
-	open: "border-sky-500/40 bg-sky-500/10 text-sky-400",
-	active: "border-blue-500/40 bg-blue-500/10 text-blue-400",
-	offer: "border-violet-500/40 bg-violet-500/10 text-violet-400",
-	closed: " bg-bg-weak-50/40 text-text-soft-400",
+	open: "border-sky-200 bg-sky-50 text-sky-700",
+	active: "border-blue-200 bg-blue-50 text-blue-700",
+	offer: "border-violet-200 bg-violet-50 text-violet-700",
+	closed: "border-stroke-soft-200 bg-bg-weak-50 text-text-soft-400",
 };
 
 export function HiringStatusBadge({ status }: { status: string | null }) {
-	const cls = STATUS_STYLES[status ?? "open"] ?? STATUS_STYLES.open;
+	const key = (status ?? "open").toLowerCase();
+	const cls = STATUS_STYLES[key] ?? STATUS_STYLES.open;
 	return (
-		<Badge variant="outline" size="sm" className={`capitalize ${cls}`}>
+		<Badge variant="outline" size="sm" className={cn("capitalize", cls)}>
 			{status ?? "open"}
 		</Badge>
 	);
 }
 
+// ── Closed How badge ──────────────────────────────────────────────────────────
+
+const CLOSED_HOW_STYLES: Record<string, string> = {
+	hired: "bg-success-light text-success-dark border-0",
+	cancelled: "bg-error-light text-error-dark border-0",
+	deferred: "bg-warning-light text-warning-dark border-0",
+};
+
+const CLOSED_HOW_LABELS: Record<string, string> = {
+	hired: "Hired",
+	cancelled: "Cancelled",
+	deferred: "Deferred",
+};
+
+function ClosedHowBadge({ closedHow }: { closedHow: string | null }) {
+	if (!closedHow) return <span className="text-text-soft-400 text-sm">—</span>;
+	const key = closedHow.toLowerCase();
+	const cls = CLOSED_HOW_STYLES[key];
+	const label = CLOSED_HOW_LABELS[key] ?? closedHow;
+	if (!cls) {
+		return (
+			<Badge variant="outline" size="sm" className="capitalize">
+				{label}
+			</Badge>
+		);
+	}
+	return (
+		<Badge size="sm" className={cn("capitalize", cls)}>
+			{label}
+		</Badge>
+	);
+}
+
+// ── Salary helpers ─────────────────────────────────────────────────────────────
+
 export function salaryRange(min: number | null, max: number | null) {
-	if (!min && !max) return "\u2014";
+	if (!min && !max) return null;
 	const fmt = (n: number) => `$${Math.round(n / 1000)}k`;
-	if (min && max) return `${fmt(min)} \u2013 ${fmt(max)}`;
+	if (min && max) return `${fmt(min)} – ${fmt(max)}`;
 	if (min) return `from ${fmt(min)}`;
-	return max ? `up to ${fmt(max)}` : "\u2014";
+	return max ? `up to ${fmt(max)}` : null;
+}
+
+// ── Target start formatter ────────────────────────────────────────────────────
+
+function formatTargetStart(dateStr: string | null): string | null {
+	if (!dateStr) return null;
+	try {
+		const d = new Date(dateStr);
+		return d.toLocaleDateString("en-AU", { month: "short", year: "numeric" });
+	} catch {
+		return dateStr;
+	}
 }
 
 // ── Days open helpers ─────────────────────────────────────────────────────────
@@ -101,8 +208,8 @@ export function daysOpen(
 export const EXPECTED_DAYS = 42;
 
 export function daysOpenColor(days: number): string {
-	if (days > EXPECTED_DAYS) return "text-red-500";
-	if (days > EXPECTED_DAYS * 0.75) return "text-amber-500";
+	if (days > EXPECTED_DAYS) return "text-red-600";
+	if (days > EXPECTED_DAYS * 0.75) return "text-amber-600";
 	return "text-text-soft-400";
 }
 
@@ -154,7 +261,10 @@ export function useHiringStats(rows: HiringNeed[], tab: TabStatus) {
 
 // ── Column definitions ────────────────────────────────────────────────────────
 
-export function useHiringColumns(tab: TabStatus) {
+export function useHiringColumns(
+	tab: TabStatus,
+	revenueGapByStateSl: Map<string, number> = new Map(),
+) {
 	return useMemo<ColumnDef<HiringNeed, unknown>[]>(() => {
 		const base: ColumnDef<HiringNeed, unknown>[] = [
 			{
@@ -165,19 +275,25 @@ export function useHiringColumns(tab: TabStatus) {
 				),
 				cell: ({ row }) => {
 					const positions = row.original.positions ?? 1;
+					const type = row.original.type;
 					return (
-						<span className="font-medium text-sm">
-							{row.getValue("role")}
-							{positions > 1 && (
-								<Badge
-									variant="secondary"
-									size="sm"
-									className="ml-1.5 tabular-nums"
-								>
-									&times;{positions}
-								</Badge>
+						<div className="flex flex-col gap-0.5">
+							<span className="font-medium text-sm">
+								{row.getValue("role")}
+								{positions > 1 && (
+									<Badge
+										variant="secondary"
+										size="sm"
+										className="ml-1.5 tabular-nums"
+									>
+										&times;{positions}
+									</Badge>
+								)}
+							</span>
+							{type && (
+								<TypeBadge type={type} />
 							)}
-						</span>
+						</div>
 					);
 				},
 			},
@@ -187,12 +303,9 @@ export function useHiringColumns(tab: TabStatus) {
 				header: ({ column }) => (
 					<DataTableColumnHeader column={column} title="Service Line" />
 				),
-				cell: ({ row }) => {
-					const val = row.getValue("sl") as string | null | undefined;
-					return (
-						<span className="text-sm">{val ? slLabel(val) : "\u2014"}</span>
-					);
-				},
+				cell: ({ row }) => (
+					<SlBadge sl={row.getValue("sl") as string | null} />
+				),
 			},
 			{
 				accessorKey: "state",
@@ -200,12 +313,9 @@ export function useHiringColumns(tab: TabStatus) {
 				header: ({ column }) => (
 					<DataTableColumnHeader column={column} title="State" />
 				),
-				cell: ({ row }) => {
-					const val = row.getValue("state") as string | null | undefined;
-					return (
-						<span className="text-sm">{val ? stateName(val) : "\u2014"}</span>
-					);
-				},
+				cell: ({ row }) => (
+					<HiringStateBadge state={row.getValue("state") as string | null} />
+				),
 			},
 			{
 				accessorKey: "priority",
@@ -223,21 +333,54 @@ export function useHiringColumns(tab: TabStatus) {
 				header: ({ column }) => (
 					<DataTableColumnHeader column={column} title="Target Start" />
 				),
-				cell: ({ row }) => (
-					<span className="text-sm">
-						{(row.getValue("targetStart") as string) ?? "\u2014"}
-					</span>
-				),
+				cell: ({ row }) => {
+					const formatted = formatTargetStart(
+						row.getValue("targetStart") as string | null,
+					);
+					return (
+						<span className="text-sm tabular-nums">
+							{formatted ?? (
+								<span className="text-text-soft-400">—</span>
+							)}
+						</span>
+					);
+				},
 			},
 			{
 				id: "salary",
 				enableSorting: false,
 				header: "Salary",
-				cell: ({ row }) => (
-					<span className="text-sm">
-						{salaryRange(row.original.salaryMin, row.original.salaryMax)}
-					</span>
-				),
+				cell: ({ row }) => {
+					const range = salaryRange(
+						row.original.salaryMin,
+						row.original.salaryMax,
+					);
+					return range ? (
+						<span className="text-sm tabular-nums">{range}</span>
+					) : (
+						<span className="text-text-soft-400 text-sm">—</span>
+					);
+				},
+			},
+			{
+				id: "gapSolved",
+				enableSorting: false,
+				header: "Gap Solved",
+				cell: ({ row }) => {
+					const state = row.original.state ?? "";
+					const sl = row.original.sl ?? "";
+					const key = `${state}|${sl}`;
+					const fallbackKey = `${state}|`;
+					const gap =
+						revenueGapByStateSl.get(key) ??
+						revenueGapByStateSl.get(fallbackKey);
+					if (!gap || gap <= 0) return null;
+					return (
+						<span className="text-text-soft-400 text-xs tabular-nums">
+							~${fmtK(gap)} {stateName(state)} shortfall
+						</span>
+					);
+				},
 			},
 		];
 
@@ -246,12 +389,12 @@ export function useHiringColumns(tab: TabStatus) {
 				accessorKey: "closedHow",
 				enableSorting: true,
 				header: ({ column }) => (
-					<DataTableColumnHeader column={column} title="Closed How" />
+					<DataTableColumnHeader column={column} title="Outcome" />
 				),
 				cell: ({ row }) => (
-					<Badge variant="outline" size="sm" className="capitalize">
-						{(row.getValue("closedHow") as string) ?? "\u2014"}
-					</Badge>
+					<ClosedHowBadge
+						closedHow={row.getValue("closedHow") as string | null}
+					/>
 				),
 			});
 		} else {
@@ -264,9 +407,21 @@ export function useHiringColumns(tab: TabStatus) {
 				accessorFn: (row) => daysOpen(row.createdAt),
 				cell: ({ row }) => {
 					const days = daysOpen(row.original.createdAt);
-					return (
+					const isOverdue = days > EXPECTED_DAYS;
+					return isOverdue ? (
+						<Badge
+							variant="outline"
+							size="sm"
+							className="border-red-200 bg-red-50 tabular-nums text-red-700"
+						>
+							{days}d
+						</Badge>
+					) : (
 						<span
-							className={`text-right text-sm tabular-nums ${daysOpenColor(days)}`}
+							className={cn(
+								"text-sm tabular-nums",
+								daysOpenColor(days),
+							)}
 						>
 							{days}d
 						</span>
@@ -276,5 +431,5 @@ export function useHiringColumns(tab: TabStatus) {
 		}
 
 		return base;
-	}, [tab]);
+	}, [tab, revenueGapByStateSl]);
 }

@@ -102,7 +102,7 @@ function TableCaption({
 	return (
 		<caption
 			className={cn(
-				"in-data-[slot=frame]:my-4 mt-4 text-text-soft-400 text-sm",
+				"in-data-[slot=frame]:my-4 mt-4 text-sm text-text-soft-400",
 				className,
 			)}
 			data-slot="table-caption"

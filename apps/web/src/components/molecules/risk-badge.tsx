@@ -7,7 +7,7 @@ const RISK_VARIANTS: Record<string, "error" | "warning" | "success"> = {
 };
 
 export function RiskBadge({ level }: { level: string | null }) {
-	if (!level) return <span className="text-text-soft-400 text-sm">—</span>;
+	if (!level) return <span className="text-sm text-text-soft-400">—</span>;
 	const variant = RISK_VARIANTS[level.toLowerCase()] ?? "secondary";
 	return (
 		<Badge variant={variant} size="sm" className="capitalize">

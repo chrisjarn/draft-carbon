@@ -150,10 +150,18 @@ function buildGroups(
 	return states;
 }
 
+// ── Elapsed FY months (Australian FY: July 1 – June 30) ──────────────────────
+
+function getElapsedFyMonths(): number {
+	const month = new Date().getMonth(); // 0-indexed: 0=Jan, 6=Jul
+	return month >= 6 ? month - 6 + 1 : month + 7;
+}
+
 // ── Flatten StateGroup[] → PodTableRow[] ─────────────────────────────────────
 
 function flattenToRows(groups: StateGroup[]): PodTableRow[] {
 	const rows: PodTableRow[] = [];
+	const elapsed = getElapsedFyMonths();
 	for (const sg of groups) {
 		for (const og of sg.offices) {
 			for (const pod of og.pods) {
@@ -168,6 +176,10 @@ function flattenToRows(groups: StateGroup[]): PodTableRow[] {
 					dominantSl: pod.dominantSl,
 					variance: pod.budget - pod.totalSalary,
 					utilisation: pod.budget > 0 ? pod.totalSalary / pod.budget : 0,
+					projectedYearEnd:
+						elapsed > 0
+							? (pod.totalSalary / elapsed) * 12
+							: pod.totalSalary,
 				});
 			}
 		}
@@ -296,7 +308,7 @@ export function PodBudgetsTab({ fy: _fy }: { fy?: string }) {
 
 	if (isLoading) {
 		return (
-			<div className="flex h-40 items-center justify-center text-text-soft-400 text-sm">
+			<div className="flex h-40 items-center justify-center text-sm text-text-soft-400">
 				Loading...
 			</div>
 		);

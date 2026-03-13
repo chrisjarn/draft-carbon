@@ -82,7 +82,7 @@ export function EntityPlanningSettingsDialog({
 
 	return (
 		<AppDialog open={open} onOpenChange={onOpenChange}>
-			<AppDialogContent size="sm">
+			<AppDialogContent size="md">
 				<AppDialogHeader>
 					<AppDialogTitle className="text-base">
 						Entity Planning Settings
@@ -96,7 +96,7 @@ export function EntityPlanningSettingsDialog({
 						form.handleSubmit();
 					}}
 				>
-					<FormGrid>
+					<FormGrid className="px-6 pb-2">
 						<form.Field
 							name="multiplier"
 							validators={{ onSubmit: multiplierSchema }}

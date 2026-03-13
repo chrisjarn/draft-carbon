@@ -69,7 +69,7 @@ export function AppTopBar() {
 				{breadcrumbLabel && (
 					<>
 						<div className="h-4 w-px bg-stroke-soft-200" />
-						<span className="font-medium text-text-strong-950 text-sm">
+						<span className="font-medium text-sm text-text-strong-950">
 							{breadcrumbLabel}
 						</span>
 					</>

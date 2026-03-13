@@ -155,7 +155,7 @@ export function PodStaffSheet({
 									staff
 								</SheetDescription>
 							</SheetHeader>
-							<div className="flex items-center gap-6 border-b border-stroke-soft-200 px-4 py-3">
+							<div className="flex items-center gap-6 border-stroke-soft-200 border-b px-4 py-3">
 								<div className="flex flex-col gap-0.5">
 									<span className="text-[11px] text-text-soft-400">
 										Headcount
@@ -219,7 +219,7 @@ export function PodStaffSheet({
 							{podStaff.length > 0 && (
 								<SheetFooter>
 									<div className="flex items-center justify-between">
-										<span className="font-medium text-text-soft-400 text-sm">
+										<span className="font-medium text-sm text-text-soft-400">
 											Total Salary
 										</span>
 										<span className="font-semibold text-base tabular-nums">

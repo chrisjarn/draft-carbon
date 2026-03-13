@@ -53,7 +53,9 @@ export function PageHeader({
 	return (
 		<div className="bg-bg-white-0 px-6 py-4">
 			{constrain ? (
-				<div className={`mx-auto flex w-full items-center justify-between ${constrain}`}>
+				<div
+					className={`mx-auto flex w-full items-center justify-between ${constrain}`}
+				>
 					{inner}
 				</div>
 			) : (

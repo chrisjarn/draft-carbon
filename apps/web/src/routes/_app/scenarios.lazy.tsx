@@ -1,16 +1,30 @@
-import { FlowSquareIcon, PlusSignIcon } from "@hugeicons/core-free-icons";
+import {
+	ArrowDataTransferHorizontalIcon,
+	Copy02Icon,
+	FlowSquareIcon,
+	PlusSignIcon,
+} from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { NewScenarioWizard } from "@/components/features/scenarios/new-scenario-wizard";
-import { ScenarioCard } from "@/components/features/scenarios/scenario-card";
+import {
+	DeltaBadge,
+	ScenarioCard,
+	calcScenarioImpact,
+} from "@/components/features/scenarios/scenario-card";
+import type {
+	ScenarioData,
+	ScenarioImpact,
+} from "@/components/features/scenarios/scenario-card";
 import { ScenarioFilters } from "@/components/features/scenarios/scenario-filters";
 import { PageHeader } from "@/components/organisms/page-header";
 import { PageStatsBar } from "@/components/organisms/page-stats-bar";
 import { Page, PageBody, PageToolbar } from "@/components/templates/page";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
 	Empty,
@@ -19,6 +33,14 @@ import {
 	EmptyMedia,
 	EmptyTitle,
 } from "@/components/ui/empty";
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from "@/components/ui/table";
 import { authClient } from "@/lib/auth-client";
 import { fmtDollar } from "@/lib/format";
 import { canWrite, getUserRole } from "@/lib/rbac";
@@ -37,6 +59,13 @@ function ScenariosPage() {
 	const hasWriteAccess = canWrite(userRole);
 
 	const [wizardOpen, setWizardOpen] = useState(false);
+	const [compareOpen, setCompareOpen] = useState(false);
+
+	// Auto-reset compareOpen when entity changes
+	// biome-ignore lint/correctness/useExhaustiveDependencies: intentionally reset on entity change only
+	useEffect(() => {
+		setCompareOpen(false);
+	}, [entity]);
 
 	// ── Entities ────────────────────────────────────────────────────────────
 	const entitiesQuery = useQuery(trpc.entities.getAll.queryOptions());
@@ -80,6 +109,7 @@ function ScenariosPage() {
 	const revenueTarget = Number(detail?.revenue?.target ?? 0);
 	const revenueActual = Number(detail?.revenue?.actual ?? 0);
 	const billingMultiplier = detail?.settings?.billingMultiplier ?? null;
+	const baseHeadcount = detail?.staff?.length ?? 0;
 
 	// ── Scenarios ───────────────────────────────────────────────────────────
 	const { data: scenarioList } = useQuery({
@@ -105,6 +135,58 @@ function ScenariosPage() {
 
 	const scenarios = scenarioList ?? [];
 
+	// Auto-reset compareOpen when scenario count drops below 2
+	useEffect(() => {
+		if (compareOpen && scenarios.length < 2) {
+			setCompareOpen(false);
+		}
+	}, [scenarios.length, compareOpen]);
+
+	// ── Scenario impacts ────────────────────────────────────────────────────
+	const scenarioImpacts = useMemo(
+		() =>
+			scenarios.map((scenario) => ({
+				scenario,
+				impact: calcScenarioImpact(
+					scenario.roles,
+					basePayroll,
+					baseBillingCapacity,
+					revenueTarget,
+					revenueActual,
+					billingMultiplier,
+				),
+			})),
+		[
+			scenarios,
+			basePayroll,
+			baseBillingCapacity,
+			revenueTarget,
+			revenueActual,
+			billingMultiplier,
+		],
+	);
+
+	const recommendedId = useMemo(() => {
+		if (scenarioImpacts.length === 0) return null;
+		const closedGap = scenarioImpacts.filter(
+			({ impact }) => impact.revisedRevGap <= 0,
+		);
+		if (closedGap.length > 0) {
+			// Primary: smallest absolute gap (closest to zero), tie-break: highest billing multiple
+			return closedGap.reduce((best, curr) => {
+				const bestAbs = Math.abs(best.impact.revisedRevGap);
+				const currAbs = Math.abs(curr.impact.revisedRevGap);
+				if (currAbs !== bestAbs) return currAbs < bestAbs ? curr : best;
+				return curr.impact.revisedMultiple > best.impact.revisedMultiple
+					? curr
+					: best;
+			}).scenario.id;
+		}
+		return scenarioImpacts.reduce((best, curr) =>
+			curr.impact.revisedRevGap < best.impact.revisedRevGap ? curr : best,
+		).scenario.id;
+	}, [scenarioImpacts]);
+
 	return (
 		<Page>
 			<PageHeader>
@@ -117,13 +199,30 @@ function ScenariosPage() {
 			</PageHeader>
 
 			<PageToolbar>
-				<ScenarioFilters
-					entity={entity}
-					fy={fy}
-					entities={entitiesList}
-					onEntityChange={setEntity}
-					onFyChange={setFy}
-				/>
+				<div>
+					<ScenarioFilters
+						entity={entity}
+						fy={fy}
+						entities={entitiesList}
+						onEntityChange={setEntity}
+						onFyChange={setFy}
+					/>
+				</div>
+				{scenarios.length >= 2 && !!entity && (
+					<div className="flex items-center gap-2">
+						<Button
+							variant="outline"
+							size="sm"
+							onClick={() => setCompareOpen((v) => !v)}
+						>
+							<HugeiconsIcon
+								icon={ArrowDataTransferHorizontalIcon}
+								className="mr-1.5 size-3.5"
+							/>
+							{compareOpen ? "Close Comparison" : "Compare"}
+						</Button>
+					</div>
+				)}
 			</PageToolbar>
 
 			{!!entity && (
@@ -192,6 +291,17 @@ function ScenariosPage() {
 									</Button>
 								)}
 							</Empty>
+						) : compareOpen && scenarios.length >= 2 ? (
+							<ScenarioComparisonTable
+								scenarios={scenarios}
+								impacts={scenarioImpacts.map(({ impact }) => impact)}
+								basePayroll={basePayroll}
+								baseBillingCapacity={baseBillingCapacity}
+								baseMultiple={baseMultiple}
+								baseRevGap={baseRevGap}
+								baseHeadcount={baseHeadcount}
+								recommendedId={recommendedId}
+							/>
 						) : (
 							<div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
 								{scenarios.map((sc) => (
@@ -207,6 +317,12 @@ function ScenariosPage() {
 										billingMultiplier={billingMultiplier}
 										hasWriteAccess={hasWriteAccess}
 										onDelete={() => deleteScenario.mutate({ id: sc.id })}
+										onEdit={() =>
+											void navigate({
+												to: "/scenarios/$id",
+												params: { id: sc.id },
+											})
+										}
 									/>
 								))}
 							</div>
@@ -228,5 +344,278 @@ function ScenariosPage() {
 				}))}
 			/>
 		</Page>
+	);
+}
+
+// ── Scenario Comparison Table ────────────────────────────────────────────────
+
+function fmtMultiple(v: number): string {
+	return `${v.toFixed(2)}\u00D7`;
+}
+
+const PLAN_LABELS = ["Plan A", "Plan B", "Plan C"] as const;
+
+function ScenarioComparisonTable({
+	scenarios,
+	impacts,
+	basePayroll,
+	baseBillingCapacity,
+	baseMultiple,
+	baseRevGap,
+	baseHeadcount,
+	recommendedId,
+}: {
+	scenarios: ScenarioData[];
+	impacts: ScenarioImpact[];
+	basePayroll: number;
+	baseBillingCapacity: number;
+	baseMultiple: number;
+	baseRevGap: number;
+	baseHeadcount: number;
+	recommendedId: string | null;
+}) {
+	// Fixed 4-column layout: Current State + Plan A + Plan B + Plan C
+	const slots = PLAN_LABELS.map((label, i) => ({
+		label,
+		scenario: scenarios[i] ?? null,
+		impact: impacts[i] ?? null,
+	}));
+
+	function handleCopy() {
+		const pad = (s: string, n: number) => s.padEnd(n);
+		const colW = 20;
+		const labelW = 18;
+
+		const header = [
+			pad("", labelW),
+			pad("Current State", colW),
+			...slots.map(({ label }) => pad(label, colW)),
+		].join("  ");
+
+		const separator = "-".repeat(labelW + 2 + colW + 2 + 3 * (colW + 2));
+
+		const rows = [
+			[
+				pad("Headcount", labelW),
+				pad(String(baseHeadcount), colW),
+				...slots.map(({ impact }) =>
+					pad(impact ? String(baseHeadcount + impact.headcount) : "—", colW),
+				),
+			].join("  "),
+			[
+				pad("Annual Payroll", labelW),
+				pad(fmtDollar(basePayroll), colW),
+				...slots.map(({ impact }) =>
+					pad(impact ? fmtDollar(impact.revisedPayroll) : "—", colW),
+				),
+			].join("  "),
+			[
+				pad("Billing Capacity", labelW),
+				pad(fmtDollar(baseBillingCapacity), colW),
+				...slots.map(({ impact }) =>
+					pad(impact ? fmtDollar(impact.revisedBillingCap) : "—", colW),
+				),
+			].join("  "),
+			[
+				pad("Revenue Gap", labelW),
+				pad(fmtDollar(baseRevGap), colW),
+				...slots.map(({ impact }) =>
+					pad(impact ? fmtDollar(impact.revisedRevGap) : "—", colW),
+				),
+			].join("  "),
+			[
+				pad("Billing Multiple", labelW),
+				pad(fmtMultiple(baseMultiple), colW),
+				...slots.map(({ impact }) =>
+					pad(impact ? fmtMultiple(impact.revisedMultiple) : "—", colW),
+				),
+			].join("  "),
+		];
+
+		const text = [header, separator, ...rows].join("\n");
+
+		navigator.clipboard.writeText(text).then(
+			() => toast.success("Copied to clipboard"),
+			() => toast.error("Failed to copy"),
+		);
+	}
+
+	return (
+		<div>
+			<div className="mb-4 flex items-center justify-between">
+				<span className="font-medium text-sm">Scenario Comparison</span>
+				<Button variant="outline" size="sm" onClick={handleCopy}>
+					<HugeiconsIcon icon={Copy02Icon} className="mr-1.5 size-3.5" />
+					Copy
+				</Button>
+			</div>
+
+			<div className="overflow-x-auto rounded-md border">
+				<Table>
+					<TableHeader>
+						<TableRow>
+							<TableHead className="w-36 min-w-36">Metric</TableHead>
+							<TableHead className="text-text-soft-400">
+								Current State
+							</TableHead>
+							{slots.map(({ label, scenario }) => {
+								const isRec = !!scenario && scenario.id === recommendedId;
+								return (
+									<TableHead
+										key={label}
+										className={
+											isRec
+												? "ring-1 ring-inset ring-blue-500 rounded-md"
+												: undefined
+										}
+									>
+										<div className="flex flex-col gap-1">
+											<span className="font-medium">{label}</span>
+											{scenario && (
+												<span className="text-text-soft-400 text-xs font-normal truncate max-w-32">
+													{scenario.name}
+												</span>
+											)}
+											{isRec && (
+												<Badge variant="info" size="sm" className="w-fit">
+													Recommended
+												</Badge>
+											)}
+										</div>
+									</TableHead>
+								);
+							})}
+						</TableRow>
+					</TableHeader>
+					<TableBody>
+						{/* Headcount */}
+						<TableRow>
+							<TableCell className="text-text-soft-400 text-xs font-medium">
+								Headcount
+							</TableCell>
+							<TableCell className="tabular-nums text-text-soft-400">
+								{baseHeadcount}
+							</TableCell>
+							{slots.map(({ label, impact }) => (
+								<TableCell key={label} className="tabular-nums">
+									{impact ? (
+										<div className="flex flex-col gap-1">
+											<span>{baseHeadcount + impact.headcount}</span>
+											<DeltaBadge
+												value={impact.headcount}
+												formatter={(v) => `+${v}`}
+											/>
+										</div>
+									) : (
+										<span className="text-text-soft-400">—</span>
+									)}
+								</TableCell>
+							))}
+						</TableRow>
+
+						{/* Annual Payroll */}
+						<TableRow>
+							<TableCell className="text-text-soft-400 text-xs font-medium">
+								Annual Payroll
+							</TableCell>
+							<TableCell className="tabular-nums text-text-soft-400">
+								{fmtDollar(basePayroll)}
+							</TableCell>
+							{slots.map(({ label, impact }) => (
+								<TableCell key={label} className="tabular-nums">
+									{impact ? (
+										<div className="flex flex-col gap-1">
+											<span>{fmtDollar(impact.revisedPayroll)}</span>
+											<DeltaBadge
+												value={impact.deltaPayroll}
+												formatter={fmtDollar}
+											/>
+										</div>
+									) : (
+										<span className="text-text-soft-400">—</span>
+									)}
+								</TableCell>
+							))}
+						</TableRow>
+
+						{/* Billing Capacity */}
+						<TableRow>
+							<TableCell className="text-text-soft-400 text-xs font-medium">
+								Billing Capacity
+							</TableCell>
+							<TableCell className="tabular-nums text-text-soft-400">
+								{fmtDollar(baseBillingCapacity)}
+							</TableCell>
+							{slots.map(({ label, impact }) => (
+								<TableCell key={label} className="tabular-nums">
+									{impact ? (
+										<div className="flex flex-col gap-1">
+											<span>{fmtDollar(impact.revisedBillingCap)}</span>
+											<DeltaBadge
+												value={impact.deltaBilling}
+												formatter={fmtDollar}
+											/>
+										</div>
+									) : (
+										<span className="text-text-soft-400">—</span>
+									)}
+								</TableCell>
+							))}
+						</TableRow>
+
+						{/* Revenue Gap */}
+						<TableRow>
+							<TableCell className="text-text-soft-400 text-xs font-medium">
+								Revenue Gap
+							</TableCell>
+							<TableCell className="tabular-nums text-text-soft-400">
+								{fmtDollar(baseRevGap)}
+							</TableCell>
+							{slots.map(({ label, impact }) => (
+								<TableCell key={label} className="tabular-nums">
+									{impact ? (
+										<div className="flex flex-col gap-1">
+											<span>{fmtDollar(impact.revisedRevGap)}</span>
+											<DeltaBadge
+												value={impact.deltaRevGap}
+												formatter={fmtDollar}
+												invertColor
+											/>
+										</div>
+									) : (
+										<span className="text-text-soft-400">—</span>
+									)}
+								</TableCell>
+							))}
+						</TableRow>
+
+						{/* Billing Multiple */}
+						<TableRow>
+							<TableCell className="text-text-soft-400 text-xs font-medium">
+								Billing Multiple
+							</TableCell>
+							<TableCell className="tabular-nums text-text-soft-400">
+								{fmtMultiple(baseMultiple)}
+							</TableCell>
+							{slots.map(({ label, impact }) => (
+								<TableCell key={label} className="tabular-nums">
+									{impact ? (
+										<div className="flex flex-col gap-1">
+											<span>{fmtMultiple(impact.revisedMultiple)}</span>
+											<DeltaBadge
+												value={impact.deltaMultiple}
+												formatter={(v) => v.toFixed(2)}
+											/>
+										</div>
+									) : (
+										<span className="text-text-soft-400">—</span>
+									)}
+								</TableCell>
+							))}
+						</TableRow>
+					</TableBody>
+				</Table>
+			</div>
+		</div>
 	);
 }

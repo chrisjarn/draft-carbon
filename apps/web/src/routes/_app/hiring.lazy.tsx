@@ -11,7 +11,7 @@ import {
 	type SortingState,
 	useReactTable,
 } from "@tanstack/react-table";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import {
 	CloseRoleDialog,
@@ -71,6 +71,7 @@ function HiringPage() {
 
 	const query = useQuery(trpc.hiring.getAll.queryOptions({ status: tab }));
 	const allQuery = useQuery(trpc.hiring.getAll.queryOptions({ status: "all" }));
+	const revenueQuery = useQuery(trpc.dashboard.revenueByEntity.queryOptions());
 	const rows = query.data ?? [];
 	const allRows = allQuery.data ?? [];
 	const counts = {
@@ -147,10 +148,31 @@ function HiringPage() {
 		else createMut.mutate(payload);
 	}
 
+	const revenueGapByStateSl = useMemo(() => {
+		const map = new Map<string, number>();
+		for (const e of revenueQuery.data ?? []) {
+			if (!e.state) continue;
+			const gap = (e.target ?? 0) - (e.actual ?? 0);
+			if (gap <= 0) continue;
+			const slList = (e.sl ?? []) as string[];
+			if (slList.length === 0) {
+				// No SL tags — aggregate into a state-only key for fallback
+				const key = `${e.state}|`;
+				map.set(key, (map.get(key) ?? 0) + gap);
+			} else {
+				for (const sl of slList) {
+					const key = `${e.state}|${sl}`;
+					map.set(key, (map.get(key) ?? 0) + gap);
+				}
+			}
+		}
+		return map;
+	}, [revenueQuery.data]);
+
 	const [sorting, setSorting] = useState<SortingState>([]);
 	const [globalFilter, setGlobalFilter] = useState("");
 	const hiringStats = useHiringStats(rows, tab);
-	const columns = useHiringColumns(tab);
+	const columns = useHiringColumns(tab, revenueGapByStateSl);
 	const table = useReactTable({
 		data: rows,
 		columns,
@@ -270,7 +292,7 @@ function HiringPage() {
 
 			<PageBody>
 				{query.isPending ? (
-					<div className="flex h-40 items-center justify-center text-text-soft-400 text-sm">
+					<div className="flex h-40 items-center justify-center text-sm text-text-soft-400">
 						Loading\u2026
 					</div>
 				) : rows.length === 0 ? (

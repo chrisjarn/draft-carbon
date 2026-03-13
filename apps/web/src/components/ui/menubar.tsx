@@ -209,7 +209,7 @@ function MenubarShortcut({
 		<DropdownMenuShortcut
 			data-slot="menubar-shortcut"
 			className={cn(
-				"ml-auto text-text-soft-400 text-sm tracking-widest group-focus/menubar-item:text-accent-foreground",
+				"ml-auto text-sm text-text-soft-400 tracking-widest group-focus/menubar-item:text-accent-foreground",
 				className,
 			)}
 			{...props}

@@ -7,7 +7,7 @@ import type * as React from "react";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-	"relative inline-flex shrink-0 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-lg border font-medium text-base outline-none transition-shadow before:pointer-events-none before:absolute before:inset-0 before:rounded-[calc(var(--radius-lg)-1px)] pointer-coarse:after:absolute pointer-coarse:after:size-full pointer-coarse:after:min-h-10 pointer-coarse:after:min-w-11 focus-visible:ring-2 focus-visible:shadow-button-important-focus focus-visible:ring-stroke-strong-950 focus-visible:ring-offset-1 disabled:pointer-events-none disabled:bg-bg-weak-50 disabled:text-text-disabled-300 sm:text-sm [&_svg:not([class*='opacity-'])]:opacity-80 [&_svg:not([class*='size-'])]:size-4.5 sm:[&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:-mx-0.5 [&_svg]:shrink-0",
+	"relative inline-flex shrink-0 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-lg border font-medium text-base outline-none transition-shadow before:pointer-events-none before:absolute before:inset-0 before:rounded-[calc(var(--radius-lg)-1px)] pointer-coarse:after:absolute pointer-coarse:after:size-full pointer-coarse:after:min-h-10 pointer-coarse:after:min-w-11 focus-visible:shadow-button-important-focus focus-visible:ring-2 focus-visible:ring-stroke-strong-950 focus-visible:ring-offset-1 disabled:pointer-events-none disabled:bg-bg-weak-50 disabled:text-text-disabled-300 sm:text-sm [&_svg:not([class*='opacity-'])]:opacity-80 [&_svg:not([class*='size-'])]:size-4.5 sm:[&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:-mx-0.5 [&_svg]:shrink-0",
 	{
 		defaultVariants: {
 			size: "default",
@@ -32,18 +32,16 @@ const buttonVariants = cva(
 			},
 			variant: {
 				default:
-					"bg-bg-surface-800 text-text-white-0 border-transparent hover:bg-stroke-strong-950 shadow-none",
-				destructive:
-					"bg-error-base text-text-white-0 border-transparent",
+					"border-transparent bg-bg-surface-800 text-text-white-0 shadow-none hover:bg-stroke-strong-950",
+				destructive: "border-transparent bg-error-base text-text-white-0",
 				"destructive-outline":
-					"ring-1 ring-inset ring-error-base border-transparent text-error-base hover:bg-error-light",
-				ghost:
-					"border-transparent text-text-sub-600 hover:bg-bg-weak-50",
-				link: "border-transparent underline-offset-4 hover:underline text-text-sub-600",
+					"border-transparent text-error-base ring-1 ring-error-base ring-inset hover:bg-error-light",
+				ghost: "border-transparent text-text-sub-600 hover:bg-bg-weak-50",
+				link: "border-transparent text-text-sub-600 underline-offset-4 hover:underline",
 				outline:
-					"ring-1 ring-inset ring-stroke-soft-200 border-transparent text-text-sub-600 hover:bg-bg-weak-50 bg-bg-white-0",
+					"border-transparent bg-bg-white-0 text-text-sub-600 ring-1 ring-stroke-soft-200 ring-inset hover:bg-bg-weak-50",
 				secondary:
-					"bg-bg-weak-50 text-text-sub-600 border-transparent hover:bg-bg-weak-50",
+					"border-transparent bg-bg-weak-50 text-text-sub-600 hover:bg-bg-weak-50",
 			},
 		},
 	},

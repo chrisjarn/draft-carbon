@@ -184,12 +184,9 @@ function StepDialogIndicator({ labels, className }: StepDialogIndicatorProps) {
 							<div
 								className={cn(
 									"flex size-7 items-center justify-center rounded-full border font-medium text-xs transition-colors",
-									isDone && "bg-green-600 border-green-600 text-white",
-									isActive &&
-										"border-green-600 bg-green-600 text-text-white-0",
-									!isDone &&
-										!isActive &&
-										" bg-bg-weak-50 text-text-soft-400",
+									isDone && "border-green-600 bg-green-600 text-white",
+									isActive && "border-green-600 bg-green-600 text-text-white-0",
+									!isDone && !isActive && "bg-bg-weak-50 text-text-soft-400",
 								)}
 							>
 								{isDone ? <HugeiconsIcon icon={Tick01Icon} size={12} /> : num}
@@ -211,7 +208,9 @@ function StepDialogIndicator({ labels, className }: StepDialogIndicatorProps) {
 							<div
 								className={cn(
 									"mx-2 mb-4 h-px flex-1 transition-colors",
-									isDone ? "bg-green-600 border-green-600" : "bg-stroke-soft-200",
+									isDone
+										? "border-green-600 bg-green-600"
+										: "bg-stroke-soft-200",
 								)}
 							/>
 						)}
@@ -299,7 +298,7 @@ function StepDialogFooter({
 		<div
 			data-slot="step-dialog-footer"
 			className={cn(
-				"flex items-center justify-between  border-t px-5 py-3",
+				"flex items-center justify-between border-t px-5 py-3",
 				className,
 			)}
 		>
@@ -312,7 +311,9 @@ function StepDialogFooter({
 					</Button>
 				) : (
 					<DialogClose asChild>
-						<Button variant="ghost" type="button">Cancel</Button>
+						<Button variant="ghost" type="button">
+							Cancel
+						</Button>
 					</DialogClose>
 				)}
 			</div>

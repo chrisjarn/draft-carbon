@@ -41,12 +41,12 @@ export function UserFooter({
 
 	return (
 		<DropdownMenu>
-			<DropdownMenuTrigger className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-sm hover:bg-bg-weak-50 transition-colors">
-				<span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-bg-weak-50 text-text-sub-600 font-semibold text-sm">
+			<DropdownMenuTrigger className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-sm transition-colors hover:bg-bg-weak-50">
+				<span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-bg-weak-50 font-semibold text-sm text-text-sub-600">
 					{initials}
 				</span>
 				{!isCollapsed && (
-					<div className="grid flex-1 text-left leading-tight overflow-hidden">
+					<div className="grid flex-1 overflow-hidden text-left leading-tight">
 						<span className="truncate font-semibold text-text-strong-950">
 							{name}
 						</span>
@@ -58,7 +58,7 @@ export function UserFooter({
 				{!isCollapsed && (
 					<HugeiconsIcon
 						icon={ArrowUpDownIcon}
-						className="size-4 text-text-soft-400 shrink-0"
+						className="size-4 shrink-0 text-text-soft-400"
 					/>
 				)}
 			</DropdownMenuTrigger>

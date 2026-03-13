@@ -49,7 +49,7 @@ export function InlineEditCell({
 	if (editing) {
 		return (
 			<div className="flex items-center gap-1">
-				<span className="text-text-soft-400 text-sm">{prefix}</span>
+				<span className="text-sm text-text-soft-400">{prefix}</span>
 				<Input
 					type="number"
 					value={val}

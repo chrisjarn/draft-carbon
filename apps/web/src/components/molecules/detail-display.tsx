@@ -24,7 +24,7 @@ export function DetailRow({
 }) {
 	return (
 		<div className="flex items-baseline justify-between gap-2">
-			<span className="text-text-soft-400 text-sm">{label}</span>
+			<span className="text-sm text-text-soft-400">{label}</span>
 			<span className="text-right font-medium text-sm">{value ?? "—"}</span>
 		</div>
 	);

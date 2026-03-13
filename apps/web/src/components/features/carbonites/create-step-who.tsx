@@ -125,9 +125,11 @@ export function CreateStepWho({ form }: { form: CreateForm }) {
 								)}
 							</form.Field>
 							{fte && (
-								<div className="pb-2 text-text-soft-400 text-sm">
+								<div className="pb-2 text-sm text-text-soft-400">
 									≈{" "}
-									<span className="font-medium text-text-strong-950">{fte} FTE</span>
+									<span className="font-medium text-text-strong-950">
+										{fte} FTE
+									</span>
 								</div>
 							)}
 						</div>

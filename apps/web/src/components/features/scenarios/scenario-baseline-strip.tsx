@@ -24,7 +24,7 @@ export function ScenarioBaselineStrip({
 	return (
 		<div
 			className={cn(
-				"flex items-center gap-6 rounded-md border  bg-bg-weak-50/20 px-4 py-2.5",
+				"flex items-center gap-6 rounded-md border bg-bg-weak-50/20 px-4 py-2.5",
 				className,
 			)}
 		>

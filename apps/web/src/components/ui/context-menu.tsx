@@ -81,7 +81,7 @@ function ContextMenuLabel({
 			data-slot="context-menu-label"
 			data-inset={inset}
 			className={cn(
-				"px-2 py-2 text-text-soft-400 text-sm data-inset:pl-7",
+				"px-2 py-2 text-sm text-text-soft-400 data-inset:pl-7",
 				className,
 			)}
 			{...props}
@@ -245,7 +245,7 @@ function ContextMenuShortcut({
 		<span
 			data-slot="context-menu-shortcut"
 			className={cn(
-				"ml-auto text-text-soft-400 text-sm tracking-widest group-focus/context-menu-item:text-accent-foreground",
+				"ml-auto text-sm text-text-soft-400 tracking-widest group-focus/context-menu-item:text-accent-foreground",
 				className,
 			)}
 			{...props}

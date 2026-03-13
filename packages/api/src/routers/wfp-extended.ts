@@ -130,33 +130,95 @@ export const wfpExtendedRouter = router({
 					),
 				);
 
-			return db
+			const risks = await db
 				.select()
 				.from(attritionRisks)
 				.where(inArray(attritionRisks.carboniteId, visibleStaffIds))
 				.orderBy(asc(attritionRisks.createdAt));
+
+			if (risks.length === 0) return [];
+
+			// Enrich with computed score + factors from carbonite fields
+			const carboniteIds = risks.map((r) => r.carboniteId);
+			const cbRows = await db
+				.select({
+					id: carbonites.id,
+					name: carbonites.name,
+					isPartner: carbonites.isPartner,
+					seniority: carbonites.seniority,
+					salary: carbonites.salary,
+				})
+				.from(carbonites)
+				.where(inArray(carbonites.id, carboniteIds));
+			const cbMap = new Map(cbRows.map((c) => [c.id, c]));
+
+			return risks.map((risk) => {
+				const cb = cbMap.get(risk.carboniteId);
+				if (!cb) return { ...risk, score: 0, factors: [] };
+				const detected = detectAttritionRisks([
+					{
+						id: cb.id,
+						name: cb.name ?? "Unknown",
+						isPartner: cb.isPartner ?? false,
+						seniority: cb.seniority,
+						salary: cb.salary,
+					},
+				]);
+				const { score, factors } = detected[0] ?? { score: 0, factors: [] };
+				return { ...risk, score, factors };
+			});
 		}),
 
 	getAllAttritionRisks: protectedProcedure.query(async ({ ctx }) => {
 		const rf = getRoleFilter(ctx.session.user);
 		const cbWhere = carboniteRoleWhere(rf);
-		// If no role filter, return all risks
-		if (!cbWhere) {
-			return db
-				.select()
-				.from(attritionRisks)
-				.orderBy(asc(attritionRisks.createdAt));
-		}
-		// SQL-level filter: subquery for visible carbonite IDs
-		const visibleStaffIds = db
-			.select({ id: carbonites.id })
+
+		// If no role filter, return all risks; otherwise filter to visible carbonites
+		const baseQuery = db.select().from(attritionRisks);
+		const risks = await (cbWhere
+			? baseQuery.where(
+					inArray(
+						attritionRisks.carboniteId,
+						db
+							.select({ id: carbonites.id })
+							.from(carbonites)
+							.where(and(eq(carbonites.isActive, true), cbWhere)),
+					),
+				)
+			: baseQuery
+		).orderBy(asc(attritionRisks.createdAt));
+
+		if (risks.length === 0) return [];
+
+		// Enrich with computed score + factors from carbonite fields
+		const carboniteIds = risks.map((r) => r.carboniteId);
+		const cbRows = await db
+			.select({
+				id: carbonites.id,
+				name: carbonites.name,
+				isPartner: carbonites.isPartner,
+				seniority: carbonites.seniority,
+				salary: carbonites.salary,
+			})
 			.from(carbonites)
-			.where(and(eq(carbonites.isActive, true), cbWhere));
-		return db
-			.select()
-			.from(attritionRisks)
-			.where(inArray(attritionRisks.carboniteId, visibleStaffIds))
-			.orderBy(asc(attritionRisks.createdAt));
+			.where(inArray(carbonites.id, carboniteIds));
+		const cbMap = new Map(cbRows.map((c) => [c.id, c]));
+
+		return risks.map((risk) => {
+			const cb = cbMap.get(risk.carboniteId);
+			if (!cb) return { ...risk, score: 0, factors: [] };
+			const detected = detectAttritionRisks([
+				{
+					id: cb.id,
+					name: cb.name ?? "Unknown",
+					isPartner: cb.isPartner ?? false,
+					seniority: cb.seniority,
+					salary: cb.salary,
+				},
+			]);
+			const { score, factors } = detected[0] ?? { score: 0, factors: [] };
+			return { ...risk, score, factors };
+		});
 	}),
 
 	createAttritionRisk: protectedProcedure
@@ -329,6 +391,7 @@ export const wfpExtendedRouter = router({
 				name: z.string().min(1),
 				description: z.string().optional(),
 				color: z.string().optional(),
+				status: z.enum(["draft", "active"]).optional(),
 				roles: z
 					.array(
 						z.object({
@@ -336,6 +399,8 @@ export const wfpExtendedRouter = router({
 							sl: z.string().optional(),
 							salary: z.number().int().min(0),
 							count: z.number().int().min(1),
+							employmentType: z.string().optional(),
+							startMonth: z.string().optional(),
 						}),
 					)
 					.optional(),
@@ -406,6 +471,99 @@ export const wfpExtendedRouter = router({
 			// scenario_roles FK has onDelete: cascade — no manual cleanup needed
 			await db.delete(scenarios).where(eq(scenarios.id, input.id));
 			return { deleted: input.id };
+		}),
+
+	getScenario: protectedProcedure
+		.input(z.object({ id: z.string() }))
+		.query(async ({ ctx, input }) => {
+			const [scen] = await db
+				.select()
+				.from(scenarios)
+				.where(eq(scenarios.id, input.id));
+			if (!scen) throw new TRPCError({ code: "NOT_FOUND" });
+			const [ent] = await db
+				.select()
+				.from(entities)
+				.where(eq(entities.id, scen.entityId));
+			if (ent) {
+				assertEntityScope(ctx.session.user, {
+					state: ent.state,
+					sl: ent.sl,
+				});
+			}
+			const roles = await db
+				.select()
+				.from(scenarioRoles)
+				.where(eq(scenarioRoles.scenarioId, input.id))
+				.orderBy(asc(scenarioRoles.roleTitle));
+			return { ...scen, roles };
+		}),
+
+	updateScenario: protectedProcedure
+		.input(
+			z.object({
+				id: z.string(),
+				name: z.string().min(1).optional(),
+				description: z.string().optional(),
+				color: z.string().optional(),
+				status: z.enum(["draft", "active"]).optional(),
+				roles: z
+					.array(
+						z.object({
+							roleTitle: z.string().min(1),
+							sl: z.string().optional(),
+							salary: z.number().int().min(0),
+							count: z.number().int().min(1),
+							employmentType: z.string().optional(),
+							startMonth: z.string().optional(),
+						}),
+					)
+					.optional(),
+			}),
+		)
+		.mutation(async ({ ctx, input }) => {
+			assertWriter(ctx.session.user);
+			const [scen] = await db
+				.select({ entityId: scenarios.entityId })
+				.from(scenarios)
+				.where(eq(scenarios.id, input.id));
+			if (!scen) throw new TRPCError({ code: "NOT_FOUND" });
+			const [ent] = await db
+				.select()
+				.from(entities)
+				.where(eq(entities.id, scen.entityId));
+			if (ent) {
+				assertEntityScope(ctx.session.user, {
+					state: ent.state,
+					sl: ent.sl,
+				});
+			}
+			const { id, roles, ...fields } = input;
+			if (Object.keys(fields).length > 0) {
+				await db.update(scenarios).set(fields).where(eq(scenarios.id, id));
+			}
+			if (roles !== undefined) {
+				await db.delete(scenarioRoles).where(eq(scenarioRoles.scenarioId, id));
+				if (roles.length > 0) {
+					await db.insert(scenarioRoles).values(
+						roles.map((r) => ({
+							id: `sr-${crypto.randomUUID()}`,
+							scenarioId: id,
+							...r,
+						})),
+					);
+				}
+			}
+			const [updated] = await db
+				.select()
+				.from(scenarios)
+				.where(eq(scenarios.id, id));
+			const updatedRoles = await db
+				.select()
+				.from(scenarioRoles)
+				.where(eq(scenarioRoles.scenarioId, id))
+				.orderBy(asc(scenarioRoles.roleTitle));
+			return { ...updated, roles: updatedRoles };
 		}),
 
 	// ── Auto-detect attrition risks ─────────────────────────────────────────────

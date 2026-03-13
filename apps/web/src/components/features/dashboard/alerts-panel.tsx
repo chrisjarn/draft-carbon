@@ -73,12 +73,10 @@ export function AlertsPanel({ data, loading }: AlertsPanelProps) {
 	return (
 		<Card>
 			<CardHeader className="flex items-center justify-between">
-				<CardTitle className="text-base text-balance">
+				<CardTitle className="text-balance text-base">
 					Needs Attention
 				</CardTitle>
-				{urgentCount > 0 && (
-					<Badge variant="error">{urgentCount}</Badge>
-				)}
+				{urgentCount > 0 && <Badge variant="error">{urgentCount}</Badge>}
 			</CardHeader>
 			<CardContent className="space-y-3">
 				{data.map((alert) => {
@@ -98,10 +96,10 @@ export function AlertsPanel({ data, loading }: AlertsPanelProps) {
 								className={cn("mt-0.5 size-4 shrink-0", config.iconColor)}
 							/>
 							<div className="min-w-0">
-								<div className="font-medium text-base text-balance">
+								<div className="text-balance font-medium text-sm">
 									{alert.title}
 								</div>
-								<div className="text-text-soft-400 text-sm text-pretty">
+								<div className="text-pretty text-sm text-text-soft-400">
 									{alert.message}
 								</div>
 							</div>

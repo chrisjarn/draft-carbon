@@ -104,7 +104,7 @@ export function UsersTable({ currentUserId }: { currentUserId?: string }) {
 	return (
 		<>
 			{query.isPending ? (
-				<div className="flex h-40 items-center justify-center text-text-soft-400 text-sm">
+				<div className="flex h-40 items-center justify-center text-sm text-text-soft-400">
 					Loading…
 				</div>
 			) : (
@@ -141,7 +141,7 @@ export function UsersTable({ currentUserId }: { currentUserId?: string }) {
 											</div>
 										</div>
 									</TableCell>
-									<TableCell className="text-text-soft-400 text-sm">
+									<TableCell className="text-sm text-text-soft-400">
 										{u.email}
 									</TableCell>
 									<TableCell>
@@ -149,7 +149,7 @@ export function UsersTable({ currentUserId }: { currentUserId?: string }) {
 									</TableCell>
 									<TableCell>
 										{isMe ? (
-											<span className="text-text-soft-400 text-sm">—</span>
+											<span className="text-sm text-text-soft-400">—</span>
 										) : (
 											<Select
 												value={u.role}
@@ -253,10 +253,10 @@ export function UsersTable({ currentUserId }: { currentUserId?: string }) {
 												</SelectContent>
 											</Select>
 										) : (
-											<span className="text-text-soft-400 text-sm">—</span>
+											<span className="text-sm text-text-soft-400">—</span>
 										)}
 									</TableCell>
-									<TableCell className="text-text-soft-400 text-sm">
+									<TableCell className="text-sm text-text-soft-400">
 										{fmtDate(u.createdAt)}
 									</TableCell>
 									<TableCell>

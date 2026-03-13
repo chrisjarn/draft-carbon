@@ -27,18 +27,29 @@ interface PageToolbarProps {
  * Secondary toolbar band below PageHeader.
  * Standardized `border-b px-6 py-2` — never override spacing on pages.
  */
-export function PageToolbar({ children, className, constrain }: PageToolbarProps) {
+export function PageToolbar({
+	children,
+	className,
+	constrain,
+}: PageToolbarProps) {
 	if (constrain) {
 		return (
 			<div className={cn("px-6 py-2", className)}>
-				<div className={cn("mx-auto flex w-full items-center justify-between", constrain)}>
+				<div
+					className={cn(
+						"mx-auto flex w-full items-center justify-between",
+						constrain,
+					)}
+				>
 					{children}
 				</div>
 			</div>
 		);
 	}
 	return (
-		<div className={cn("flex items-center justify-between px-6 py-2", className)}>
+		<div
+			className={cn("flex items-center justify-between px-6 py-2", className)}
+		>
 			{children}
 		</div>
 	);
@@ -67,7 +78,9 @@ interface PageSectionProps {
  */
 export function PageSection({ children, className }: PageSectionProps) {
 	return (
-		<div className={cn("bg-bg-weak-50/30 px-6 py-4", className)}>{children}</div>
+		<div className={cn("bg-bg-weak-50/30 px-6 py-4", className)}>
+			{children}
+		</div>
 	);
 }
 

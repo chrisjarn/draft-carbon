@@ -29,6 +29,8 @@ interface DataTableProps<TData> extends React.ComponentProps<"div"> {
 	footer?: React.ReactNode;
 	/** Use table-layout: fixed with explicit column widths from column.getSize() */
 	fixedLayout?: boolean;
+	/** Optional extra className per leaf row */
+	getRowClassName?: (row: Row<TData>) => string;
 }
 
 export function DataTable<TData>({
@@ -40,6 +42,7 @@ export function DataTable<TData>({
 	renderGroupCells,
 	footer,
 	fixedLayout,
+	getRowClassName,
 	...props
 }: DataTableProps<TData>) {
 	const showPagination = table.getPageCount() > 1;
@@ -88,7 +91,7 @@ export function DataTable<TData>({
 									return (
 										<TableRow
 											key={row.id}
-											className="bg-bg-weak-50/40 hover:bg-bg-weak-50/60"
+											className="bg-bg-weak-50/60 font-semibold"
 										>
 											{table.getVisibleFlatColumns().map((col) => (
 												<TableCell key={col.id}>
@@ -103,7 +106,10 @@ export function DataTable<TData>({
 									<TableRow
 										data-state={row.getIsSelected() && "selected"}
 										key={row.id}
-										className={cn(onRowClick ? "cursor-pointer" : undefined)}
+										className={cn(
+											onRowClick ? "cursor-pointer" : undefined,
+											getRowClassName?.(row),
+										)}
 										onClick={() => onRowClick?.(row.original)}
 									>
 										{row.getVisibleCells().map((cell) => (

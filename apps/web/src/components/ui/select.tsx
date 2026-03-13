@@ -1,6 +1,10 @@
 "use client";
 
-import { ArrowDown01Icon, ArrowUp01Icon, ArrowUpDownIcon } from "@hugeicons/core-free-icons";
+import {
+	ArrowDown01Icon,
+	ArrowUp01Icon,
+	ArrowUpDownIcon,
+} from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import * as SelectPrimitive from "@radix-ui/react-select";
 import { cva, type VariantProps } from "class-variance-authority";
@@ -11,7 +15,7 @@ import { cn } from "@/lib/utils";
 const Select = SelectPrimitive.Root;
 
 const selectTriggerVariants = cva(
-	"relative inline-flex min-h-9 w-full min-w-36 select-none items-center justify-between gap-2 shadow-custom-input bg-bg-white-0 text-text-strong-950 rounded-lg px-[calc(--spacing(3)-1px)] text-left text-base border border-transparent outline-none transition-[shadow,border-color] pointer-coarse:after:absolute pointer-coarse:after:size-full pointer-coarse:after:min-h-10 hover:shadow-gray-shadow focus:border-green-600 focus:shadow-gray-shadow-2 aria-invalid:border-error-base data-[disabled]:pointer-events-none data-[disabled]:opacity-64 sm:min-h-10 sm:text-sm [&_svg:not([class*='opacity-'])]:opacity-80 [&_svg:not([class*='size-'])]:size-4.5 sm:[&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+	"relative inline-flex min-h-9 w-full min-w-36 select-none items-center justify-between gap-2 rounded-lg border border-stroke-soft-200 bg-bg-white-0 px-[calc(--spacing(3)-1px)] text-left text-base text-text-strong-950 shadow-custom-input outline-none transition-[box-shadow,border-color,background-color] duration-200 ease-out pointer-coarse:after:absolute pointer-coarse:after:size-full pointer-coarse:after:min-h-10 hover:bg-bg-weak-50 hover:shadow-none focus:border-primary-base focus:bg-bg-white-0 focus:shadow-[var(--shadow-block-custom-input-active)] data-[state=open]:border-primary-base data-[state=open]:bg-bg-white-0 data-[state=open]:shadow-[var(--shadow-block-custom-input-active)] aria-invalid:border-error-base data-[disabled]:pointer-events-none data-[disabled]:opacity-64 sm:min-h-10 sm:text-sm [&_svg:not([class*='opacity-'])]:opacity-80 [&_svg:not([class*='size-'])]:size-4.5 sm:[&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
 	{
 		defaultVariants: {
 			size: "default",
@@ -44,7 +48,10 @@ const SelectButton = React.forwardRef<HTMLButtonElement, SelectButtonProps>(
 			<span className="flex-1 truncate data-[placeholder]:text-text-disabled-300">
 				{children}
 			</span>
-			<HugeiconsIcon icon={ArrowUpDownIcon} className={selectTriggerIconClassName} />
+			<HugeiconsIcon
+				icon={ArrowUpDownIcon}
+				className={selectTriggerIconClassName}
+			/>
 		</button>
 	),
 );
@@ -65,7 +72,10 @@ function SelectTrigger({
 		>
 			{children}
 			<SelectPrimitive.Icon data-slot="select-icon">
-				<HugeiconsIcon icon={ArrowUpDownIcon} className={selectTriggerIconClassName} />
+				<HugeiconsIcon
+					icon={ArrowUpDownIcon}
+					className={selectTriggerIconClassName}
+				/>
 			</SelectPrimitive.Icon>
 		</SelectPrimitive.Trigger>
 	);
@@ -100,7 +110,7 @@ function SelectPopup({
 		<SelectPrimitive.Portal>
 			<SelectPrimitive.Content
 				className={cn(
-					"bg-bg-white-0 shadow-gray-shadow rounded-lg border border-stroke-soft-200 z-50 max-h-[var(--radix-select-content-available-height)] min-w-[var(--radix-select-trigger-width)] overflow-hidden data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
+					"data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 z-50 max-h-[var(--radix-select-content-available-height)] min-w-[var(--radix-select-trigger-width)] overflow-hidden rounded-lg border border-stroke-soft-200 bg-bg-white-0 shadow-gray-shadow data-[state=closed]:animate-out data-[state=open]:animate-in",
 					className,
 				)}
 				data-slot="select-popup"
@@ -111,13 +121,19 @@ function SelectPopup({
 				{...props}
 			>
 				<SelectPrimitive.ScrollUpButton className="flex h-6 w-full cursor-default items-center justify-center">
-					<HugeiconsIcon icon={ArrowUp01Icon} className="relative size-4.5 sm:size-4" />
+					<HugeiconsIcon
+						icon={ArrowUp01Icon}
+						className="relative size-4.5 sm:size-4"
+					/>
 				</SelectPrimitive.ScrollUpButton>
 				<SelectPrimitive.Viewport className={cn("p-1", className)}>
 					{children}
 				</SelectPrimitive.Viewport>
 				<SelectPrimitive.ScrollDownButton className="flex h-6 w-full cursor-default items-center justify-center">
-					<HugeiconsIcon icon={ArrowDown01Icon} className="relative size-4.5 sm:size-4" />
+					<HugeiconsIcon
+						icon={ArrowDown01Icon}
+						className="relative size-4.5 sm:size-4"
+					/>
 				</SelectPrimitive.ScrollDownButton>
 			</SelectPrimitive.Content>
 		</SelectPrimitive.Portal>

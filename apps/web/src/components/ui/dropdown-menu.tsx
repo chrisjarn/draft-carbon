@@ -1,6 +1,6 @@
-import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
 import { ArrowRight01Icon, Tick01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
 import type * as React from "react";
 import { cn } from "@/lib/utils";
 
@@ -14,10 +14,7 @@ function DropdownMenuPortal({
 	...props
 }: React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Portal>) {
 	return (
-		<DropdownMenuPrimitive.Portal
-			data-slot="dropdown-menu-portal"
-			{...props}
-		/>
+		<DropdownMenuPrimitive.Portal data-slot="dropdown-menu-portal" {...props} />
 	);
 }
 
@@ -49,7 +46,7 @@ function DropdownMenuContent({
 				side={side}
 				sideOffset={sideOffset}
 				className={cn(
-					"bg-bg-white-0 shadow-gray-shadow rounded-lg border border-stroke-soft-200 p-1 z-50 max-h-[var(--radix-dropdown-menu-content-available-height)] min-w-32 overflow-y-auto overflow-x-hidden data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+					"data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 max-h-[var(--radix-dropdown-menu-content-available-height)] min-w-32 overflow-y-auto overflow-x-hidden rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-1 shadow-gray-shadow data-[state=closed]:animate-out data-[state=open]:animate-in",
 					className,
 				)}
 				{...props}
@@ -62,10 +59,7 @@ function DropdownMenuGroup({
 	...props
 }: React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Group>) {
 	return (
-		<DropdownMenuPrimitive.Group
-			data-slot="dropdown-menu-group"
-			{...props}
-		/>
+		<DropdownMenuPrimitive.Group data-slot="dropdown-menu-group" {...props} />
 	);
 }
 
@@ -81,7 +75,7 @@ function DropdownMenuLabel({
 			data-slot="dropdown-menu-label"
 			data-inset={inset}
 			className={cn(
-				"px-2 py-2 text-text-soft-400 text-sm data-[inset]:pl-7",
+				"px-2 py-2 text-sm text-text-soft-400 data-[inset]:pl-7",
 				className,
 			)}
 			{...props}
@@ -115,9 +109,7 @@ function DropdownMenuItem({
 function DropdownMenuSub({
 	...props
 }: React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Sub>) {
-	return (
-		<DropdownMenuPrimitive.Sub data-slot="dropdown-menu-sub" {...props} />
-	);
+	return <DropdownMenuPrimitive.Sub data-slot="dropdown-menu-sub" {...props} />;
 }
 
 function DropdownMenuSubTrigger({
@@ -153,7 +145,7 @@ function DropdownMenuSubContent({
 			<DropdownMenuPrimitive.SubContent
 				data-slot="dropdown-menu-sub-content"
 				className={cn(
-					"bg-bg-white-0 shadow-gray-shadow rounded-lg border border-stroke-soft-200 p-1 z-50 min-w-[96px] overflow-hidden data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+					"data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 min-w-[96px] overflow-hidden rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-1 shadow-gray-shadow data-[state=closed]:animate-out data-[state=open]:animate-in",
 					className,
 				)}
 				{...props}
@@ -168,9 +160,7 @@ function DropdownMenuCheckboxItem({
 	checked,
 	inset,
 	...props
-}: React.ComponentPropsWithoutRef<
-	typeof DropdownMenuPrimitive.CheckboxItem
-> & {
+}: React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.CheckboxItem> & {
 	inset?: boolean;
 }) {
 	return (
@@ -260,7 +250,7 @@ function DropdownMenuShortcut({
 		<span
 			data-slot="dropdown-menu-shortcut"
 			className={cn(
-				"ml-auto text-text-soft-400 text-sm tracking-widest",
+				"ml-auto text-sm text-text-soft-400 tracking-widest",
 				className,
 			)}
 			{...props}

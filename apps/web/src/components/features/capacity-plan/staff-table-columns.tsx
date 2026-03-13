@@ -5,6 +5,7 @@ import { officeLabel, slLabel } from "@/components/features/carbonites/types";
 import { PersonNameCell } from "@/components/molecules/person-name-cell";
 import { DataTableColumnHeader } from "@/components/organisms/data-table/data-table-column-header";
 import type { Option } from "@/components/organisms/data-table/types/data-table";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
 	Tooltip,
@@ -17,6 +18,7 @@ import { fmtDollar } from "@/lib/format";
 
 import { EditableCell, fmtPromoEta, PerfBadge, pct } from "./shared";
 import type { StaffWithMeta } from "./types";
+import { RISK_STYLES } from "./types";
 
 // ── Faceted filter function ───────────────────────────────────────────────────
 // DataTableFacetedFilter sets column filter value as string[]
@@ -114,6 +116,15 @@ interface StaffColumnsOpts {
 	officeOptions: Option[];
 	tagOptions: Option[];
 	promoOptions: Option[];
+	/** Map of carbonite id → attrition risk data */
+	attritionRiskMap: Map<
+		string,
+		{
+			riskLevel: string;
+			score: number;
+			factors: { label: string; impact: number }[];
+		}
+	>;
 }
 
 export function getStaffTableColumns(
@@ -137,11 +148,26 @@ export function getStaffTableColumns(
 			header: ({ column }) => (
 				<DataTableColumnHeader column={column} title="Role" />
 			),
-			cell: ({ getValue }) => (
-				<span className="text-text-soft-400 text-sm">
-					{(getValue() as string | null) ?? "\u2014"}
-				</span>
-			),
+			cell: ({ row, getValue }) => {
+				const val = getValue() as string | null;
+				if (!val) {
+					return (
+						<div className="flex items-center gap-1">
+							<span className="text-text-soft-400/50 text-xs">Not set</span>
+							{opts.canEdit && (
+								<Button
+									variant="ghost"
+									size="icon-xs"
+									onClick={() => opts.onEdit(row.original)}
+								>
+									<HugeiconsIcon icon={PencilEdit01Icon} className="size-3" />
+								</Button>
+							)}
+						</div>
+					);
+				}
+				return <span className="text-sm text-text-soft-400">{val}</span>;
+			},
 			meta: { label: "Role" },
 		},
 		{
@@ -152,9 +178,25 @@ export function getStaffTableColumns(
 			header: ({ column }) => (
 				<DataTableColumnHeader column={column} title="Tag" />
 			),
-			cell: ({ getValue }) => {
+			cell: ({ row, getValue }) => {
 				const tag = getValue() as string | null;
-				return <span className="text-sm capitalize">{tag ?? "\u2014"}</span>;
+				if (!tag) {
+					return (
+						<div className="flex items-center gap-1">
+							<span className="text-text-soft-400/50 text-xs">Not set</span>
+							{opts.canEdit && (
+								<Button
+									variant="ghost"
+									size="icon-xs"
+									onClick={() => opts.onEdit(row.original)}
+								>
+									<HugeiconsIcon icon={PencilEdit01Icon} className="size-3" />
+								</Button>
+							)}
+						</div>
+					);
+				}
+				return <span className="text-sm capitalize">{tag}</span>;
 			},
 			meta: {
 				label: "Tag",
@@ -204,11 +246,26 @@ export function getStaffTableColumns(
 			header: ({ column }) => (
 				<DataTableColumnHeader column={column} title="Pod" />
 			),
-			cell: ({ getValue }) => (
-				<span className="text-sm">
-					{(getValue() as string | null) ?? "\u2014"}
-				</span>
-			),
+			cell: ({ row, getValue }) => {
+				const val = getValue() as string | null;
+				if (!val) {
+					return (
+						<div className="flex items-center gap-1">
+							<span className="text-text-soft-400/50 text-xs">Not set</span>
+							{opts.canEdit && (
+								<Button
+									variant="ghost"
+									size="icon-xs"
+									onClick={() => opts.onEdit(row.original)}
+								>
+									<HugeiconsIcon icon={PencilEdit01Icon} className="size-3" />
+								</Button>
+							)}
+						</div>
+					);
+				}
+				return <span className="text-sm">{val}</span>;
+			},
 			meta: { label: "Pod" },
 		},
 		{
@@ -270,7 +327,7 @@ export function getStaffTableColumns(
 									}
 								}}
 							>
-								<span className="text-text-soft-400 text-sm tabular-nums">
+								<span className="text-sm text-text-soft-400 tabular-nums">
 									{fmtDollar(autoCalc)}
 								</span>
 								<span className="ml-1 text-[10px] text-text-soft-400/60">
@@ -324,18 +381,56 @@ export function getStaffTableColumns(
 				<DataTableColumnHeader column={column} title="Attainment" />
 			),
 			cell: ({ row }) => {
-				const actual = row.original.meta?.billingActual ?? null;
-				const target = row.original.meta?.billingTarget ?? null;
-				const isGreen = Number(actual) >= Number(target) && target;
+				const actual = Number(row.original.meta?.billingActual ?? 0);
+				const target = Number(row.original.meta?.billingTarget ?? 0);
+				if (!actual || !target) {
+					return (
+						<span className="text-sm text-text-soft-400">{"\u2014"}</span>
+					);
+				}
+				const attainmentPct = (actual / target) * 100;
+				const badgeCls =
+					attainmentPct >= 100
+						? "border-green-500/40 bg-green-500/10 text-green-400"
+						: attainmentPct >= 80
+							? "border-stroke-soft-200 bg-bg-weak-50 text-text-soft-400"
+							: "border-red-500/40 bg-red-500/10 text-red-400";
 				return (
-					<span
-						className={`font-medium text-sm tabular-nums ${isGreen ? "text-green-400" : ""}`}
+					<Badge
+						variant="outline"
+						size="sm"
+						className={`tabular-nums ${badgeCls}`}
 					>
-						{pct(actual, target)}
-					</span>
+						{pct(
+							row.original.meta?.billingActual ?? null,
+							row.original.meta?.billingTarget ?? null,
+						)}
+					</Badge>
 				);
 			},
 			meta: { label: "Attainment" },
+		},
+		{
+			id: "attritionRisk",
+			accessorFn: (row) =>
+				opts.attritionRiskMap.get(row.id)?.riskLevel ?? null,
+			enableSorting: true,
+			enableColumnFilter: false,
+			header: ({ column }) => (
+				<DataTableColumnHeader column={column} title="Attrition Risk" />
+			),
+			cell: ({ row }) => {
+				const risk = opts.attritionRiskMap.get(row.original.id);
+				if (!risk) return null;
+				const cls = RISK_STYLES[risk.riskLevel];
+				if (!cls) return null;
+				return (
+					<Badge variant="outline" size="sm" className={cls}>
+						{risk.riskLevel.charAt(0).toUpperCase() + risk.riskLevel.slice(1)}
+					</Badge>
+				);
+			},
+			meta: { label: "Attrition Risk" },
 		},
 		{
 			id: "perf",
@@ -377,7 +472,7 @@ export function getStaffTableColumns(
 					);
 				}
 				return (
-					<span className="text-text-soft-400/40 text-sm">{"\u2014"}</span>
+					<span className="text-sm text-text-soft-400/40">{"\u2014"}</span>
 				);
 			},
 			meta: {

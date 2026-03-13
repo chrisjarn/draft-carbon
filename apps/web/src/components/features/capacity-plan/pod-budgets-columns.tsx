@@ -46,9 +46,9 @@ function VarianceCell({
 	hasBudgetSet: boolean;
 }) {
 	if (!hasBudgetSet)
-		return <span className="text-text-soft-400 text-sm">—</span>;
+		return <span className="text-sm text-text-soft-400">—</span>;
 	if (variance === 0)
-		return <span className="text-text-soft-400 text-sm">—</span>;
+		return <span className="text-sm text-text-soft-400">—</span>;
 	const cls = variance > 0 ? "text-green-400" : "text-red-400";
 	return (
 		<span className={`font-medium text-sm tabular-nums ${cls}`}>
@@ -65,9 +65,9 @@ function AggregateVariance({
 	salary: number;
 }) {
 	if (budget === 0)
-		return <span className="text-text-soft-400 text-sm">—</span>;
+		return <span className="text-sm text-text-soft-400">—</span>;
 	const v = budget - salary;
-	if (v === 0) return <span className="text-text-soft-400 text-sm">—</span>;
+	if (v === 0) return <span className="text-sm text-text-soft-400">—</span>;
 	const cls = v > 0 ? "text-green-400" : "text-red-400";
 	return (
 		<span className={`font-medium text-sm tabular-nums ${cls}`}>
@@ -122,7 +122,7 @@ export function makePodBudgetColumns(
 										podName: r.podName,
 									})
 								}
-								className="truncate text-left text-text-soft-400 text-sm hover:text-text-strong-950 hover:underline"
+								className="truncate text-left text-sm text-text-soft-400 hover:text-text-strong-950 hover:underline"
 							>
 								{r.podName}
 							</button>
@@ -194,11 +194,25 @@ export function makePodBudgetColumns(
 			header: "Utilisation",
 			cell: ({ row }) => {
 				if (row.original.isAddPodRow) return null;
+				const r = row.original;
 				return (
-					<CapacityBar
-						actual={row.original.totalSalary}
-						budget={row.original.budget}
-					/>
+					<div className="flex flex-col gap-1">
+						<CapacityBar
+							actual={r.totalSalary}
+							budget={r.budget}
+							projectedYearEnd={r.projectedYearEnd}
+						/>
+						{r.hasBudgetSet &&
+							r.projectedYearEnd < r.budget * 0.85 && (
+								<Badge
+									variant="outline"
+									size="sm"
+									className="border-blue-500/40 bg-blue-500/10 text-blue-400"
+								>
+									Projected underspend
+								</Badge>
+							)}
+					</div>
 				);
 			},
 			size: COL_WIDTHS.utilisation,
@@ -292,7 +306,7 @@ export function buildPodGroupCells(
 				<button
 					type="button"
 					onClick={() => onAddPod(stateVal, officeVal)}
-					className="mt-1 flex items-center gap-2 rounded-md border-2 border-stroke-soft-200/60 border-dashed px-4 py-2 text-text-soft-400 text-sm transition-colors hover:border-green-600/40 hover:text-text-strong-950"
+					className="mt-1 flex items-center gap-2 rounded-md border-2 border-stroke-soft-200/60 border-dashed px-4 py-2 text-sm text-text-soft-400 transition-colors hover:border-green-600/40 hover:text-text-strong-950"
 				>
 					<HugeiconsIcon icon={PlusSignIcon} className="size-3.5" />
 					<span>Add Pod</span>

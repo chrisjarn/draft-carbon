@@ -6,6 +6,7 @@ import {
 } from "@/components/ui/empty";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SERVICE_LINES, SL_COLOR_MAP } from "@/lib/constants";
+import { cn } from "@/lib/utils";
 import type { SlRow } from "./types";
 
 /* ─── SL Breakdown Bars ────────────────────────────────────────────────── */
@@ -17,7 +18,12 @@ interface SlBreakdownBarsProps {
 	onSlClick?: (slId: string | null) => void;
 }
 
-export function SlBreakdownBars({ data, loading, activeSlId, onSlClick }: SlBreakdownBarsProps) {
+export function SlBreakdownBars({
+	data,
+	loading,
+	activeSlId,
+	onSlClick,
+}: SlBreakdownBarsProps) {
 	if (loading) {
 		return (
 			<div className="space-y-3">
@@ -57,7 +63,10 @@ export function SlBreakdownBars({ data, loading, activeSlId, onSlClick }: SlBrea
 					<button
 						key={row.sl}
 						type="button"
-						className={`w-full space-y-1 rounded-md px-2 py-1 text-left transition-colors hover:bg-bg-weak-50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring${isActive ? " border-l-2 border-blue-500 pl-1.5" : ""}`}
+						className={cn(
+							"w-full space-y-1 rounded-md px-2 py-1 text-left transition-colors hover:bg-bg-weak-50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-stroke-soft-200",
+							isActive && "border-l-2 border-emerald-500 pl-1.5",
+						)}
 						onClick={() => onSlClick?.(isActive ? null : row.sl)}
 					>
 						<div className="flex items-center justify-between text-sm">

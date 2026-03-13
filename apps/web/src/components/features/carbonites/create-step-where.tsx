@@ -221,7 +221,7 @@ export function CreateStepWhere({ form }: { form: CreateForm }) {
 								)}
 							</form.Field>
 							{senLabel && (
-								<div className="pb-2 text-text-soft-400 text-sm">
+								<div className="pb-2 text-sm text-text-soft-400">
 									Level:{" "}
 									<span className="font-medium text-text-strong-950">
 										{senLabel}

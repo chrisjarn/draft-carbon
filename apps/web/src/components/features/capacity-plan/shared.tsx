@@ -67,7 +67,7 @@ export function EditableCell({
 	if (editing) {
 		return (
 			<div className="flex items-center gap-1">
-				<span className="text-text-soft-400 text-sm">{prefix}</span>
+				<span className="text-sm text-text-soft-400">{prefix}</span>
 				<Input
 					type="number"
 					value={val}
@@ -143,14 +143,14 @@ export function KpiCard({
 	return (
 		<Card size="sm">
 			<CardHeader className="flex-row items-center justify-between pb-1">
-				<CardTitle className="font-normal text-text-soft-400 text-sm">
+				<CardTitle className="font-normal text-sm text-text-soft-400">
 					{label}
 				</CardTitle>
 				{icon}
 			</CardHeader>
 			<CardContent>
 				{loading ? (
-					<span className="text-text-soft-400 text-sm">Loading...</span>
+					<span className="text-sm text-text-soft-400">Loading...</span>
 				) : (
 					<span
 						className={`font-bold text-xl tabular-nums ${muted ? "text-text-soft-400" : ""}`}

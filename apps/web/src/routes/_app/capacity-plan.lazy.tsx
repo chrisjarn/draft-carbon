@@ -129,6 +129,31 @@ function CapacityPlanPage() {
 		}),
 	);
 
+	// Attrition risks — fetched only on staff tab
+	const attritionRisksQuery = useQuery({
+		...trpc.wfpExtended.getAllAttritionRisks.queryOptions(),
+		enabled: tab === "staff",
+	});
+
+	const attritionRiskMap = useMemo(() => {
+		const m = new Map<
+			string,
+			{
+				riskLevel: string;
+				score: number;
+				factors: { label: string; impact: number }[];
+			}
+		>();
+		for (const r of attritionRisksQuery.data ?? []) {
+			m.set(r.carboniteId, {
+				riskLevel: r.riskLevel,
+				score: r.score,
+				factors: r.factors,
+			});
+		}
+		return m;
+	}, [attritionRisksQuery.data]);
+
 	// Staff table — lifted to page level so toolbar filters render in PageToolbar
 	const onQuickUpsert = useCallback(
 		(cbId: string, patch: Record<string, string>) => {
@@ -145,7 +170,16 @@ function CapacityPlanPage() {
 		onQuickUpsert,
 		onEdit,
 		canEdit: hasWriteAccess,
+		attritionRiskMap,
 	});
+
+	const staffTableGetRowClassName = useCallback(
+		(row: { original: StaffWithMeta }) =>
+			attritionRiskMap.get(row.original.id)?.riskLevel === "high"
+				? "border-l-2 border-red-500"
+				: "",
+		[attritionRiskMap],
+	);
 
 	// Pod budgets data (for pod-budgets tab stats)
 	const carbonitesQuery = useQuery({
@@ -409,6 +443,7 @@ function CapacityPlanPage() {
 						table={staffTable}
 						editStaff={editStaff}
 						onCloseEdit={() => setEditStaff(null)}
+						getRowClassName={staffTableGetRowClassName}
 					/>
 				)}
 				{tab === "pod-budgets" && <PodBudgetsTab fy={fy} />}

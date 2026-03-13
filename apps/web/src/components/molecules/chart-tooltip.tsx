@@ -173,9 +173,7 @@ export function BenchmarkTooltip({
 							className="mr-1 h-0.5 w-2.5 rounded-full bg-stroke-soft-200"
 							aria-hidden="true"
 						/>
-						<span className="text-text-soft-400 text-xs">
-							{benchmarkLabel}
-						</span>
+						<span className="text-text-soft-400 text-xs">{benchmarkLabel}</span>
 					</div>
 					<span className="font-medium text-text-strong-950 text-xs">
 						{formattedDiff}

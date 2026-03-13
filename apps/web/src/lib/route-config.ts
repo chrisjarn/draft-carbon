@@ -1,14 +1,14 @@
-import type { IconSvgElement as IconType } from "@hugeicons/react";
 import {
 	Briefcase01Icon,
 	Calendar01Icon,
-	CheckmarkBadge02Icon,
 	ChartLineData02Icon,
+	CheckmarkBadge02Icon,
 	DashboardSquare01Icon,
 	FlowSquareIcon,
 	Settings01Icon,
 	UserGroupIcon,
 } from "@hugeicons/core-free-icons";
+import type { IconSvgElement as IconType } from "@hugeicons/react";
 
 /** Static metadata for each app route. */
 export const ROUTE_CONFIG: Record<

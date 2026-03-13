@@ -1,7 +1,13 @@
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { Table } from "@tanstack/react-table";
+import type { Row, Table } from "@tanstack/react-table";
+import { useState } from "react";
 import { toast } from "sonner";
+import { DatePicker } from "@/components/molecules/date-picker";
+import { FormField } from "@/components/molecules/form-field";
+import { FormGrid } from "@/components/molecules/form-grid";
+import { DataTable } from "@/components/organisms/data-table/data-table";
+import { DataTableSkeleton } from "@/components/organisms/data-table/data-table-skeleton";
 import {
 	AppDialog,
 	AppDialogContent,
@@ -9,11 +15,6 @@ import {
 	AppDialogHeader,
 	AppDialogTitle,
 } from "@/components/molecules/app-dialog";
-import { DatePicker } from "@/components/molecules/date-picker";
-import { FormField } from "@/components/molecules/form-field";
-import { FormGrid } from "@/components/molecules/form-grid";
-import { DataTable } from "@/components/organisms/data-table/data-table";
-import { DataTableSkeleton } from "@/components/organisms/data-table/data-table-skeleton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -23,6 +24,14 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import {
+	AlertDialog,
+	AlertDialogContent,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { fmtDollar } from "@/lib/format";
 import { trpc } from "@/utils/trpc";
 
 import type { MetaForm, StaffWithMeta } from "./types";
@@ -60,7 +69,7 @@ function MetaDialog({
 			<AppDialogContent size="sm">
 				<AppDialogHeader>
 					<AppDialogTitle className="text-base">{staff.name}</AppDialogTitle>
-					<p className="text-text-soft-400 text-sm">
+					<p className="text-sm text-text-soft-400">
 						{staff.role} &middot; {staff.office}
 					</p>
 				</AppDialogHeader>
@@ -217,21 +226,45 @@ function MetaDialog({
 // ── Staff Tab ────────────────────────────────────────────────────────────────
 // ══════════════════════════════════════════════════════════════════════════════
 
+type RoleChangeWarning = {
+	staffName: string;
+	oldRole: string;
+	newRole: string;
+	oldSalary: number;
+	newSalary: number;
+	billingMultiplier: number;
+	delta: number;
+	oldRoleTag: string;
+};
+
 export function StaffTab({
 	entityId,
 	table,
 	editStaff,
 	onCloseEdit,
+	getRowClassName,
 }: {
 	entityId?: string;
 	table: Table<StaffWithMeta>;
 	editStaff: StaffWithMeta | null;
 	onCloseEdit: () => void;
+	getRowClassName?: (row: Row<StaffWithMeta>) => string;
 }) {
 	const qc = useQueryClient();
 
+	const [roleChangeWarning, setRoleChangeWarning] =
+		useState<RoleChangeWarning | null>(null);
+
 	const query = useQuery(
 		trpc.wfp.getStaffWithMeta.queryOptions(entityId ? { entityId } : undefined),
+	);
+
+	const entityDetailQuery = useQuery({
+		...trpc.wfp.entityDetail.queryOptions({ entityId: entityId ?? "" }),
+		enabled: !!entityId,
+	});
+	const billingMultiplier = Number(
+		entityDetailQuery.data?.settings?.billingMultiplier ?? 1,
 	);
 
 	const upsertMeta = useMutation(
@@ -268,7 +301,7 @@ export function StaffTab({
 		<div className="flex h-full flex-col">
 			{/* DataTable — filters are rendered in PageToolbar above */}
 			<div className="flex-1 overflow-auto bg-bg-weak-50">
-				<DataTable table={table} />
+				<DataTable table={table} getRowClassName={getRowClassName} />
 			</div>
 
 			{/* Edit dialog */}
@@ -278,21 +311,97 @@ export function StaffTab({
 					staff={editStaff}
 					onClose={onCloseEdit}
 					onSave={(f) => {
-						upsertMeta.mutate({
-							cbId: editStaff.id,
-							perfRating: f.perfRating,
-							promoFlag: f.promoFlag as "yes" | "maybe" | "no",
-							promoEta: f.promoEta || undefined,
-							staffRole: f.staffRole || undefined,
-							roleTag: f.roleTag
-								? (f.roleTag as "doer" | "reviewer" | "bd")
-								: null,
-							billingTarget: f.billingTarget || undefined,
-							billingActual: f.billingActual || undefined,
-						});
+						const oldEffectiveRole = (
+							editStaff.meta?.staffRole?.trim() ||
+							editStaff.role?.trim() ||
+							""
+						).toLowerCase();
+						const newEffectiveRole = (
+							f.staffRole?.trim() ||
+							editStaff.role?.trim() ||
+							""
+						).toLowerCase();
+						const roleChanged =
+							(oldEffectiveRole || newEffectiveRole) &&
+							oldEffectiveRole !== newEffectiveRole;
+
+						upsertMeta.mutate(
+							{
+								cbId: editStaff.id,
+								perfRating: f.perfRating,
+								promoFlag: f.promoFlag as "yes" | "maybe" | "no",
+								promoEta: f.promoEta || undefined,
+								staffRole: f.staffRole || undefined,
+								roleTag: f.roleTag
+									? (f.roleTag as "doer" | "reviewer" | "bd")
+									: null,
+								billingTarget: f.billingTarget || undefined,
+								billingActual: f.billingActual || undefined,
+							},
+							{
+								onSuccess: () => {
+									if (roleChanged) {
+										const oldSalary = editStaff.salary ?? 0;
+										const newSalary = editStaff.salary ?? 0;
+										const delta =
+											(newSalary - oldSalary) * billingMultiplier;
+										setRoleChangeWarning({
+											staffName: editStaff.name,
+											oldRole:
+												editStaff.meta?.staffRole?.trim() ||
+												editStaff.role ||
+												"",
+											newRole:
+												f.staffRole?.trim() || editStaff.role || "",
+											oldSalary,
+											newSalary,
+											billingMultiplier,
+											delta,
+											oldRoleTag:
+												editStaff.meta?.roleTag ||
+												editStaff.role ||
+												"",
+										});
+									}
+								},
+							},
+						);
 					}}
 					saving={upsertMeta.isPending}
 				/>
+			)}
+
+			{roleChangeWarning && (
+				<AlertDialog open onOpenChange={(o) => !o && setRoleChangeWarning(null)}>
+					<AlertDialogContent>
+						<AlertDialogHeader>
+							<AlertDialogTitle>Role Change Impact</AlertDialogTitle>
+							<div className="space-y-2 px-6 text-sm text-text-soft-400">
+								<p>
+									{roleChangeWarning.staffName} has moved from{" "}
+									<strong className="text-text-strong-950">{roleChangeWarning.oldRole}</strong> to{" "}
+									<strong className="text-text-strong-950">{roleChangeWarning.newRole}</strong>.
+								</p>
+								<p>
+									Billing capacity delta:{" "}
+									<span className="tabular-nums font-medium text-text-strong-950">
+										{fmtDollar(roleChangeWarning.delta)}
+									</span>
+								</p>
+								<p>
+									Consider hiring a replacement{" "}
+									<strong className="text-text-strong-950">{roleChangeWarning.oldRoleTag}</strong> to
+									maintain billing capacity.
+								</p>
+							</div>
+						</AlertDialogHeader>
+						<AlertDialogFooter>
+							<Button size="sm" onClick={() => setRoleChangeWarning(null)}>
+								Got it
+							</Button>
+						</AlertDialogFooter>
+					</AlertDialogContent>
+				</AlertDialog>
 			)}
 		</div>
 	);

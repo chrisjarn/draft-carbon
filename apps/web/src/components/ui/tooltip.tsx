@@ -20,9 +20,7 @@ function TooltipTrigger({
 }: React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Trigger> & {
 	asChild?: boolean;
 }) {
-	return (
-		<TooltipPrimitive.Trigger data-slot="tooltip-trigger" {...props} />
-	);
+	return <TooltipPrimitive.Trigger data-slot="tooltip-trigger" {...props} />;
 }
 
 function TooltipPopup({
@@ -37,7 +35,7 @@ function TooltipPopup({
 		<TooltipPrimitive.Portal>
 			<TooltipPrimitive.Content
 				className={cn(
-					"bg-bg-surface-800 text-text-white-0 rounded-lg px-2 py-1 text-xs font-medium z-50 shadow-md data-[state=delayed-open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=delayed-open]:fade-in-0",
+					"data-[state=closed]:fade-out-0 data-[state=delayed-open]:fade-in-0 z-50 rounded-lg bg-bg-surface-800 px-2 py-1 font-medium text-text-white-0 text-xs shadow-md data-[state=closed]:animate-out data-[state=delayed-open]:animate-in",
 					className,
 				)}
 				data-slot="tooltip-popup"

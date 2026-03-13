@@ -36,10 +36,10 @@ function TabsList({
 				"relative z-0 flex w-fit items-center justify-center gap-x-0.5 text-text-soft-400",
 				"data-[orientation=vertical]:flex-col",
 				variant === "default"
-					? "bg-bg-weak-50 rounded-lg p-0.5"
+					? "rounded-lg bg-bg-weak-50 p-0.5"
 					: variant === "pill"
-						? "gap-2 bg-bg-weak-50 rounded-full p-0.5"
-						: "border-b border-stroke-soft-200 gap-0",
+						? "gap-2 rounded-full bg-bg-weak-50 p-0.5"
+						: "gap-0 border-stroke-soft-200 border-b",
 				className,
 			)}
 			data-slot="tabs-list"
@@ -58,9 +58,9 @@ function TabsTab({
 	return (
 		<TabsPrimitive.Trigger
 			className={cn(
-				"relative flex h-8 shrink-0 grow cursor-pointer items-center justify-center gap-1.5 whitespace-nowrap rounded-md border border-transparent px-2 font-medium text-sm outline-none transition-[color,background-color,box-shadow] text-text-soft-400 hover:text-text-sub-600 focus-visible:ring-2 focus-visible:ring-stroke-strong-950 data-[disabled]:pointer-events-none data-[orientation=vertical]:w-full data-[orientation=vertical]:justify-start data-[state=active]:text-text-strong-950 data-[state=active]:font-medium data-[disabled]:opacity-64 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:-mx-0.5 [&_svg]:shrink-0",
+				"relative flex h-8 shrink-0 grow cursor-pointer items-center justify-center gap-1.5 whitespace-nowrap rounded-md border border-transparent px-2 font-medium text-sm text-text-soft-400 outline-none transition-[color,background-color,box-shadow] hover:text-text-sub-600 focus-visible:ring-2 focus-visible:ring-stroke-strong-950 data-[disabled]:pointer-events-none data-[orientation=vertical]:w-full data-[orientation=vertical]:justify-start data-[state=active]:font-medium data-[state=active]:text-text-strong-950 data-[disabled]:opacity-64 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:-mx-0.5 [&_svg]:shrink-0",
 				"in-data-[variant=default]:data-[state=active]:bg-bg-white-0 in-data-[variant=default]:data-[state=active]:shadow-sm",
-				"in-data-[variant=underline]:data-[state=active]:border-b-2 in-data-[variant=underline]:data-[state=active]:border-stroke-strong-950",
+				"in-data-[variant=underline]:data-[state=active]:border-stroke-strong-950 in-data-[variant=underline]:data-[state=active]:border-b-2",
 				"in-data-[variant=pill]:rounded-full in-data-[variant=pill]:px-3 in-data-[variant=pill]:text-sm in-data-[variant=pill]:data-[state=active]:bg-text-strong-950 in-data-[variant=pill]:data-[state=active]:text-text-white-0",
 				className,
 			)}

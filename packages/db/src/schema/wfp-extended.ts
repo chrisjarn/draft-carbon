@@ -48,6 +48,7 @@ export const scenarios = pgTable("scenarios", {
 	name: text("name").notNull(),
 	description: text("description"),
 	color: text("color").default("#6366f1"),
+	status: text("status").default("draft"), // draft | active
 	createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -61,6 +62,8 @@ export const scenarioRoles = pgTable("scenario_roles", {
 	sl: text("sl"),
 	salary: integer("salary").notNull().default(0),
 	count: integer("count").notNull().default(1),
+	employmentType: text("employment_type"), // FT | PT
+	startMonth: text("start_month"), // Jan | Feb | ... | Dec
 });
 
 // Prior year comparison data

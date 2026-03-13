@@ -56,7 +56,7 @@ function SignInView({ onSwitch }: { onSwitch: () => void }) {
 
 	return (
 		<>
-			<h3 className="mt-6 text-balance font-semibold text-text-strong-950 text-lg">
+			<h3 className="mt-6 text-balance font-semibold text-lg text-text-strong-950">
 				Sign in to your account
 			</h3>
 			<p className="mt-2 text-pretty text-base text-text-soft-400">
@@ -188,7 +188,7 @@ function SignUpView({ onSwitch }: { onSwitch: () => void }) {
 
 	return (
 		<>
-			<h3 className="mt-6 text-balance font-semibold text-text-strong-950 text-lg">
+			<h3 className="mt-6 text-balance font-semibold text-lg text-text-strong-950">
 				Create your account
 			</h3>
 			<p className="mt-2 text-pretty text-base text-text-soft-400">
@@ -376,12 +376,13 @@ export default function Login04() {
 			</div>
 
 			{/* Right panel — form */}
-			<div className="flex flex-1 flex-col justify-center bg-bg-white-0 px-8 py-10 lg:px-12">
+			<div className="flex flex-1 flex-col justify-center bg-bg-weak-50 px-8 py-10 lg:px-12">
 				<div className="mx-auto w-full max-w-sm">
+				<div className="shadow-custom-input rounded-20 bg-bg-white-0 p-8">
 					{/* Mobile logo */}
 					<div className="mb-6 flex items-center space-x-2 lg:hidden">
 						<CarbonLogo />
-						<p className="font-semibold text-text-strong-950 text-lg">
+						<p className="font-semibold text-lg text-text-strong-950">
 							Carbon Group
 						</p>
 					</div>
@@ -391,6 +392,7 @@ export default function Login04() {
 					) : (
 						<SignUpView onSwitch={() => setIsSignIn(true)} />
 					)}
+				</div>
 				</div>
 			</div>
 		</div>

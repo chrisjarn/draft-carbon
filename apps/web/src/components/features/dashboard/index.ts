@@ -1,10 +1,10 @@
 export { AlertsPanel } from "./alerts-panel";
-export { HealthBanner } from "./health-banner";
 export { BudgetPayrollChart } from "./budget-payroll-chart";
 export { DashboardGreeting } from "./dashboard-greeting";
 export { DashboardEmptyState, DashboardErrorState } from "./dashboard-states";
 export type { EntitySummary } from "./entity-card";
 export { EntityCard, EntityCardGrid } from "./entity-card";
+export { HealthBanner } from "./health-banner";
 export { KpiSection } from "./kpi-section";
 export { RevenueChart } from "./revenue-chart";
 export { SlBreakdownBars } from "./sl-breakdown-table";

@@ -30,6 +30,8 @@ export type ScenarioRoleValues = {
 	sl: string;
 	salary: string;
 	count: string;
+	employmentType: string; // "FT" | "PT" | ""
+	startMonth: string; // "Jan" | "Feb" | ... | "Dec" | ""
 };
 
 export type WizardFormValues = {
@@ -53,7 +55,7 @@ export function defaultWizardValues(
 		name: "",
 		description: "",
 		color: defaultColor ?? "#4CAF50",
-		roles: [{ roleTitle: "", sl: "", salary: "", count: "1" }],
+		roles: [{ roleTitle: "", sl: "", salary: "", count: "1", employmentType: "", startMonth: "" }],
 	};
 }
 

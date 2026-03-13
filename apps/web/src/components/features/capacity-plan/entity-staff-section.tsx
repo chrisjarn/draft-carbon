@@ -66,7 +66,7 @@ export function EntityStaffSection({
 	return (
 		<Collapsible open={open} onOpenChange={setOpen}>
 			<CollapsibleTrigger className="flex w-full items-center justify-between rounded-sm px-1 py-1.5 hover:bg-bg-weak-50/30">
-				<h4 className="flex items-center gap-1.5 font-medium text-text-soft-400 text-sm">
+				<h4 className="flex items-center gap-1.5 font-medium text-sm text-text-soft-400">
 					<HugeiconsIcon icon={UserGroupIcon} className="size-3.5" />
 					Staff Billing
 					<Badge variant="outline" size="sm" className="ml-1">
@@ -81,7 +81,7 @@ export function EntityStaffSection({
 
 			<CollapsiblePanel>
 				{staff.length === 0 ? (
-					<p className="py-4 text-center text-text-soft-400 text-sm">
+					<p className="py-4 text-center text-sm text-text-soft-400">
 						No staff in this entity
 					</p>
 				) : (
@@ -112,7 +112,7 @@ export function EntityStaffSection({
 										<TableCell>
 											<PersonNameCell name={s.name} />
 										</TableCell>
-										<TableCell className="text-text-soft-400 text-sm">
+										<TableCell className="text-sm text-text-soft-400">
 											{s.role ?? "\u2014"}
 										</TableCell>
 										<TableCell className="text-right text-sm">
@@ -133,9 +133,7 @@ export function EntityStaffSection({
 													)}
 												</span>
 											) : (
-												<span className="text-text-soft-400">
-													{"\u2014"}
-												</span>
+												<span className="text-text-soft-400">{"\u2014"}</span>
 											)}
 										</TableCell>
 										<TableCell className="text-right text-sm tabular-nums">

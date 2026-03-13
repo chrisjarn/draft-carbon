@@ -210,7 +210,7 @@ export function PodComparisonTable({ priorFy }: { priorFy: string }) {
 
 	if (loading) {
 		return (
-			<div className="flex h-24 items-center justify-center text-text-soft-400 text-sm">
+			<div className="flex h-24 items-center justify-center text-sm text-text-soft-400">
 				Loading pod comparison...
 			</div>
 		);
@@ -250,7 +250,7 @@ export function PodComparisonTable({ priorFy }: { priorFy: string }) {
 					Export Pod Report
 				</Button>
 			</div>
-			<div className="overflow-auto rounded-lg border ">
+			<div className="overflow-auto rounded-lg border">
 				<Table>
 					<TableHeader>
 						<TableRow>

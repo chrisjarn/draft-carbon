@@ -88,7 +88,7 @@ export function PageStatsBar({
 	return (
 		<div
 			className={cn(
-				"flex items-center justify-between gap-6 border-b border-stroke-soft-200 bg-bg-white-0 px-6 py-2.5",
+				"flex items-center justify-between gap-6 border-stroke-soft-200 border-b bg-bg-white-0 px-6 py-2.5",
 				className,
 			)}
 		>

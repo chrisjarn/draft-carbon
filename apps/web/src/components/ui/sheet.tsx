@@ -1,8 +1,8 @@
 "use client";
 
-import * as SheetPrimitive from "@radix-ui/react-dialog";
 import { Cancel01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import * as SheetPrimitive from "@radix-ui/react-dialog";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
@@ -30,7 +30,7 @@ function SheetBackdrop({
 	return (
 		<SheetPrimitive.Overlay
 			className={cn(
-				"fixed inset-0 z-50 bg-black/32 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+				"data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/32 backdrop-blur-sm data-[state=closed]:animate-out data-[state=open]:animate-in",
 				className,
 			)}
 			data-slot="sheet-backdrop"
@@ -69,15 +69,15 @@ function SheetPopup({
 			<SheetBackdrop />
 			<SheetPrimitive.Content
 				className={cn(
-					"fixed z-50 flex max-h-full min-h-0 w-full min-w-0 flex-col bg-bg-white-0 shadow-lg transition-transform duration-200 ease-in-out data-[state=open]:animate-in data-[state=closed]:animate-out",
+					"fixed z-50 flex max-h-full min-h-0 w-full min-w-0 flex-col bg-bg-white-0 shadow-lg transition-transform duration-200 ease-in-out data-[state=closed]:animate-out data-[state=open]:animate-in",
 					side === "bottom" &&
-						"inset-x-0 bottom-0 border-t data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom",
+						"data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom inset-x-0 bottom-0 border-t",
 					side === "top" &&
-						"inset-x-0 top-0 border-b data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top",
+						"data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top inset-x-0 top-0 border-b",
 					side === "left" &&
-						`inset-y-0 left-0 w-[calc(100%-(--spacing(12)))] ${sheetSizeClass[size ?? "md"]} border-e data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left`,
+						`inset-y-0 left-0 w-[calc(100%-(--spacing(12)))] ${sheetSizeClass[size ?? "md"]} data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left border-e`,
 					side === "right" &&
-						`inset-y-0 right-0 w-[calc(100%-(--spacing(12)))] ${sheetSizeClass[size ?? "md"]} border-s data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right`,
+						`inset-y-0 right-0 w-[calc(100%-(--spacing(12)))] ${sheetSizeClass[size ?? "md"]} data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right border-s`,
 					variant === "inset" &&
 						"sm:rounded-2xl sm:border sm:**:data-[slot=sheet-footer]:rounded-b-[calc(var(--radius-2xl)-1px)]",
 					className,
@@ -160,7 +160,7 @@ function SheetDescription({
 }: React.ComponentPropsWithoutRef<typeof SheetPrimitive.Description>) {
 	return (
 		<SheetPrimitive.Description
-			className={cn("text-text-soft-400 text-sm", className)}
+			className={cn("text-sm text-text-soft-400", className)}
 			data-slot="sheet-description"
 			{...props}
 		/>

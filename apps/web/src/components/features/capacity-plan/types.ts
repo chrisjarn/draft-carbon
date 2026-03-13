@@ -65,6 +65,8 @@ export type PodTableRow = {
 	dominantSl: string | null;
 	variance: number;
 	utilisation: number;
+	/** Annualised projected year-end salary cost based on elapsed FY months */
+	projectedYearEnd: number;
 	/** Sentinel flag — when true, the row renders an "Add Pod" button instead of data */
 	isAddPodRow?: boolean;
 };

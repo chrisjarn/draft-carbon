@@ -142,7 +142,7 @@ export function EntityCard({
 					});
 				}
 			}}
-			className="group h-full min-h-55 cursor-pointer shadow-custom-input rounded-20 hover:bg-bg-weak-50 transition-all duration-200"
+			className="group h-full min-h-55 cursor-pointer rounded-20 shadow-custom-input transition-all duration-200 hover:bg-bg-weak-50"
 		>
 			<Card flushFooter className="h-full gap-0">
 				{/* Header */}
@@ -152,7 +152,7 @@ export function EntityCard({
 							{entity.biz}
 						</h3>
 						{entity.legalName && (
-							<p className="mt-0.5 truncate text-text-soft-400 text-sm">
+							<p className="mt-0.5 truncate text-sm text-text-soft-400">
 								{entity.legalName}
 							</p>
 						)}

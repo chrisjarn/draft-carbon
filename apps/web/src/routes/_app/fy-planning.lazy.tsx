@@ -19,11 +19,14 @@ import {
 	CsvImportDialog,
 	derivePriorFy,
 	type EntityWithRevenue,
+	ExecutiveSummary,
+	type FYSummaryData,
 	exportRevenueCsv,
 	fmt,
 	makeRevenueColumns,
 	PodComparisonTable,
 	type RevenueRow,
+	SalaryMarketChart,
 	TotalsFooter,
 } from "@/components/features/fy-planning";
 import { SearchInput } from "@/components/molecules/search-input";
@@ -83,6 +86,7 @@ function FyPlanningPage() {
 	const [importOpen, setImportOpen] = useState(false);
 	const [globalFilter, setGlobalFilter] = useState("");
 	const [expanded, setExpanded] = useState<ExpandedState>(true);
+	const [salaryStateFilter, setSalaryStateFilter] = useState("");
 
 	const priorFy = derivePriorFy(fy);
 
@@ -90,6 +94,21 @@ function FyPlanningPage() {
 
 	const query = useQuery(trpc.wfp.getRevenue.queryOptions({ fy }));
 	const rawRows = (query.data ?? []) as EntityWithRevenue[];
+
+	const priorRevenueQuery = useQuery(
+		trpc.wfp.getRevenue.queryOptions({ fy: priorFy }),
+	);
+	const priorRows = (priorRevenueQuery.data ?? []) as EntityWithRevenue[];
+
+	const hiringQuery = useQuery(
+		trpc.hiring.getAll.queryOptions({ status: "open" }),
+	);
+
+	const firmKPIsQuery = useQuery(trpc.wfp.firmKPIs.queryOptions());
+
+	const bracketsQuery = useQuery(trpc.salaryBrackets.getAll.queryOptions());
+
+	const carbonitesQuery = useQuery(trpc.carbonites.getAll.queryOptions());
 
 	const tableData: RevenueRow[] = useMemo(
 		() =>
@@ -117,11 +136,24 @@ function FyPlanningPage() {
 		[upsertRevenue, fy],
 	);
 
+	// -- Prior-year attainment map --------------------------------------------
+
+	const priorAttainmentMap = useMemo(() => {
+		const map = new Map<string, number | null>();
+		for (const r of priorRows) {
+			map.set(
+				r.id,
+				attainmentPct(r.revenue?.target ?? null, r.revenue?.actual ?? null),
+			);
+		}
+		return map;
+	}, [priorRows]);
+
 	// -- Table ----------------------------------------------------------------
 
 	const columns = useMemo(
-		() => makeRevenueColumns(hasWriteAccess, handleSave),
-		[hasWriteAccess, handleSave],
+		() => makeRevenueColumns(hasWriteAccess, handleSave, priorAttainmentMap),
+		[hasWriteAccess, handleSave, priorAttainmentMap],
 	);
 
 	const table = useReactTable({
@@ -162,6 +194,36 @@ function FyPlanningPage() {
 			overallPct: attainmentPct(String(target), String(actual)),
 		};
 	}, [rawRows]);
+
+	const summaryData = useMemo((): FYSummaryData => {
+		const entityCount = rawRows.length;
+		const stateCount = new Set(
+			rawRows.map((r) => r.state).filter(Boolean),
+		).size;
+		const totalPayroll = firmKPIsQuery.data?.totalPayroll ?? 0;
+		const payrollPct =
+			totalActual > 0 ? Math.round((totalPayroll / totalActual) * 100) : null;
+		return {
+			fyLabel: fy,
+			revenueActual: totalActual,
+			revenueTarget: totalTarget,
+			attainmentPct: overallPct,
+			entityCount,
+			stateCount,
+			totalPayroll,
+			payrollPct,
+			openPositions: hiringQuery.data?.length ?? 0,
+			atRiskCount: firmKPIsQuery.data?.atRiskCount ?? 0,
+		};
+	}, [
+		rawRows,
+		fy,
+		totalActual,
+		totalTarget,
+		overallPct,
+		firmKPIsQuery.data,
+		hiringQuery.data,
+	]);
 
 	const renderGroupCells = useCallback(
 		(row: Row<RevenueRow>) => buildGroupCells(row),
@@ -255,8 +317,13 @@ function FyPlanningPage() {
 			/>
 
 			<PageBody>
+				{!query.isPending && rawRows.length > 0 && (
+					<div className="mb-4">
+						<ExecutiveSummary data={summaryData} />
+					</div>
+				)}
 				{query.isPending ? (
-					<div className="flex h-40 items-center justify-center text-text-soft-400 text-sm">
+					<div className="flex h-40 items-center justify-center text-sm text-text-soft-400">
 						Loading...
 					</div>
 				) : rawRows.length === 0 ? (
@@ -285,10 +352,19 @@ function FyPlanningPage() {
 			</PageBody>
 
 			<PageSection className="border-t">
-				<h2 className="mb-4 font-bold text-base tracking-tight">
+				<h2 className="mb-4 text-balance font-bold text-base">
 					Pod Budget Comparison
 				</h2>
 				<PodComparisonTable priorFy={priorFy} />
+			</PageSection>
+
+			<PageSection className="border-t">
+				<SalaryMarketChart
+					brackets={bracketsQuery.data ?? []}
+					carbonites={carbonitesQuery.data ?? []}
+					stateFilter={salaryStateFilter}
+					onStateFilterChange={setSalaryStateFilter}
+				/>
 			</PageSection>
 
 			<CsvImportDialog

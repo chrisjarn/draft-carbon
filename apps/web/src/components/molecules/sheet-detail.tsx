@@ -47,7 +47,7 @@ export function SheetGroup({ title, children, className }: SheetGroupProps) {
 	return (
 		<div className={cn("pt-4 pb-2", className)}>
 			<p className="section-label mb-1">{title}</p>
-			<div className="divide-y divide-border/40 rounded-md border /60 bg-bg-weak-50/20 px-3">
+			<div className="/60 divide-y divide-border/40 rounded-md border bg-bg-weak-50/20 px-3">
 				{children}
 			</div>
 		</div>

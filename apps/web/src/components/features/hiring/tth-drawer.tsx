@@ -111,7 +111,7 @@ export function TthDrawer({
 			<SheetContent size="xl">
 				<SheetHeader>
 					<SheetTitle>Time to Hire &amp; Salary Brackets</SheetTitle>
-					<p className="text-text-soft-400 text-sm">
+					<p className="text-sm text-text-soft-400">
 						Reference data for planning &mdash; hire timelines and salary ranges
 						by role.
 					</p>
@@ -165,10 +165,10 @@ export function TthDrawer({
 							{tthRows.map((entry) => (
 								<TableRow key={entry.role}>
 									<TableCell className="text-sm">{entry.role}</TableCell>
-									<TableCell className="text-right text-text-soft-400 text-sm tabular-nums">
+									<TableCell className="text-right text-sm text-text-soft-400 tabular-nums">
 										{entry.hireWeeks[0]}&ndash;{entry.hireWeeks[1]} wks
 									</TableCell>
-									<TableCell className="text-right text-text-soft-400 text-sm tabular-nums">
+									<TableCell className="text-right text-sm text-text-soft-400 tabular-nums">
 										{entry.noticeWeeks[0]}&ndash;{entry.noticeWeeks[1]} wks
 									</TableCell>
 								</TableRow>
@@ -194,7 +194,7 @@ export function TthDrawer({
 							{salaryRows.map((b) => (
 								<TableRow key={b.role}>
 									<TableCell className="text-sm">{b.role}</TableCell>
-									<TableCell className="text-center text-text-soft-400 text-sm tabular-nums">
+									<TableCell className="text-center text-sm text-text-soft-400 tabular-nums">
 										{b.level}
 									</TableCell>
 									<TableCell className="text-right text-sm tabular-nums">

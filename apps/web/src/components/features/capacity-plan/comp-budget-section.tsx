@@ -104,7 +104,7 @@ export function CompBudgetSection({
 
 	return (
 		<div className="space-y-3">
-			<h4 className="flex items-center gap-1.5 font-medium text-text-soft-400 text-sm">
+			<h4 className="flex items-center gap-1.5 font-medium text-sm text-text-soft-400">
 				<HugeiconsIcon icon={Dollar01Icon} className="size-3.5" />
 				Compensation Budget
 				{entityState && (

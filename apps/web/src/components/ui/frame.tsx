@@ -55,7 +55,7 @@ function FrameDescription({
 }: React.ComponentProps<"div">) {
 	return (
 		<div
-			className={cn("text-text-soft-400 text-sm", className)}
+			className={cn("text-sm text-text-soft-400", className)}
 			data-slot="frame-panel-description"
 			{...props}
 		/>

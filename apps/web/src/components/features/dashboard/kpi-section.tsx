@@ -69,24 +69,21 @@ export function KpiSection({
 				value={stats?.totalCarbonites ?? 0}
 				valueClass="text-emerald-700"
 				loading={loading}
-				className="bg-emerald-50 hover:bg-emerald-100 shadow-none"
-			>
-				<p className="text-emerald-600/70 text-xs">
+				>
+				<p className="text-text-soft-400 text-xs">
 					{entityCount} entities nationwide
 				</p>
 			</KpiCard>
 
 			<KpiCard
 				title="Revenue Attainment"
-				value={
-					<span className="tabular-nums">{revenuePct}%</span>
-				}
+				value={<span className="tabular-nums">{revenuePct}%</span>}
 				valueClass={revenueValueClass}
 				loading={loading}
 				className="bg-bg-white-0 shadow-custom-input hover:bg-bg-weak-50 hover:shadow-none"
 			>
 				<ProgressBar value={revenuePct} variant={revenueProgressVariant} />
-				<p className="text-text-soft-400 text-xs tabular-nums mt-1">
+				<p className="mt-1 text-text-soft-400 text-xs tabular-nums">
 					{fmtDollar(revenueActual)} of {fmtDollar(revenueTarget)}
 				</p>
 			</KpiCard>
@@ -103,9 +100,7 @@ export function KpiSection({
 
 			<KpiCard
 				title="Payroll Ratio"
-				value={
-					<span className="tabular-nums">{payrollPct.toFixed(1)}%</span>
-				}
+				value={<span className="tabular-nums">{payrollPct.toFixed(1)}%</span>}
 				valueClass={payrollValueClass}
 				loading={loading}
 				className="bg-bg-white-0 shadow-custom-input hover:bg-bg-weak-50 hover:shadow-none"

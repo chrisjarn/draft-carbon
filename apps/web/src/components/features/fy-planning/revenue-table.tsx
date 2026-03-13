@@ -58,7 +58,7 @@ export function RevenueCell({
 	if (editing) {
 		return (
 			<div className="flex items-center gap-1">
-				<span className="text-text-soft-400 text-sm">$</span>
+				<span className="text-sm text-text-soft-400">$</span>
 				<Input
 					type="number"
 					value={val}
@@ -122,6 +122,7 @@ const COL_WIDTHS = {
 	variance: 110,
 	progress: 160,
 	attainment: 80,
+	priorFyAttainment: 90,
 } as const;
 
 // -- Column definitions -------------------------------------------------------
@@ -129,6 +130,7 @@ const COL_WIDTHS = {
 export function makeRevenueColumns(
 	canWriteAccess: boolean,
 	onSave: (entId: string, field: "target" | "actual", value: string) => void,
+	priorAttainmentMap: Map<string, number | null> = new Map(),
 ): ColumnDef<RevenueRow>[] {
 	return [
 		{
@@ -222,6 +224,34 @@ export function makeRevenueColumns(
 				);
 			},
 			size: COL_WIDTHS.attainment,
+		},
+		{
+			id: "priorFyAttainment",
+			header: "vs Prior FY",
+			cell: ({ row }) => {
+				const currentPct = attainmentPct(
+					row.original.revenue?.target ?? null,
+					row.original.revenue?.actual ?? null,
+				);
+				const priorPct = priorAttainmentMap.get(row.original.id);
+				if (priorPct === undefined || priorPct === null || currentPct === null) {
+					return (
+						<span className="text-sm text-text-soft-400">{"\u2014"}</span>
+					);
+				}
+				const delta = currentPct - priorPct;
+				const isPositive = delta >= 0;
+				return (
+					<span
+						className={`text-sm tabular-nums ${isPositive ? "text-green-400" : "text-red-400"}`}
+					>
+						{isPositive ? "\u2191" : "\u2193"}
+						{isPositive ? "+" : ""}
+						{delta}pp
+					</span>
+				);
+			},
+			size: COL_WIDTHS.priorFyAttainment,
 		},
 	];
 }
@@ -353,6 +383,7 @@ export function TotalsFooter({
 						{pct !== null ? `${pct}%` : "\u2014"}
 					</span>
 				</TableCell>
+				<TableCell />
 			</TableRow>
 		</TableFooter>
 	);

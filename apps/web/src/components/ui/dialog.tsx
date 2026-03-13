@@ -1,8 +1,8 @@
 "use client";
 
-import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { Cancel01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
@@ -32,7 +32,7 @@ function DialogBackdrop({
 	return (
 		<DialogPrimitive.Overlay
 			className={cn(
-				"fixed inset-0 z-50 bg-black/32 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+				"data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/32 backdrop-blur-sm data-[state=closed]:animate-out data-[state=open]:animate-in",
 				className,
 			)}
 			data-slot="dialog-backdrop"
@@ -41,10 +41,7 @@ function DialogBackdrop({
 	);
 }
 
-function DialogViewport({
-	className,
-	...props
-}: React.ComponentProps<"div">) {
+function DialogViewport({ className, ...props }: React.ComponentProps<"div">) {
 	return (
 		<div
 			className={cn(
@@ -74,9 +71,9 @@ function DialogPopup({
 			<DialogBackdrop />
 			<DialogPrimitive.Content
 				className={cn(
-					"fixed left-[50%] top-[50%] z-50 translate-x-[-50%] translate-y-[-50%] flex max-h-[85vh] min-h-0 w-full min-w-0 max-w-lg flex-col bg-bg-white-0 rounded-2xl shadow-lg border border-stroke-soft-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
+					"data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 flex max-h-[85vh] min-h-0 w-full min-w-0 max-w-lg translate-x-[-50%] translate-y-[-50%] flex-col rounded-2xl border border-stroke-soft-200 bg-bg-white-0 shadow-lg data-[state=closed]:animate-out data-[state=open]:animate-in",
 					bottomStickOnMobile &&
-						"max-sm:max-w-none max-sm:top-auto max-sm:bottom-0 max-sm:left-0 max-sm:translate-x-0 max-sm:translate-y-0 max-sm:rounded-b-none max-sm:border-b-0",
+						"max-sm:top-auto max-sm:bottom-0 max-sm:left-0 max-sm:max-w-none max-sm:translate-x-0 max-sm:translate-y-0 max-sm:rounded-b-none max-sm:border-b-0",
 					className,
 				)}
 				data-slot="dialog-popup"
@@ -157,7 +154,7 @@ function DialogDescription({
 }: React.ComponentPropsWithoutRef<typeof DialogPrimitive.Description>) {
 	return (
 		<DialogPrimitive.Description
-			className={cn("text-text-soft-400 text-sm", className)}
+			className={cn("text-sm text-text-soft-400", className)}
 			data-slot="dialog-description"
 			{...props}
 		/>

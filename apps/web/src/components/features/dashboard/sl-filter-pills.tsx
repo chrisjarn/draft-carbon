@@ -21,7 +21,7 @@ export function SlFilterPills({ activeSlId, onToggle }: SlFilterPillsProps) {
 						className={cn(
 							"inline-flex h-8 items-center gap-1.5 rounded-full px-3 font-medium text-sm transition-colors",
 							active
-								? "bg-text-strong-950 text-text-white-0"
+								? "bg-green-alpha-10 text-green-600"
 								: "bg-bg-white-0 text-text-soft-400 hover:bg-bg-weak-50 hover:text-text-strong-950",
 						)}
 					>
