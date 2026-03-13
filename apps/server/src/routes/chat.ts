@@ -12,6 +12,7 @@ import {
 	scenarioRoles,
 	scenarios,
 } from "@carbon-wfp/db/schema/wfp-extended";
+// stepCountIs replaces maxSteps in AI SDK v6; toUIMessageStreamResponse replaces toDataStreamResponse
 import { stepCountIs, streamText, tool } from "ai";
 import { and, asc, avg, count, eq, inArray, sum } from "drizzle-orm";
 import { Hono } from "hono";
@@ -222,17 +223,34 @@ const getScenarioSummary = tool({
 	},
 });
 
+const chatBodySchema = z.object({
+	messages: z.array(
+		z.object({
+			role: z.enum(["user", "assistant", "system", "tool"]),
+			content: z.union([z.string(), z.array(z.unknown())]),
+		}),
+	),
+});
+
 chatRoute.post("/api/chat", async (c) => {
 	const session = await auth.api.getSession({ headers: c.req.raw.headers });
 	if (!session) return c.json({ error: "Unauthorized" }, 401);
 
-	const body = await c.req.json<{ messages: unknown[] }>();
-	const messages = body.messages;
+	const raw = await c.req.json();
+	const parsed = chatBodySchema.safeParse(raw);
+	if (!parsed.success) {
+		return c.json(
+			{ error: "Invalid request body", details: parsed.error.issues },
+			400,
+		);
+	}
+
+	const { messages } = parsed.data;
 
 	const result = streamText({
 		model: openai("gpt-4o"),
 		system: SYSTEM_PROMPT,
-		// biome-ignore lint/suspicious/noExplicitAny: AI SDK messages type
+		// biome-ignore lint/suspicious/noExplicitAny: AI SDK CoreMessage union types are narrower than our schema
 		messages: messages as any,
 		tools: {
 			getRevenueSummary,
@@ -246,5 +264,7 @@ chatRoute.post("/api/chat", async (c) => {
 		stopWhen: stepCountIs(5),
 	});
 
-	return result.toTextStreamResponse();
+	// toUIMessageStreamResponse is the v6 equivalent of toDataStreamResponse —
+	// it emits the same JSON data-stream protocol (text-delta, tool-call, tool-result events)
+	return result.toUIMessageStreamResponse();
 });

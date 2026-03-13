@@ -1,4 +1,5 @@
 import {
+	AiChat02Icon,
 	Briefcase01Icon,
 	Calendar01Icon,
 	Cancel01Icon,
@@ -11,13 +12,11 @@ import {
 	UserGroupIcon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { useNavigate } from "@tanstack/react-router";
 
 import { authClient } from "@/lib/auth-client";
 import { getRank, getUserRole } from "@/lib/rbac";
 import { CarbonLogo } from "./logo";
 import { type NavItem, NavMain } from "./nav-main";
-import { useRecentViews } from "./use-recent-views";
 import { UserFooter } from "./user-footer";
 
 const NAV_ITEMS: NavItem[] = [
@@ -47,21 +46,17 @@ const NAV_ITEMS: NavItem[] = [
 		icon: Calendar01Icon,
 		minRank: 10,
 	},
+	{
+		to: "/chat",
+		label: "AI Assistant",
+		icon: AiChat02Icon,
+		minRank: 10,
+	},
 ];
 
 const ADMIN_ITEMS: NavItem[] = [
 	{ to: "/admin", label: "Settings", icon: Settings01Icon, minRank: 100 },
 ];
-
-const NAV_ICON_MAP: Record<string, typeof DashboardSquare01Icon> = {
-	"/dashboard": DashboardSquare01Icon,
-	"/capacity-plan": ChartLineData02Icon,
-	"/carbonites": UserGroupIcon,
-	"/hiring": Briefcase01Icon,
-	"/scenarios": FlowSquareIcon,
-	"/fy-planning": Calendar01Icon,
-	"/admin": Settings01Icon,
-};
 
 function openCommandPalette() {
 	document.dispatchEvent(
@@ -82,9 +77,6 @@ export function AppSidebar({
 	isMobileOpen,
 	setMobileOpen,
 }: AppSidebarProps) {
-	const recentViews = useRecentViews();
-	const navigate = useNavigate();
-
 	const { data: session } = authClient.useSession();
 	const userRole = getUserRole(session?.user);
 	const userRank = getRank(userRole);
@@ -177,34 +169,6 @@ export function AppSidebar({
 						<>
 							<div className="my-1 border-stroke-soft-200 border-t" />
 							<NavMain items={visibleAdmin} isCollapsed={effectiveCollapsed} />
-						</>
-					)}
-
-					{/* Recent views — hidden in collapsed mode */}
-					{!effectiveCollapsed && recentViews.length > 0 && (
-						<>
-							<div className="my-1 border-stroke-soft-200 border-t" />
-							<span className="section-label px-3">Recent</span>
-							<ul className="flex flex-col gap-0.5">
-								{recentViews.map((view) => {
-									const icon = NAV_ICON_MAP[view.to] ?? DashboardSquare01Icon;
-									return (
-										<li key={view.to}>
-											<button
-												type="button"
-												onClick={() => navigate({ to: view.to })}
-												className="flex w-full items-center gap-3 rounded-lg px-3 py-2 font-medium text-sm text-text-sub-600 transition-colors hover:bg-bg-weak-50"
-											>
-												<HugeiconsIcon
-													icon={icon}
-													className="size-5 shrink-0"
-												/>
-												<span className="truncate">{view.label}</span>
-											</button>
-										</li>
-									);
-								})}
-							</ul>
 						</>
 					)}
 				</div>

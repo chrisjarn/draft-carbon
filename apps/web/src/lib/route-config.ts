@@ -1,4 +1,5 @@
 import {
+	AiChat02Icon,
 	Briefcase01Icon,
 	Calendar01Icon,
 	ChartLineData02Icon,
@@ -57,5 +58,10 @@ export const ROUTE_CONFIG: Record<
 		title: "Todos",
 		description: "Task management scratch pad.",
 		icon: CheckmarkBadge02Icon,
+	},
+	"/chat": {
+		title: "AI Assistant",
+		description: "Ask questions about revenue, headcount, hiring, and more.",
+		icon: AiChat02Icon,
 	},
 };

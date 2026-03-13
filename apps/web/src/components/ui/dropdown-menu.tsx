@@ -46,7 +46,7 @@ function DropdownMenuContent({
 				side={side}
 				sideOffset={sideOffset}
 				className={cn(
-					"data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 max-h-[var(--radix-dropdown-menu-content-available-height)] min-w-32 overflow-y-auto overflow-x-hidden rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-1 shadow-gray-shadow data-[state=closed]:animate-out data-[state=open]:animate-in",
+					"data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 max-h-[var(--radix-dropdown-menu-content-available-height)] min-w-32 max-w-xs overflow-y-auto overflow-x-hidden rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-1 shadow-gray-shadow data-[state=closed]:animate-out data-[state=open]:animate-in",
 					className,
 				)}
 				{...props}
@@ -98,7 +98,7 @@ function DropdownMenuItem({
 			data-inset={inset}
 			data-variant={variant}
 			className={cn(
-				"group/dropdown-menu-item relative flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-2 text-sm outline-hidden focus:bg-bg-weak-50 focus:text-text-sub-600 data-[disabled]:pointer-events-none data-[inset]:pl-7 data-[variant=destructive]:text-error-base data-[disabled]:opacity-50 data-[variant=destructive]:focus:bg-error-light [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0 data-[variant=destructive]:*:[svg]:text-error-base",
+				"group/dropdown-menu-item relative flex cursor-default select-none items-center gap-2 overflow-hidden whitespace-nowrap rounded-sm px-2 py-2 text-sm outline-hidden focus:bg-bg-weak-50 focus:text-text-sub-600 data-[disabled]:pointer-events-none data-[inset]:pl-7 data-[variant=destructive]:text-error-base data-[disabled]:opacity-50 data-[variant=destructive]:focus:bg-error-light [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0 data-[variant=destructive]:*:[svg]:text-error-base",
 				className,
 			)}
 			{...props}

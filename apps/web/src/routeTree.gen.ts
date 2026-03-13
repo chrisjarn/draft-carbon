@@ -17,6 +17,7 @@ import { Route as AppScenariosRouteImport } from './routes/_app/scenarios'
 import { Route as AppHiringRouteImport } from './routes/_app/hiring'
 import { Route as AppFyPlanningRouteImport } from './routes/_app/fy-planning'
 import { Route as AppDashboardRouteImport } from './routes/_app/dashboard'
+import { Route as AppChatRouteImport } from './routes/_app/chat'
 import { Route as AppCarbonitesRouteImport } from './routes/_app/carbonites'
 import { Route as AppCapacityPlanRouteImport } from './routes/_app/capacity-plan'
 import { Route as AppAdminRouteImport } from './routes/_app/admin'
@@ -65,6 +66,11 @@ const AppDashboardRoute = AppDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AppRoute,
 } as any)
+const AppChatRoute = AppChatRouteImport.update({
+  id: '/chat',
+  path: '/chat',
+  getParentRoute: () => AppRoute,
+} as any).lazy(() => import('./routes/_app/chat.lazy').then((d) => d.Route))
 const AppCarbonitesRoute = AppCarbonitesRouteImport.update({
   id: '/carbonites',
   path: '/carbonites',
@@ -98,6 +104,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AppAdminRoute
   '/capacity-plan': typeof AppCapacityPlanRoute
   '/carbonites': typeof AppCarbonitesRoute
+  '/chat': typeof AppChatRoute
   '/dashboard': typeof AppDashboardRoute
   '/fy-planning': typeof AppFyPlanningRoute
   '/hiring': typeof AppHiringRoute
@@ -111,6 +118,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AppAdminRoute
   '/capacity-plan': typeof AppCapacityPlanRoute
   '/carbonites': typeof AppCarbonitesRoute
+  '/chat': typeof AppChatRoute
   '/dashboard': typeof AppDashboardRoute
   '/fy-planning': typeof AppFyPlanningRoute
   '/hiring': typeof AppHiringRoute
@@ -126,6 +134,7 @@ export interface FileRoutesById {
   '/_app/admin': typeof AppAdminRoute
   '/_app/capacity-plan': typeof AppCapacityPlanRoute
   '/_app/carbonites': typeof AppCarbonitesRoute
+  '/_app/chat': typeof AppChatRoute
   '/_app/dashboard': typeof AppDashboardRoute
   '/_app/fy-planning': typeof AppFyPlanningRoute
   '/_app/hiring': typeof AppHiringRoute
@@ -141,6 +150,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/capacity-plan'
     | '/carbonites'
+    | '/chat'
     | '/dashboard'
     | '/fy-planning'
     | '/hiring'
@@ -154,6 +164,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/capacity-plan'
     | '/carbonites'
+    | '/chat'
     | '/dashboard'
     | '/fy-planning'
     | '/hiring'
@@ -168,6 +179,7 @@ export interface FileRouteTypes {
     | '/_app/admin'
     | '/_app/capacity-plan'
     | '/_app/carbonites'
+    | '/_app/chat'
     | '/_app/dashboard'
     | '/_app/fy-planning'
     | '/_app/hiring'
@@ -240,6 +252,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppDashboardRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/chat': {
+      id: '/_app/chat'
+      path: '/chat'
+      fullPath: '/chat'
+      preLoaderRoute: typeof AppChatRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/carbonites': {
       id: '/_app/carbonites'
       path: '/carbonites'
@@ -287,6 +306,7 @@ interface AppRouteChildren {
   AppAdminRoute: typeof AppAdminRoute
   AppCapacityPlanRoute: typeof AppCapacityPlanRoute
   AppCarbonitesRoute: typeof AppCarbonitesRoute
+  AppChatRoute: typeof AppChatRoute
   AppDashboardRoute: typeof AppDashboardRoute
   AppFyPlanningRoute: typeof AppFyPlanningRoute
   AppHiringRoute: typeof AppHiringRoute
@@ -298,6 +318,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppAdminRoute: AppAdminRoute,
   AppCapacityPlanRoute: AppCapacityPlanRoute,
   AppCarbonitesRoute: AppCarbonitesRoute,
+  AppChatRoute: AppChatRoute,
   AppDashboardRoute: AppDashboardRoute,
   AppFyPlanningRoute: AppFyPlanningRoute,
   AppHiringRoute: AppHiringRoute,
