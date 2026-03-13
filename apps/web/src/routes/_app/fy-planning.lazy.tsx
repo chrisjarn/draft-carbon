@@ -20,8 +20,8 @@ import {
 	derivePriorFy,
 	type EntityWithRevenue,
 	ExecutiveSummary,
-	type FYSummaryData,
 	exportRevenueCsv,
+	type FYSummaryData,
 	fmt,
 	makeRevenueColumns,
 	PodComparisonTable,
@@ -197,9 +197,8 @@ function FyPlanningPage() {
 
 	const summaryData = useMemo((): FYSummaryData => {
 		const entityCount = rawRows.length;
-		const stateCount = new Set(
-			rawRows.map((r) => r.state).filter(Boolean),
-		).size;
+		const stateCount = new Set(rawRows.map((r) => r.state).filter(Boolean))
+			.size;
 		const totalPayroll = firmKPIsQuery.data?.totalPayroll ?? 0;
 		const payrollPct =
 			totalActual > 0 ? Math.round((totalPayroll / totalActual) * 100) : null;

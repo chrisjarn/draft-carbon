@@ -28,8 +28,18 @@ import type { ScenarioRoleValues } from "./wizard-types";
 // ── Constants ────────────────────────────────────────────────────────────────
 
 const MONTHS = [
-	"Jan", "Feb", "Mar", "Apr", "May", "Jun",
-	"Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+	"Jan",
+	"Feb",
+	"Mar",
+	"Apr",
+	"May",
+	"Jun",
+	"Jul",
+	"Aug",
+	"Sep",
+	"Oct",
+	"Nov",
+	"Dec",
 ] as const;
 
 // ── Types ───────────────────────────────────────────────────────────────────
@@ -94,7 +104,16 @@ export function ScenarioLeversPanel({
 			roles:
 				hires.length > 0
 					? hires
-					: [{ roleTitle: "", sl: "", salary: "", count: "1", employmentType: "", startMonth: "" }],
+					: [
+							{
+								roleTitle: "",
+								sl: "",
+								salary: "",
+								count: "1",
+								employmentType: "",
+								startMonth: "",
+							},
+						],
 		},
 		onSubmit: ({ value }) => {
 			const validRoles = value.roles
@@ -314,7 +333,10 @@ export function ScenarioLeversPanel({
 											})
 										}
 									>
-										<HugeiconsIcon icon={PlusSignIcon} className="mr-1 size-3" />
+										<HugeiconsIcon
+											icon={PlusSignIcon}
+											className="mr-1 size-3"
+										/>
 										Add Role
 									</Button>
 								)}

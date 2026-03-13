@@ -55,7 +55,16 @@ export function defaultWizardValues(
 		name: "",
 		description: "",
 		color: defaultColor ?? "#4CAF50",
-		roles: [{ roleTitle: "", sl: "", salary: "", count: "1", employmentType: "", startMonth: "" }],
+		roles: [
+			{
+				roleTitle: "",
+				sl: "",
+				salary: "",
+				count: "1",
+				employmentType: "",
+				startMonth: "",
+			},
+		],
 	};
 }
 

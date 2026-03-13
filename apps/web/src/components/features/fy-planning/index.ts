@@ -1,6 +1,5 @@
 export { CsvImportDialog } from "./csv-import-dialog";
 export { ExecutiveSummary, type FYSummaryData } from "./executive-summary";
-export { SalaryMarketChart } from "./salary-market-chart";
 export { PodComparisonTable } from "./pod-comparison-table";
 export {
 	buildGroupCells,
@@ -8,6 +7,7 @@ export {
 	RevenueCell,
 	TotalsFooter,
 } from "./revenue-table";
+export { SalaryMarketChart } from "./salary-market-chart";
 export type {
 	ComparisonRow,
 	CsvRow,

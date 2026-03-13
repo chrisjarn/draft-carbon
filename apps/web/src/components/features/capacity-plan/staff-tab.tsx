@@ -3,11 +3,6 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Row, Table } from "@tanstack/react-table";
 import { useState } from "react";
 import { toast } from "sonner";
-import { DatePicker } from "@/components/molecules/date-picker";
-import { FormField } from "@/components/molecules/form-field";
-import { FormGrid } from "@/components/molecules/form-grid";
-import { DataTable } from "@/components/organisms/data-table/data-table";
-import { DataTableSkeleton } from "@/components/organisms/data-table/data-table-skeleton";
 import {
 	AppDialog,
 	AppDialogContent,
@@ -15,6 +10,18 @@ import {
 	AppDialogHeader,
 	AppDialogTitle,
 } from "@/components/molecules/app-dialog";
+import { DatePicker } from "@/components/molecules/date-picker";
+import { FormField } from "@/components/molecules/form-field";
+import { FormGrid } from "@/components/molecules/form-grid";
+import { DataTable } from "@/components/organisms/data-table/data-table";
+import { DataTableSkeleton } from "@/components/organisms/data-table/data-table-skeleton";
+import {
+	AlertDialog,
+	AlertDialogContent,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -24,13 +31,6 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import {
-	AlertDialog,
-	AlertDialogContent,
-	AlertDialogFooter,
-	AlertDialogHeader,
-	AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { fmtDollar } from "@/lib/format";
 import { trpc } from "@/utils/trpc";
 
@@ -343,24 +343,20 @@ export function StaffTab({
 									if (roleChanged) {
 										const oldSalary = editStaff.salary ?? 0;
 										const newSalary = editStaff.salary ?? 0;
-										const delta =
-											(newSalary - oldSalary) * billingMultiplier;
+										const delta = (newSalary - oldSalary) * billingMultiplier;
 										setRoleChangeWarning({
 											staffName: editStaff.name,
 											oldRole:
 												editStaff.meta?.staffRole?.trim() ||
 												editStaff.role ||
 												"",
-											newRole:
-												f.staffRole?.trim() || editStaff.role || "",
+											newRole: f.staffRole?.trim() || editStaff.role || "",
 											oldSalary,
 											newSalary,
 											billingMultiplier,
 											delta,
 											oldRoleTag:
-												editStaff.meta?.roleTag ||
-												editStaff.role ||
-												"",
+												editStaff.meta?.roleTag || editStaff.role || "",
 										});
 									}
 								},
@@ -372,26 +368,37 @@ export function StaffTab({
 			)}
 
 			{roleChangeWarning && (
-				<AlertDialog open onOpenChange={(o) => !o && setRoleChangeWarning(null)}>
+				<AlertDialog
+					open
+					onOpenChange={(o) => !o && setRoleChangeWarning(null)}
+				>
 					<AlertDialogContent>
 						<AlertDialogHeader>
 							<AlertDialogTitle>Role Change Impact</AlertDialogTitle>
 							<div className="space-y-2 px-6 text-sm text-text-soft-400">
 								<p>
 									{roleChangeWarning.staffName} has moved from{" "}
-									<strong className="text-text-strong-950">{roleChangeWarning.oldRole}</strong> to{" "}
-									<strong className="text-text-strong-950">{roleChangeWarning.newRole}</strong>.
+									<strong className="text-text-strong-950">
+										{roleChangeWarning.oldRole}
+									</strong>{" "}
+									to{" "}
+									<strong className="text-text-strong-950">
+										{roleChangeWarning.newRole}
+									</strong>
+									.
 								</p>
 								<p>
 									Billing capacity delta:{" "}
-									<span className="tabular-nums font-medium text-text-strong-950">
+									<span className="font-medium text-text-strong-950 tabular-nums">
 										{fmtDollar(roleChangeWarning.delta)}
 									</span>
 								</p>
 								<p>
 									Consider hiring a replacement{" "}
-									<strong className="text-text-strong-950">{roleChangeWarning.oldRoleTag}</strong> to
-									maintain billing capacity.
+									<strong className="text-text-strong-950">
+										{roleChangeWarning.oldRoleTag}
+									</strong>{" "}
+									to maintain billing capacity.
 								</p>
 							</div>
 						</AlertDialogHeader>

@@ -41,9 +41,7 @@ export function PageHeader({
 					<h1 className="font-medium text-lg/snug text-text-strong-950 tracking-tight">
 						{titleOverride ?? config.title}
 					</h1>
-					<p className="font-medium text-sm text-text-soft-400">
-						{config.description}
-					</p>
+					<p className="text-sm">{config.description}</p>
 				</div>
 			</div>
 			{children && <div className="flex items-center gap-2">{children}</div>}

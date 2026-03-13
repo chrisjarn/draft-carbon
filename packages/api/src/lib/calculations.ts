@@ -243,14 +243,13 @@ export function detectAttritionRisks(
 			carboniteId: cb.id,
 			name: cb.name,
 			riskLevel,
-			reason:
-				isPartner
-					? "Key person / partner dependency"
-					: highSeniorHighSalary
-						? "Senior staff — high market demand"
-						: highSalary
-							? "Above-market salary — counteroffers likely"
-							: "Mid-senior staff — competitive market",
+			reason: isPartner
+				? "Key person / partner dependency"
+				: highSeniorHighSalary
+					? "Senior staff — high market demand"
+					: highSalary
+						? "Above-market salary — counteroffers likely"
+						: "Mid-senior staff — competitive market",
 			impact: riskLevel === "high" ? "Critical" : "Significant",
 			score,
 			factors,

@@ -177,9 +177,7 @@ function flattenToRows(groups: StateGroup[]): PodTableRow[] {
 					variance: pod.budget - pod.totalSalary,
 					utilisation: pod.budget > 0 ? pod.totalSalary / pod.budget : 0,
 					projectedYearEnd:
-						elapsed > 0
-							? (pod.totalSalary / elapsed) * 12
-							: pod.totalSalary,
+						elapsed > 0 ? (pod.totalSalary / elapsed) * 12 : pod.totalSalary,
 				});
 			}
 		}

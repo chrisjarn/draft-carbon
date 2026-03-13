@@ -425,7 +425,7 @@ function CarbonitesPage() {
 								style={{ backgroundColor: sl.color }}
 								aria-hidden="true"
 							/>
-							<span className="text-text-soft-400 text-xs">
+							<span className="text-xs">
 								{sl.label} ({sl.count})
 							</span>
 						</li>

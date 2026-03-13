@@ -69,7 +69,7 @@ export function KpiSection({
 				value={stats?.totalCarbonites ?? 0}
 				valueClass="text-emerald-700"
 				loading={loading}
-				>
+			>
 				<p className="text-text-soft-400 text-xs">
 					{entityCount} entities nationwide
 				</p>
@@ -80,7 +80,6 @@ export function KpiSection({
 				value={<span className="tabular-nums">{revenuePct}%</span>}
 				valueClass={revenueValueClass}
 				loading={loading}
-				className="bg-bg-white-0 shadow-custom-input hover:bg-bg-weak-50 hover:shadow-none"
 			>
 				<ProgressBar value={revenuePct} variant={revenueProgressVariant} />
 				<p className="mt-1 text-text-soft-400 text-xs tabular-nums">
@@ -93,7 +92,6 @@ export function KpiSection({
 				value={fmtDollar(totalPayroll)}
 				valueClass="text-text-strong-950"
 				loading={loading}
-				className="bg-bg-white-0 shadow-custom-input hover:bg-bg-weak-50 hover:shadow-none"
 			>
 				<p className="text-text-soft-400 text-xs">Live from pod salaries</p>
 			</KpiCard>
@@ -103,7 +101,6 @@ export function KpiSection({
 				value={<span className="tabular-nums">{payrollPct.toFixed(1)}%</span>}
 				valueClass={payrollValueClass}
 				loading={loading}
-				className="bg-bg-white-0 shadow-custom-input hover:bg-bg-weak-50 hover:shadow-none"
 			>
 				<p className={`text-xs tabular-nums ${payrollStatusColor}`}>
 					{payrollStatusText}

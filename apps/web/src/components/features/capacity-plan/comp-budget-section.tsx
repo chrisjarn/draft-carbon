@@ -64,7 +64,7 @@ function MiniMetric({
 }) {
 	return (
 		<div className="flex flex-col gap-0.5 rounded-md border bg-bg-white-0 px-3 py-2">
-			<span className="text-text-soft-400 text-xs">{label}</span>
+			<span className="text-xs">{label}</span>
 			<span
 				className={cn(
 					"font-semibold text-sm tabular-nums",
@@ -104,7 +104,7 @@ export function CompBudgetSection({
 
 	return (
 		<div className="space-y-3">
-			<h4 className="flex items-center gap-1.5 font-medium text-sm text-text-soft-400">
+			<h4 className="flex items-center gap-1.5 font-medium text-sm">
 				<HugeiconsIcon icon={Dollar01Icon} className="size-3.5" />
 				Compensation Budget
 				{entityState && (

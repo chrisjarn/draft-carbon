@@ -296,7 +296,7 @@
 	--color-stable-lighter: var(--color-teal-50);
 
 	/* AlignUI Font */
-	--font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+	--font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
 
 	/* AlignUI Typography System */
 	--text-title-h1: 3.5rem;

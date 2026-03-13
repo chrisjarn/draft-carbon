@@ -40,7 +40,7 @@ export function KpiCard({
 	return (
 		<div
 			className={cn(
-				"relative w-full overflow-hidden rounded-20 bg-bg-white-0 p-5 text-left shadow-custom-input transition-all duration-200 hover:bg-bg-weak-50 hover:shadow-none",
+				"relative w-full overflow-hidden rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-4 text-left transition-colors hover:bg-bg-weak-50",
 				className,
 			)}
 		>
@@ -52,7 +52,7 @@ export function KpiCard({
 			) : (
 				<dd
 					className={cn(
-						"mt-2 font-semibold text-2xl tabular-nums tracking-tight text-text-strong-950",
+						"mt-1.5 font-semibold text-text-strong-950 text-xl tabular-nums tracking-tight",
 						valueClass,
 					)}
 				>

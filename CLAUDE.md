@@ -60,7 +60,7 @@ All under `/_app/` use `.lazy.tsx` code-splitting: `/dashboard`, `/carbonites`, 
 ## Design System
 - **Theme**: zinc + emerald, shadcn base-maia style, dark sidebar (`inverted` menu)
 - **Icons**: Hugeicons only — `<HugeiconsIcon icon={IconNameIcon} />`. Never use lucide-react.
-- **Font**: Plus Jakarta Sans, loaded via Google Fonts in `index.html`, mapped to `--font-sans` in `src/index.css`
+- **Font**: Inter, loaded via Google Fonts in `index.html`, mapped to `--font-sans` in `src/index.css`
 - **Adding components**: `bunx --bun shadcn@latest add <name>` from `apps/web/`, then replace any lucide imports with Hugeicons
 
 ## Conventions

@@ -384,9 +384,7 @@ export function getStaffTableColumns(
 				const actual = Number(row.original.meta?.billingActual ?? 0);
 				const target = Number(row.original.meta?.billingTarget ?? 0);
 				if (!actual || !target) {
-					return (
-						<span className="text-sm text-text-soft-400">{"\u2014"}</span>
-					);
+					return <span className="text-sm text-text-soft-400">{"\u2014"}</span>;
 				}
 				const attainmentPct = (actual / target) * 100;
 				const badgeCls =
@@ -412,8 +410,7 @@ export function getStaffTableColumns(
 		},
 		{
 			id: "attritionRisk",
-			accessorFn: (row) =>
-				opts.attritionRiskMap.get(row.id)?.riskLevel ?? null,
+			accessorFn: (row) => opts.attritionRiskMap.get(row.id)?.riskLevel ?? null,
 			enableSorting: true,
 			enableColumnFilter: false,
 			header: ({ column }) => (

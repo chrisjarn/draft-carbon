@@ -65,7 +65,7 @@ export function SlBreakdownBars({
 						type="button"
 						className={cn(
 							"w-full space-y-1 rounded-md px-2 py-1 text-left transition-colors hover:bg-bg-weak-50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-stroke-soft-200",
-							isActive && "border-l-2 border-emerald-500 pl-1.5",
+							isActive && "border-emerald-500 border-l-2 pl-1.5",
 						)}
 						onClick={() => onSlClick?.(isActive ? null : row.sl)}
 					>

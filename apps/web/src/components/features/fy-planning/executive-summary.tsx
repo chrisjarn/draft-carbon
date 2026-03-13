@@ -46,14 +46,13 @@ export function ExecutiveSummary({ data }: { data: FYSummaryData }) {
 			: "text-text-strong-950";
 
 	return (
-		<blockquote className="rounded-r-lg border-l-4 border-blue-600 bg-blue-50/50 p-5">
-			<p className="text-balance text-sm leading-relaxed text-text-strong-950">
+		<blockquote className="rounded-r-lg border-blue-600 border-l-4 bg-blue-50/50 p-5">
+			<p className="text-balance text-sm text-text-strong-950 leading-relaxed">
 				In <strong className="tabular-nums">{fyLabel}</strong>, Carbon tracked{" "}
 				<strong className="tabular-nums">{fmtDollar(revenueActual)}</strong>{" "}
 				actual revenue against a{" "}
 				<strong className="tabular-nums">{fmtDollar(revenueTarget)}</strong>{" "}
-				target across{" "}
-				<strong className="tabular-nums">{entityCount}</strong>{" "}
+				target across <strong className="tabular-nums">{entityCount}</strong>{" "}
 				{entityCount === 1 ? "entity" : "entities"} in{" "}
 				<strong className="tabular-nums">{stateCount}</strong>{" "}
 				{stateCount === 1 ? "state" : "states"}, delivering{" "}
@@ -67,7 +66,8 @@ export function ExecutiveSummary({ data }: { data: FYSummaryData }) {
 						<strong className="tabular-nums">{fmtDollar(totalPayroll)}</strong>
 						{payrollPct !== null && (
 							<>
-								{" "}represents{" "}
+								{" "}
+								represents{" "}
 								<strong className={`tabular-nums ${payrollClass}`}>
 									{payrollPct}%
 								</strong>{" "}
@@ -87,11 +87,11 @@ export function ExecutiveSummary({ data }: { data: FYSummaryData }) {
 				)}
 				{atRiskCount > 0 && (
 					<>
-						<strong className="tabular-nums text-amber-600">{atRiskCount}</strong>{" "}
-						{atRiskCount === 1
-							? "staff member has"
-							: "staff members have"}{" "}
-						been flagged as attrition risks.
+						<strong className="text-amber-600 tabular-nums">
+							{atRiskCount}
+						</strong>{" "}
+						{atRiskCount === 1 ? "staff member has" : "staff members have"} been
+						flagged as attrition risks.
 					</>
 				)}
 			</p>

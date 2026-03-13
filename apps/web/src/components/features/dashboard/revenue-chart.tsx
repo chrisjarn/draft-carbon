@@ -168,9 +168,7 @@ export function RevenueChart({ data, loading, fy }: RevenueChartProps) {
 												<span style={{ color }}>{fmtDollar(d.actual)}</span>
 											</div>
 											<div className="flex justify-between gap-4 tabular-nums">
-												<span className="text-text-soft-400">
-													Attainment
-												</span>
+												<span className="text-text-soft-400">Attainment</span>
 												<span style={{ color }}>{d.pct}%</span>
 											</div>
 											<div className="flex justify-between gap-4 tabular-nums">

@@ -378,21 +378,21 @@ export default function Login04() {
 			{/* Right panel — form */}
 			<div className="flex flex-1 flex-col justify-center bg-bg-weak-50 px-8 py-10 lg:px-12">
 				<div className="mx-auto w-full max-w-sm">
-				<div className="shadow-custom-input rounded-20 bg-bg-white-0 p-8">
-					{/* Mobile logo */}
-					<div className="mb-6 flex items-center space-x-2 lg:hidden">
-						<CarbonLogo />
-						<p className="font-semibold text-lg text-text-strong-950">
-							Carbon Group
-						</p>
-					</div>
+					<div className="rounded-20 bg-bg-white-0 p-8 shadow-custom-input">
+						{/* Mobile logo */}
+						<div className="mb-6 flex items-center space-x-2 lg:hidden">
+							<CarbonLogo />
+							<p className="font-semibold text-lg text-text-strong-950">
+								Carbon Group
+							</p>
+						</div>
 
-					{isSignIn ? (
-						<SignInView onSwitch={() => setIsSignIn(false)} />
-					) : (
-						<SignUpView onSwitch={() => setIsSignIn(true)} />
-					)}
-				</div>
+						{isSignIn ? (
+							<SignInView onSwitch={() => setIsSignIn(false)} />
+						) : (
+							<SignUpView onSwitch={() => setIsSignIn(true)} />
+						)}
+					</div>
 				</div>
 			</div>
 		</div>

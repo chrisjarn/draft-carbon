@@ -234,10 +234,12 @@ export function makeRevenueColumns(
 					row.original.revenue?.actual ?? null,
 				);
 				const priorPct = priorAttainmentMap.get(row.original.id);
-				if (priorPct === undefined || priorPct === null || currentPct === null) {
-					return (
-						<span className="text-sm text-text-soft-400">{"\u2014"}</span>
-					);
+				if (
+					priorPct === undefined ||
+					priorPct === null ||
+					currentPct === null
+				) {
+					return <span className="text-sm text-text-soft-400">{"\u2014"}</span>;
 				}
 				const delta = currentPct - priorPct;
 				const isPositive = delta >= 0;

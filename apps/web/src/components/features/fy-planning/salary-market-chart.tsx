@@ -127,10 +127,7 @@ export function SalaryMarketChart({
 	const chartData = useMemo(() => {
 		// Aggregate brackets by SL: compute average market min/max across all
 		// bracket rows in the SL so we get exactly one datum per service line.
-		const slMap = new Map<
-			string,
-			{ mins: number[]; maxes: number[] }
-		>();
+		const slMap = new Map<string, { mins: number[]; maxes: number[] }>();
 		for (const bracket of brackets) {
 			const market = getEffectiveMarketRange(bracket, stateFilter);
 			if (!market) continue;
@@ -154,8 +151,7 @@ export function SalaryMarketChart({
 			const marketMax = agg
 				? Math.round(agg.maxes.reduce((s, v) => s + v, 0) / agg.maxes.length)
 				: 0;
-			const market =
-				agg ? { min: marketMin, max: marketMax } : null;
+			const market = agg ? { min: marketMin, max: marketMax } : null;
 			const carbonAvg = avgBySl.get(slId) ?? 0;
 			return {
 				sl: slLabel(slId),
@@ -261,8 +257,7 @@ export function SalaryMarketChart({
 							<ChartTooltip
 								content={({ active, payload }) => {
 									if (!active || !payload?.length) return null;
-									const d = payload[0]
-										?.payload as (typeof chartData)[number];
+									const d = payload[0]?.payload as (typeof chartData)[number];
 									if (!d) return null;
 									return (
 										<div className="rounded-none border bg-background px-2.5 py-1.5 text-sm shadow-xl">
@@ -273,7 +268,9 @@ export function SalaryMarketChart({
 														Market Min
 													</span>
 													<span>
-														{d.marketMin > 0 ? fmtDollar(d.marketMin) : "\u2014"}
+														{d.marketMin > 0
+															? fmtDollar(d.marketMin)
+															: "\u2014"}
 													</span>
 												</div>
 												<div className="flex justify-between gap-4 tabular-nums">
@@ -281,7 +278,9 @@ export function SalaryMarketChart({
 														Carbon Avg
 													</span>
 													<span>
-														{d.carbonAvg > 0 ? fmtDollar(d.carbonAvg) : "\u2014"}
+														{d.carbonAvg > 0
+															? fmtDollar(d.carbonAvg)
+															: "\u2014"}
 													</span>
 												</div>
 												<div className="flex justify-between gap-4 tabular-nums">
@@ -289,7 +288,9 @@ export function SalaryMarketChart({
 														Market Max
 													</span>
 													<span>
-														{d.marketMax > 0 ? fmtDollar(d.marketMax) : "\u2014"}
+														{d.marketMax > 0
+															? fmtDollar(d.marketMax)
+															: "\u2014"}
 													</span>
 												</div>
 											</div>
@@ -297,11 +298,7 @@ export function SalaryMarketChart({
 									);
 								}}
 							/>
-							<Bar
-								dataKey="marketMin"
-								fill="#e4e4e7"
-								radius={[4, 4, 0, 0]}
-							/>
+							<Bar dataKey="marketMin" fill="#e4e4e7" radius={[4, 4, 0, 0]} />
 							<Bar dataKey="carbonAvg" radius={[4, 4, 0, 0]}>
 								{chartData.map((entry) => (
 									<Cell
@@ -310,11 +307,7 @@ export function SalaryMarketChart({
 									/>
 								))}
 							</Bar>
-							<Bar
-								dataKey="marketMax"
-								fill="#e4e4e7"
-								radius={[4, 4, 0, 0]}
-							/>
+							<Bar dataKey="marketMax" fill="#e4e4e7" radius={[4, 4, 0, 0]} />
 						</BarChart>
 					</ChartContainer>
 					{interpretation && (

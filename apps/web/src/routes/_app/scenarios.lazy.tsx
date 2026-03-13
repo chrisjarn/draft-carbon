@@ -11,14 +11,14 @@ import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { NewScenarioWizard } from "@/components/features/scenarios/new-scenario-wizard";
-import {
-	DeltaBadge,
-	ScenarioCard,
-	calcScenarioImpact,
-} from "@/components/features/scenarios/scenario-card";
 import type {
 	ScenarioData,
 	ScenarioImpact,
+} from "@/components/features/scenarios/scenario-card";
+import {
+	calcScenarioImpact,
+	DeltaBadge,
+	ScenarioCard,
 } from "@/components/features/scenarios/scenario-card";
 import { ScenarioFilters } from "@/components/features/scenarios/scenario-filters";
 import { PageHeader } from "@/components/organisms/page-header";
@@ -465,14 +465,14 @@ function ScenarioComparisonTable({
 										key={label}
 										className={
 											isRec
-												? "ring-1 ring-inset ring-blue-500 rounded-md"
+												? "rounded-md ring-1 ring-blue-500 ring-inset"
 												: undefined
 										}
 									>
 										<div className="flex flex-col gap-1">
 											<span className="font-medium">{label}</span>
 											{scenario && (
-												<span className="text-text-soft-400 text-xs font-normal truncate max-w-32">
+												<span className="max-w-32 truncate font-normal text-text-soft-400 text-xs">
 													{scenario.name}
 												</span>
 											)}
@@ -490,10 +490,10 @@ function ScenarioComparisonTable({
 					<TableBody>
 						{/* Headcount */}
 						<TableRow>
-							<TableCell className="text-text-soft-400 text-xs font-medium">
+							<TableCell className="font-medium text-text-soft-400 text-xs">
 								Headcount
 							</TableCell>
-							<TableCell className="tabular-nums text-text-soft-400">
+							<TableCell className="text-text-soft-400 tabular-nums">
 								{baseHeadcount}
 							</TableCell>
 							{slots.map(({ label, impact }) => (
@@ -515,10 +515,10 @@ function ScenarioComparisonTable({
 
 						{/* Annual Payroll */}
 						<TableRow>
-							<TableCell className="text-text-soft-400 text-xs font-medium">
+							<TableCell className="font-medium text-text-soft-400 text-xs">
 								Annual Payroll
 							</TableCell>
-							<TableCell className="tabular-nums text-text-soft-400">
+							<TableCell className="text-text-soft-400 tabular-nums">
 								{fmtDollar(basePayroll)}
 							</TableCell>
 							{slots.map(({ label, impact }) => (
@@ -540,10 +540,10 @@ function ScenarioComparisonTable({
 
 						{/* Billing Capacity */}
 						<TableRow>
-							<TableCell className="text-text-soft-400 text-xs font-medium">
+							<TableCell className="font-medium text-text-soft-400 text-xs">
 								Billing Capacity
 							</TableCell>
-							<TableCell className="tabular-nums text-text-soft-400">
+							<TableCell className="text-text-soft-400 tabular-nums">
 								{fmtDollar(baseBillingCapacity)}
 							</TableCell>
 							{slots.map(({ label, impact }) => (
@@ -565,10 +565,10 @@ function ScenarioComparisonTable({
 
 						{/* Revenue Gap */}
 						<TableRow>
-							<TableCell className="text-text-soft-400 text-xs font-medium">
+							<TableCell className="font-medium text-text-soft-400 text-xs">
 								Revenue Gap
 							</TableCell>
-							<TableCell className="tabular-nums text-text-soft-400">
+							<TableCell className="text-text-soft-400 tabular-nums">
 								{fmtDollar(baseRevGap)}
 							</TableCell>
 							{slots.map(({ label, impact }) => (
@@ -591,10 +591,10 @@ function ScenarioComparisonTable({
 
 						{/* Billing Multiple */}
 						<TableRow>
-							<TableCell className="text-text-soft-400 text-xs font-medium">
+							<TableCell className="font-medium text-text-soft-400 text-xs">
 								Billing Multiple
 							</TableCell>
-							<TableCell className="tabular-nums text-text-soft-400">
+							<TableCell className="text-text-soft-400 tabular-nums">
 								{fmtMultiple(baseMultiple)}
 							</TableCell>
 							{slots.map(({ label, impact }) => (

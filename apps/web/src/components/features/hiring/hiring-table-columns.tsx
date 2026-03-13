@@ -40,7 +40,7 @@ export type TabStatus = "open" | "active" | "offer" | "closed";
 
 export function SlBadge({ sl }: { sl: string | null }) {
 	if (!sl)
-		return <span className="text-text-soft-400 text-sm tabular-nums">—</span>;
+		return <span className="text-sm text-text-soft-400 tabular-nums">—</span>;
 	const meta = SERVICE_LINES.find((s) => s.id === sl);
 	const color = SL_COLOR_MAP[sl] ?? "#888";
 	return (
@@ -50,7 +50,7 @@ export function SlBadge({ sl }: { sl: string | null }) {
 				style={{ backgroundColor: color }}
 				aria-hidden="true"
 			/>
-			<span className="text-sm font-medium">{meta?.short ?? sl}</span>
+			<span className="font-medium text-sm">{meta?.short ?? sl}</span>
 		</span>
 	);
 }
@@ -59,7 +59,7 @@ export function SlBadge({ sl }: { sl: string | null }) {
 
 export function HiringStateBadge({ state }: { state: string | null }) {
 	if (!state)
-		return <span className="text-text-soft-400 text-sm tabular-nums">—</span>;
+		return <span className="text-sm text-text-soft-400 tabular-nums">—</span>;
 	const color = STATE_COLOR_MAP[state];
 	return (
 		<Badge
@@ -152,7 +152,7 @@ const CLOSED_HOW_LABELS: Record<string, string> = {
 };
 
 function ClosedHowBadge({ closedHow }: { closedHow: string | null }) {
-	if (!closedHow) return <span className="text-text-soft-400 text-sm">—</span>;
+	if (!closedHow) return <span className="text-sm text-text-soft-400">—</span>;
 	const key = closedHow.toLowerCase();
 	const cls = CLOSED_HOW_STYLES[key];
 	const label = CLOSED_HOW_LABELS[key] ?? closedHow;
@@ -277,21 +277,14 @@ export function useHiringColumns(
 					const positions = row.original.positions ?? 1;
 					const type = row.original.type;
 					return (
-						<div className="flex flex-col gap-0.5">
+						<div className="flex items-center gap-1.5">
 							<span className="font-medium text-sm">
 								{row.getValue("role")}
-								{positions > 1 && (
-									<Badge
-										variant="secondary"
-										size="sm"
-										className="ml-1.5 tabular-nums"
-									>
-										&times;{positions}
-									</Badge>
-								)}
 							</span>
-							{type && (
-								<TypeBadge type={type} />
+							{positions > 1 && (
+								<Badge variant="secondary" size="sm" className="tabular-nums">
+									&times;{positions}
+								</Badge>
 							)}
 						</div>
 					);
@@ -303,9 +296,7 @@ export function useHiringColumns(
 				header: ({ column }) => (
 					<DataTableColumnHeader column={column} title="Service Line" />
 				),
-				cell: ({ row }) => (
-					<SlBadge sl={row.getValue("sl") as string | null} />
-				),
+				cell: ({ row }) => <SlBadge sl={row.getValue("sl") as string | null} />,
 			},
 			{
 				accessorKey: "state",
@@ -339,9 +330,7 @@ export function useHiringColumns(
 					);
 					return (
 						<span className="text-sm tabular-nums">
-							{formatted ?? (
-								<span className="text-text-soft-400">—</span>
-							)}
+							{formatted ?? <span className="text-text-soft-400">—</span>}
 						</span>
 					);
 				},
@@ -358,7 +347,7 @@ export function useHiringColumns(
 					return range ? (
 						<span className="text-sm tabular-nums">{range}</span>
 					) : (
-						<span className="text-text-soft-400 text-sm">—</span>
+						<span className="text-sm text-text-soft-400">—</span>
 					);
 				},
 			},
@@ -412,17 +401,12 @@ export function useHiringColumns(
 						<Badge
 							variant="outline"
 							size="sm"
-							className="border-red-200 bg-red-50 tabular-nums text-red-700"
+							className="border-red-200 bg-red-50 text-red-700 tabular-nums"
 						>
 							{days}d
 						</Badge>
 					) : (
-						<span
-							className={cn(
-								"text-sm tabular-nums",
-								daysOpenColor(days),
-							)}
-						>
+						<span className={cn("text-sm tabular-nums", daysOpenColor(days))}>
 							{days}d
 						</span>
 					);

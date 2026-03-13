@@ -1,28 +1,9 @@
-import {
-	ArrowDown01Icon,
-	ArrowUp01Icon,
-	ChartLineData02Icon,
-} from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
 import { useQuery } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 
 import { Badge } from "@/components/ui/badge";
-import {
-	Collapsible,
-	CollapsiblePanel,
-	CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from "@/components/ui/table";
 import { SERVICE_LINES } from "@/lib/constants";
-import { fmtDollar } from "@/lib/format";
+import { fmtDollar, fmtK } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { trpc } from "@/utils/trpc";
 
@@ -59,21 +40,41 @@ function getMarketRange(
 	>;
 	const range = bracket[stateKey];
 	if (!range) return null;
-
-	// Prefer market range (m), fall back to recommended range (r)
 	if (range.m) return { min: range.m[0], max: range.m[1] };
 	return { min: range.r[0], max: range.r[1] };
 }
 
-function benchmarkColor(
+function getStatus(
 	avg: number,
-	market: { min: number; max: number } | null,
-): string {
-	if (!market || avg === 0) return "text-text-soft-400";
-	if (avg > market.max) return "text-red-400";
-	if (avg > market.max * 0.9) return "text-amber-400";
-	if (avg >= market.min) return "text-green-400";
-	return "text-blue-400"; // below min — might be underpaying
+	market: { min: number; max: number },
+): { textColor: string; dotClass: string; label: string; badgeClass: string } {
+	if (avg > market.max)
+		return {
+			textColor: "text-red-400",
+			dotClass: "bg-red-400",
+			label: "Above",
+			badgeClass: "border-red-500/40 bg-red-500/10 text-red-400",
+		};
+	if (avg > market.max * 0.9)
+		return {
+			textColor: "text-amber-400",
+			dotClass: "bg-amber-400",
+			label: "Near Max",
+			badgeClass: "border-amber-500/40 bg-amber-500/10 text-amber-400",
+		};
+	if (avg >= market.min)
+		return {
+			textColor: "text-emerald-500",
+			dotClass: "bg-emerald-500",
+			label: "In Range",
+			badgeClass: "border-green-500/40 bg-green-500/10 text-green-400",
+		};
+	return {
+		textColor: "text-blue-400",
+		dotClass: "bg-blue-400",
+		label: "Below Min",
+		badgeClass: "border-blue-500/40 bg-blue-500/10 text-blue-400",
+	};
 }
 
 function slLabel(slId: string): string {
@@ -89,9 +90,6 @@ export function SalaryBenchmarksSection({
 	entityId: string;
 	staff: EntityDetailData["staff"];
 }) {
-	const [open, setOpen] = useState(false);
-
-	// Derive unique SLs from staff
 	const staffSls = useMemo(() => {
 		const slSet = new Set<string>();
 		for (const s of staff) {
@@ -100,7 +98,6 @@ export function SalaryBenchmarksSection({
 		return [...slSet].sort();
 	}, [staff]);
 
-	// Compute avg salary per SL from entity staff
 	const avgBySl = useMemo(() => {
 		const map = new Map<string, { total: number; count: number }>();
 		for (const s of staff) {
@@ -117,11 +114,9 @@ export function SalaryBenchmarksSection({
 		return result;
 	}, [staff]);
 
-	// Fetch bracket data for each SL present in the entity
-	// Use getAll since we need multiple SLs — filter client-side
 	const bracketsQuery = useQuery({
 		...trpc.salaryBrackets.getAll.queryOptions(),
-		enabled: open && staffSls.length > 0,
+		enabled: staffSls.length > 0,
 	});
 
 	const brackets = useMemo(() => {
@@ -130,135 +125,168 @@ export function SalaryBenchmarksSection({
 		return bracketsQuery.data.filter((b) => slSet.has(b.sl));
 	}, [bracketsQuery.data, staffSls]);
 
-	// Derive entity state from first staff member (they share entity state)
 	const entityState = staff[0]?.state ?? null;
 
+	if (staff.length === 0) {
+		return (
+			<p className="py-8 text-center text-sm text-text-soft-400">
+				No staff data available
+			</p>
+		);
+	}
+
+	if (bracketsQuery.isPending) {
+		return (
+			<div className="space-y-6 py-2">
+				{[1, 2, 3].map((i) => (
+					<div key={i} className="space-y-2">
+						<div className="h-4 w-36 rounded bg-bg-weak-50" />
+						<div className="h-2 w-full rounded-full bg-bg-weak-50" />
+						<div className="h-3 w-24 rounded bg-bg-weak-50" />
+					</div>
+				))}
+			</div>
+		);
+	}
+
+	if (brackets.length === 0) {
+		return (
+			<p className="py-8 text-center text-sm text-text-soft-400">
+				No benchmark data for this entity&apos;s service lines
+			</p>
+		);
+	}
+
 	return (
-		<Collapsible open={open} onOpenChange={setOpen}>
-			<CollapsibleTrigger className="flex w-full items-center justify-between rounded-sm px-1 py-1.5 hover:bg-bg-weak-50/30">
-				<h4 className="flex items-center gap-1.5 font-medium text-sm text-text-soft-400">
-					<HugeiconsIcon icon={ChartLineData02Icon} className="size-3.5" />
-					Salary Benchmarks
-					<Badge variant="outline" size="sm" className="ml-1">
-						{staffSls.length} SL
-					</Badge>
-				</h4>
-				<HugeiconsIcon
-					icon={open ? ArrowUp01Icon : ArrowDown01Icon}
-					className="size-3.5 text-text-soft-400"
-				/>
-			</CollapsibleTrigger>
+		<div className="space-y-5">
+			{brackets.map((bracket) => {
+				const market = getMarketRange(bracket as BracketRow, entityState);
+				const carbonAvg = avgBySl.get(bracket.sl) ?? 0;
 
-			<CollapsiblePanel>
-				{bracketsQuery.isPending ? (
-					<p className="py-4 text-center text-sm text-text-soft-400">
-						Loading benchmarks...
-					</p>
-				) : brackets.length === 0 ? (
-					<p className="py-4 text-center text-sm text-text-soft-400">
-						No benchmark data available for this entity&apos;s service lines
-					</p>
-				) : (
-					<Table>
-						<TableHeader>
-							<TableRow>
-								<TableHead>Service Line</TableHead>
-								<TableHead>Benchmark Role</TableHead>
-								<TableHead className="text-right">Market Min</TableHead>
-								<TableHead className="text-right">Market Max</TableHead>
-								<TableHead className="text-right">Carbon Avg</TableHead>
-								<TableHead className="text-center">Status</TableHead>
-							</TableRow>
-						</TableHeader>
-						<TableBody>
-							{brackets.map((bracket) => {
-								const market = getMarketRange(
-									bracket as BracketRow,
-									entityState,
-								);
-								const carbonAvg = avgBySl.get(bracket.sl) ?? 0;
-								const color = benchmarkColor(carbonAvg, market);
-
-								return (
-									<TableRow key={bracket.id}>
-										<TableCell className="text-sm">
-											{slLabel(bracket.sl)}
-										</TableCell>
-										<TableCell className="text-sm text-text-soft-400">
-											{bracket.role}
-										</TableCell>
-										<TableCell className="text-right text-sm tabular-nums">
-											{market ? fmtDollar(market.min) : "\u2014"}
-										</TableCell>
-										<TableCell className="text-right text-sm tabular-nums">
-											{market ? fmtDollar(market.max) : "\u2014"}
-										</TableCell>
-										<TableCell
-											className={cn(
-												"text-right font-medium text-sm tabular-nums",
-												color,
-											)}
-										>
-											{carbonAvg > 0 ? fmtDollar(carbonAvg) : "\u2014"}
-										</TableCell>
-										<TableCell className="text-center">
-											{carbonAvg > 0 && market ? (
-												<StatusBadge avg={carbonAvg} market={market} />
-											) : (
-												<span className="text-text-soft-400 text-xs">
-													{"\u2014"}
-												</span>
-											)}
-										</TableCell>
-									</TableRow>
-								);
-							})}
-						</TableBody>
-					</Table>
-				)}
-			</CollapsiblePanel>
-		</Collapsible>
+				return (
+					<BenchmarkRangeRow
+						key={bracket.id}
+						sl={slLabel(bracket.sl)}
+						role={bracket.role}
+						market={market}
+						carbonAvg={carbonAvg}
+					/>
+				);
+			})}
+		</div>
 	);
 }
 
-// ── Status Badge ──────────────────────────────────────────────────────────────
+// ── BenchmarkRangeRow ─────────────────────────────────────────────────────────
 
-function StatusBadge({
-	avg,
+function BenchmarkRangeRow({
+	sl,
+	role,
 	market,
+	carbonAvg,
 }: {
-	avg: number;
-	market: { min: number; max: number };
+	sl: string;
+	role: string;
+	market: { min: number; max: number } | null;
+	carbonAvg: number;
 }) {
-	if (avg > market.max) {
+	if (!market) {
 		return (
-			<Badge
-				variant="outline"
-				size="sm"
-				className="border-red-500/40 bg-red-500/10 text-red-400"
-			>
-				Above
-			</Badge>
+			<div className="flex items-center justify-between">
+				<div>
+					<span className="font-medium text-sm">{sl}</span>
+					<span className="ml-1.5 text-text-soft-400 text-xs">{role}</span>
+				</div>
+				<span className="text-text-soft-400 text-xs">No market data</span>
+			</div>
 		);
 	}
-	if (avg > market.max * 0.9) {
-		return (
-			<Badge
-				variant="outline"
-				size="sm"
-				className="border-amber-500/40 bg-amber-500/10 text-amber-400"
-			>
-				Near Max
-			</Badge>
-		);
-	}
+
+	const pad = (market.max - market.min) * 0.5;
+	const barMin = Math.max(0, market.min - pad);
+	const barMax = market.max + pad;
+	const barSpan = barMax - barMin;
+
+	const minPct = ((market.min - barMin) / barSpan) * 100;
+	const maxPct = ((market.max - barMin) / barSpan) * 100;
+	const rawAvgPct =
+		carbonAvg > 0 ? ((carbonAvg - barMin) / barSpan) * 100 : null;
+	const clampedAvgPct =
+		rawAvgPct !== null ? Math.max(0, Math.min(100, rawAvgPct)) : null;
+
+	const status = carbonAvg > 0 ? getStatus(carbonAvg, market) : null;
+
 	return (
-		<Badge
-			variant="outline"
-			size="sm"
-			className="border-green-500/40 bg-green-500/10 text-green-400"
-		>
-			In Range
-		</Badge>
+		<div className="space-y-1.5">
+			{/* Row header */}
+			<div className="flex items-center justify-between gap-4">
+				<div className="min-w-0">
+					<span className="font-medium text-sm">{sl}</span>
+					<span className="ml-1.5 truncate text-text-soft-400 text-xs">
+						{role}
+					</span>
+				</div>
+				{status && carbonAvg > 0 && (
+					<div className="flex shrink-0 items-center gap-2">
+						<span
+							className={cn(
+								"font-medium text-sm tabular-nums",
+								status.textColor,
+							)}
+						>
+							{fmtDollar(carbonAvg)}
+						</span>
+						<Badge variant="outline" size="sm" className={status.badgeClass}>
+							{status.label}
+						</Badge>
+					</div>
+				)}
+			</div>
+
+			{/* Range bar */}
+			<div className="relative h-2 overflow-hidden rounded-full bg-bg-weak-50">
+				{/* Market zone */}
+				<div
+					className="absolute h-full bg-emerald-500/20"
+					style={{ left: `${minPct}%`, right: `${100 - maxPct}%` }}
+				/>
+				{/* Min boundary */}
+				<div
+					className="absolute h-full w-px bg-emerald-500/60"
+					style={{ left: `${minPct}%` }}
+				/>
+				{/* Max boundary */}
+				<div
+					className="absolute h-full w-px bg-emerald-500/60"
+					style={{ left: `${maxPct}%` }}
+				/>
+				{/* Carbon avg marker */}
+				{clampedAvgPct !== null && (
+					<div
+						className={cn(
+							"absolute top-1/2 size-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full",
+							status?.dotClass ?? "bg-text-soft-400",
+						)}
+						style={{ left: `${clampedAvgPct}%` }}
+					/>
+				)}
+			</div>
+
+			{/* Scale labels aligned to min/max boundaries */}
+			<div className="relative h-4">
+				<span
+					className="absolute text-text-soft-400 text-xs tabular-nums"
+					style={{ left: `${minPct}%`, transform: "translateX(-50%)" }}
+				>
+					{fmtK(market.min)}
+				</span>
+				<span
+					className="absolute text-text-soft-400 text-xs tabular-nums"
+					style={{ left: `${maxPct}%`, transform: "translateX(-50%)" }}
+				>
+					{fmtK(market.max)}
+				</span>
+			</div>
+		</div>
 	);
 }

@@ -72,8 +72,7 @@ export function CapacityBar({
 			? "bg-amber-500"
 			: "bg-green-500";
 
-	const hasProjection =
-		projectedYearEnd != null && projectedYearEnd > actual;
+	const hasProjection = projectedYearEnd != null && projectedYearEnd > actual;
 
 	if (!hasProjection) {
 		const spentPct = Math.min((actual / budget) * 100, 100);
@@ -104,7 +103,7 @@ export function CapacityBar({
 		<div className="relative h-1.5 w-full overflow-hidden rounded-full bg-bg-weak-50">
 			{/* Spent fill */}
 			<div
-				className={`absolute left-0 top-0 h-full ${fillColor}`}
+				className={`absolute top-0 left-0 h-full ${fillColor}`}
 				style={{ width: `${spentPct}%` }}
 			/>
 			{/* Projected extension */}
@@ -116,7 +115,7 @@ export function CapacityBar({
 			)}
 			{/* Budget limit marker — always shown */}
 			<div
-				className="absolute top-0 h-full w-px border-l border-dashed border-text-soft-400/60"
+				className="absolute top-0 h-full w-px border-text-soft-400/60 border-l border-dashed"
 				style={{ left: `${budgetMarkerPct}%` }}
 			/>
 		</div>

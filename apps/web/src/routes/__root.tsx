@@ -59,7 +59,7 @@ function RootComponent() {
 				<Toaster richColors />
 			</ThemeProvider>
 			{import.meta.env.DEV && <Agentation />}
-			<Suspense fallback={null}></Suspense>
+			<Suspense fallback={null} />
 		</>
 	);
 }

@@ -243,11 +243,11 @@ function DashboardPage() {
 							<div className="flex items-center justify-between px-7 py-5">
 								{/* Hero stat */}
 								<div className="flex flex-col gap-2">
-									<p className="text-[11px] font-medium text-white/30">
+									<p className="font-medium text-[11px] text-white/30">
 										{activeFy} &middot; Carbon Group
 									</p>
 									<div className="flex items-baseline gap-2.5">
-										<span className="font-bold text-5xl text-white leading-none tabular-nums">
+										<span className="font-bold text-5xl text-white tabular-nums leading-none">
 											{bannerStats.carbonites}
 										</span>
 										<span className="font-medium text-lg text-white/40 leading-none">
@@ -259,28 +259,28 @@ function DashboardPage() {
 								{/* Supporting stats */}
 								<div className="flex items-center gap-6">
 									<div className="flex flex-col items-end gap-0.5">
-										<span className="font-semibold text-2xl text-white leading-none tabular-nums">
+										<span className="font-semibold text-2xl text-white tabular-nums leading-none">
 											{bannerStats.offices}
 										</span>
-										<span className="text-[10px] font-medium text-white/30">
+										<span className="font-medium text-[10px] text-white/30">
 											Offices
 										</span>
 									</div>
 									<div className="h-8 w-px bg-white/10" />
 									<div className="flex flex-col items-end gap-0.5">
-										<span className="font-semibold text-2xl text-white leading-none tabular-nums">
+										<span className="font-semibold text-2xl text-white tabular-nums leading-none">
 											{bannerStats.states}
 										</span>
-										<span className="text-[10px] font-medium text-white/30">
+										<span className="font-medium text-[10px] text-white/30">
 											States
 										</span>
 									</div>
 									<div className="h-8 w-px bg-white/10" />
 									<div className="flex flex-col items-end gap-0.5">
-										<span className="font-semibold text-2xl text-white leading-none tabular-nums">
+										<span className="font-semibold text-2xl text-white tabular-nums leading-none">
 											{bannerStats.serviceLines}
 										</span>
-										<span className="text-[10px] font-medium text-white/30">
+										<span className="font-medium text-[10px] text-white/30">
 											Svc Lines
 										</span>
 									</div>

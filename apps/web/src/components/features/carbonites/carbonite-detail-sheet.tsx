@@ -156,7 +156,11 @@ function SalaryMarketBar({
 						"absolute size-3 rounded-full border-2 border-bg-white-0 shadow-sm",
 						dotColor,
 					)}
-					style={{ left: `${pct}%`, top: "50%", transform: "translate(-50%, -50%)" }}
+					style={{
+						left: `${pct}%`,
+						top: "50%",
+						transform: "translate(-50%, -50%)",
+					}}
 				/>
 			</div>
 			<div className="flex justify-between text-[10px] text-text-soft-400 tabular-nums">
@@ -332,7 +336,7 @@ export function CarboniteDetailSheet({
 														<span
 															key={f.label}
 															className={cn(
-																"inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-xs font-medium",
+																"inline-flex items-center gap-1 rounded-md border px-2 py-0.5 font-medium text-xs",
 																f.impact > 0
 																	? "border-red-200 bg-red-50 text-red-700"
 																	: "border-green-200 bg-green-50 text-green-700",

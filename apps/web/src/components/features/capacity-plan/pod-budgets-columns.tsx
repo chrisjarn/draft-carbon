@@ -202,16 +202,15 @@ export function makePodBudgetColumns(
 							budget={r.budget}
 							projectedYearEnd={r.projectedYearEnd}
 						/>
-						{r.hasBudgetSet &&
-							r.projectedYearEnd < r.budget * 0.85 && (
-								<Badge
-									variant="outline"
-									size="sm"
-									className="border-blue-500/40 bg-blue-500/10 text-blue-400"
-								>
-									Projected underspend
-								</Badge>
-							)}
+						{r.hasBudgetSet && r.projectedYearEnd < r.budget * 0.85 && (
+							<Badge
+								variant="outline"
+								size="sm"
+								className="border-blue-500/40 bg-blue-500/10 text-blue-400"
+							>
+								Projected underspend
+							</Badge>
+						)}
 					</div>
 				);
 			},
