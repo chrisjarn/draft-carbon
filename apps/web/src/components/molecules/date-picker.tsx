@@ -48,24 +48,20 @@ export function DatePicker({
 
 	return (
 		<Popover open={open} onOpenChange={setOpen}>
-			<PopoverTrigger
-				render={
-					<Button
-						variant="outline"
-						id={id}
-						disabled={disabled}
-						className={cn(
-							"w-full justify-start text-left font-normal",
-							!value && "text-muted-foreground",
-							className,
-						)}
-					/>
-				}
-				aria-haspopup="dialog"
-				aria-expanded={open}
-			>
-				<HugeiconsIcon icon={Calendar01Icon} className="mr-2 size-4" />
-				{displayText}
+			<PopoverTrigger render={<span />}>
+				<Button
+					variant="outline"
+					id={id}
+					disabled={disabled}
+					className={cn(
+						"w-full justify-start text-left font-normal",
+						!value && "text-text-disabled-300",
+						className,
+					)}
+				>
+					<HugeiconsIcon icon={Calendar01Icon} className="mr-2 size-4" />
+					{displayText}
+				</Button>
 			</PopoverTrigger>
 			<PopoverContent className="w-auto p-0" align="start">
 				<Calendar

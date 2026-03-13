@@ -98,7 +98,7 @@ export function CsvImportDialog({
 				/>
 
 				{parsed.length > 0 && (
-					<div className="max-h-48 overflow-auto rounded border border-border">
+					<div className="max-h-48 overflow-auto rounded border ">
 						<Table>
 							<TableHeader>
 								<TableRow>

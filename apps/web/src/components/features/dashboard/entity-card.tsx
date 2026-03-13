@@ -61,7 +61,7 @@ function SlTags({ sls }: { sls: string[] }) {
 				return (
 					<span
 						key={sl}
-						className="rounded-md border border-border bg-muted/50 px-1.5 py-px font-medium text-muted-foreground text-xs"
+						className="rounded-md border  bg-muted/50 px-1.5 py-px font-medium text-muted-foreground text-xs"
 					>
 						{meta?.short ?? sl}
 					</span>

@@ -10,11 +10,9 @@ import { ROUTE_CONFIG } from "@/lib/route-config";
  */
 export function PageHeader({
 	children,
-	description,
 	titleOverride,
 }: {
 	children?: ReactNode;
-	description?: ReactNode;
 	/** Custom title node — replaces the route-config title when provided. */
 	titleOverride?: ReactNode;
 }) {
@@ -25,15 +23,10 @@ export function PageHeader({
 	if (!config) return null;
 
 	return (
-		<div className="flex items-center justify-between border-b bg-background px-6 py-3">
-			<div className="flex flex-col gap-0.5">
-				<h1 className="font-medium text-base tracking-tight">
-					{titleOverride ?? config.title}
-				</h1>
-				<p className="text-muted-foreground text-xs">
-					{description ?? config.description}
-				</p>
-			</div>
+		<div className="flex items-center justify-between bg-white px-6 py-3">
+			<h1 className="font-medium text-base tracking-tight">
+				{titleOverride ?? config.title}
+			</h1>
 			{children && <div className="flex items-center gap-2">{children}</div>}
 		</div>
 	);

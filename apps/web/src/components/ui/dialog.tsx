@@ -1,34 +1,38 @@
 "use client";
 
-import { Dialog as DialogPrimitive } from "@base-ui/react/dialog";
+import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { Cancel01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 
-const DialogCreateHandle = DialogPrimitive.createHandle;
+const DialogCreateHandle = undefined;
 
 const Dialog = DialogPrimitive.Root;
 
 const DialogPortal = DialogPrimitive.Portal;
 
-function DialogTrigger(props: DialogPrimitive.Trigger.Props) {
+function DialogTrigger(
+	props: React.ComponentPropsWithoutRef<typeof DialogPrimitive.Trigger>,
+) {
 	return <DialogPrimitive.Trigger data-slot="dialog-trigger" {...props} />;
 }
 
-function DialogClose(props: DialogPrimitive.Close.Props) {
+function DialogClose(
+	props: React.ComponentPropsWithoutRef<typeof DialogPrimitive.Close>,
+) {
 	return <DialogPrimitive.Close data-slot="dialog-close" {...props} />;
 }
 
 function DialogBackdrop({
 	className,
 	...props
-}: DialogPrimitive.Backdrop.Props) {
+}: React.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay>) {
 	return (
-		<DialogPrimitive.Backdrop
+		<DialogPrimitive.Overlay
 			className={cn(
-				"fixed inset-0 z-50 bg-black/32 backdrop-blur-sm transition-all duration-200 data-ending-style:opacity-0 data-starting-style:opacity-0",
+				"fixed inset-0 z-50 bg-black/32 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
 				className,
 			)}
 			data-slot="dialog-backdrop"
@@ -40,9 +44,9 @@ function DialogBackdrop({
 function DialogViewport({
 	className,
 	...props
-}: DialogPrimitive.Viewport.Props) {
+}: React.ComponentProps<"div">) {
 	return (
-		<DialogPrimitive.Viewport
+		<div
 			className={cn(
 				"fixed inset-0 z-50 grid grid-rows-[1fr_auto_3fr] justify-items-center p-4",
 				className,
@@ -60,43 +64,38 @@ function DialogPopup({
 	bottomStickOnMobile = true,
 	closeProps,
 	...props
-}: DialogPrimitive.Popup.Props & {
+}: React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> & {
 	showCloseButton?: boolean;
 	bottomStickOnMobile?: boolean;
-	closeProps?: DialogPrimitive.Close.Props;
+	closeProps?: React.ComponentPropsWithoutRef<typeof DialogPrimitive.Close>;
 }) {
 	return (
 		<DialogPortal>
 			<DialogBackdrop />
-			<DialogViewport
+			<DialogPrimitive.Content
 				className={cn(
+					"fixed left-[50%] top-[50%] z-50 translate-x-[-50%] translate-y-[-50%] flex max-h-[85vh] min-h-0 w-full min-w-0 max-w-lg flex-col bg-bg-white-0 rounded-2xl shadow-lg border border-stroke-soft-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
 					bottomStickOnMobile &&
-						"max-sm:grid-rows-[1fr_auto] max-sm:p-0 max-sm:pt-12",
+						"max-sm:max-w-none max-sm:top-auto max-sm:bottom-0 max-sm:left-0 max-sm:translate-x-0 max-sm:translate-y-0 max-sm:rounded-b-none max-sm:border-b-0",
+					className,
 				)}
+				data-slot="dialog-popup"
+				{...props}
 			>
-				<DialogPrimitive.Popup
-					className={cn(
-						"relative row-start-2 flex max-h-full min-h-0 w-full min-w-0 max-w-lg origin-center flex-col rounded-2xl border bg-popover not-dark:bg-clip-padding text-popover-foreground opacity-[calc(1-var(--nested-dialogs))] shadow-lg/5 transition-[scale,opacity,translate] duration-200 ease-in-out will-change-transform before:pointer-events-none before:absolute before:inset-0 before:rounded-[calc(var(--radius-2xl)-1px)] before:shadow-[0_1px_--theme(--color-black/4%)] data-ending-style:opacity-0 data-starting-style:opacity-0 sm:scale-[calc(1-0.1*var(--nested-dialogs))] sm:data-ending-style:scale-98 sm:data-starting-style:scale-98 dark:before:shadow-[0_-1px_--theme(--color-white/6%)]",
-						bottomStickOnMobile &&
-							"max-sm:max-w-none max-sm:origin-bottom max-sm:rounded-none max-sm:border-x-0 max-sm:border-t max-sm:border-b-0 max-sm:data-ending-style:translate-y-4 max-sm:data-starting-style:translate-y-4 max-sm:before:hidden max-sm:before:rounded-none",
-						className,
-					)}
-					data-slot="dialog-popup"
-					{...props}
-				>
-					{children}
-					{showCloseButton && (
-						<DialogPrimitive.Close
+				{children}
+				{showCloseButton && (
+					<DialogPrimitive.Close asChild {...closeProps}>
+						<Button
+							size="icon"
+							variant="ghost"
 							aria-label="Close"
 							className="absolute end-2 top-2"
-							render={<Button size="icon" variant="ghost" />}
-							{...closeProps}
 						>
 							<HugeiconsIcon icon={Cancel01Icon} />
-						</DialogPrimitive.Close>
-					)}
-				</DialogPrimitive.Popup>
-			</DialogViewport>
+						</Button>
+					</DialogPrimitive.Close>
+				)}
+			</DialogPrimitive.Content>
 		</DialogPortal>
 	);
 }
@@ -125,7 +124,7 @@ function DialogFooter({
 		<div
 			className={cn(
 				"flex flex-col-reverse gap-2 px-6 sm:flex-row sm:justify-end sm:rounded-b-[calc(var(--radius-2xl)-1px)]",
-				variant === "default" && "border-t bg-muted/72 py-4",
+				variant === "default" && "border-t bg-bg-weak-50/72 py-4",
 				variant === "bare" &&
 					"in-[[data-slot=dialog-popup]:has([data-slot=dialog-panel])]:pt-3 pt-4 pb-6",
 				className,
@@ -136,7 +135,10 @@ function DialogFooter({
 	);
 }
 
-function DialogTitle({ className, ...props }: DialogPrimitive.Title.Props) {
+function DialogTitle({
+	className,
+	...props
+}: React.ComponentPropsWithoutRef<typeof DialogPrimitive.Title>) {
 	return (
 		<DialogPrimitive.Title
 			className={cn(
@@ -152,10 +154,10 @@ function DialogTitle({ className, ...props }: DialogPrimitive.Title.Props) {
 function DialogDescription({
 	className,
 	...props
-}: DialogPrimitive.Description.Props) {
+}: React.ComponentPropsWithoutRef<typeof DialogPrimitive.Description>) {
 	return (
 		<DialogPrimitive.Description
-			className={cn("text-muted-foreground text-sm", className)}
+			className={cn("text-text-soft-400 text-sm", className)}
 			data-slot="dialog-description"
 			{...props}
 		/>

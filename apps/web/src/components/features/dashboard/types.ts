@@ -24,9 +24,16 @@ export type AlertItem = {
 	link: string;
 };
 
+export type PartnerByStateRow = {
+	state: string | null;
+	sl: string | null;
+	partnerCount: number;
+};
+
 export type DashboardStats = {
 	totalCarbonites: number;
 	totalFte: number;
+	totalPartners: number;
 	revenueTarget: number;
 	revenueActual: number;
 	revenuePct: number;

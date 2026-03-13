@@ -28,10 +28,7 @@ interface PageToolbarProps {
 export function PageToolbar({ children, className }: PageToolbarProps) {
 	return (
 		<div
-			className={cn(
-				"flex items-center justify-between border-b px-6 py-2",
-				className,
-			)}
+			className={cn("flex items-center justify-between px-6 py-2", className)}
 		>
 			{children}
 		</div>

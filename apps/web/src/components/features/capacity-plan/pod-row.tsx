@@ -42,7 +42,7 @@ export function StatusBadge({
 		},
 		empty: {
 			label: "No budget",
-			className: "border-border bg-muted/40 text-muted-foreground",
+			className: " bg-muted/40 text-muted-foreground",
 		},
 	};
 	const { label, className } = map[status];

@@ -26,7 +26,6 @@ import {
 } from "@/components/templates/dashboard-template";
 import { Page, PageBody, PageToolbar } from "@/components/templates/page";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Divider } from "@/components/ui/divider";
 import {
 	Select,
 	SelectContent,
@@ -168,6 +167,25 @@ function DashboardPage() {
 		return map;
 	}, [filteredRevenue]);
 
+	// ── Banner stats ─────────────────────────────────────────────────
+	const bannerStats = useMemo(() => {
+		const ents = filteredEntities ?? [];
+		const officeSet = new Set<string>();
+		const slSet = new Set<string>();
+		const stateSet = new Set<string>();
+		for (const e of ents) {
+			if (e.officeId) officeSet.add(e.officeId);
+			if (e.state) stateSet.add(e.state);
+			for (const sl of e.sls) slSet.add(sl);
+		}
+		return {
+			carbonites: filteredStats?.totalCarbonites ?? 0,
+			offices: officeSet.size,
+			serviceLines: slSet.size,
+			states: stateSet.size,
+		};
+	}, [filteredEntities, filteredStats]);
+
 	const isError = stats.isError || health.isError;
 	const isEmpty =
 		!stats.isLoading &&
@@ -181,10 +199,7 @@ function DashboardPage() {
 	// ── Render ───────────────────────────────────────────────────────────
 	return (
 		<Page>
-			<PageHeader
-				titleOverride={greetingTitle}
-				description="Carbon Group \u00B7 Workforce Planner"
-			>
+			<PageHeader titleOverride={greetingTitle}>
 				<Select value={activeFy} onValueChange={setFy}>
 					<SelectTrigger className="h-8 w-28 text-xs">
 						<SelectValue />
@@ -199,7 +214,7 @@ function DashboardPage() {
 				</Select>
 			</PageHeader>
 
-			<PageToolbar>
+			<PageToolbar className="bg-muted/30">
 				<Tabs
 					value={stateFilter ?? "all"}
 					onValueChange={(val) => setStateFilter(val === "all" ? null : val)}
@@ -213,10 +228,50 @@ function DashboardPage() {
 						))}
 					</TabsList>
 				</Tabs>
-				<div className="ml-auto">
-					<SlFilterPills activeSlId={slFilter} onToggle={setSlFilter} />
-				</div>
 			</PageToolbar>
+
+			<div className="bg-muted/30 px-6 pt-5">
+				<div className="mx-auto flex w-full max-w-[968px] items-center justify-between rounded-xl bg-card px-8 py-8">
+					<div className="flex flex-col gap-1">
+						<h2 className="font-semibold text-xl tracking-tight">
+							Carbonite Workforce Overview
+						</h2>
+						<p className="text-muted-foreground text-sm">
+							{activeFy} &middot; {bannerStats.states} States &middot;{" "}
+							{bannerStats.offices} Offices &middot;{" "}
+							{bannerStats.serviceLines} Service Lines
+						</p>
+					</div>
+					<div className="flex items-center gap-8">
+						<div className="flex flex-col items-center gap-1">
+							<span className="font-semibold text-2xl tabular-nums">
+								{bannerStats.carbonites}
+							</span>
+							<span className="text-muted-foreground text-xs">
+								Carbonites
+							</span>
+						</div>
+						<div className="h-10 w-px bg-border" />
+						<div className="flex flex-col items-center gap-1">
+							<span className="font-semibold text-2xl tabular-nums">
+								{bannerStats.offices}
+							</span>
+							<span className="text-muted-foreground text-xs">
+								Offices
+							</span>
+						</div>
+						<div className="h-10 w-px bg-border" />
+						<div className="flex flex-col items-center gap-1">
+							<span className="font-semibold text-2xl tabular-nums">
+								{bannerStats.serviceLines}
+							</span>
+							<span className="text-muted-foreground text-xs">
+								Service Lines
+							</span>
+						</div>
+					</div>
+				</div>
+			</div>
 
 			<PageBody padded constrain="max-w-[968px]">
 				{isError ? (
@@ -227,10 +282,10 @@ function DashboardPage() {
 					<div className="flex flex-col gap-5">
 						<KpiSection
 							stats={filteredStats}
-							loading={stats.isLoading}
-							activeFy={activeFy}
+							entities={filteredEntities}
+							loading={stats.isLoading || entitySummaries.isLoading}
 						/>
-						<Divider />
+						<SlFilterPills activeSlId={slFilter} onToggle={setSlFilter} />
 						<DashboardChartRow>
 							<RevenueChart
 								data={filteredRevenue}

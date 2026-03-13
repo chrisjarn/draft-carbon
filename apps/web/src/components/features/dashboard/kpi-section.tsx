@@ -1,101 +1,66 @@
-import {
-	KpiCard,
-	KpiLegend,
-	KpiLegendItem,
-} from "@/components/molecules/kpi-card";
-import { ProgressCircle } from "@/components/ui/progress-circle";
+import { KpiCard } from "@/components/molecules/kpi-card";
 import { fmtDollar } from "@/lib/format";
+import type { EntitySummary } from "./entity-card";
 import type { DashboardStats } from "./types";
-
-/* ─── Revenue color helpers ────────────────────────────────────────────── */
-
-function revTextColor(pct: number): string {
-	if (pct >= 95) return "text-emerald-500";
-	if (pct >= 80) return "text-amber-500";
-	return "text-red-500";
-}
 
 /* ─── KPI Section ──────────────────────────────────────────────────────── */
 
 interface KpiSectionProps {
 	stats: DashboardStats | null;
+	entities: EntitySummary[] | undefined;
 	loading: boolean;
-	activeFy: string;
 }
 
-export function KpiSection({ stats, loading, activeFy }: KpiSectionProps) {
+export function KpiSection({ stats, entities, loading }: KpiSectionProps) {
+	const entityCount = entities?.length ?? 0;
+	const totalPayroll = entities?.reduce((s, e) => s + e.totalSalary, 0) ?? 0;
+	const podCount = entities?.reduce((s, e) => s + e.podCount, 0) ?? 0;
+	const staffWithSalary =
+		entities?.reduce(
+			(s, e) => s + (e.totalSalary > 0 ? e.headcount : 0),
+			0,
+		) ?? 0;
+
 	return (
-		<dl className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+		<dl className="grid grid-cols-2 gap-4 lg:grid-cols-4">
 			<KpiCard
-				title="Carbonites"
+				title="Total Carbonites"
 				value={stats?.totalCarbonites ?? 0}
 				loading={loading}
 			>
-				<KpiLegend>
-					<KpiLegendItem
-						color="bg-primary"
-						label="Active staff"
-						value={stats?.totalCarbonites ?? 0}
-					/>
-					<KpiLegendItem
-						color="bg-muted-foreground"
-						label="FTE"
-						value={stats?.totalFte ?? 0}
-					/>
-				</KpiLegend>
+				<p className="text-muted-foreground text-xs">
+					{entityCount} entities nationwide
+				</p>
 			</KpiCard>
 
 			<KpiCard
-				title="Revenue Target"
-				value={fmtDollar(stats?.revenueTarget)}
+				title="Total Partners"
+				value={stats?.totalPartners ?? 0}
 				loading={loading}
 			>
-				<KpiLegend>
-					<KpiLegendItem
-						color="bg-emerald-500"
-						label="Actual"
-						value={fmtDollar(stats?.revenueActual)}
-					/>
-					<KpiLegendItem color="bg-muted-foreground" label={activeFy} />
-				</KpiLegend>
+				<p className="text-muted-foreground text-xs">
+					Across all entities
+				</p>
 			</KpiCard>
 
 			<KpiCard
-				title="Revenue Attainment"
-				value={stats ? `${stats.revenuePct}%` : "—"}
-				valueClass={stats ? revTextColor(stats.revenuePct) : undefined}
+				title="Total Payroll"
+				value={fmtDollar(totalPayroll)}
 				loading={loading}
 			>
-				<div className="flex items-center justify-between gap-4">
-					<KpiLegend>
-						<KpiLegendItem
-							color={
-								stats && stats.revenuePct >= 95
-									? "bg-emerald-500"
-									: stats && stats.revenuePct >= 80
-										? "bg-amber-500"
-										: "bg-red-500"
-							}
-							label="to target"
-						/>
-					</KpiLegend>
-					<ProgressCircle
-						value={stats?.revenuePct ?? 0}
-						radius={32}
-						strokeWidth={5}
-						variant={
-							stats && stats.revenuePct >= 95
-								? "success"
-								: stats && stats.revenuePct >= 80
-									? undefined
-									: "error"
-						}
-					>
-						<span className="font-semibold text-xs tabular-nums">
-							{stats?.revenuePct ?? 0}%
-						</span>
-					</ProgressCircle>
-				</div>
+				<p className="text-muted-foreground text-xs">
+					Live from pod salaries
+				</p>
+			</KpiCard>
+
+			<KpiCard
+				title="Active Pods"
+				value={podCount}
+				loading={loading}
+			>
+				<p className="text-muted-foreground text-xs">
+					{staffWithSalary} staff with salary set
+				</p>
 			</KpiCard>
 		</dl>
 	);

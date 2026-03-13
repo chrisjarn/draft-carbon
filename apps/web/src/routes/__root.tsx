@@ -51,7 +51,7 @@ function RootComponent() {
 			<HeadContent />
 			<ThemeProvider
 				attribute="class"
-				forcedTheme="dark"
+				forcedTheme="light"
 				disableTransitionOnChange
 				storageKey="carbon-wfp-theme"
 			>
@@ -60,8 +60,6 @@ function RootComponent() {
 			</ThemeProvider>
 			{import.meta.env.DEV && <Agentation />}
 			<Suspense fallback={null}>
-				<TanStackRouterDevtools position="bottom-left" />
-				<ReactQueryDevtools position="bottom" buttonPosition="bottom-right" />
 			</Suspense>
 		</>
 	);

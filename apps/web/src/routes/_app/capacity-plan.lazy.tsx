@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { FirmTab } from "@/components/features/capacity-plan/firm-tab";
@@ -104,6 +104,17 @@ function CapacityPlanPage() {
 
 	// Inline-cell upsert mutation (quick edits from table cells)
 	const qc = useQueryClient();
+
+	// Lazy prefetch pod data on first pod-budgets tab activation
+	const podPrefetched = useRef(false);
+	useEffect(() => {
+		if (tab === "pod-budgets" && !podPrefetched.current) {
+			podPrefetched.current = true;
+			void qc.ensureQueryData(trpc.carbonites.getAll.queryOptions({}));
+			void qc.ensureQueryData(trpc.podBudgets.getAll.queryOptions());
+		}
+	}, [tab, qc]);
+
 	const upsertMeta = useMutation(
 		trpc.wfp.upsertStaffMeta.mutationOptions({
 			onSuccess: () => {
@@ -374,7 +385,11 @@ function CapacityPlanPage() {
 					)}
 				</div>
 
-				<Tabs className="ml-auto" value={tab} onValueChange={(v) => setTab(v as TabValue)}>
+				<Tabs
+					className="ml-auto"
+					value={tab}
+					onValueChange={(v) => setTab(v as TabValue)}
+				>
 					<TabsList variant="underline">
 						<TabsTrigger value="firm">Firm</TabsTrigger>
 						<TabsTrigger value="staff">Staff</TabsTrigger>

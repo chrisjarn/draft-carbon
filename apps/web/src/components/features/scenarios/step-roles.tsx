@@ -119,7 +119,7 @@ export function StepRoles({ form, impact, hasValidRoles }: StepRolesProps) {
 
 			{/* Live impact preview */}
 			{hasValidRoles && (
-				<div className="space-y-2 rounded-md border border-border bg-muted/20 p-3">
+				<div className="space-y-2 rounded-md border  bg-muted/20 p-3">
 					<span className="font-medium text-muted-foreground text-xs uppercase tracking-wider">
 						Projected Impact
 					</span>

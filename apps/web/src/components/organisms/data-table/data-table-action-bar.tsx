@@ -162,8 +162,8 @@ function DataTableActionBarAction({
 	return (
 		<TooltipProvider>
 			<Tooltip>
-				<TooltipTrigger render={<span className="flex" />}>
-					{trigger}
+				<TooltipTrigger asChild>
+					<span className="flex">{trigger}</span>
 				</TooltipTrigger>
 				<TooltipContent sideOffset={6}>{tooltip}</TooltipContent>
 			</Tooltip>
@@ -192,17 +192,15 @@ function DataTableActionBarSelection<TData>({
 
 			<TooltipProvider>
 				<Tooltip>
-					<TooltipTrigger
-						render={
-							<Button
-								className="size-5 text-zinc-500 hover:bg-zinc-700 hover:text-zinc-200"
-								onClick={onClearSelection}
-								size="icon"
-								variant="ghost"
-							/>
-						}
-					>
-						<HugeiconsIcon icon={Cancel01Icon} className="size-3" />
+					<TooltipTrigger asChild>
+						<Button
+							className="size-5 text-zinc-500 hover:bg-zinc-700 hover:text-zinc-200"
+							onClick={onClearSelection}
+							size="icon"
+							variant="ghost"
+						>
+							<HugeiconsIcon icon={Cancel01Icon} className="size-3" />
+						</Button>
 					</TooltipTrigger>
 					<TooltipContent
 						className="flex items-center gap-2 border border-zinc-600 bg-zinc-800 px-2 py-1 font-semibold text-zinc-200 [&>span]:hidden"

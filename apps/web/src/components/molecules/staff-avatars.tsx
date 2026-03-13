@@ -61,7 +61,7 @@ export function StaffAvatars({
 }) {
 	if (headcount === 0) {
 		return (
-			<span className="text-muted-foreground text-xs">No staff assigned</span>
+			<span className="text-text-soft-400 text-xs">No staff assigned</span>
 		);
 	}
 
@@ -74,30 +74,33 @@ export function StaffAvatars({
 			<div className={cn("flex items-center gap-0.5", className)}>
 				{shown.map((ini, i) => (
 					<Tooltip key={`${ini}-${i.toString()}`}>
-						<TooltipTrigger
-							render={<span style={{ backgroundColor: avatarColor(ini) }} />}
-							className={cn(
-								"flex cursor-default items-center justify-center rounded-full border-2 border-white font-medium text-white shadow-sm transition-shadow hover:shadow-md",
-								s.avatar,
-								s.text,
-							)}
-						>
-							{ini}
+						<TooltipTrigger asChild>
+							<span
+								style={{ backgroundColor: avatarColor(ini) }}
+								className={cn(
+									"flex cursor-default items-center justify-center rounded-full border-2 border-white font-medium text-white shadow-sm transition-shadow hover:shadow-md",
+									s.avatar,
+									s.text,
+								)}
+							>
+								{ini}
+							</span>
 						</TooltipTrigger>
 						<TooltipContent>{names?.[i] ?? ini}</TooltipContent>
 					</Tooltip>
 				))}
 				{overflow > 0 && (
 					<Tooltip>
-						<TooltipTrigger
-							render={<span />}
-							className={cn(
-								"flex cursor-default items-center justify-center rounded-full border-2 border-white bg-muted font-medium text-muted-foreground shadow-sm transition-shadow hover:shadow-md",
-								s.avatar,
-								s.text,
-							)}
-						>
-							+{overflow}
+						<TooltipTrigger asChild>
+							<span
+								className={cn(
+									"flex cursor-default items-center justify-center rounded-full border-2 border-white bg-bg-weak-50 font-medium text-text-soft-400 shadow-sm transition-shadow hover:shadow-md",
+									s.avatar,
+									s.text,
+								)}
+							>
+								+{overflow}
+							</span>
 						</TooltipTrigger>
 						<TooltipContent>+{overflow} more</TooltipContent>
 					</Tooltip>

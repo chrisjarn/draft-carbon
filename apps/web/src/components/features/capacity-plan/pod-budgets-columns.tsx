@@ -49,10 +49,7 @@ function VarianceCell({
 		return <span className="text-muted-foreground text-sm">—</span>;
 	if (variance === 0)
 		return <span className="text-muted-foreground text-sm">—</span>;
-	const cls =
-		variance > 0
-			? "text-green-400"
-			: "text-red-400";
+	const cls = variance > 0 ? "text-green-400" : "text-red-400";
 	return (
 		<span className={`font-medium text-sm tabular-nums ${cls}`}>
 			{variance > 0 ? `+${fmtDollar(variance)}` : fmtDollar(variance)}
@@ -70,10 +67,8 @@ function AggregateVariance({
 	if (budget === 0)
 		return <span className="text-muted-foreground text-sm">—</span>;
 	const v = budget - salary;
-	if (v === 0)
-		return <span className="text-muted-foreground text-sm">—</span>;
-	const cls =
-		v > 0 ? "text-green-400" : "text-red-400";
+	if (v === 0) return <span className="text-muted-foreground text-sm">—</span>;
+	const cls = v > 0 ? "text-green-400" : "text-red-400";
 	return (
 		<span className={`font-medium text-sm tabular-nums ${cls}`}>
 			{v > 0 ? `+${fmtDollar(v)}` : fmtDollar(v)}
@@ -227,31 +222,42 @@ export function makePodBudgetColumns(
 
 // ── Group row cells ──────────────────────────────────────────────────────────
 
+export type GroupAggregates = Map<
+	string,
+	{
+		totalBudget: number;
+		totalSalary: number;
+		leafCount: number;
+		officeCount?: number;
+	}
+>;
+
 export function buildPodGroupCells(
 	row: Row<PodTableRow>,
+	aggregates: GroupAggregates,
 	onAddPod?: (state: string, office: string) => void,
 	canWriteAccess?: boolean,
 ): Record<string, ReactNode> {
 	const isExpanded = row.getIsExpanded();
-	const leafRows = row.getLeafRows().filter((r) => !r.original.isAddPodRow);
-
-	const totalBudget = leafRows.reduce((s, r) => s + r.original.budget, 0);
-	const totalSalary = leafRows.reduce((s, r) => s + r.original.totalSalary, 0);
-
 	const isStateGroup = row.groupingColumnId === "stateGroup";
 
+	const stateVal: string = row.getValue("stateGroup") ?? "";
+	const officeVal: string = isStateGroup
+		? ""
+		: (row.getValue("officeGroup") ?? "");
+	const aggKey = isStateGroup ? stateVal : `${stateVal}||${officeVal}`;
+	const agg = aggregates.get(aggKey);
+
+	const totalBudget = agg?.totalBudget ?? 0;
+	const totalSalary = agg?.totalSalary ?? 0;
+
 	const groupLabel = isStateGroup
-		? stateLabel(row.getValue("stateGroup"))
-		: officeLabel(row.getValue("officeGroup"));
+		? stateLabel(stateVal)
+		: officeLabel(officeVal);
 
 	const countLabel = isStateGroup
-		? (() => {
-				const officeSet = new Set(
-					leafRows.map((r) => r.original.officeGroup),
-				);
-				return `${officeSet.size} offices`;
-			})()
-		: `${leafRows.length} pods`;
+		? `${agg?.officeCount ?? 0} offices`
+		: `${agg?.leafCount ?? 0} pods`;
 
 	const locationContent = (
 		<div className={`flex flex-col gap-1 ${isStateGroup ? "" : "pl-4"}`}>
@@ -273,7 +279,9 @@ export function buildPodGroupCells(
 						aria-hidden="true"
 					/>
 				)}
-				<span className={isStateGroup ? "font-bold" : "font-semibold text-base"}>
+				<span
+					className={isStateGroup ? "font-bold" : "font-semibold text-base"}
+				>
 					{groupLabel}
 				</span>
 				<Badge variant={isStateGroup ? "secondary" : "outline"} size="sm">
@@ -283,12 +291,7 @@ export function buildPodGroupCells(
 			{!isStateGroup && isExpanded && canWriteAccess && onAddPod && (
 				<button
 					type="button"
-					onClick={() =>
-						onAddPod(
-							row.getValue("stateGroup") ?? leafRows[0]?.original.stateGroup ?? "",
-							row.getValue("officeGroup") ?? "",
-						)
-					}
+					onClick={() => onAddPod(stateVal, officeVal)}
 					className="mt-1 flex items-center gap-2 rounded-md border-2 border-border/60 border-dashed px-4 py-2 text-muted-foreground text-sm transition-colors hover:border-primary/40 hover:text-foreground"
 				>
 					<HugeiconsIcon icon={PlusSignIcon} className="size-3.5" />

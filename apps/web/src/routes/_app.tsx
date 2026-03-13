@@ -1,8 +1,9 @@
+import { Menu01Icon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
-import { AppTopBar } from "@/components/organisms/app-top-bar";
 import { CommandPalette } from "@/components/organisms/command-palette";
 import { AppSidebar } from "@/components/sidebar-02/app-sidebar";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { useSidebarState } from "@/components/sidebar-02/use-sidebar-state";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { authClient } from "@/lib/auth-client";
 
@@ -20,18 +21,36 @@ export const Route = createFileRoute("/_app")({
 });
 
 function AppLayout() {
+	const { isCollapsed, toggle, isMobileOpen, setMobileOpen } =
+		useSidebarState();
+
 	return (
 		<TooltipProvider>
-			<SidebarProvider>
-				<div className="relative flex h-dvh w-full">
-					<AppSidebar />
-					<SidebarInset className="flex flex-col overflow-auto">
-						{/* <AppTopBar /> */}
+			<div className="relative flex h-dvh overflow-hidden lg:h-screen">
+				<AppSidebar
+					isCollapsed={isCollapsed}
+					toggle={toggle}
+					isMobileOpen={isMobileOpen}
+					setMobileOpen={setMobileOpen}
+				/>
+				<main className="flex w-full flex-1 flex-col overflow-hidden">
+					{/* Mobile top bar — hamburger only visible on small screens */}
+					<div className="flex shrink-0 items-center gap-3 border-stroke-soft-200 border-b bg-bg-white-0 px-4 py-3 md:hidden">
+						<button
+							type="button"
+							onClick={() => setMobileOpen(true)}
+							className="flex size-8 items-center justify-center rounded-md text-text-soft-400 transition-colors hover:bg-bg-weak-50"
+							aria-label="Open sidebar"
+						>
+							<HugeiconsIcon icon={Menu01Icon} className="size-5" />
+						</button>
+					</div>
+					<div className="flex h-full flex-col overflow-auto lg:p-1.5 lg:pl-0">
 						<Outlet />
-					</SidebarInset>
-					<CommandPalette />
-				</div>
-			</SidebarProvider>
+					</div>
+				</main>
+				<CommandPalette />
+			</div>
 		</TooltipProvider>
 	);
 }

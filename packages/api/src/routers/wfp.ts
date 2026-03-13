@@ -274,7 +274,14 @@ export const wfpRouter = router({
 					asc(carbonites.office),
 					asc(carbonites.name),
 				);
-			const meta = await db.select().from(wfpStaffMeta);
+			const staffIds = staff.map((s) => s.id);
+			const meta =
+				staffIds.length > 0
+					? await db
+							.select()
+							.from(wfpStaffMeta)
+							.where(inArray(wfpStaffMeta.cbId, staffIds))
+					: [];
 			const metaMap = new Map(meta.map((m) => [m.cbId, m]));
 			return staff.map((s) => ({ ...s, meta: metaMap.get(s.id) ?? null }));
 		}),

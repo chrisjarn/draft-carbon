@@ -12,6 +12,7 @@ export type {
 	AlertItem,
 	BudgetBySlRaw,
 	DashboardStats,
+	PartnerByStateRow,
 	RevenueByEntityRow,
 	RevenueEntry,
 	SlBreakdownRaw,

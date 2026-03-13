@@ -167,8 +167,7 @@ function flattenToRows(groups: StateGroup[]): PodTableRow[] {
 					hasBudgetSet: pod.hasBudgetSet,
 					dominantSl: pod.dominantSl,
 					variance: pod.budget - pod.totalSalary,
-					utilisation:
-						pod.budget > 0 ? pod.totalSalary / pod.budget : 0,
+					utilisation: pod.budget > 0 ? pod.totalSalary / pod.budget : 0,
 				});
 			}
 		}
@@ -208,14 +207,62 @@ export function PodBudgetsTab({ fy: _fy }: { fy?: string }) {
 
 	const carbonites = (carbonitesQuery.data ?? []) as Carbonite[];
 	const budgets = budgetsQuery.data ?? [];
-	const groups = buildGroups(carbonites, budgets);
 
-	const totalBudget = groups.reduce((s, g) => s + g.totalBudget, 0);
-	const totalSalary = groups.reduce((s, g) => s + g.totalSalary, 0);
+	const groups = useMemo(
+		() => buildGroups(carbonites, budgets),
+		[carbonites, budgets],
+	);
 
-	// ── Flat data for TanStack Table ──────────────────────────────────────────
+	const { totalBudget, totalSalary, tableData, groupAggregates } =
+		useMemo(() => {
+			const tBudget = groups.reduce((s, g) => s + g.totalBudget, 0);
+			const tSalary = groups.reduce((s, g) => s + g.totalSalary, 0);
+			const rows = flattenToRows(groups);
 
-	const tableData = useMemo(() => flattenToRows(groups), [groups]);
+			// Precompute aggregates for each group key (state and state||office)
+			const aggs = new Map<
+				string,
+				{
+					totalBudget: number;
+					totalSalary: number;
+					leafCount: number;
+					officeCount?: number;
+				}
+			>();
+			for (const sg of groups) {
+				const officeSet = new Set<string>();
+				let stateBudget = 0;
+				let stateSalary = 0;
+				let stateLeafCount = 0;
+				for (const og of sg.offices) {
+					officeSet.add(og.office);
+					const officeBudget = og.totalBudget;
+					const officeSalary = og.totalSalary;
+					const officeLeafCount = og.pods.length;
+					aggs.set(`${sg.state}||${og.office}`, {
+						totalBudget: officeBudget,
+						totalSalary: officeSalary,
+						leafCount: officeLeafCount,
+					});
+					stateBudget += officeBudget;
+					stateSalary += officeSalary;
+					stateLeafCount += officeLeafCount;
+				}
+				aggs.set(sg.state, {
+					totalBudget: stateBudget,
+					totalSalary: stateSalary,
+					leafCount: stateLeafCount,
+					officeCount: officeSet.size,
+				});
+			}
+
+			return {
+				totalBudget: tBudget,
+				totalSalary: tSalary,
+				tableData: rows,
+				groupAggregates: aggs,
+			};
+		}, [groups]);
 
 	const columns = useMemo(
 		() => makePodBudgetColumns(hasWriteAccess, setSelectedPod),
@@ -241,8 +288,8 @@ export function PodBudgetsTab({ fy: _fy }: { fy?: string }) {
 
 	const renderGroupCells = useCallback(
 		(row: Row<PodTableRow>) =>
-			buildPodGroupCells(row, handleAddPod, hasWriteAccess),
-		[hasWriteAccess],
+			buildPodGroupCells(row, groupAggregates, handleAddPod, hasWriteAccess),
+		[hasWriteAccess, groupAggregates, handleAddPod],
 	);
 
 	// ── Render ────────────────────────────────────────────────────────────────

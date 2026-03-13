@@ -139,7 +139,7 @@ export function FirmTab({
 									className={`flex flex-col gap-2 rounded-md border bg-card p-4 text-left transition-colors hover:bg-muted/50 ${
 										selectedEntity === ent.id
 											? "border-primary ring-1 ring-primary"
-											: "border-border"
+											: ""
 									}`}
 								>
 									<div className="flex items-center justify-between">

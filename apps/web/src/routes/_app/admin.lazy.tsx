@@ -51,7 +51,11 @@ function AdminPage() {
 			</PageHeader>
 
 			<PageToolbar>
-				<Tabs className="ml-auto" value={tab} onValueChange={(v) => setTab(v as AdminTab)}>
+				<Tabs
+					className="ml-auto"
+					value={tab}
+					onValueChange={(v) => setTab(v as AdminTab)}
+				>
 					<TabsList variant="underline">
 						<TabsTrigger value="users">Users</TabsTrigger>
 						<TabsTrigger value="entities">Entities</TabsTrigger>

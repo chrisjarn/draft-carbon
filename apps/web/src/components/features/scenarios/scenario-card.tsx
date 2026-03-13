@@ -306,9 +306,9 @@ export function ScenarioCard({
 
 			<CardContent className="space-y-3 pl-4">
 				{/* Split-Panel Comparison */}
-				<div className="rounded-md border border-border">
+				<div className="rounded-md border ">
 					{/* Column Headers */}
-					<div className="grid grid-cols-2 gap-4 border-border border-b bg-muted/30 px-3 py-1.5">
+					<div className="grid grid-cols-2 gap-4  border-b bg-muted/30 px-3 py-1.5">
 						<span className="font-medium text-muted-foreground text-xs uppercase tracking-wider">
 							Current State
 						</span>
@@ -351,7 +351,7 @@ export function ScenarioCard({
 					</div>
 
 					{/* CategoryBar comparison */}
-					<div className="grid grid-cols-2 gap-4 border-border border-t px-3 py-2.5">
+					<div className="grid grid-cols-2 gap-4  border-t px-3 py-2.5">
 						<div>
 							<CategoryBar
 								values={currentBarValues}

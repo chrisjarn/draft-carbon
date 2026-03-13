@@ -3,6 +3,7 @@ import type { EntitySummary } from "./entity-card";
 import type {
 	BudgetBySlRaw,
 	DashboardStats,
+	PartnerByStateRow,
 	RevenueByEntityRow,
 	RevenueEntry,
 	SlBreakdownRaw,
@@ -16,6 +17,7 @@ export function useFilteredStats(
 	raw:
 		| {
 				staffByState: StaffByStateRow[];
+				partnerByState: PartnerByStateRow[];
 				revenueByEntity: RevenueByEntityRow[];
 		  }
 		| undefined,
@@ -28,6 +30,11 @@ export function useFilteredStats(
 		let staff = raw.staffByState;
 		if (stateFilter) staff = staff.filter((r) => r.state === stateFilter);
 		if (slFilter) staff = staff.filter((r) => r.sl === slFilter);
+
+		let partners = raw.partnerByState;
+		if (stateFilter) partners = partners.filter((r) => r.state === stateFilter);
+		if (slFilter) partners = partners.filter((r) => r.sl === slFilter);
+		const totalPartners = partners.reduce((s, r) => s + r.partnerCount, 0);
 
 		let rev = raw.revenueByEntity;
 		if (stateFilter) rev = rev.filter((r) => r.state === stateFilter);
@@ -43,6 +50,7 @@ export function useFilteredStats(
 		return {
 			totalCarbonites,
 			totalFte,
+			totalPartners,
 			revenueTarget,
 			revenueActual,
 			revenuePct,

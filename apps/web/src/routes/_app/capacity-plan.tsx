@@ -23,8 +23,5 @@ export const Route = createFileRoute("/_app/capacity-plan")({
 		// Firm tab KPIs (default tab)
 		void queryClient.ensureQueryData(trpc.wfp.firmKPIs.queryOptions());
 		void queryClient.ensureQueryData(trpc.wfp.entityOverview.queryOptions());
-		// Pod budgets tab data
-		void queryClient.ensureQueryData(trpc.carbonites.getAll.queryOptions({}));
-		void queryClient.ensureQueryData(trpc.podBudgets.getAll.queryOptions());
 	},
 });

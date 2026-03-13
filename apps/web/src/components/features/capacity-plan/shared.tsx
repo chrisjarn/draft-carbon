@@ -15,7 +15,7 @@ const PERF_STYLES: Record<string, string> = {
 	Exceeds: "border-green-500/40 bg-green-500/10 text-green-400",
 	Meets: "border-blue-500/40 bg-blue-500/10 text-blue-400",
 	Below: "border-red-500/40 bg-red-500/10 text-red-400",
-	"N/A": "border-border bg-muted/40 text-muted-foreground",
+	"N/A": " bg-muted/40 text-muted-foreground",
 };
 
 export function PerfBadge({ rating }: { rating: string | null | undefined }) {

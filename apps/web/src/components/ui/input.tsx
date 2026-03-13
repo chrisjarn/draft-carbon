@@ -1,12 +1,17 @@
 "use client";
 
-import { Input as InputPrimitive } from "@base-ui/react/input";
-import type * as React from "react";
+import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
+const InputPrimitive = React.forwardRef<
+	HTMLInputElement,
+	React.ComponentPropsWithoutRef<"input">
+>((props, ref) => <input ref={ref} {...props} />);
+InputPrimitive.displayName = "InputPrimitive";
+
 type InputProps = Omit<
-	InputPrimitive.Props & React.RefAttributes<HTMLInputElement>,
+	React.ComponentPropsWithoutRef<"input"> & React.RefAttributes<HTMLInputElement>,
 	"size"
 > & {
 	size?: "sm" | "default" | "lg" | number;
@@ -22,13 +27,13 @@ function Input({
 	...props
 }: InputProps) {
 	const inputClassName = cn(
-		"h-10 w-full min-w-0 rounded-[inherit] px-[calc(--spacing(3)-1px)] outline-none [transition:background-color_5000000s_ease-in-out_0s] placeholder:text-muted-foreground/72",
+		"h-10 w-full min-w-0 rounded-[inherit] px-[calc(--spacing(3)-1px)] outline-none [transition:background-color_5000000s_ease-in-out_0s] placeholder:text-text-disabled-300",
 		size === "sm" && "h-8 px-[calc(--spacing(2.5)-1px)]",
 		size === "lg" && "h-12",
 		props.type === "search" &&
 			"[&::-webkit-search-cancel-button]:appearance-none [&::-webkit-search-decoration]:appearance-none [&::-webkit-search-results-button]:appearance-none [&::-webkit-search-results-decoration]:appearance-none",
 		props.type === "file" &&
-			"text-muted-foreground file:me-3 file:bg-transparent file:font-medium file:text-foreground file:text-sm",
+			"text-text-soft-400 file:me-3 file:bg-transparent file:font-medium file:text-text-strong-950 file:text-sm",
 	);
 
 	return (
@@ -36,28 +41,19 @@ function Input({
 			className={
 				cn(
 					!unstyled &&
-						"relative inline-flex w-full items-center rounded-lg border border-input bg-card not-dark:bg-clip-padding text-base text-foreground ring-ring/24 transition-shadow has-focus-visible:has-aria-invalid:border-destructive/64 has-focus-visible:has-aria-invalid:ring-destructive/16 has-aria-invalid:border-destructive/36 has-focus-visible:border-ring has-autofill:bg-foreground/4 has-disabled:opacity-64 has-focus-visible:ring-[3px] sm:text-sm dark:bg-input/32 dark:has-autofill:bg-foreground/8 dark:has-aria-invalid:ring-destructive/24",
+						"relative inline-flex w-full items-center shadow-custom-input bg-bg-white-0 rounded-lg text-text-strong-950 text-base transition-shadow has-focus-visible:shadow-gray-shadow-2 has-focus-visible:has-aria-invalid:border-destructive/64 has-focus-visible:has-aria-invalid:ring-destructive/16 has-aria-invalid:border-destructive/36 has-autofill:bg-foreground/4 has-disabled:opacity-64 sm:text-sm",
 					className,
 				) || undefined
 			}
 			data-size={size}
 			data-slot="input-control"
 		>
-			{nativeInput ? (
-				<input
-					className={inputClassName}
-					data-slot="input"
-					size={typeof size === "number" ? size : undefined}
-					{...props}
-				/>
-			) : (
-				<InputPrimitive
-					className={inputClassName}
-					data-slot="input"
-					size={typeof size === "number" ? size : undefined}
-					{...props}
-				/>
-			)}
+			<input
+				className={inputClassName}
+				data-slot="input"
+				size={typeof size === "number" ? size : undefined}
+				{...props}
+			/>
 		</span>
 	);
 }

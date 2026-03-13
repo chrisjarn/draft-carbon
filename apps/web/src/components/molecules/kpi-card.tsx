@@ -40,7 +40,7 @@ export function KpiCard({
 	return (
 		<div
 			className={cn(
-				"relative w-full overflow-hidden rounded-lg border border-border bg-card shadow-card p-5 text-left",
+				"relative w-full overflow-hidden rounded-lg bg-card p-5 text-left",
 				className,
 			)}
 		>
@@ -60,7 +60,7 @@ export function KpiCard({
 				</dd>
 			)}
 			{children && (
-				<div className="mt-4 border-border/60 border-t pt-3">{children}</div>
+				<div className="mt-4 border-t border-border/60 pt-3">{children}</div>
 			)}
 		</div>
 	);

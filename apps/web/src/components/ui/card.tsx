@@ -1,262 +1,207 @@
 "use client";
 
-import { mergeProps } from "@base-ui/react/merge-props";
-import { useRender } from "@base-ui/react/use-render";
+import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
-function Card({
-	className,
-	render,
-	size = "default",
-	flushFooter,
-	...props
-}: useRender.ComponentProps<"div"> & {
-	size?: "default" | "sm";
-	flushFooter?: boolean;
-}) {
-	const defaultProps = {
-		className: cn(
-			"relative flex flex-col rounded-2xl border bg-card not-dark:bg-clip-padding text-card-foreground shadow-xs/5 before:pointer-events-none before:absolute before:inset-0 before:rounded-[calc(var(--radius-2xl)-1px)] before:shadow-[0_1px_--theme(--color-black/4%)] dark:before:shadow-[0_-1px_--theme(--color-white/6%)]",
-			size === "sm" && "rounded-xl before:rounded-[calc(var(--radius-xl)-1px)]",
+const Card = React.forwardRef<
+	HTMLDivElement,
+	React.ComponentPropsWithoutRef<"div"> & {
+		size?: "default" | "sm";
+		flushFooter?: boolean;
+	}
+>(({ className, size = "default", flushFooter, ...props }, ref) => (
+	<div
+		ref={ref}
+		className={cn(
+			"relative flex flex-col rounded-20 shadow-custom-input bg-bg-white-0 not-dark:bg-clip-padding text-card-foreground",
+			size === "sm" && "rounded-xl",
 			flushFooter && "[&>[data-slot=card-footer]]:p-0",
 			className,
-		),
-		"data-slot": "card",
-		"data-size": size,
-	};
+		)}
+		data-slot="card"
+		data-size={size}
+		{...props}
+	/>
+));
+Card.displayName = "Card";
 
-	return useRender({
-		defaultTagName: "div",
-		props: mergeProps<"div">(defaultProps, props),
-		render,
-	});
-}
-
-function CardFrame({
-	className,
-	render,
-	...props
-}: useRender.ComponentProps<"div">) {
-	const defaultProps = {
-		className: cn(
-			"relative flex flex-col rounded-2xl border bg-card not-dark:bg-clip-padding text-card-foreground shadow-xs/5 [--clip-bottom:-1rem] [--clip-top:-1rem] before:pointer-events-none before:absolute before:inset-0 before:rounded-[calc(var(--radius-2xl)-1px)] before:bg-muted/72 before:shadow-[0_1px_--theme(--color-black/4%)] *:data-[slot=card]:-m-px *:not-first:data-[slot=card]:rounded-t-xl *:not-last:data-[slot=card]:rounded-b-xl *:data-[slot=card]:bg-clip-padding *:data-[slot=card]:shadow-none *:data-[slot=card]:before:hidden *:not-first:data-[slot=card]:before:rounded-t-[calc(var(--radius-xl)-1px)] *:not-last:data-[slot=card]:before:rounded-b-[calc(var(--radius-xl)-1px)] dark:before:shadow-[0_-1px_--theme(--color-white/6%)] *:data-[slot=card]:[clip-path:inset(var(--clip-top)_1px_var(--clip-bottom)_1px_round_calc(var(--radius-2xl)-1px))] *:data-[slot=card]:last:[--clip-bottom:1px] *:data-[slot=card]:first:[--clip-top:1px]",
+const CardFrame = React.forwardRef<
+	HTMLDivElement,
+	React.ComponentPropsWithoutRef<"div">
+>(({ className, ...props }, ref) => (
+	<div
+		ref={ref}
+		className={cn(
+			"relative flex flex-col rounded-2xl bg-bg-white-0 not-dark:bg-clip-padding text-card-foreground [--clip-bottom:-1rem] [--clip-top:-1rem] before:pointer-events-none before:absolute before:inset-0 before:rounded-[calc(var(--radius-2xl)-1px)] before:bg-bg-weak-50/72 *:data-[slot=card]:-m-px *:not-first:data-[slot=card]:rounded-t-xl *:not-last:data-[slot=card]:rounded-b-xl *:data-[slot=card]:bg-clip-padding *:data-[slot=card]:shadow-none *:data-[slot=card]:before:hidden *:not-first:data-[slot=card]:before:rounded-t-[calc(var(--radius-xl)-1px)] *:not-last:data-[slot=card]:before:rounded-b-[calc(var(--radius-xl)-1px)] *:data-[slot=card]:[clip-path:inset(var(--clip-top)_1px_var(--clip-bottom)_1px_round_calc(var(--radius-2xl)-1px))] *:data-[slot=card]:last:[--clip-bottom:1px] *:data-[slot=card]:first:[--clip-top:1px]",
 			className,
-		),
-		"data-slot": "card-frame",
-	};
+		)}
+		data-slot="card-frame"
+		{...props}
+	/>
+));
+CardFrame.displayName = "CardFrame";
 
-	return useRender({
-		defaultTagName: "div",
-		props: mergeProps<"div">(defaultProps, props),
-		render,
-	});
-}
-
-function CardFrameHeader({
-	className,
-	render,
-	...props
-}: useRender.ComponentProps<"div">) {
-	const defaultProps = {
-		className: cn(
-			"relative flex grid auto-rows-min grid-rows-[auto_auto] flex-col items-start gap-x-4 bg-zinc-50 px-6 py-4 has-data-[slot=card-frame-action]:grid-cols-[1fr_auto]",
+const CardFrameHeader = React.forwardRef<
+	HTMLDivElement,
+	React.ComponentPropsWithoutRef<"div">
+>(({ className, ...props }, ref) => (
+	<div
+		ref={ref}
+		className={cn(
+			"relative flex grid auto-rows-min grid-rows-[auto_auto] flex-col items-start gap-x-4 bg-bg-weak-50 px-6 py-4 has-data-[slot=card-frame-action]:grid-cols-[1fr_auto]",
 			className,
-		),
-		"data-slot": "card-frame-header",
-	};
+		)}
+		data-slot="card-frame-header"
+		{...props}
+	/>
+));
+CardFrameHeader.displayName = "CardFrameHeader";
 
-	return useRender({
-		defaultTagName: "div",
-		props: mergeProps<"div">(defaultProps, props),
-		render,
-	});
-}
+const CardFrameTitle = React.forwardRef<
+	HTMLDivElement,
+	React.ComponentPropsWithoutRef<"div">
+>(({ className, ...props }, ref) => (
+	<div
+		ref={ref}
+		className={cn("font-semibold text-sm", className)}
+		data-slot="card-frame-title"
+		{...props}
+	/>
+));
+CardFrameTitle.displayName = "CardFrameTitle";
 
-function CardFrameTitle({
-	className,
-	render,
-	...props
-}: useRender.ComponentProps<"div">) {
-	const defaultProps = {
-		className: cn("font-semibold text-sm", className),
-		"data-slot": "card-frame-title",
-	};
+const CardFrameDescription = React.forwardRef<
+	HTMLDivElement,
+	React.ComponentPropsWithoutRef<"div">
+>(({ className, ...props }, ref) => (
+	<div
+		ref={ref}
+		className={cn("text-text-soft-400 text-sm", className)}
+		data-slot="card-frame-description"
+		{...props}
+	/>
+));
+CardFrameDescription.displayName = "CardFrameDescription";
 
-	return useRender({
-		defaultTagName: "div",
-		props: mergeProps<"div">(defaultProps, props),
-		render,
-	});
-}
-
-function CardFrameDescription({
-	className,
-	render,
-	...props
-}: useRender.ComponentProps<"div">) {
-	const defaultProps = {
-		className: cn("text-muted-foreground text-sm", className),
-		"data-slot": "card-frame-description",
-	};
-
-	return useRender({
-		defaultTagName: "div",
-		props: mergeProps<"div">(defaultProps, props),
-		render,
-	});
-}
-
-function CardFrameAction({
-	className,
-	render,
-	...props
-}: useRender.ComponentProps<"div">) {
-	const defaultProps = {
-		className: cn(
+const CardFrameAction = React.forwardRef<
+	HTMLDivElement,
+	React.ComponentPropsWithoutRef<"div">
+>(({ className, ...props }, ref) => (
+	<div
+		ref={ref}
+		className={cn(
 			"col-start-2 row-span-2 row-start-1 inline-flex self-center justify-self-end",
 			className,
-		),
-		"data-slot": "card-frame-action",
-	};
+		)}
+		data-slot="card-frame-action"
+		{...props}
+	/>
+));
+CardFrameAction.displayName = "CardFrameAction";
 
-	return useRender({
-		defaultTagName: "div",
-		props: mergeProps<"div">(defaultProps, props),
-		render,
-	});
-}
+const CardFrameFooter = React.forwardRef<
+	HTMLDivElement,
+	React.ComponentPropsWithoutRef<"div">
+>(({ className, ...props }, ref) => (
+	<div
+		ref={ref}
+		className={cn("bg-bg-weak-50 px-6 py-4", className)}
+		data-slot="card-frame-footer"
+		{...props}
+	/>
+));
+CardFrameFooter.displayName = "CardFrameFooter";
 
-function CardFrameFooter({
-	className,
-	render,
-	...props
-}: useRender.ComponentProps<"div">) {
-	const defaultProps = {
-		className: cn("bg-zinc-50 px-6 py-4", className),
-		"data-slot": "card-frame-footer",
-	};
-
-	return useRender({
-		defaultTagName: "div",
-		props: mergeProps<"div">(defaultProps, props),
-		render,
-	});
-}
-
-function CardHeader({
-	className,
-	render,
-	...props
-}: useRender.ComponentProps<"div">) {
-	const defaultProps = {
-		className: cn(
+const CardHeader = React.forwardRef<
+	HTMLDivElement,
+	React.ComponentPropsWithoutRef<"div">
+>(({ className, ...props }, ref) => (
+	<div
+		ref={ref}
+		className={cn(
 			"grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 p-6 in-[[data-slot=card]:has(>[data-slot=card-panel])]:pb-4 has-data-[slot=card-action]:grid-cols-[1fr_auto]",
 			className,
-		),
-		"data-slot": "card-header",
-	};
+		)}
+		data-slot="card-header"
+		{...props}
+	/>
+));
+CardHeader.displayName = "CardHeader";
 
-	return useRender({
-		defaultTagName: "div",
-		props: mergeProps<"div">(defaultProps, props),
-		render,
-	});
-}
+const CardTitle = React.forwardRef<
+	HTMLDivElement,
+	React.ComponentPropsWithoutRef<"div">
+>(({ className, ...props }, ref) => (
+	<div
+		ref={ref}
+		className={cn("font-semibold text-lg leading-none", className)}
+		data-slot="card-title"
+		{...props}
+	/>
+));
+CardTitle.displayName = "CardTitle";
 
-function CardTitle({
-	className,
-	render,
-	...props
-}: useRender.ComponentProps<"div">) {
-	const defaultProps = {
-		className: cn("font-semibold text-lg leading-none", className),
-		"data-slot": "card-title",
-	};
+const CardDescription = React.forwardRef<
+	HTMLDivElement,
+	React.ComponentPropsWithoutRef<"div">
+>(({ className, ...props }, ref) => (
+	<div
+		ref={ref}
+		className={cn("text-text-soft-400 text-sm", className)}
+		data-slot="card-description"
+		{...props}
+	/>
+));
+CardDescription.displayName = "CardDescription";
 
-	return useRender({
-		defaultTagName: "div",
-		props: mergeProps<"div">(defaultProps, props),
-		render,
-	});
-}
-
-function CardDescription({
-	className,
-	render,
-	...props
-}: useRender.ComponentProps<"div">) {
-	const defaultProps = {
-		className: cn("text-muted-foreground text-sm", className),
-		"data-slot": "card-description",
-	};
-
-	return useRender({
-		defaultTagName: "div",
-		props: mergeProps<"div">(defaultProps, props),
-		render,
-	});
-}
-
-function CardAction({
-	className,
-	render,
-	...props
-}: useRender.ComponentProps<"div">) {
-	const defaultProps = {
-		className: cn(
+const CardAction = React.forwardRef<
+	HTMLDivElement,
+	React.ComponentPropsWithoutRef<"div">
+>(({ className, ...props }, ref) => (
+	<div
+		ref={ref}
+		className={cn(
 			"col-start-2 row-span-2 row-start-1 inline-flex self-start justify-self-end",
 			className,
-		),
-		"data-slot": "card-action",
-	};
+		)}
+		data-slot="card-action"
+		{...props}
+	/>
+));
+CardAction.displayName = "CardAction";
 
-	return useRender({
-		defaultTagName: "div",
-		props: mergeProps<"div">(defaultProps, props),
-		render,
-	});
-}
-
-function CardPanel({
-	className,
-	render,
-	...props
-}: useRender.ComponentProps<"div">) {
-	const defaultProps = {
-		className: cn(
+const CardPanel = React.forwardRef<
+	HTMLDivElement,
+	React.ComponentPropsWithoutRef<"div">
+>(({ className, ...props }, ref) => (
+	<div
+		ref={ref}
+		className={cn(
 			"flex-1 p-6 in-[[data-slot=card]:has(>[data-slot=card-header]:not(.border-b))]:pt-0 in-[[data-slot=card]:has(>[data-slot=card-footer]:not(.border-t))]:pb-0",
 			className,
-		),
-		"data-slot": "card-panel",
-	};
+		)}
+		data-slot="card-panel"
+		{...props}
+	/>
+));
+CardPanel.displayName = "CardPanel";
 
-	return useRender({
-		defaultTagName: "div",
-		props: mergeProps<"div">(defaultProps, props),
-		render,
-	});
-}
-
-function CardFooter({
-	className,
-	render,
-	...props
-}: useRender.ComponentProps<"div">) {
-	const defaultProps = {
-		className: cn(
+const CardFooter = React.forwardRef<
+	HTMLDivElement,
+	React.ComponentPropsWithoutRef<"div">
+>(({ className, ...props }, ref) => (
+	<div
+		ref={ref}
+		className={cn(
 			"flex items-center p-6 in-[[data-slot=card]:has(>[data-slot=card-panel])]:pt-4",
 			className,
-		),
-		"data-slot": "card-footer",
-	};
-
-	return useRender({
-		defaultTagName: "div",
-		props: mergeProps<"div">(defaultProps, props),
-		render,
-	});
-}
+		)}
+		data-slot="card-footer"
+		{...props}
+	/>
+));
+CardFooter.displayName = "CardFooter";
 
 /* ─── CardStatBar ──────────────────────────────────────────────────────── */
 
@@ -280,7 +225,7 @@ function CardStatBar({ stats }: { stats: CardStat[] }) {
 					<span className="font-bold text-base tracking-tighter">
 						{stat.value}
 					</span>
-					<span className="text-muted-foreground">{stat.label}</span>
+					<span className="text-text-soft-400">{stat.label}</span>
 				</div>
 			))}
 		</div>

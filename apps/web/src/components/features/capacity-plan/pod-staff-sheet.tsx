@@ -83,7 +83,7 @@ export function PodStaffSheet({
 }) {
 	const queryClient = useQueryClient();
 	const { data: session } = authClient.useSession();
-	const writable = canWrite(getUserRole(session));
+	const writable = canWrite(getUserRole(session?.user));
 
 	const [removeTarget, setRemoveTarget] = useState<Carbonite | null>(null);
 
@@ -155,7 +155,7 @@ export function PodStaffSheet({
 									staff
 								</SheetDescription>
 							</SheetHeader>
-							<div className="flex items-center gap-6 border-border border-b px-4 py-3">
+							<div className="flex items-center gap-6  border-b px-4 py-3">
 								<div className="flex flex-col gap-0.5">
 									<span className="text-[11px] text-muted-foreground">
 										Headcount

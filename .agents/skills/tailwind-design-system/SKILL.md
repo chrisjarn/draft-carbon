@@ -152,7 +152,7 @@ Build production-ready design systems with Tailwind CSS v4, including CSS-first 
 /* Base styles */
 @layer base {
   * {
-    @apply border-border;
+    @apply ;
   }
 
   body {
@@ -198,7 +198,7 @@ const buttonVariants = cva(
       variant: {
         default: 'bg-primary text-primary-foreground hover:bg-primary/90',
         destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
-        outline: 'border border-border bg-background hover:bg-accent hover:text-accent-foreground',
+        outline: 'border  bg-background hover:bg-accent hover:text-accent-foreground',
         secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
         ghost: 'hover:bg-accent hover:text-accent-foreground',
         link: 'text-primary underline-offset-4 hover:underline',
@@ -264,7 +264,7 @@ export function Card({
     <div
       ref={ref}
       className={cn(
-        'rounded-lg border border-border bg-card text-card-foreground shadow-sm',
+        'rounded-lg border  bg-card text-card-foreground shadow-sm',
         className
       )}
       {...props}
@@ -370,7 +370,7 @@ export function Input({ className, type, error, ref, ...props }: InputProps) {
       <input
         type={type}
         className={cn(
-          'flex h-10 w-full rounded-md border border-border bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
+          'flex h-10 w-full rounded-md border  bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
           error && 'border-destructive focus-visible:ring-destructive',
           className
         )}
@@ -623,7 +623,7 @@ export function DialogContent({
       <DialogPrimitive.Content
         ref={ref}
         className={cn(
-          'fixed left-1/2 top-1/2 z-50 grid w-full max-w-lg -translate-x-1/2 -translate-y-1/2 gap-4 border border-border bg-background p-6 shadow-lg sm:rounded-lg',
+          'fixed left-1/2 top-1/2 z-50 grid w-full max-w-lg -translate-x-1/2 -translate-y-1/2 gap-4 border  bg-background p-6 shadow-lg sm:rounded-lg',
           'data-[state=open]:animate-dialog-in data-[state=closed]:animate-dialog-out',
           className
         )}

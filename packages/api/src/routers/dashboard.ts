@@ -59,6 +59,17 @@ export const dashboardRouter = router({
 				.where(cbWhere)
 				.groupBy(carbonites.state, carbonites.sl);
 
+			// Per-state-sl partner count
+			const partnerByState = await db
+				.select({
+					state: carbonites.state,
+					sl: carbonites.sl,
+					partnerCount: count(),
+				})
+				.from(carbonites)
+				.where(and(...cbConditions, eq(carbonites.isPartner, true)))
+				.groupBy(carbonites.state, carbonites.sl);
+
 			// RBAC-scoped entity IDs (for revenue lookup)
 			const entConditions: ReturnType<typeof eq>[] = [];
 			const rbacEnt = entityRoleWhere(rf);
@@ -108,6 +119,11 @@ export const dashboardRouter = router({
 					sl: r.sl,
 					headcount: r.headcount,
 					fte: Number(Number(r.fte).toFixed(1)),
+				})),
+				partnerByState: partnerByState.map((r) => ({
+					state: r.state,
+					sl: r.sl,
+					partnerCount: r.partnerCount,
 				})),
 				revenueByEntity: revenueByEntity.map((r) => ({
 					...r,

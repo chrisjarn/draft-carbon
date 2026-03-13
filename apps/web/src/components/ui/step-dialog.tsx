@@ -184,12 +184,12 @@ function StepDialogIndicator({ labels, className }: StepDialogIndicatorProps) {
 							<div
 								className={cn(
 									"flex size-7 items-center justify-center rounded-full border font-medium text-xs transition-colors",
-									isDone && "border-emerald-500 bg-emerald-500 text-white",
+									isDone && "bg-green-600 border-green-600 text-white",
 									isActive &&
-										"border-primary bg-primary text-primary-foreground",
+										"border-green-600 bg-green-600 text-text-white-0",
 									!isDone &&
 										!isActive &&
-										"border-border bg-muted text-muted-foreground",
+										" bg-bg-weak-50 text-text-soft-400",
 								)}
 							>
 								{isDone ? <HugeiconsIcon icon={Tick01Icon} size={12} /> : num}
@@ -199,8 +199,8 @@ function StepDialogIndicator({ labels, className }: StepDialogIndicatorProps) {
 									className={cn(
 										"whitespace-nowrap text-xs",
 										isActive
-											? "font-medium text-foreground"
-											: "text-muted-foreground",
+											? "font-medium text-text-strong-950"
+											: "text-text-soft-400",
 									)}
 								>
 									{labels[i]}
@@ -211,7 +211,7 @@ function StepDialogIndicator({ labels, className }: StepDialogIndicatorProps) {
 							<div
 								className={cn(
 									"mx-2 mb-4 h-px flex-1 transition-colors",
-									isDone ? "bg-emerald-500" : "bg-border",
+									isDone ? "bg-green-600 border-green-600" : "bg-stroke-soft-200",
 								)}
 							/>
 						)}
@@ -299,7 +299,7 @@ function StepDialogFooter({
 		<div
 			data-slot="step-dialog-footer"
 			className={cn(
-				"flex items-center justify-between border-border border-t px-5 py-3",
+				"flex items-center justify-between  border-t px-5 py-3",
 				className,
 			)}
 		>
@@ -311,8 +311,8 @@ function StepDialogFooter({
 						Back
 					</Button>
 				) : (
-					<DialogClose render={<Button variant="ghost" type="button" />}>
-						Cancel
+					<DialogClose asChild>
+						<Button variant="ghost" type="button">Cancel</Button>
 					</DialogClose>
 				)}
 			</div>

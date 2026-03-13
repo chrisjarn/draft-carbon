@@ -250,7 +250,7 @@ export function PodComparisonTable({ priorFy }: { priorFy: string }) {
 					Export Pod Report
 				</Button>
 			</div>
-			<div className="overflow-auto rounded-lg border border-border">
+			<div className="overflow-auto rounded-lg border ">
 				<Table>
 					<TableHeader>
 						<TableRow>

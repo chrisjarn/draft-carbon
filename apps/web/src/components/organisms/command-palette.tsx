@@ -111,7 +111,7 @@ export function CommandPalette() {
 			title="Command Palette"
 			description="Search or jump to..."
 			showCloseButton={false}
-			className="top-[40%] max-w-[560px] overflow-hidden rounded-lg border border-border/60 shadow-lg supports-backdrop-filter:backdrop-blur-sm md:left-[calc(50%+8rem)]"
+			className="top-[40%] max-w-[560px] overflow-hidden rounded-lg border /60 shadow-lg supports-backdrop-filter:backdrop-blur-sm md:left-[calc(50%+8rem)]"
 		>
 			<Command shouldFilter={!shouldSearch} loop>
 				<CommandInput
@@ -234,7 +234,7 @@ export function SearchBarTrigger({ className }: { className?: string }) {
 			<span className="flex-1 text-left text-sm opacity-60">
 				Search or jump to...
 			</span>
-			<kbd className="pointer-events-none hidden h-5 select-none items-center gap-0.5 rounded border border-border/60 bg-background px-1.5 font-medium font-mono text-[11px] text-muted-foreground/70 sm:inline-flex">
+			<kbd className="pointer-events-none hidden h-5 select-none items-center gap-0.5 rounded border /60 bg-background px-1.5 font-medium font-mono text-[11px] text-muted-foreground/70 sm:inline-flex">
 				<span className="text-xs">⌘</span>K
 			</kbd>
 		</button>

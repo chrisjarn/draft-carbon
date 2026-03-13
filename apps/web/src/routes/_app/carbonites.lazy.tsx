@@ -27,7 +27,6 @@ import { CarboniteCard } from "@/components/features/carbonites/carbonite-card";
 import { seniorityLabel } from "@/components/features/carbonites/types";
 import { useCarboniteDataTable } from "@/components/features/carbonites/use-carbonite-data-table";
 import { ConfirmDialog } from "@/components/molecules/confirm-dialog";
-import { PageStatsBar } from "@/components/organisms/page-stats-bar";
 import { SearchInput } from "@/components/molecules/search-input";
 import { DataTable } from "@/components/organisms/data-table/data-table";
 import {
@@ -36,6 +35,7 @@ import {
 	DataTableActionBarSelection,
 } from "@/components/organisms/data-table/data-table-action-bar";
 import { PageHeader } from "@/components/organisms/page-header";
+import { PageStatsBar } from "@/components/organisms/page-stats-bar";
 import {
 	Page,
 	PageBody,
@@ -395,9 +395,7 @@ function CarbonitesPage() {
 			/>
 
 			<PageSection className="border-b">
-				<p className="section-label mb-2">
-					Service Line Distribution
-				</p>
+				<p className="section-label mb-2">Service Line Distribution</p>
 				{query.isPending ? (
 					<Skeleton className="h-3 w-full rounded-full" />
 				) : allData.length === 0 ? (
