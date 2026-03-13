@@ -66,7 +66,7 @@ export function ConfirmDialog({
 				<AppDialogHeader>
 					<AppDialogTitle>{title}</AppDialogTitle>
 				</AppDialogHeader>
-				<p className="text-muted-foreground text-sm">{description}</p>
+				<p className="text-text-soft-400 text-sm">{description}</p>
 				<AppDialogFooter>
 					<Button
 						variant="outline"

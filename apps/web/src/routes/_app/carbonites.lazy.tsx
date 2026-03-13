@@ -399,7 +399,7 @@ function CarbonitesPage() {
 				{query.isPending ? (
 					<Skeleton className="h-3 w-full rounded-full" />
 				) : allData.length === 0 ? (
-					<div className="h-3 w-full rounded-full bg-muted" />
+					<div className="h-3 w-full rounded-full bg-bg-weak-50" />
 				) : (
 					<div className="flex h-3 w-full overflow-hidden rounded-full">
 						{slBreakdown.map((sl) => {
@@ -425,7 +425,7 @@ function CarbonitesPage() {
 								style={{ backgroundColor: sl.color }}
 								aria-hidden="true"
 							/>
-							<span className="text-muted-foreground text-xs">
+							<span className="text-text-soft-400 text-xs">
 								{sl.label} ({sl.count})
 							</span>
 						</li>

@@ -150,7 +150,7 @@ function TodosPage() {
 												htmlFor={`todo-${todo.id}`}
 												className={
 													todo.completed
-														? "text-muted-foreground line-through"
+														? "text-text-soft-400 line-through"
 														: ""
 												}
 											>

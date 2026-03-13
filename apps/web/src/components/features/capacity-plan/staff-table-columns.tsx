@@ -138,7 +138,7 @@ export function getStaffTableColumns(
 				<DataTableColumnHeader column={column} title="Role" />
 			),
 			cell: ({ getValue }) => (
-				<span className="text-muted-foreground text-sm">
+				<span className="text-text-soft-400 text-sm">
 					{(getValue() as string | null) ?? "\u2014"}
 				</span>
 			),
@@ -270,10 +270,10 @@ export function getStaffTableColumns(
 									}
 								}}
 							>
-								<span className="text-muted-foreground text-sm tabular-nums">
+								<span className="text-text-soft-400 text-sm tabular-nums">
 									{fmtDollar(autoCalc)}
 								</span>
-								<span className="ml-1 text-[10px] text-muted-foreground/60">
+								<span className="ml-1 text-[10px] text-text-soft-400/60">
 									Auto
 								</span>
 							</TooltipTrigger>
@@ -377,7 +377,7 @@ export function getStaffTableColumns(
 					);
 				}
 				return (
-					<span className="text-muted-foreground/40 text-sm">{"\u2014"}</span>
+					<span className="text-text-soft-400/40 text-sm">{"\u2014"}</span>
 				);
 			},
 			meta: {

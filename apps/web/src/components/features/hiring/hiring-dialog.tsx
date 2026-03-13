@@ -160,17 +160,17 @@ export function HiringDrawer({
 					<SheetTitle className="text-lg">
 						{isEdit ? "Edit Role" : "Log a Hiring Role"}
 					</SheetTitle>
-					<p className="text-muted-foreground text-sm">
+					<p className="text-text-soft-400 text-sm">
 						{page === 1
 							? "Role information & classification"
 							: "Compensation & additional details"}
 					</p>
 					<div className="flex items-center gap-2 pt-1">
 						<div
-							className={`h-1 flex-1 rounded-full ${page === 1 ? "bg-primary" : "bg-primary/30"}`}
+							className={`h-1 flex-1 rounded-full ${page === 1 ? "bg-green-600" : "bg-green-600/30"}`}
 						/>
 						<div
-							className={`h-1 flex-1 rounded-full ${page === 2 ? "bg-primary" : "bg-primary/30"}`}
+							className={`h-1 flex-1 rounded-full ${page === 2 ? "bg-green-600" : "bg-green-600/30"}`}
 						/>
 					</div>
 				</SheetHeader>

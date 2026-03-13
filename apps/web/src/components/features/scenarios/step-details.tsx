@@ -40,7 +40,7 @@ export function StepDetails({ form }: StepDetailsProps) {
 			</form.Field>
 
 			<div className="flex flex-col gap-1.5">
-				<Label className="text-muted-foreground">Color</Label>
+				<Label className="text-text-soft-400">Color</Label>
 				<form.Field name="color">
 					{(field) => (
 						<div className="flex items-center gap-2">

@@ -43,7 +43,7 @@ export function AutoDetectedRisks({
 				<Button
 					variant="ghost"
 					size="sm"
-					className="h-6 text-muted-foreground text-xs"
+					className="h-6 text-text-soft-400 text-xs"
 					onClick={onDismissAll}
 				>
 					Dismiss all
@@ -53,7 +53,7 @@ export function AutoDetectedRisks({
 				{risks.map((r) => (
 					<div
 						key={r.carboniteId}
-						className="flex items-center justify-between gap-3 rounded border bg-background/50 px-3 py-2 text-sm"
+						className="flex items-center justify-between gap-3 rounded border bg-bg-white-0/50 px-3 py-2 text-sm"
 					>
 						<div className="flex min-w-0 flex-1 items-center gap-2">
 							<span className="font-medium">{r.name}</span>
@@ -64,7 +64,7 @@ export function AutoDetectedRisks({
 							>
 								{r.riskLevel}
 							</Badge>
-							<span className="truncate text-muted-foreground text-xs">
+							<span className="truncate text-text-soft-400 text-xs">
 								{r.reason}
 							</span>
 						</div>
@@ -81,7 +81,7 @@ export function AutoDetectedRisks({
 							<Button
 								variant="ghost"
 								size="sm"
-								className="h-6 text-muted-foreground text-xs"
+								className="h-6 text-text-soft-400 text-xs"
 								onClick={() => onDismiss(r.carboniteId)}
 							>
 								<HugeiconsIcon icon={Cancel01Icon} className="mr-0.5 size-3" />

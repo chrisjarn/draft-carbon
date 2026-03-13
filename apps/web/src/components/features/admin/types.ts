@@ -39,5 +39,5 @@ export const ROLE_STYLES: Record<string, string> = {
 	practice_manager: "border-blue-500/40 bg-blue-500/10 text-blue-400",
 	service_line_lead: "border-cyan-500/40 bg-cyan-500/10 text-cyan-400",
 	state_manager: "border-teal-500/40 bg-teal-500/10 text-teal-400",
-	read_only: " bg-muted/40 text-muted-foreground",
+	read_only: " bg-bg-weak-50/40 text-text-soft-400",
 };

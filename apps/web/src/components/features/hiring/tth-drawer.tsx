@@ -111,26 +111,26 @@ export function TthDrawer({
 			<SheetContent size="xl">
 				<SheetHeader>
 					<SheetTitle>Time to Hire &amp; Salary Brackets</SheetTitle>
-					<p className="text-muted-foreground text-sm">
+					<p className="text-text-soft-400 text-sm">
 						Reference data for planning &mdash; hire timelines and salary ranges
 						by role.
 					</p>
 					{/* Summary strip */}
-					<div className="flex gap-6 rounded-md border bg-muted/30 px-4 py-3 text-sm">
+					<div className="flex gap-6 rounded-md border bg-bg-weak-50/30 px-4 py-3 text-sm">
 						<div>
-							<p className="text-muted-foreground text-xs">Avg Time to Hire</p>
+							<p className="text-text-soft-400 text-xs">Avg Time to Hire</p>
 							<p className="font-semibold tabular-nums">
 								{TTH_SUMMARY.avgHireWeeks} weeks
 							</p>
 						</div>
 						<div>
-							<p className="text-muted-foreground text-xs">Avg Notice Period</p>
+							<p className="text-text-soft-400 text-xs">Avg Notice Period</p>
 							<p className="font-semibold tabular-nums">
 								{TTH_SUMMARY.avgNoticeWeeks} weeks
 							</p>
 						</div>
 						<div>
-							<p className="text-muted-foreground text-xs">Total Lead Time</p>
+							<p className="text-text-soft-400 text-xs">Total Lead Time</p>
 							<p className="font-semibold tabular-nums">
 								{TTH_SUMMARY.avgHireWeeks + TTH_SUMMARY.avgNoticeWeeks} weeks
 							</p>
@@ -150,7 +150,7 @@ export function TthDrawer({
 
 				<SheetPanel>
 					{/* Time to Hire table */}
-					<p className="mb-2 font-medium text-muted-foreground text-xs uppercase tracking-wider">
+					<p className="mb-2 font-medium text-text-soft-400 text-xs uppercase tracking-wider">
 						Time to Hire
 					</p>
 					<Table>
@@ -165,10 +165,10 @@ export function TthDrawer({
 							{tthRows.map((entry) => (
 								<TableRow key={entry.role}>
 									<TableCell className="text-sm">{entry.role}</TableCell>
-									<TableCell className="text-right text-muted-foreground text-sm tabular-nums">
+									<TableCell className="text-right text-text-soft-400 text-sm tabular-nums">
 										{entry.hireWeeks[0]}&ndash;{entry.hireWeeks[1]} wks
 									</TableCell>
-									<TableCell className="text-right text-muted-foreground text-sm tabular-nums">
+									<TableCell className="text-right text-text-soft-400 text-sm tabular-nums">
 										{entry.noticeWeeks[0]}&ndash;{entry.noticeWeeks[1]} wks
 									</TableCell>
 								</TableRow>
@@ -177,7 +177,7 @@ export function TthDrawer({
 					</Table>
 
 					{/* Salary brackets table */}
-					<p className="mt-6 mb-2 font-medium text-muted-foreground text-xs uppercase tracking-wider">
+					<p className="mt-6 mb-2 font-medium text-text-soft-400 text-xs uppercase tracking-wider">
 						Salary Brackets
 					</p>
 					<Table>
@@ -194,7 +194,7 @@ export function TthDrawer({
 							{salaryRows.map((b) => (
 								<TableRow key={b.role}>
 									<TableCell className="text-sm">{b.role}</TableCell>
-									<TableCell className="text-center text-muted-foreground text-sm tabular-nums">
+									<TableCell className="text-center text-text-soft-400 text-sm tabular-nums">
 										{b.level}
 									</TableCell>
 									<TableCell className="text-right text-sm tabular-nums">

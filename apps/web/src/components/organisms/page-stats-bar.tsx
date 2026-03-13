@@ -61,7 +61,7 @@ function StatIndicator({ value }: { value: number }) {
 					key={i}
 					className={cn(
 						"h-3.5 w-1 rounded-sm",
-						i < activeBars ? activeClass : "bg-border",
+						i < activeBars ? activeClass : "bg-stroke-soft-200",
 					)}
 				/>
 			))}
@@ -88,18 +88,18 @@ export function PageStatsBar({
 	return (
 		<div
 			className={cn(
-				"flex items-center justify-between gap-6 border-b bg-background px-6 py-2.5",
+				"flex items-center justify-between gap-6 border-b border-stroke-soft-200 bg-bg-white-0 px-6 py-2.5",
 				className,
 			)}
 		>
 			{/* Stats — left side */}
-			<div className="flex items-center divide-x divide-border">
+			<div className="flex items-center divide-x">
 				{stats.map((stat, i) => (
 					<div
 						key={`${stat.label}-${i}`}
 						className="flex flex-col gap-0.5 pr-10 pl-10 first:pl-0"
 					>
-						<span className="font-medium text-[10px] text-muted-foreground uppercase tracking-widest">
+						<span className="font-medium text-[10px] text-text-soft-400 uppercase tracking-widest">
 							{stat.label}
 						</span>
 						{stat.loading ? (
@@ -118,7 +118,7 @@ export function PageStatsBar({
 									{stat.value}
 								</span>
 								{stat.fraction && (
-									<span className="text-muted-foreground text-xs tabular-nums">
+									<span className="text-text-soft-400 text-xs tabular-nums">
 										{stat.fraction}
 									</span>
 								)}

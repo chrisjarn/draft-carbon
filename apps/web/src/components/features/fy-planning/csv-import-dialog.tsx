@@ -81,9 +81,9 @@ export function CsvImportDialog({
 					<AppDialogTitle>Import Prior Year Data ({fy})</AppDialogTitle>
 				</AppDialogHeader>
 
-				<p className="text-muted-foreground text-sm">
+				<p className="text-text-soft-400 text-sm">
 					Paste CSV data with format:{" "}
-					<code className="rounded bg-muted px-1 py-0.5">
+					<code className="rounded bg-bg-weak-50 px-1 py-0.5">
 						state,office,pod_name,budget
 					</code>
 				</p>

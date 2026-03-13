@@ -629,8 +629,11 @@
 }
 
 @layer base {
+  *, ::before, ::after {
+    border-color: var(--color-stroke-soft-200);
+  }
   * {
-    @apply outline-ring/50;
+    outline-color: color-mix(in oklch, var(--color-green-600) 50%, transparent);
   }
   body {
     @apply font-sans bg-bg-white-0 text-text-strong-950;

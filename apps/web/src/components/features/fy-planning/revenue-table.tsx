@@ -25,11 +25,11 @@ function RevenueBar({
 }) {
 	const t = Number(target);
 	const a = Number(actual);
-	if (!t) return <div className="h-1.5 w-full rounded-full bg-muted" />;
+	if (!t) return <div className="h-1.5 w-full rounded-full bg-bg-weak-50" />;
 	const pct = Math.min((a / t) * 100, 100);
 	const over = a > t;
 	return (
-		<div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+		<div className="h-1.5 w-full overflow-hidden rounded-full bg-bg-weak-50">
 			<div
 				className={`h-full rounded-full transition-[width] ${over ? "bg-green-500" : pct >= 80 ? "bg-amber-500" : "bg-blue-500"}`}
 				style={{ width: `${pct}%` }}
@@ -58,7 +58,7 @@ export function RevenueCell({
 	if (editing) {
 		return (
 			<div className="flex items-center gap-1">
-				<span className="text-muted-foreground text-sm">$</span>
+				<span className="text-text-soft-400 text-sm">$</span>
 				<Input
 					type="number"
 					value={val}
@@ -79,7 +79,7 @@ export function RevenueCell({
 						onSave(val);
 						setEditing(false);
 					}}
-					className="rounded-sm text-green-400 hover:text-green-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+					className="rounded-sm text-green-400 hover:text-green-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stroke-strong-950"
 				>
 					<HugeiconsIcon
 						icon={Tick01Icon}
@@ -101,7 +101,7 @@ export function RevenueCell({
 					setVal(value ?? "");
 					setEditing(true);
 				}}
-				className="rounded-sm text-muted-foreground opacity-0 transition-opacity hover:text-foreground focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring group-hover:opacity-100"
+				className="rounded-sm text-text-soft-400 opacity-0 transition-opacity hover:text-text-strong-950 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stroke-strong-950 group-hover:opacity-100"
 			>
 				<HugeiconsIcon
 					icon={PencilEdit01Icon}
@@ -186,7 +186,7 @@ export function makeRevenueColumns(
 				const v = variance(target, actual);
 				return (
 					<span
-						className={`font-medium text-sm tabular-nums ${v.positive === null ? "text-muted-foreground" : v.positive ? "text-green-400" : "text-red-400"}`}
+						className={`font-medium text-sm tabular-nums ${v.positive === null ? "text-text-soft-400" : v.positive ? "text-green-400" : "text-red-400"}`}
 					>
 						{v.val}
 					</span>
@@ -215,7 +215,7 @@ export function makeRevenueColumns(
 				);
 				return (
 					<span
-						className={`font-medium text-sm tabular-nums ${pct === null ? "text-muted-foreground" : pct >= 100 ? "text-green-400" : pct >= 80 ? "text-amber-400" : "text-red-400"}`}
+						className={`font-medium text-sm tabular-nums ${pct === null ? "text-text-soft-400" : pct >= 100 ? "text-green-400" : pct >= 80 ? "text-amber-400" : "text-red-400"}`}
 					>
 						{pct !== null ? `${pct}%` : "\u2014"}
 					</span>
@@ -254,13 +254,13 @@ export function buildGroupCells(
 				{isExpanded ? (
 					<HugeiconsIcon
 						icon={ArrowDown01Icon}
-						className="size-4 text-muted-foreground"
+						className="size-4 text-text-soft-400"
 						aria-hidden="true"
 					/>
 				) : (
 					<HugeiconsIcon
 						icon={ArrowRight01Icon}
-						className="size-4 text-muted-foreground"
+						className="size-4 text-text-soft-400"
 						aria-hidden="true"
 					/>
 				)}
@@ -282,7 +282,7 @@ export function buildGroupCells(
 		),
 		variance: (
 			<span
-				className={`font-medium text-sm tabular-nums ${v.positive === null ? "text-muted-foreground" : v.positive ? "text-green-400" : "text-red-400"}`}
+				className={`font-medium text-sm tabular-nums ${v.positive === null ? "text-text-soft-400" : v.positive ? "text-green-400" : "text-red-400"}`}
 			>
 				{v.val}
 			</span>
@@ -292,7 +292,7 @@ export function buildGroupCells(
 		),
 		attainment: (
 			<span
-				className={`font-medium text-sm tabular-nums ${pct === null ? "text-muted-foreground" : pct >= 100 ? "text-green-400" : pct >= 80 ? "text-amber-400" : "text-red-400"}`}
+				className={`font-medium text-sm tabular-nums ${pct === null ? "text-text-soft-400" : pct >= 100 ? "text-green-400" : pct >= 80 ? "text-amber-400" : "text-red-400"}`}
 			>
 				{pct !== null ? `${pct}%` : "\u2014"}
 			</span>
@@ -316,9 +316,9 @@ export function TotalsFooter({
 
 	return (
 		<TableFooter>
-			<TableRow className="bg-muted/30 font-semibold">
+			<TableRow className="bg-bg-weak-50/30 font-semibold">
 				{/* stateGroup (hidden) + biz */}
-				<TableCell className="text-muted-foreground">Total ({fy})</TableCell>
+				<TableCell className="text-text-soft-400">Total ({fy})</TableCell>
 				<TableCell className="text-sm tabular-nums">
 					{fmt(String(totalTarget))}
 				</TableCell>
@@ -327,7 +327,7 @@ export function TotalsFooter({
 				</TableCell>
 				<TableCell>
 					<span
-						className={`text-sm tabular-nums ${v.positive === null ? "text-muted-foreground" : v.positive ? "text-green-400" : "text-red-400"}`}
+						className={`text-sm tabular-nums ${v.positive === null ? "text-text-soft-400" : v.positive ? "text-green-400" : "text-red-400"}`}
 					>
 						{v.val}
 					</span>
@@ -342,7 +342,7 @@ export function TotalsFooter({
 					<span
 						className={`text-sm tabular-nums ${
 							pct === null
-								? "text-muted-foreground"
+								? "text-text-soft-400"
 								: pct >= 100
 									? "text-green-400"
 									: pct >= 80

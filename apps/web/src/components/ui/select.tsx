@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 const Select = SelectPrimitive.Root;
 
 const selectTriggerVariants = cva(
-	"relative inline-flex min-h-9 w-full min-w-36 select-none items-center justify-between gap-2 shadow-custom-input bg-bg-white-0 text-text-strong-950 rounded-lg px-[calc(--spacing(3)-1px)] text-left text-base outline-none transition-shadow pointer-coarse:after:absolute pointer-coarse:after:size-full pointer-coarse:after:min-h-10 hover:shadow-gray-shadow focus:shadow-gray-shadow-2 aria-invalid:border-destructive/36 data-[disabled]:pointer-events-none data-[disabled]:opacity-64 sm:min-h-10 sm:text-sm [&_svg:not([class*='opacity-'])]:opacity-80 [&_svg:not([class*='size-'])]:size-4.5 sm:[&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+	"relative inline-flex min-h-9 w-full min-w-36 select-none items-center justify-between gap-2 shadow-custom-input bg-bg-white-0 text-text-strong-950 rounded-lg px-[calc(--spacing(3)-1px)] text-left text-base border border-transparent outline-none transition-[shadow,border-color] pointer-coarse:after:absolute pointer-coarse:after:size-full pointer-coarse:after:min-h-10 hover:shadow-gray-shadow focus:border-green-600 focus:shadow-gray-shadow-2 aria-invalid:border-error-base data-[disabled]:pointer-events-none data-[disabled]:opacity-64 sm:min-h-10 sm:text-sm [&_svg:not([class*='opacity-'])]:opacity-80 [&_svg:not([class*='size-'])]:size-4.5 sm:[&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
 	{
 		defaultVariants: {
 			size: "default",

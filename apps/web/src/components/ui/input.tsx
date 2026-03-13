@@ -41,7 +41,7 @@ function Input({
 			className={
 				cn(
 					!unstyled &&
-						"relative inline-flex w-full items-center shadow-custom-input bg-bg-white-0 rounded-lg text-text-strong-950 text-base transition-shadow has-focus-visible:shadow-gray-shadow-2 has-focus-visible:has-aria-invalid:border-destructive/64 has-focus-visible:has-aria-invalid:ring-destructive/16 has-aria-invalid:border-destructive/36 has-autofill:bg-foreground/4 has-disabled:opacity-64 sm:text-sm",
+						"relative inline-flex w-full items-center shadow-custom-input bg-bg-white-0 rounded-lg text-text-strong-950 text-base border border-transparent transition-[shadow,border-color] has-focus:border-green-600 has-focus:shadow-gray-shadow-2 has-aria-invalid:border-error-base has-disabled:opacity-64 sm:text-sm",
 					className,
 				) || undefined
 			}

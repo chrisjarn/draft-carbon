@@ -7,7 +7,7 @@ export function DetailSection({
 }) {
 	return (
 		<div>
-			<p className="mb-2 font-semibold text-muted-foreground text-xs uppercase tracking-widest">
+			<p className="mb-2 font-semibold text-text-soft-400 text-xs uppercase tracking-widest">
 				{title}
 			</p>
 			<div className="space-y-1.5">{children}</div>
@@ -24,7 +24,7 @@ export function DetailRow({
 }) {
 	return (
 		<div className="flex items-baseline justify-between gap-2">
-			<span className="text-muted-foreground text-sm">{label}</span>
+			<span className="text-text-soft-400 text-sm">{label}</span>
 			<span className="text-right font-medium text-sm">{value ?? "—"}</span>
 		</div>
 	);

@@ -75,8 +75,8 @@ export function StepContext({
 			<form.Subscribe selector={(s) => s.values.entityId}>
 				{(entityId) =>
 					entityId && hasDetail ? (
-						<div className="space-y-2 rounded-md border  bg-muted/20 p-3">
-							<span className="font-medium text-muted-foreground text-xs uppercase tracking-wider">
+						<div className="space-y-2 rounded-md border  bg-bg-weak-50/20 p-3">
+							<span className="font-medium text-text-soft-400 text-xs uppercase tracking-wider">
 								Current Baseline
 							</span>
 							<div className="grid grid-cols-2 gap-3">

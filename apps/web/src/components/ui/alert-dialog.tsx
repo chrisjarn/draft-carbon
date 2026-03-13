@@ -106,7 +106,7 @@ function AlertDialogFooter({
 		<div
 			className={cn(
 				"flex flex-col-reverse gap-2 px-6 sm:flex-row sm:justify-end sm:rounded-b-[calc(var(--radius-2xl)-1px)]",
-				variant === "default" && "border-t bg-muted/72 py-4",
+				variant === "default" && "border-t bg-bg-weak-50/72 py-4",
 				variant === "bare" && "pb-6",
 				className,
 			)}
@@ -138,7 +138,7 @@ function AlertDialogDescription({
 }: AlertDialogPrimitive.Description.Props) {
 	return (
 		<AlertDialogPrimitive.Description
-			className={cn("text-muted-foreground text-sm", className)}
+			className={cn("text-text-soft-400 text-sm", className)}
 			data-slot="alert-dialog-description"
 			{...props}
 		/>

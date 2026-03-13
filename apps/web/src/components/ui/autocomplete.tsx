@@ -179,7 +179,7 @@ function AutocompleteGroupLabel({
 	return (
 		<AutocompletePrimitive.GroupLabel
 			className={cn(
-				"px-2 py-1.5 font-medium text-muted-foreground text-xs",
+				"px-2 py-1.5 font-medium text-text-soft-400 text-xs",
 				className,
 			)}
 			data-slot="autocomplete-group-label"
@@ -195,7 +195,7 @@ function AutocompleteEmpty({
 	return (
 		<AutocompletePrimitive.Empty
 			className={cn(
-				"not-empty:p-2 text-center text-base text-muted-foreground sm:text-sm",
+				"not-empty:p-2 text-center text-base text-text-soft-400 sm:text-sm",
 				className,
 			)}
 			data-slot="autocomplete-empty"
@@ -266,7 +266,7 @@ function AutocompleteStatus({
 	return (
 		<AutocompletePrimitive.Status
 			className={cn(
-				"px-3 py-2 font-medium text-muted-foreground text-xs empty:m-0 empty:p-0",
+				"px-3 py-2 font-medium text-text-soft-400 text-xs empty:m-0 empty:p-0",
 				className,
 			)}
 			data-slot="autocomplete-status"

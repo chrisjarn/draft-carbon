@@ -61,7 +61,7 @@ function SlTags({ sls }: { sls: string[] }) {
 				return (
 					<span
 						key={sl}
-						className="rounded-md border  bg-muted/50 px-1.5 py-px font-medium text-muted-foreground text-xs"
+						className="rounded-md border border-stroke-soft-200 bg-bg-weak-50/50 px-1.5 py-px font-medium text-text-soft-400 text-xs"
 					>
 						{meta?.short ?? sl}
 					</span>
@@ -91,16 +91,16 @@ function BudgetBar({
 	return (
 		<div className="px-5 pb-3">
 			<div className="mb-1 flex items-center justify-between">
-				<span className="text-muted-foreground text-xs">Budget</span>
+				<span className="text-text-soft-400 text-xs">Budget</span>
 				<span
-					className={`text-xs tabular-nums ${over ? "text-red-400" : "text-muted-foreground"}`}
+					className={`text-xs tabular-nums ${over ? "text-red-400" : "text-text-soft-400"}`}
 				>
 					{over
 						? `${fmtDollar(Math.abs(remaining))} over`
 						: `${fmtDollar(remaining)} remaining`}
 				</span>
 			</div>
-			<div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+			<div className="h-1.5 w-full overflow-hidden rounded-full bg-bg-weak-50">
 				<div
 					className={`h-full rounded-full transition-all ${barColor}`}
 					style={{ width: `${pct}%` }}
@@ -142,7 +142,7 @@ export function EntityCard({
 					});
 				}
 			}}
-			className="group h-full min-h-55 cursor-pointer"
+			className="group h-full min-h-55 cursor-pointer shadow-custom-input rounded-20 hover:bg-bg-weak-50 transition-all duration-200"
 		>
 			<Card flushFooter className="h-full gap-0">
 				{/* Header */}
@@ -152,7 +152,7 @@ export function EntityCard({
 							{entity.biz}
 						</h3>
 						{entity.legalName && (
-							<p className="mt-0.5 truncate text-muted-foreground text-sm">
+							<p className="mt-0.5 truncate text-text-soft-400 text-sm">
 								{entity.legalName}
 							</p>
 						)}

@@ -23,7 +23,7 @@ export function DashboardGreeting({
 	return (
 		<div className="flex items-end justify-between pb-5">
 			<div>
-				<p className="pb-1 font-medium text-[10px] text-muted-foreground uppercase tracking-widest">
+				<p className="pb-1 font-medium text-[10px] text-text-soft-400 uppercase tracking-widest">
 					Carbon Group · Workforce Planner
 				</p>
 				<h2 className="font-semibold text-2xl tracking-tight">

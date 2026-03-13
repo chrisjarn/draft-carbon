@@ -210,7 +210,7 @@ export function PodComparisonTable({ priorFy }: { priorFy: string }) {
 
 	if (loading) {
 		return (
-			<div className="flex h-24 items-center justify-center text-muted-foreground text-sm">
+			<div className="flex h-24 items-center justify-center text-text-soft-400 text-sm">
 				Loading pod comparison...
 			</div>
 		);
@@ -316,7 +316,7 @@ export function PodComparisonTable({ priorFy }: { priorFy: string }) {
 											<TableCell
 												className={`text-right font-medium tabular-nums ${
 													r.yoyChange === null
-														? "text-muted-foreground"
+														? "text-text-soft-400"
 														: r.yoyChange >= 0
 															? "text-green-400"
 															: "text-red-400"

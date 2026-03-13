@@ -49,7 +49,7 @@ export function FormField({
 
 	return (
 		<div className={cn("flex flex-col gap-1.5", className)}>
-			<Label htmlFor={field.name} className="text-muted-foreground">
+			<Label htmlFor={field.name} className="text-text-soft-400">
 				{label}
 				{required && (
 					<span aria-hidden="true" className="ml-0.5 text-destructive">
@@ -69,7 +69,7 @@ export function FormField({
 				</p>
 			)}
 			{hint && !showError && (
-				<p id={hintId} className="text-muted-foreground text-xs">
+				<p id={hintId} className="text-text-soft-400 text-xs">
 					{hint}
 				</p>
 			)}

@@ -15,7 +15,7 @@ const PERF_STYLES: Record<string, string> = {
 	Exceeds: "border-green-500/40 bg-green-500/10 text-green-400",
 	Meets: "border-blue-500/40 bg-blue-500/10 text-blue-400",
 	Below: "border-red-500/40 bg-red-500/10 text-red-400",
-	"N/A": " bg-muted/40 text-muted-foreground",
+	"N/A": " bg-bg-weak-50/40 text-text-soft-400",
 };
 
 export function PerfBadge({ rating }: { rating: string | null | undefined }) {
@@ -67,7 +67,7 @@ export function EditableCell({
 	if (editing) {
 		return (
 			<div className="flex items-center gap-1">
-				<span className="text-muted-foreground text-sm">{prefix}</span>
+				<span className="text-text-soft-400 text-sm">{prefix}</span>
 				<Input
 					type="number"
 					value={val}
@@ -104,7 +104,7 @@ export function EditableCell({
 					setVal(value ?? "");
 					setEditing(true);
 				}}
-				className="text-muted-foreground opacity-0 transition-opacity hover:text-foreground group-hover:opacity-100"
+				className="text-text-soft-400 opacity-0 transition-opacity hover:text-text-strong-950 group-hover:opacity-100"
 			>
 				<HugeiconsIcon icon={PencilEdit01Icon} className="size-3" />
 			</button>
@@ -143,17 +143,17 @@ export function KpiCard({
 	return (
 		<Card size="sm">
 			<CardHeader className="flex-row items-center justify-between pb-1">
-				<CardTitle className="font-normal text-muted-foreground text-sm">
+				<CardTitle className="font-normal text-text-soft-400 text-sm">
 					{label}
 				</CardTitle>
 				{icon}
 			</CardHeader>
 			<CardContent>
 				{loading ? (
-					<span className="text-muted-foreground text-sm">Loading...</span>
+					<span className="text-text-soft-400 text-sm">Loading...</span>
 				) : (
 					<span
-						className={`font-bold text-xl tabular-nums ${muted ? "text-muted-foreground" : ""}`}
+						className={`font-bold text-xl tabular-nums ${muted ? "text-text-soft-400" : ""}`}
 					>
 						{value}
 					</span>

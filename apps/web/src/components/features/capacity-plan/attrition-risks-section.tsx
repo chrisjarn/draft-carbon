@@ -111,7 +111,7 @@ export function AttritionRisksSection({
 	return (
 		<div>
 			<div className="mb-2 flex items-center justify-between">
-				<h4 className="flex items-center gap-1.5 font-medium text-muted-foreground text-sm">
+				<h4 className="flex items-center gap-1.5 font-medium text-text-soft-400 text-sm">
 					<HugeiconsIcon icon={Alert02Icon} className="size-3.5" />
 					Attrition Risks
 				</h4>

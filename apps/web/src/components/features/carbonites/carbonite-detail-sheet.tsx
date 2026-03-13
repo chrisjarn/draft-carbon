@@ -86,20 +86,20 @@ export function CarboniteDetailSheet({
 						<SheetHeader>
 							<div className="flex items-start justify-between gap-3 pr-6">
 								<div className="flex items-center gap-3">
-									<div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-foreground font-semibold text-background text-sm ring-2 ring-emerald-500/30">
+									<div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-text-strong-950 font-semibold text-bg-white-0 text-sm ring-2 ring-emerald-500/30">
 										{initials(carbonite.name)}
 									</div>
 									<div className="min-w-0">
 										<SheetTitle className="text-lg leading-tight">
 											{carbonite.name}
 										</SheetTitle>
-										<p className="text-muted-foreground text-sm">
+										<p className="text-text-soft-400 text-sm">
 											{carbonite.role ?? "—"}
 										</p>
 									</div>
 								</div>
 								{carbonite.salary ? (
-									<span className="shrink-0 font-semibold text-foreground text-sm tabular-nums">
+									<span className="shrink-0 font-semibold text-text-strong-950 text-sm tabular-nums">
 										${carbonite.salary.toLocaleString()}
 									</span>
 								) : null}

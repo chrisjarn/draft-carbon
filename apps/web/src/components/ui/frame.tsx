@@ -6,7 +6,7 @@ function Frame({ className, ...props }: React.ComponentProps<"div">) {
 	return (
 		<div
 			className={cn(
-				"relative flex flex-col rounded-2xl bg-muted/72 p-1",
+				"relative flex flex-col rounded-2xl bg-bg-weak-50/72 p-1",
 				"*:[[data-slot=frame-panel]+[data-slot=frame-panel]]:mt-1",
 				className,
 			)}
@@ -55,7 +55,7 @@ function FrameDescription({
 }: React.ComponentProps<"div">) {
 	return (
 		<div
-			className={cn("text-muted-foreground text-sm", className)}
+			className={cn("text-text-soft-400 text-sm", className)}
 			data-slot="frame-panel-description"
 			{...props}
 		/>

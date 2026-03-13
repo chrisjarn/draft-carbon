@@ -32,7 +32,7 @@ const SL_BADGE_COLORS: Record<string, string> = {
 };
 
 function slBadgeClass(sl: string): string {
-	const color = SL_BADGE_COLORS[sl] ?? "bg-muted text-muted-foreground";
+	const color = SL_BADGE_COLORS[sl] ?? "bg-bg-weak-50 text-text-soft-400";
 	return `inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-medium uppercase leading-none ${color}`;
 }
 
@@ -46,9 +46,9 @@ function VarianceCell({
 	hasBudgetSet: boolean;
 }) {
 	if (!hasBudgetSet)
-		return <span className="text-muted-foreground text-sm">—</span>;
+		return <span className="text-text-soft-400 text-sm">—</span>;
 	if (variance === 0)
-		return <span className="text-muted-foreground text-sm">—</span>;
+		return <span className="text-text-soft-400 text-sm">—</span>;
 	const cls = variance > 0 ? "text-green-400" : "text-red-400";
 	return (
 		<span className={`font-medium text-sm tabular-nums ${cls}`}>
@@ -65,9 +65,9 @@ function AggregateVariance({
 	salary: number;
 }) {
 	if (budget === 0)
-		return <span className="text-muted-foreground text-sm">—</span>;
+		return <span className="text-text-soft-400 text-sm">—</span>;
 	const v = budget - salary;
-	if (v === 0) return <span className="text-muted-foreground text-sm">—</span>;
+	if (v === 0) return <span className="text-text-soft-400 text-sm">—</span>;
 	const cls = v > 0 ? "text-green-400" : "text-red-400";
 	return (
 		<span className={`font-medium text-sm tabular-nums ${cls}`}>
@@ -122,7 +122,7 @@ export function makePodBudgetColumns(
 										podName: r.podName,
 									})
 								}
-								className="truncate text-left text-muted-foreground text-sm hover:text-foreground hover:underline"
+								className="truncate text-left text-text-soft-400 text-sm hover:text-text-strong-950 hover:underline"
 							>
 								{r.podName}
 							</button>
@@ -132,7 +132,7 @@ export function makePodBudgetColumns(
 								</span>
 							)}
 						</div>
-						<span className="text-[11px] text-muted-foreground tabular-nums">
+						<span className="text-[11px] text-text-soft-400 tabular-nums">
 							{r.actual} staff
 						</span>
 					</div>
@@ -269,13 +269,13 @@ export function buildPodGroupCells(
 				{isExpanded ? (
 					<HugeiconsIcon
 						icon={ArrowDown01Icon}
-						className="size-4 text-muted-foreground"
+						className="size-4 text-text-soft-400"
 						aria-hidden="true"
 					/>
 				) : (
 					<HugeiconsIcon
 						icon={ArrowRight01Icon}
-						className="size-4 text-muted-foreground"
+						className="size-4 text-text-soft-400"
 						aria-hidden="true"
 					/>
 				)}
@@ -292,7 +292,7 @@ export function buildPodGroupCells(
 				<button
 					type="button"
 					onClick={() => onAddPod(stateVal, officeVal)}
-					className="mt-1 flex items-center gap-2 rounded-md border-2 border-border/60 border-dashed px-4 py-2 text-muted-foreground text-sm transition-colors hover:border-primary/40 hover:text-foreground"
+					className="mt-1 flex items-center gap-2 rounded-md border-2 border-stroke-soft-200/60 border-dashed px-4 py-2 text-text-soft-400 text-sm transition-colors hover:border-green-600/40 hover:text-text-strong-950"
 				>
 					<HugeiconsIcon icon={PlusSignIcon} className="size-3.5" />
 					<span>Add Pod</span>
@@ -330,9 +330,9 @@ export function PodBudgetsTotalsFooter({
 }) {
 	return (
 		<TableFooter>
-			<TableRow className="bg-muted/30 font-semibold">
+			<TableRow className="bg-bg-weak-50/30 font-semibold">
 				{/* stateGroup (hidden) + officeGroup (hidden) + location */}
-				<TableCell className="text-muted-foreground">Total</TableCell>
+				<TableCell className="text-text-soft-400">Total</TableCell>
 				<TableCell className="text-sm tabular-nums">
 					{totalBudget > 0 ? fmtDollar(totalBudget) : "—"}
 				</TableCell>

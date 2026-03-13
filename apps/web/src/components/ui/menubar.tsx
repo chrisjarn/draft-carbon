@@ -57,7 +57,7 @@ function MenubarTrigger({
 		<DropdownMenuTrigger
 			data-slot="menubar-trigger"
 			className={cn(
-				"flex select-none items-center rounded-sm px-1.5 py-[calc(--spacing(0.8))] font-medium text-sm outline-hidden hover:bg-muted aria-expanded:bg-muted",
+				"flex select-none items-center rounded-sm px-1.5 py-[calc(--spacing(0.8))] font-medium text-sm outline-hidden hover:bg-bg-weak-50 aria-expanded:bg-bg-weak-50",
 				className,
 			)}
 			{...props}
@@ -209,7 +209,7 @@ function MenubarShortcut({
 		<DropdownMenuShortcut
 			data-slot="menubar-shortcut"
 			className={cn(
-				"ml-auto text-muted-foreground text-sm tracking-widest group-focus/menubar-item:text-accent-foreground",
+				"ml-auto text-text-soft-400 text-sm tracking-widest group-focus/menubar-item:text-accent-foreground",
 				className,
 			)}
 			{...props}

@@ -205,7 +205,7 @@ function HiringPage() {
 						setSelected(null);
 					}}
 				>
-					<TabsList variant="underline">
+					<TabsList variant="pill">
 						<TabsTrigger value="open" className="gap-1.5">
 							Open
 							{counts.open > 0 && (
@@ -270,7 +270,7 @@ function HiringPage() {
 
 			<PageBody>
 				{query.isPending ? (
-					<div className="flex h-40 items-center justify-center text-muted-foreground text-sm">
+					<div className="flex h-40 items-center justify-center text-text-soft-400 text-sm">
 						Loading\u2026
 					</div>
 				) : rows.length === 0 ? (

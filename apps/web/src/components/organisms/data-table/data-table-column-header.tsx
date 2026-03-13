@@ -43,7 +43,7 @@ export function DataTableColumnHeader<TData, TValue>({
 		<DropdownMenu>
 			<DropdownMenuTrigger
 				className={cn(
-					"-ml-1.5 flex h-10 items-center gap-1.5 rounded-md px-2 py-1.5 hover:bg-accent focus:outline-none focus:ring-1 focus:ring-ring data-[state=open]:bg-accent [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:text-muted-foreground",
+					"-ml-1.5 flex h-10 items-center gap-1.5 rounded-md px-2 py-1.5 hover:bg-bg-weak-50 focus:outline-none focus:ring-1 focus:ring-stroke-strong-950 data-[state=open]:bg-bg-weak-50 [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:text-text-soft-400",
 					className,
 				)}
 				{...props}
@@ -65,7 +65,7 @@ export function DataTableColumnHeader<TData, TValue>({
 					<>
 						<DropdownMenuCheckboxItem
 							checked={column.getIsSorted() === "asc"}
-							className="relative pr-8 pl-2 [&>span:first-child]:right-2 [&>span:first-child]:left-auto [&_svg]:text-muted-foreground"
+							className="relative pr-8 pl-2 [&>span:first-child]:right-2 [&>span:first-child]:left-auto [&_svg]:text-text-soft-400"
 							onClick={() => column.toggleSorting(false)}
 						>
 							<HugeiconsIcon icon={ArrowUp01Icon} />
@@ -73,7 +73,7 @@ export function DataTableColumnHeader<TData, TValue>({
 						</DropdownMenuCheckboxItem>
 						<DropdownMenuCheckboxItem
 							checked={column.getIsSorted() === "desc"}
-							className="relative pr-8 pl-2 [&>span:first-child]:right-2 [&>span:first-child]:left-auto [&_svg]:text-muted-foreground"
+							className="relative pr-8 pl-2 [&>span:first-child]:right-2 [&>span:first-child]:left-auto [&_svg]:text-text-soft-400"
 							onClick={() => column.toggleSorting(true)}
 						>
 							<HugeiconsIcon icon={ArrowDown01Icon} />
@@ -81,7 +81,7 @@ export function DataTableColumnHeader<TData, TValue>({
 						</DropdownMenuCheckboxItem>
 						{column.getIsSorted() && (
 							<DropdownMenuItem
-								className="pl-2 [&_svg]:text-muted-foreground"
+								className="pl-2 [&_svg]:text-text-soft-400"
 								onClick={() => column.clearSorting()}
 							>
 								<HugeiconsIcon icon={Cancel01Icon} />
@@ -93,7 +93,7 @@ export function DataTableColumnHeader<TData, TValue>({
 				{column.getCanHide() && (
 					<DropdownMenuCheckboxItem
 						checked={!column.getIsVisible()}
-						className="relative pr-8 pl-2 [&>span:first-child]:right-2 [&>span:first-child]:left-auto [&_svg]:text-muted-foreground"
+						className="relative pr-8 pl-2 [&>span:first-child]:right-2 [&>span:first-child]:left-auto [&_svg]:text-text-soft-400"
 						onClick={() => column.toggleVisibility(false)}
 					>
 						<HugeiconsIcon icon={ViewOffIcon} />

@@ -9,6 +9,7 @@ import {
 	DashboardEmptyState,
 	DashboardErrorState,
 	EntityCardGrid,
+	HealthBanner,
 	KpiSection,
 	RevenueChart,
 	SlBreakdownBars,
@@ -198,8 +199,8 @@ function DashboardPage() {
 
 	// ── Render ───────────────────────────────────────────────────────────
 	return (
-		<Page>
-			<PageHeader titleOverride={greetingTitle}>
+		<Page className="h-auto min-h-full">
+			<PageHeader titleOverride={greetingTitle} constrain="max-w-[968px]">
 				<Select value={activeFy} onValueChange={setFy}>
 					<SelectTrigger className="h-8 w-28 text-xs">
 						<SelectValue />
@@ -214,7 +215,7 @@ function DashboardPage() {
 				</Select>
 			</PageHeader>
 
-			<PageToolbar className="bg-muted/30">
+			<PageToolbar className="bg-bg-weak-50/30" constrain="max-w-[968px]">
 				<Tabs
 					value={stateFilter ?? "all"}
 					onValueChange={(val) => setStateFilter(val === "all" ? null : val)}
@@ -230,60 +231,57 @@ function DashboardPage() {
 				</Tabs>
 			</PageToolbar>
 
-			<div className="bg-muted/30 px-6 pt-5">
-				<div className="mx-auto flex w-full max-w-[968px] items-center justify-between rounded-xl bg-card px-8 py-8">
-					<div className="flex flex-col gap-1">
-						<h2 className="font-semibold text-xl tracking-tight">
-							Carbonite Workforce Overview
-						</h2>
-						<p className="text-muted-foreground text-sm">
-							{activeFy} &middot; {bannerStats.states} States &middot;{" "}
-							{bannerStats.offices} Offices &middot;{" "}
-							{bannerStats.serviceLines} Service Lines
-						</p>
-					</div>
-					<div className="flex items-center gap-8">
-						<div className="flex flex-col items-center gap-1">
-							<span className="font-semibold text-2xl tabular-nums">
-								{bannerStats.carbonites}
-							</span>
-							<span className="text-muted-foreground text-xs">
-								Carbonites
-							</span>
-						</div>
-						<div className="h-10 w-px bg-border" />
-						<div className="flex flex-col items-center gap-1">
-							<span className="font-semibold text-2xl tabular-nums">
-								{bannerStats.offices}
-							</span>
-							<span className="text-muted-foreground text-xs">
-								Offices
-							</span>
-						</div>
-						<div className="h-10 w-px bg-border" />
-						<div className="flex flex-col items-center gap-1">
-							<span className="font-semibold text-2xl tabular-nums">
-								{bannerStats.serviceLines}
-							</span>
-							<span className="text-muted-foreground text-xs">
-								Service Lines
-							</span>
-						</div>
-					</div>
-				</div>
-			</div>
-
-			<PageBody padded constrain="max-w-[968px]">
+			<PageBody padded constrain="max-w-[968px]" className="overflow-visible">
 				{isError ? (
 					<DashboardErrorState onRetry={handleRetry} />
 				) : isEmpty ? (
 					<DashboardEmptyState onRetry={handleRetry} />
 				) : (
 					<div className="flex flex-col gap-5">
+						<div className="flex items-center justify-between rounded-20 bg-zinc-900 px-8 py-6">
+							<div className="flex flex-col gap-1">
+								<h2 className="font-semibold text-xl text-white text-balance">
+									Carbonite Workforce Overview
+								</h2>
+								<p className="text-white/50 text-sm text-pretty">
+									{activeFy} &middot; {bannerStats.states} States &middot;{" "}
+									{bannerStats.offices} Offices &middot;{" "}
+									{bannerStats.serviceLines} Service Lines
+								</p>
+							</div>
+							<div className="flex items-center gap-8">
+								<div className="flex flex-col items-center gap-1">
+									<span className="font-semibold text-2xl text-white tabular-nums">
+										{bannerStats.carbonites}
+									</span>
+									<span className="text-white/50 text-xs">Carbonites</span>
+								</div>
+								<div className="h-10 w-px bg-white/20" />
+								<div className="flex flex-col items-center gap-1">
+									<span className="font-semibold text-2xl text-white tabular-nums">
+										{bannerStats.offices}
+									</span>
+									<span className="text-white/50 text-xs">Offices</span>
+								</div>
+								<div className="h-10 w-px bg-white/20" />
+								<div className="flex flex-col items-center gap-1">
+									<span className="font-semibold text-2xl text-white tabular-nums">
+										{bannerStats.serviceLines}
+									</span>
+									<span className="text-white/50 text-xs">Service Lines</span>
+								</div>
+							</div>
+						</div>
+						<HealthBanner
+							data={filteredRevenue}
+							loading={revenueByEntity.isLoading}
+						/>
 						<KpiSection
 							stats={filteredStats}
 							entities={filteredEntities}
 							loading={stats.isLoading || entitySummaries.isLoading}
+							revenueActual={filteredStats?.revenueActual ?? 0}
+							revenueTarget={filteredStats?.revenueTarget ?? 0}
 						/>
 						<SlFilterPills activeSlId={slFilter} onToggle={setSlFilter} />
 						<DashboardChartRow>
@@ -300,6 +298,8 @@ function DashboardPage() {
 									<SlBreakdownBars
 										data={filteredSl}
 										loading={slBreakdown.isLoading}
+										activeSlId={slFilter}
+										onSlClick={setSlFilter}
 									/>
 								</CardContent>
 							</Card>

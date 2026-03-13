@@ -37,10 +37,10 @@ function StaffRow({
 	onRemove?: () => void;
 }) {
 	return (
-		<div className="group flex items-center justify-between rounded-sm px-2 py-2 hover:bg-muted/40">
+		<div className="group flex items-center justify-between rounded-sm px-2 py-2 hover:bg-bg-weak-50/40">
 			<div className="min-w-0 flex-1">
 				<p className="truncate font-medium text-sm">{c.name ?? "Unknown"}</p>
-				<p className="truncate text-muted-foreground text-xs">
+				<p className="truncate text-text-soft-400 text-xs">
 					{c.role ?? "No role"}
 				</p>
 			</div>
@@ -57,7 +57,7 @@ function StaffRow({
 					<button
 						type="button"
 						onClick={onRemove}
-						className="ml-1 rounded-sm p-0.5 text-muted-foreground opacity-0 transition-opacity hover:text-destructive group-hover:opacity-100"
+						className="ml-1 rounded-sm p-0.5 text-text-soft-400 opacity-0 transition-opacity hover:text-destructive group-hover:opacity-100"
 						title="Remove from pod"
 					>
 						<HugeiconsIcon icon={Cancel01Icon} className="size-3.5" />
@@ -155,9 +155,9 @@ export function PodStaffSheet({
 									staff
 								</SheetDescription>
 							</SheetHeader>
-							<div className="flex items-center gap-6  border-b px-4 py-3">
+							<div className="flex items-center gap-6 border-b border-stroke-soft-200 px-4 py-3">
 								<div className="flex flex-col gap-0.5">
-									<span className="text-[11px] text-muted-foreground">
+									<span className="text-[11px] text-text-soft-400">
 										Headcount
 									</span>
 									<span className="font-semibold text-sm tabular-nums">
@@ -165,7 +165,7 @@ export function PodStaffSheet({
 									</span>
 								</div>
 								<div className="flex flex-col gap-0.5">
-									<span className="text-[11px] text-muted-foreground">
+									<span className="text-[11px] text-text-soft-400">
 										Staff Cost
 									</span>
 									<span className="font-semibold text-sm tabular-nums">
@@ -197,7 +197,7 @@ export function PodStaffSheet({
 									<div className="space-y-4">
 										{tiers.map((tier) => (
 											<div key={tier.label}>
-												<p className="mb-1 font-semibold text-muted-foreground text-xs uppercase tracking-wider">
+												<p className="mb-1 font-semibold text-text-soft-400 text-xs uppercase tracking-wider">
 													{tier.label}
 												</p>
 												<div className="space-y-1">
@@ -219,7 +219,7 @@ export function PodStaffSheet({
 							{podStaff.length > 0 && (
 								<SheetFooter>
 									<div className="flex items-center justify-between">
-										<span className="font-medium text-muted-foreground text-sm">
+										<span className="font-medium text-text-soft-400 text-sm">
 											Total Salary
 										</span>
 										<span className="font-semibold text-base tabular-nums">

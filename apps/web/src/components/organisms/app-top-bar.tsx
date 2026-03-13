@@ -62,14 +62,14 @@ export function AppTopBar() {
 	}
 
 	return (
-		<div className="sticky top-0 z-10 flex h-14 shrink-0 items-center gap-2 border-b bg-background px-4">
+		<div className="sticky top-0 z-10 flex h-14 shrink-0 items-center gap-2 border-b bg-bg-white-0 px-4">
 			{/* Left — sidebar trigger + breadcrumb */}
 			<div className="flex flex-1 items-center gap-2">
 				<SidebarTrigger className="-ml-1" />
 				{breadcrumbLabel && (
 					<>
-						<div className="h-4 w-px bg-border" />
-						<span className="font-medium text-foreground text-sm">
+						<div className="h-4 w-px bg-stroke-soft-200" />
+						<span className="font-medium text-text-strong-950 text-sm">
 							{breadcrumbLabel}
 						</span>
 					</>
@@ -113,7 +113,7 @@ export function AppTopBar() {
 							Notifications
 						</DropdownMenuLabel>
 						<DropdownMenuSeparator />
-						<div className="px-3 py-6 text-center text-muted-foreground text-xs">
+						<div className="px-3 py-6 text-center text-text-soft-400 text-xs">
 							No new notifications
 						</div>
 					</DropdownMenuContent>
@@ -127,7 +127,7 @@ export function AppTopBar() {
 					<DropdownMenuContent align="end" className="min-w-[200px]">
 						<div className="px-2 py-1.5">
 							<p className="font-semibold text-sm">{userName}</p>
-							<p className="text-muted-foreground text-xs">
+							<p className="text-text-soft-400 text-xs">
 								{ROLE_LABELS[userRole] ?? userRole}
 							</p>
 						</div>

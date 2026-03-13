@@ -62,12 +62,12 @@ export function AttritionRisksTable({
 								{member?.name ? (
 									<PersonNameCell name={member.name} />
 								) : (
-									<span className="text-muted-foreground text-sm">
+									<span className="text-text-soft-400 text-sm">
 										{risk.carboniteId}
 									</span>
 								)}
 							</TableCell>
-							<TableCell className="text-muted-foreground text-sm">
+							<TableCell className="text-text-soft-400 text-sm">
 								{member?.role ?? "--"}
 							</TableCell>
 							<TableCell>

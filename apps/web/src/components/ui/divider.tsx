@@ -12,7 +12,7 @@ export function Divider({ className, children, ...props }: DividerProps) {
 		<div
 			className={cn(
 				"mx-auto my-6 flex w-full items-center justify-between gap-3 text-sm",
-				"text-muted-foreground",
+				"text-text-soft-400",
 				className,
 			)}
 			{...props}

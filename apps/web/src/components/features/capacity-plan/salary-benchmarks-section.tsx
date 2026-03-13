@@ -69,7 +69,7 @@ function benchmarkColor(
 	avg: number,
 	market: { min: number; max: number } | null,
 ): string {
-	if (!market || avg === 0) return "text-muted-foreground";
+	if (!market || avg === 0) return "text-text-soft-400";
 	if (avg > market.max) return "text-red-400";
 	if (avg > market.max * 0.9) return "text-amber-400";
 	if (avg >= market.min) return "text-green-400";
@@ -135,8 +135,8 @@ export function SalaryBenchmarksSection({
 
 	return (
 		<Collapsible open={open} onOpenChange={setOpen}>
-			<CollapsibleTrigger className="flex w-full items-center justify-between rounded-sm px-1 py-1.5 hover:bg-muted/30">
-				<h4 className="flex items-center gap-1.5 font-medium text-muted-foreground text-sm">
+			<CollapsibleTrigger className="flex w-full items-center justify-between rounded-sm px-1 py-1.5 hover:bg-bg-weak-50/30">
+				<h4 className="flex items-center gap-1.5 font-medium text-text-soft-400 text-sm">
 					<HugeiconsIcon icon={ChartLineData02Icon} className="size-3.5" />
 					Salary Benchmarks
 					<Badge variant="outline" size="sm" className="ml-1">
@@ -145,17 +145,17 @@ export function SalaryBenchmarksSection({
 				</h4>
 				<HugeiconsIcon
 					icon={open ? ArrowUp01Icon : ArrowDown01Icon}
-					className="size-3.5 text-muted-foreground"
+					className="size-3.5 text-text-soft-400"
 				/>
 			</CollapsibleTrigger>
 
 			<CollapsiblePanel>
 				{bracketsQuery.isPending ? (
-					<p className="py-4 text-center text-muted-foreground text-sm">
+					<p className="py-4 text-center text-text-soft-400 text-sm">
 						Loading benchmarks...
 					</p>
 				) : brackets.length === 0 ? (
-					<p className="py-4 text-center text-muted-foreground text-sm">
+					<p className="py-4 text-center text-text-soft-400 text-sm">
 						No benchmark data available for this entity&apos;s service lines
 					</p>
 				) : (
@@ -184,7 +184,7 @@ export function SalaryBenchmarksSection({
 										<TableCell className="text-sm">
 											{slLabel(bracket.sl)}
 										</TableCell>
-										<TableCell className="text-muted-foreground text-sm">
+										<TableCell className="text-text-soft-400 text-sm">
 											{bracket.role}
 										</TableCell>
 										<TableCell className="text-right text-sm tabular-nums">
@@ -205,7 +205,7 @@ export function SalaryBenchmarksSection({
 											{carbonAvg > 0 && market ? (
 												<StatusBadge avg={carbonAvg} market={market} />
 											) : (
-												<span className="text-muted-foreground text-xs">
+												<span className="text-text-soft-400 text-xs">
 													{"\u2014"}
 												</span>
 											)}

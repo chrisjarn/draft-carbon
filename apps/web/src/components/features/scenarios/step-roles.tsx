@@ -21,7 +21,7 @@ export function StepRoles({ form, impact, hasValidRoles }: StepRolesProps) {
 	return (
 		<div className="space-y-4">
 			<div>
-				<Label className="mb-1.5 block text-muted-foreground text-sm">
+				<Label className="mb-1.5 block text-text-soft-400 text-sm">
 					Roles
 				</Label>
 				<form.Field name="roles" mode="array">
@@ -119,8 +119,8 @@ export function StepRoles({ form, impact, hasValidRoles }: StepRolesProps) {
 
 			{/* Live impact preview */}
 			{hasValidRoles && (
-				<div className="space-y-2 rounded-md border  bg-muted/20 p-3">
-					<span className="font-medium text-muted-foreground text-xs uppercase tracking-wider">
+				<div className="space-y-2 rounded-md border  bg-bg-weak-50/20 p-3">
+					<span className="font-medium text-text-soft-400 text-xs uppercase tracking-wider">
 						Projected Impact
 					</span>
 					<div className="grid grid-cols-3 gap-3">

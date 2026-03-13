@@ -132,7 +132,7 @@ export function CommandPalette() {
 										value={`person-${c.name}`}
 										onSelect={() => go("/carbonites", { search: c.name })}
 									>
-										<div className="flex size-6 items-center justify-center rounded-full bg-muted font-medium text-[10px] text-muted-foreground">
+										<div className="flex size-6 items-center justify-center rounded-full bg-bg-weak-50 font-medium text-[10px] text-text-soft-400">
 											{c.name
 												.split(/\s+/)
 												.map((p) => p[0])
@@ -141,7 +141,7 @@ export function CommandPalette() {
 												.toUpperCase()}
 										</div>
 										<span className="flex-1 truncate">{c.name}</span>
-										<span className="text-muted-foreground text-xs">
+										<span className="text-text-soft-400 text-xs">
 											{c.role ?? ""} {c.office ? `· ${c.office}` : ""}
 										</span>
 									</CommandItem>
@@ -161,7 +161,7 @@ export function CommandPalette() {
 							>
 								<HugeiconsIcon
 									icon={page.icon}
-									className="size-4 text-muted-foreground"
+									className="size-4 text-text-soft-400"
 								/>
 								{page.label}
 							</CommandItem>
@@ -175,7 +175,7 @@ export function CommandPalette() {
 								>
 									<HugeiconsIcon
 										icon={page.icon}
-										className="size-4 text-muted-foreground"
+										className="size-4 text-text-soft-400"
 									/>
 									{page.label}
 								</CommandItem>
@@ -194,10 +194,10 @@ export function CommandPalette() {
 							>
 								<HugeiconsIcon
 									icon={Location04Icon}
-									className="size-4 text-muted-foreground"
+									className="size-4 text-text-soft-400"
 								/>
 								<span className="flex-1">{s.name}</span>
-								<span className="font-mono text-muted-foreground text-xs">
+								<span className="font-mono text-text-soft-400 text-xs">
 									{s.abbr}
 								</span>
 							</CommandItem>
@@ -225,7 +225,7 @@ export function SearchBarTrigger({ className }: { className?: string }) {
 					}),
 				);
 			}}
-			className={`group inline-flex h-10 w-full max-w-sm items-center gap-2.5 rounded-full bg-zinc-100 px-3.5 font-medium text-muted-foreground text-sm transition-colors hover:bg-zinc-200/70 ${className ?? ""}`}
+			className={`group inline-flex h-10 w-full max-w-sm items-center gap-2.5 rounded-full bg-zinc-100 px-3.5 font-medium text-text-soft-400 text-sm transition-colors hover:bg-zinc-200/70 ${className ?? ""}`}
 		>
 			<HugeiconsIcon
 				icon={Search01Icon}
@@ -234,7 +234,7 @@ export function SearchBarTrigger({ className }: { className?: string }) {
 			<span className="flex-1 text-left text-sm opacity-60">
 				Search or jump to...
 			</span>
-			<kbd className="pointer-events-none hidden h-5 select-none items-center gap-0.5 rounded border /60 bg-background px-1.5 font-medium font-mono text-[11px] text-muted-foreground/70 sm:inline-flex">
+			<kbd className="pointer-events-none hidden h-5 select-none items-center gap-0.5 rounded border /60 bg-bg-white-0 px-1.5 font-medium font-mono text-[11px] text-text-soft-400/70 sm:inline-flex">
 				<span className="text-xs">⌘</span>K
 			</kbd>
 		</button>

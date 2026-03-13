@@ -15,8 +15,8 @@ const variantStyles: Record<ProgressBarVariant, { bg: string; bar: string }> = {
 		bar: "bg-blue-500",
 	},
 	neutral: {
-		bg: "bg-muted",
-		bar: "bg-muted-foreground",
+		bg: "bg-bg-weak-50",
+		bar: "bg-text-soft-400",
 	},
 	warning: {
 		bg: "bg-yellow-200 dark:bg-yellow-500/30",

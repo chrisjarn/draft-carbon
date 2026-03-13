@@ -1,24 +1,20 @@
 import {
 	Briefcase01Icon,
-	Building06Icon,
 	Calendar01Icon,
 	Cancel01Icon,
 	ChartLineData02Icon,
 	DashboardSquare01Icon,
 	FlowSquareIcon,
-	Location04Icon,
 	Search01Icon,
 	Settings01Icon,
 	SidebarLeft01Icon,
 	UserGroupIcon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 
 import { authClient } from "@/lib/auth-client";
 import { getRank, getUserRole } from "@/lib/rbac";
-import { trpc } from "@/utils/trpc";
 import { CarbonLogo } from "./logo";
 import { type NavItem, NavMain } from "./nav-main";
 import { useRecentViews } from "./use-recent-views";
@@ -95,9 +91,6 @@ export function AppSidebar({
 
 	const visibleNav = NAV_ITEMS.filter((item) => userRank >= item.minRank);
 	const visibleAdmin = ADMIN_ITEMS.filter((item) => userRank >= item.minRank);
-
-	const { data: entities } = useQuery(trpc.entities.getAll.queryOptions());
-	const pinnedEntities = (entities ?? []).slice(0, 3);
 
 	// On mobile overlay, always render expanded regardless of persisted collapse state
 	const effectiveCollapsed = isCollapsed && !isMobileOpen;
@@ -185,46 +178,6 @@ export function AppSidebar({
 						</>
 					)}
 
-					{/* Pinned entities — hidden in collapsed mode */}
-					{!effectiveCollapsed && pinnedEntities.length > 0 && (
-						<>
-							<div className="my-1 border-stroke-soft-200 border-t" />
-							<span className="section-label px-3">Pinned</span>
-							<ul className="flex flex-col gap-0.5">
-								{pinnedEntities.map((entity) => (
-									<li key={entity.id}>
-										<button
-											type="button"
-											onClick={() =>
-												navigate({
-													to: "/capacity-plan",
-													search: { entity: entity.id },
-												})
-											}
-											className="flex w-full items-center gap-3 rounded-lg px-3 py-2 font-medium text-sm text-text-sub-600 transition-colors hover:bg-bg-weak-50"
-										>
-											<HugeiconsIcon
-												icon={Building06Icon}
-												className="size-5 shrink-0"
-											/>
-											<div className="flex flex-col overflow-hidden text-left">
-												<span className="truncate">{entity.biz}</span>
-												{entity.state && (
-													<span className="flex items-center gap-1 truncate text-text-soft-400 text-xs">
-														<HugeiconsIcon
-															icon={Location04Icon}
-															className="size-3 shrink-0"
-														/>
-														{entity.state}
-													</span>
-												)}
-											</div>
-										</button>
-									</li>
-								))}
-							</ul>
-						</>
-					)}
 
 					{/* Recent views — hidden in collapsed mode */}
 					{!effectiveCollapsed && recentViews.length > 0 && (

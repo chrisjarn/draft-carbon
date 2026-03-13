@@ -41,7 +41,7 @@ export function DataTableViewOptions<TData>({
 
 	return (
 		<Popover>
-			<PopoverTrigger className="ml-auto hidden h-10 items-center gap-1.5 rounded-md border border-input bg-card px-3 font-medium text-sm shadow-xs transition-colors hover:bg-accent hover:text-accent-foreground lg:inline-flex">
+			<PopoverTrigger className="ml-auto hidden h-10 items-center gap-1.5 rounded-md border border-stroke-soft-200 bg-bg-white-0 px-3 font-medium text-sm shadow-xs transition-colors hover:bg-bg-weak-50 hover:text-text-sub-600 lg:inline-flex">
 				<HugeiconsIcon icon={Settings01Icon} className="size-4" />
 				View
 				<HugeiconsIcon

@@ -93,7 +93,7 @@ function DataTableToolbarFilter<TData>({ column }: { column: Column<TData> }) {
 							value={column.getFilterValue() as string}
 						/>
 						{columnMeta.unit && (
-							<span className="absolute top-0 right-0 bottom-0 flex items-center rounded-r-md bg-accent px-2 text-muted-foreground text-sm">
+							<span className="absolute top-0 right-0 bottom-0 flex items-center rounded-r-md bg-bg-weak-50 px-2 text-text-soft-400 text-sm">
 								{columnMeta.unit}
 							</span>
 						)}

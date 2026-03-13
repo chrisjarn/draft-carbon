@@ -104,7 +104,7 @@ export function UsersTable({ currentUserId }: { currentUserId?: string }) {
 	return (
 		<>
 			{query.isPending ? (
-				<div className="flex h-40 items-center justify-center text-muted-foreground text-sm">
+				<div className="flex h-40 items-center justify-center text-text-soft-400 text-sm">
 					Loading…
 				</div>
 			) : (
@@ -125,23 +125,23 @@ export function UsersTable({ currentUserId }: { currentUserId?: string }) {
 						{users.map((u) => {
 							const isMe = u.id === currentUserId;
 							return (
-								<TableRow key={u.id} className={isMe ? "bg-muted/20" : ""}>
+								<TableRow key={u.id} className={isMe ? "bg-bg-weak-50/20" : ""}>
 									<TableCell>
 										<div className="flex items-center gap-2">
-											<div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-foreground font-semibold text-[10px] text-background">
+											<div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-text-strong-950 font-semibold text-[10px] text-bg-white-0">
 												{initials(u.name)}
 											</div>
 											<div>
 												<p className="font-medium text-base">{u.name}</p>
 												{isMe && (
-													<span className="text-[10px] text-muted-foreground">
+													<span className="text-[10px] text-text-soft-400">
 														You
 													</span>
 												)}
 											</div>
 										</div>
 									</TableCell>
-									<TableCell className="text-muted-foreground text-sm">
+									<TableCell className="text-text-soft-400 text-sm">
 										{u.email}
 									</TableCell>
 									<TableCell>
@@ -149,7 +149,7 @@ export function UsersTable({ currentUserId }: { currentUserId?: string }) {
 									</TableCell>
 									<TableCell>
 										{isMe ? (
-											<span className="text-muted-foreground text-sm">—</span>
+											<span className="text-text-soft-400 text-sm">—</span>
 										) : (
 											<Select
 												value={u.role}
@@ -253,10 +253,10 @@ export function UsersTable({ currentUserId }: { currentUserId?: string }) {
 												</SelectContent>
 											</Select>
 										) : (
-											<span className="text-muted-foreground text-sm">—</span>
+											<span className="text-text-soft-400 text-sm">—</span>
 										)}
 									</TableCell>
-									<TableCell className="text-muted-foreground text-sm">
+									<TableCell className="text-text-soft-400 text-sm">
 										{fmtDate(u.createdAt)}
 									</TableCell>
 									<TableCell>
@@ -272,7 +272,7 @@ export function UsersTable({ currentUserId }: { currentUserId?: string }) {
 											<Button
 												variant="ghost"
 												size="icon-sm"
-												className="text-muted-foreground hover:text-destructive"
+												className="text-text-soft-400 hover:text-destructive"
 												onClick={() => setDeleteTarget(u)}
 												aria-label={`Delete user ${u.name}`}
 											>

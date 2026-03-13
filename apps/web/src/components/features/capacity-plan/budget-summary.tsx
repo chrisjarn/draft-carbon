@@ -16,7 +16,7 @@ export function BudgetSummary({
 		<div className="grid grid-cols-4 gap-3 pb-4">
 			<Card size="sm">
 				<CardContent>
-					<p className="text-muted-foreground text-xs">Total Budget</p>
+					<p className="text-text-soft-400 text-xs">Total Budget</p>
 					<p className="font-bold text-lg tabular-nums">
 						{totalBudget > 0 ? fmtDollar(totalBudget) : "—"}
 					</p>
@@ -24,7 +24,7 @@ export function BudgetSummary({
 			</Card>
 			<Card size="sm">
 				<CardContent>
-					<p className="text-muted-foreground text-xs">Total Staff Cost</p>
+					<p className="text-text-soft-400 text-xs">Total Staff Cost</p>
 					<p className="font-bold text-lg tabular-nums">
 						{fmtDollar(totalActual)}
 					</p>
@@ -32,14 +32,14 @@ export function BudgetSummary({
 			</Card>
 			<Card size="sm">
 				<CardContent>
-					<p className="text-muted-foreground text-xs">Variance</p>
+					<p className="text-text-soft-400 text-xs">Variance</p>
 					<p
 						className={`font-bold text-lg tabular-nums ${
 							variance < 0
 								? "text-red-400"
 								: variance > 0
 									? "text-green-400"
-									: "text-muted-foreground"
+									: "text-text-soft-400"
 						}`}
 					>
 						{totalBudget > 0
@@ -54,7 +54,7 @@ export function BudgetSummary({
 			</Card>
 			<Card size="sm">
 				<CardContent>
-					<p className="text-muted-foreground text-xs">Utilisation</p>
+					<p className="text-text-soft-400 text-xs">Utilisation</p>
 					<p
 						className={`font-bold text-lg tabular-nums ${
 							utilisation > 100

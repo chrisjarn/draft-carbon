@@ -14,7 +14,7 @@ import Loader from "./loader";
 function CarbonLogo() {
 	return (
 		<div
-			className="size-7 shrink-0 text-foreground"
+			className="size-7 shrink-0 text-text-strong-950"
 			style={{
 				clipPath:
 					"polygon(20% 0%,100% 0%,100% 22%,44% 22%,44% 78%,100% 78%,100% 100%,20% 100%,0% 80%,0% 20%)",
@@ -56,15 +56,15 @@ function SignInView({ onSwitch }: { onSwitch: () => void }) {
 
 	return (
 		<>
-			<h3 className="mt-6 text-balance font-semibold text-foreground text-lg">
+			<h3 className="mt-6 text-balance font-semibold text-text-strong-950 text-lg">
 				Sign in to your account
 			</h3>
-			<p className="mt-2 text-pretty text-base text-muted-foreground">
+			<p className="mt-2 text-pretty text-base text-text-soft-400">
 				Don&apos;t have an account?{" "}
 				<button
 					type="button"
 					onClick={onSwitch}
-					className="font-medium text-primary hover:text-primary/90"
+					className="font-medium text-green-600 hover:text-green-600/90"
 				>
 					Sign up
 				</button>
@@ -188,15 +188,15 @@ function SignUpView({ onSwitch }: { onSwitch: () => void }) {
 
 	return (
 		<>
-			<h3 className="mt-6 text-balance font-semibold text-foreground text-lg">
+			<h3 className="mt-6 text-balance font-semibold text-text-strong-950 text-lg">
 				Create your account
 			</h3>
-			<p className="mt-2 text-pretty text-base text-muted-foreground">
+			<p className="mt-2 text-pretty text-base text-text-soft-400">
 				Already have an account?{" "}
 				<button
 					type="button"
 					onClick={onSwitch}
-					className="font-medium text-primary hover:text-primary/90"
+					className="font-medium text-green-600 hover:text-green-600/90"
 				>
 					Sign in
 				</button>
@@ -376,12 +376,12 @@ export default function Login04() {
 			</div>
 
 			{/* Right panel — form */}
-			<div className="flex flex-1 flex-col justify-center bg-background px-8 py-10 lg:px-12">
+			<div className="flex flex-1 flex-col justify-center bg-bg-white-0 px-8 py-10 lg:px-12">
 				<div className="mx-auto w-full max-w-sm">
 					{/* Mobile logo */}
 					<div className="mb-6 flex items-center space-x-2 lg:hidden">
 						<CarbonLogo />
-						<p className="font-semibold text-foreground text-lg">
+						<p className="font-semibold text-text-strong-950 text-lg">
 							Carbon Group
 						</p>
 					</div>

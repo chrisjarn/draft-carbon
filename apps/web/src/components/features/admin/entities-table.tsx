@@ -46,11 +46,11 @@ export function EntitiesTable() {
 	return (
 		<>
 			{entitiesQuery.isPending ? (
-				<div className="flex h-40 items-center justify-center text-muted-foreground text-sm">
+				<div className="flex h-40 items-center justify-center text-text-soft-400 text-sm">
 					Loading…
 				</div>
 			) : entitiesData.length === 0 ? (
-				<div className="flex h-40 items-center justify-center text-muted-foreground text-sm">
+				<div className="flex h-40 items-center justify-center text-text-soft-400 text-sm">
 					No entities. Add one to get started.
 				</div>
 			) : (
@@ -74,7 +74,7 @@ export function EntitiesTable() {
 										<Button
 											variant="ghost"
 											size="icon-sm"
-											className="text-muted-foreground hover:text-foreground"
+											className="text-text-soft-400 hover:text-text-strong-950"
 											onClick={() => setEditTarget(e)}
 											aria-label={`Edit entity ${e.biz}`}
 										>
@@ -87,7 +87,7 @@ export function EntitiesTable() {
 										<Button
 											variant="ghost"
 											size="icon-sm"
-											className="text-muted-foreground hover:text-destructive"
+											className="text-text-soft-400 hover:text-destructive"
 											onClick={() => setDeleteEntityTarget(e)}
 											aria-label={`Delete entity ${e.biz}`}
 										>

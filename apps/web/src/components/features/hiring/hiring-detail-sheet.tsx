@@ -58,7 +58,7 @@ export function HiringDetailSheet({
 						<SheetHeader>
 							<div className="flex items-start justify-between gap-3 pr-6">
 								<div className="flex items-center gap-3">
-									<div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-foreground/8 text-foreground ring-2 ring-emerald-500/20">
+									<div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-bg-weak-50 text-text-strong-950 ring-2 ring-emerald-500/20">
 										<HugeiconsIcon
 											icon={Briefcase01Icon}
 											className="size-4"
@@ -69,7 +69,7 @@ export function HiringDetailSheet({
 										{role.role}
 									</SheetTitle>
 								</div>
-								<span className="shrink-0 font-semibold text-foreground text-sm tabular-nums">
+								<span className="shrink-0 font-semibold text-text-strong-950 text-sm tabular-nums">
 									{salaryRange(role.salaryMin, role.salaryMax)}
 								</span>
 							</div>

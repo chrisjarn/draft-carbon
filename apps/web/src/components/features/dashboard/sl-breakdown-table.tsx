@@ -13,9 +13,11 @@ import type { SlRow } from "./types";
 interface SlBreakdownBarsProps {
 	data: SlRow[] | undefined;
 	loading: boolean;
+	activeSlId?: string | null;
+	onSlClick?: (slId: string | null) => void;
 }
 
-export function SlBreakdownBars({ data, loading }: SlBreakdownBarsProps) {
+export function SlBreakdownBars({ data, loading, activeSlId, onSlClick }: SlBreakdownBarsProps) {
 	if (loading) {
 		return (
 			<div className="space-y-3">
@@ -50,8 +52,14 @@ export function SlBreakdownBars({ data, loading }: SlBreakdownBarsProps) {
 					maxHeadcount > 0
 						? Math.round((row.headcount / maxHeadcount) * 100)
 						: 0;
+				const isActive = row.sl === activeSlId;
 				return (
-					<div key={row.sl} className="space-y-1">
+					<button
+						key={row.sl}
+						type="button"
+						className={`w-full space-y-1 rounded-md px-2 py-1 text-left transition-colors hover:bg-bg-weak-50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring${isActive ? " border-l-2 border-blue-500 pl-1.5" : ""}`}
+						onClick={() => onSlClick?.(isActive ? null : row.sl)}
+					>
 						<div className="flex items-center justify-between text-sm">
 							<div className="flex items-center gap-2">
 								<span
@@ -60,12 +68,12 @@ export function SlBreakdownBars({ data, loading }: SlBreakdownBarsProps) {
 								/>
 								<span className="font-medium">{slMeta?.name ?? row.sl}</span>
 							</div>
-							<div className="flex items-center gap-3 text-muted-foreground">
+							<div className="flex items-center gap-3 text-text-soft-400">
 								<span className="tabular-nums">{row.headcount}</span>
 								<span className="text-xs tabular-nums">({row.pctOfFirm}%)</span>
 							</div>
 						</div>
-						<div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+						<div className="h-1.5 w-full overflow-hidden rounded-full bg-bg-weak-50">
 							<div
 								className="h-full rounded-full transition-all"
 								style={{
@@ -74,7 +82,7 @@ export function SlBreakdownBars({ data, loading }: SlBreakdownBarsProps) {
 								}}
 							/>
 						</div>
-					</div>
+					</button>
 				);
 			})}
 		</div>

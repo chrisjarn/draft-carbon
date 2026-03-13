@@ -102,16 +102,16 @@ export function CreateStepPodPay({
 								)}
 							</form.Field>
 							{monthly && (
-								<div className="space-y-0.5 pb-2 text-muted-foreground text-xs">
+								<div className="space-y-0.5 pb-2 text-text-soft-400 text-xs">
 									<div>
 										Monthly:{" "}
-										<span className="font-medium text-foreground">
+										<span className="font-medium text-text-strong-950">
 											${monthly.toLocaleString()}
 										</span>
 									</div>
 									<div>
 										Quarterly:{" "}
-										<span className="font-medium text-foreground">
+										<span className="font-medium text-text-strong-950">
 											${quarterly?.toLocaleString()}
 										</span>
 									</div>

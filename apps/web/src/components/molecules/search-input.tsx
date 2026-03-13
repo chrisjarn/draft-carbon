@@ -1,7 +1,4 @@
-import { Search01Icon } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
-
-import { Input } from "@/components/ui/input";
+import { InputPrimitive } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 interface SearchInputProps {
@@ -14,8 +11,8 @@ interface SearchInputProps {
 /**
  * SearchInput — icon-prefixed search field.
  *
- * Replaces the repeated `<div className="relative"> + absolute icon + pl-8 Input`
- * pattern used across carbonites, fy-planning, and hiring.
+ * Uses InputPrimitive so pl-8 applies directly to the <input>,
+ * not a wrapper span, keeping the placeholder correctly aligned.
  */
 export function SearchInput({
 	placeholder = "Search…",
@@ -24,17 +21,17 @@ export function SearchInput({
 	className,
 }: SearchInputProps) {
 	return (
-		<div className="relative">
-			<HugeiconsIcon
-				icon={Search01Icon}
-				className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground"
-				aria-hidden="true"
-			/>
-			<Input
+		<div
+			className={cn(
+				"flex h-10 w-48 items-center rounded-10 border border-transparent bg-bg-white-0 shadow-custom-input transition-[shadow,border-color] hover:shadow-gray-shadow has-[:focus]:border-green-600 has-[:focus]:shadow-gray-shadow-2 lg:w-64",
+				className,
+			)}
+		>
+			<InputPrimitive
+				className="h-full w-full rounded-[inherit] bg-transparent px-3 text-sm text-text-strong-950 outline-none placeholder:text-text-disabled-300"
 				placeholder={placeholder}
 				value={value}
 				onChange={(e) => onChange(e.target.value)}
-				className={cn("w-48 pl-8 lg:w-64", className)}
 			/>
 		</div>
 	);

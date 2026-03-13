@@ -49,7 +49,7 @@ export function InlineEditCell({
 	if (editing) {
 		return (
 			<div className="flex items-center gap-1">
-				<span className="text-muted-foreground text-sm">{prefix}</span>
+				<span className="text-text-soft-400 text-sm">{prefix}</span>
 				<Input
 					type="number"
 					value={val}
@@ -70,7 +70,7 @@ export function InlineEditCell({
 						onSave(val);
 						setEditing(false);
 					}}
-					className="rounded-sm text-green-400 hover:text-green-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+					className="rounded-sm text-green-400 hover:text-green-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stroke-strong-950"
 				>
 					<HugeiconsIcon
 						icon={Tick01Icon}
@@ -92,7 +92,7 @@ export function InlineEditCell({
 					setVal(value ?? "");
 					setEditing(true);
 				}}
-				className="rounded-sm text-muted-foreground opacity-0 transition-opacity hover:text-foreground focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring group-hover:opacity-100"
+				className="rounded-sm text-text-soft-400 opacity-0 transition-opacity hover:text-text-strong-950 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stroke-strong-950 group-hover:opacity-100"
 			>
 				<HugeiconsIcon
 					icon={PencilEdit01Icon}

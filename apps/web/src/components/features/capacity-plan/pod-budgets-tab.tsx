@@ -296,7 +296,7 @@ export function PodBudgetsTab({ fy: _fy }: { fy?: string }) {
 
 	if (isLoading) {
 		return (
-			<div className="flex h-40 items-center justify-center text-muted-foreground text-sm">
+			<div className="flex h-40 items-center justify-center text-text-soft-400 text-sm">
 				Loading...
 			</div>
 		);

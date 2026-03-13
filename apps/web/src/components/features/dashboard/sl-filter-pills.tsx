@@ -21,8 +21,8 @@ export function SlFilterPills({ activeSlId, onToggle }: SlFilterPillsProps) {
 						className={cn(
 							"inline-flex h-8 items-center gap-1.5 rounded-full px-3 font-medium text-sm transition-colors",
 							active
-								? "bg-foreground text-background"
-								: "bg-white text-muted-foreground hover:bg-accent hover:text-foreground",
+								? "bg-text-strong-950 text-text-white-0"
+								: "bg-bg-white-0 text-text-soft-400 hover:bg-bg-weak-50 hover:text-text-strong-950",
 						)}
 					>
 						<span
@@ -37,7 +37,7 @@ export function SlFilterPills({ activeSlId, onToggle }: SlFilterPillsProps) {
 				<button
 					type="button"
 					onClick={() => onToggle(null)}
-					className="ml-0.5 text-sm text-muted-foreground hover:text-foreground"
+					className="ml-0.5 text-sm text-text-soft-400 hover:text-text-strong-950"
 				>
 					Clear
 				</button>

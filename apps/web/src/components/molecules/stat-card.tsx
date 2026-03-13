@@ -23,7 +23,7 @@ export function StatCard({
 }: StatCardProps) {
 	return (
 		<Card className="flex flex-col gap-1 p-4">
-			<span className="font-medium text-muted-foreground text-xs uppercase tracking-widest">
+			<span className="font-medium text-text-soft-400 text-xs uppercase tracking-widest">
 				{label}
 			</span>
 			{loading ? (
@@ -50,7 +50,7 @@ export function StatCard({
 					)}
 					{subtitle && (
 						<span
-							className={`text-xs ${subtitleClass ?? "text-muted-foreground"}`}
+							className={`text-xs ${subtitleClass ?? "text-text-soft-400"}`}
 						>
 							{subtitle}
 						</span>

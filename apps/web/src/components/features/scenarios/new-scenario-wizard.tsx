@@ -38,7 +38,7 @@ function StepProgress({ current }: { current: WizardStep }) {
 						key={name}
 						className={cn(
 							"h-1 w-12 rounded-full transition-colors",
-							index <= current ? "bg-primary" : "bg-muted",
+							index <= current ? "bg-green-600" : "bg-bg-weak-50",
 						)}
 					>
 						<span className="sr-only">
@@ -52,7 +52,7 @@ function StepProgress({ current }: { current: WizardStep }) {
 					</li>
 				))}
 			</ol>
-			<span className="text-muted-foreground text-xs">
+			<span className="text-text-soft-400 text-xs">
 				Step {current + 1} of {STEP_LABELS.length} — {STEP_LABELS[current]}
 			</span>
 		</div>

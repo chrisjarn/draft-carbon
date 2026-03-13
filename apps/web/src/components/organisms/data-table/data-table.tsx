@@ -48,7 +48,7 @@ export function DataTable<TData>({
 		<div className={cn("flex w-full flex-col", className)} {...props}>
 			{children}
 
-			<div className="overflow-x-auto bg-background">
+			<div className="overflow-x-auto bg-bg-white-0">
 				<Table className={fixedLayout ? "table-fixed" : undefined}>
 					{fixedLayout && (
 						<colgroup>
@@ -57,7 +57,7 @@ export function DataTable<TData>({
 							))}
 						</colgroup>
 					)}
-					<TableHeader className="sticky top-0 z-10 bg-muted/80 backdrop-blur-sm">
+					<TableHeader className="sticky top-0 z-10 bg-bg-weak-50/80 backdrop-blur-sm">
 						{table.getHeaderGroups().map((headerGroup) => (
 							<TableRow key={headerGroup.id}>
 								{headerGroup.headers.map((header) => (
@@ -88,7 +88,7 @@ export function DataTable<TData>({
 									return (
 										<TableRow
 											key={row.id}
-											className="bg-muted/40 hover:bg-muted/60"
+											className="bg-bg-weak-50/40 hover:bg-bg-weak-50/60"
 										>
 											{table.getVisibleFlatColumns().map((col) => (
 												<TableCell key={col.id}>

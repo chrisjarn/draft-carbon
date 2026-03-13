@@ -42,7 +42,7 @@ export function StatusBadge({
 		},
 		empty: {
 			label: "No budget",
-			className: " bg-muted/40 text-muted-foreground",
+			className: " bg-bg-weak-50/40 text-text-soft-400",
 		},
 	};
 	const { label, className } = map[status];
@@ -61,11 +61,11 @@ export function CapacityBar({
 	budget: number;
 }) {
 	if (budget === 0)
-		return <div className="h-1.5 w-full rounded-full bg-muted" />;
+		return <div className="h-1.5 w-full rounded-full bg-bg-weak-50" />;
 	const pct = Math.min((actual / budget) * 100, 100);
 	const over = actual > budget;
 	return (
-		<div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+		<div className="h-1.5 w-full overflow-hidden rounded-full bg-bg-weak-50">
 			<div
 				className={`h-full rounded-full transition-all ${over ? "bg-red-500" : pct >= 90 ? "bg-amber-500" : "bg-green-500"}`}
 				style={{ width: `${pct}%` }}
@@ -142,12 +142,12 @@ export function BudgetCell({
 	return (
 		<div className="group flex items-center gap-1">
 			<span
-				className={`font-medium text-sm tabular-nums ${!hasBudgetSet ? "text-muted-foreground italic" : ""}`}
+				className={`font-medium text-sm tabular-nums ${!hasBudgetSet ? "text-text-soft-400 italic" : ""}`}
 			>
 				{budget > 0 ? (
 					fmtDollar(budget)
 				) : (
-					<span className="text-muted-foreground">—</span>
+					<span className="text-text-soft-400">—</span>
 				)}
 			</span>
 			{canWriteAccess && (
@@ -157,7 +157,7 @@ export function BudgetCell({
 						setVal(String(budget));
 						setEditing(true);
 					}}
-					className="text-muted-foreground opacity-0 transition-opacity hover:text-foreground group-hover:opacity-100"
+					className="text-text-soft-400 opacity-0 transition-opacity hover:text-text-strong-950 group-hover:opacity-100"
 					aria-label="Edit budget"
 				>
 					<HugeiconsIcon icon={PencilEdit01Icon} className="size-3" />

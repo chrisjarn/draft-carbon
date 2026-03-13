@@ -1,4 +1,5 @@
 export { AlertsPanel } from "./alerts-panel";
+export { HealthBanner } from "./health-banner";
 export { BudgetPayrollChart } from "./budget-payroll-chart";
 export { DashboardGreeting } from "./dashboard-greeting";
 export { DashboardEmptyState, DashboardErrorState } from "./dashboard-states";

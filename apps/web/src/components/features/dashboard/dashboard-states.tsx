@@ -28,7 +28,7 @@ export function DashboardErrorState({ onRetry }: { onRetry: () => void }) {
 					/>
 					<div>
 						<h2 className="font-semibold text-lg">Connection Error</h2>
-						<p className="mt-1 text-base text-muted-foreground">
+						<p className="mt-1 text-base text-text-soft-400">
 							Could not reach the API server. Make sure the backend is running
 							on port 3000.
 						</p>

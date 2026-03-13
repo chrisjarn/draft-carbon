@@ -29,8 +29,8 @@ interface BudgetPayrollChartProps {
 /* ─── Chart config ─────────────────────────────────────────────────────── */
 
 const chartConfig = {
-	budget: { label: "Budget", color: "hsl(var(--muted-foreground))" },
-	payroll: { label: "Payroll", color: "var(--color-emerald-500, #10b981)" },
+	budget: { label: "Budget", color: "#e4e4e7" },
+	payroll: { label: "Payroll", color: "#16a34a" },
 } satisfies ChartConfig;
 
 /* ─── Component ────────────────────────────────────────────────────────── */
@@ -108,7 +108,7 @@ export function BudgetPayrollChart({ data, loading }: BudgetPayrollChartProps) {
 						<Bar
 							dataKey="budget"
 							radius={[4, 4, 0, 0]}
-							fill="color-mix(in oklch, var(--muted-foreground) 30%, transparent)"
+							fill="#e4e4e7"
 							animationDuration={300}
 							animationEasing="ease-out"
 						/>

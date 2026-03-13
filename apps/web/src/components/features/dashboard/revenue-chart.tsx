@@ -2,7 +2,7 @@ import { BarChartIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useNavigate } from "@tanstack/react-router";
 import * as React from "react";
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, Cell, XAxis, YAxis } from "recharts";
 
 import {
 	Card,
@@ -17,7 +17,6 @@ import {
 	ChartLegend,
 	ChartLegendContent,
 	ChartTooltip,
-	ChartTooltipContent,
 } from "@/components/ui/chart";
 import {
 	Empty,
@@ -30,16 +29,27 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { fmtDollar } from "@/lib/format";
 import type { RevenueEntry } from "./types";
 
+/* ─── Attainment colour util ───────────────────────────────────────────── */
+
+function getAttainmentColor(actual: number, target: number): string {
+	if (target === 0) return "#16a34a";
+	const ratio = actual / target;
+	if (ratio >= 0.95) return "#16a34a";
+	if (ratio >= 0.8) return "#ca8a04";
+	if (ratio >= 0.7) return "#ea580c";
+	return "#dc2626";
+}
+
 /* ─── Chart config ─────────────────────────────────────────────────────── */
 
 const revenueChartConfig = {
 	target: {
 		label: "Target",
-		color: "hsl(var(--muted-foreground) / 0.3)",
+		color: "#e4e4e7",
 	},
 	actual: {
 		label: "Actual",
-		color: "var(--color-emerald-500, #10b981)",
+		color: "#16a34a",
 	},
 } satisfies ChartConfig;
 
@@ -139,20 +149,39 @@ export function RevenueChart({ data, loading, fy }: RevenueChartProps) {
 							fontSize={11}
 						/>
 						<ChartTooltip
-							content={
-								<ChartTooltipContent
-									formatter={(value, name) => (
-										<span className="font-medium tabular-nums">
-											{typeof name === "string"
-												? revenueChartConfig[
-														name as keyof typeof revenueChartConfig
-													]?.label ?? name
-												: name}
-											: {fmtDollar(Number(value))}
-										</span>
-									)}
-								/>
-							}
+							content={({ active, payload }) => {
+								if (!active || !payload?.length) return null;
+								const d = payload[0]?.payload as (typeof chartData)[number];
+								if (!d) return null;
+								const color = getAttainmentColor(d.actual, d.target);
+								const delta = d.actual - d.target;
+								return (
+									<div className="rounded-none border bg-background px-2.5 py-1.5 text-sm shadow-xl">
+										<p className="mb-1 font-medium">{d.biz}</p>
+										<div className="space-y-0.5 text-xs">
+											<div className="flex justify-between gap-4 tabular-nums">
+												<span className="text-muted-foreground">Target</span>
+												<span>{fmtDollar(d.target)}</span>
+											</div>
+											<div className="flex justify-between gap-4 tabular-nums">
+												<span className="text-muted-foreground">Actual</span>
+												<span style={{ color }}>{fmtDollar(d.actual)}</span>
+											</div>
+											<div className="flex justify-between gap-4 tabular-nums">
+												<span className="text-muted-foreground">Attainment</span>
+												<span style={{ color }}>{d.pct}%</span>
+											</div>
+											<div className="flex justify-between gap-4 tabular-nums">
+												<span className="text-muted-foreground">Delta</span>
+												<span style={{ color: delta >= 0 ? "#16a34a" : "#dc2626" }}>
+													{delta >= 0 ? "+" : "−"}
+													{fmtDollar(Math.abs(delta))}
+												</span>
+											</div>
+										</div>
+									</div>
+								);
+							}}
 						/>
 						<ChartLegend content={<ChartLegendContent />} />
 						<Bar
@@ -172,7 +201,6 @@ export function RevenueChart({ data, loading, fy }: RevenueChartProps) {
 						/>
 						<Bar
 							dataKey="actual"
-							fill="var(--color-actual)"
 							radius={[4, 4, 0, 0]}
 							cursor="pointer"
 							onClick={(_data: unknown, index: number) => {
@@ -184,7 +212,14 @@ export function RevenueChart({ data, loading, fy }: RevenueChartProps) {
 									});
 								}
 							}}
-						/>
+						>
+							{chartData.map((entry) => (
+								<Cell
+									key={entry.id}
+									fill={getAttainmentColor(entry.actual, entry.target)}
+								/>
+							))}
+						</Bar>
 					</BarChart>
 				</ChartContainer>
 			</CardContent>

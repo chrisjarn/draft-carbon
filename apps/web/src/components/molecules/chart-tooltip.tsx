@@ -66,8 +66,8 @@ export function ChartTooltip({
 							aria-hidden="true"
 						/>
 						<div className="space-y-0.5">
-							<p className="text-muted-foreground text-xs">{item.category}</p>
-							<p className="font-medium text-foreground">
+							<p className="text-text-soft-400 text-xs">{item.category}</p>
+							<p className="font-medium text-text-strong-950">
 								{valueFormatter(item.value)}
 							</p>
 						</div>
@@ -139,8 +139,8 @@ export function BenchmarkTooltip({
 							aria-hidden="true"
 						/>
 						<div className="space-y-0.5">
-							<p className="text-muted-foreground text-xs">{item.category}</p>
-							<p className="font-medium text-foreground">
+							<p className="text-text-soft-400 text-xs">{item.category}</p>
+							<p className="font-medium text-text-strong-950">
 								{valueFormatter(item.value)}
 							</p>
 						</div>
@@ -148,21 +148,21 @@ export function BenchmarkTooltip({
 				))}
 			</ul>
 			<div className="border-t p-2">
-				<div className="relative mt-0.5 h-1.5 w-full rounded-full bg-muted">
+				<div className="relative mt-0.5 h-1.5 w-full rounded-full bg-bg-weak-50">
 					{/* Center marker = benchmark */}
-					<span className="absolute top-1/2 left-1/2 z-30 h-2.5 w-0.5 -translate-y-1/2 rounded-full bg-muted-foreground" />
+					<span className="absolute top-1/2 left-1/2 z-30 h-2.5 w-0.5 -translate-y-1/2 rounded-full bg-stroke-soft-200" />
 					{diff >= 0 ? (
 						<span className="absolute top-1/2 left-1/2 z-10 h-1.5 w-1/2 -translate-y-1/2">
 							<span
 								style={{ width: `${cappedValue}%` }}
-								className="absolute h-1.5 rounded-r-full bg-gradient-to-r from-muted-foreground/60 to-muted-foreground/40 transition-all duration-300"
+								className="absolute h-1.5 rounded-r-full bg-gradient-to-r from-stroke-soft-200/60 to-stroke-soft-200/40 transition-all duration-300"
 							/>
 						</span>
 					) : (
 						<span className="absolute top-1/2 right-1/2 z-10 h-1.5 w-1/2 -translate-y-1/2">
 							<span
 								style={{ width: `${Math.abs(cappedValue)}%` }}
-								className="absolute right-0 h-1.5 rounded-l-full bg-gradient-to-l from-muted-foreground/60 to-muted-foreground/40 transition-all duration-300"
+								className="absolute right-0 h-1.5 rounded-l-full bg-gradient-to-l from-stroke-soft-200/60 to-stroke-soft-200/40 transition-all duration-300"
 							/>
 						</span>
 					)}
@@ -170,14 +170,14 @@ export function BenchmarkTooltip({
 				<div className="mt-1 flex items-center justify-between">
 					<div className="flex items-center">
 						<span
-							className="mr-1 h-0.5 w-2.5 rounded-full bg-muted-foreground"
+							className="mr-1 h-0.5 w-2.5 rounded-full bg-stroke-soft-200"
 							aria-hidden="true"
 						/>
-						<span className="text-muted-foreground text-xs">
+						<span className="text-text-soft-400 text-xs">
 							{benchmarkLabel}
 						</span>
 					</div>
-					<span className="font-medium text-foreground text-xs">
+					<span className="font-medium text-text-strong-950 text-xs">
 						{formattedDiff}
 					</span>
 				</div>

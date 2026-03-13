@@ -158,7 +158,7 @@ export function getCarboniteTableColumns(
 				<DataTableColumnHeader column={column} title="Role" />
 			),
 			cell: ({ getValue }) => (
-				<span className="text-muted-foreground text-sm">
+				<span className="text-text-soft-400 text-sm">
 					{(getValue() as string | null) ?? "\u2014"}
 				</span>
 			),
@@ -177,7 +177,7 @@ export function getCarboniteTableColumns(
 				const sl = getValue() as string | null;
 				if (!sl) {
 					return (
-						<span className="text-muted-foreground text-sm">{"\u2014"}</span>
+						<span className="text-text-soft-400 text-sm">{"\u2014"}</span>
 					);
 				}
 				const color = slColor(sl);

@@ -21,7 +21,7 @@ function CategoryBar({ segments }: { segments: CategorySegment[] }) {
 
 	return (
 		<div className="space-y-1.5">
-			<div className="flex h-3 w-full overflow-hidden rounded-full bg-muted/30">
+			<div className="flex h-3 w-full overflow-hidden rounded-full bg-bg-weak-50/30">
 				{segments.map((seg) => {
 					const pct = (seg.value / total) * 100;
 					if (pct <= 0) return null;
@@ -42,7 +42,7 @@ function CategoryBar({ segments }: { segments: CategorySegment[] }) {
 							className="inline-block size-2 rounded-full"
 							style={{ backgroundColor: seg.color }}
 						/>
-						<span className="text-muted-foreground text-xs">{seg.label}</span>
+						<span className="text-text-soft-400 text-xs">{seg.label}</span>
 						<span className="text-xs tabular-nums">{fmtDollar(seg.value)}</span>
 					</div>
 				))}
@@ -63,12 +63,12 @@ function MiniMetric({
 	muted?: boolean;
 }) {
 	return (
-		<div className="flex flex-col gap-0.5 rounded-md border bg-card px-3 py-2">
-			<span className="text-muted-foreground text-xs">{label}</span>
+		<div className="flex flex-col gap-0.5 rounded-md border bg-bg-white-0 px-3 py-2">
+			<span className="text-text-soft-400 text-xs">{label}</span>
 			<span
 				className={cn(
 					"font-semibold text-sm tabular-nums",
-					muted && "text-muted-foreground",
+					muted && "text-text-soft-400",
 				)}
 			>
 				{value}
@@ -104,7 +104,7 @@ export function CompBudgetSection({
 
 	return (
 		<div className="space-y-3">
-			<h4 className="flex items-center gap-1.5 font-medium text-muted-foreground text-sm">
+			<h4 className="flex items-center gap-1.5 font-medium text-text-soft-400 text-sm">
 				<HugeiconsIcon icon={Dollar01Icon} className="size-3.5" />
 				Compensation Budget
 				{entityState && (

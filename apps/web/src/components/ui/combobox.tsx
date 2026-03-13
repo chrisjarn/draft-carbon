@@ -259,7 +259,7 @@ function ComboboxGroupLabel({
 	return (
 		<ComboboxPrimitive.GroupLabel
 			className={cn(
-				"px-2 py-1.5 font-medium text-muted-foreground text-xs",
+				"px-2 py-1.5 font-medium text-text-soft-400 text-xs",
 				className,
 			)}
 			data-slot="combobox-group-label"
@@ -272,7 +272,7 @@ function ComboboxEmpty({ className, ...props }: ComboboxPrimitive.Empty.Props) {
 	return (
 		<ComboboxPrimitive.Empty
 			className={cn(
-				"not-empty:p-2 text-center text-base text-muted-foreground sm:text-sm",
+				"not-empty:p-2 text-center text-base text-text-soft-400 sm:text-sm",
 				className,
 			)}
 			data-slot="combobox-empty"
@@ -327,7 +327,7 @@ function ComboboxStatus({
 	return (
 		<ComboboxPrimitive.Status
 			className={cn(
-				"px-3 py-2 font-medium text-muted-foreground text-xs empty:m-0 empty:p-0",
+				"px-3 py-2 font-medium text-text-soft-400 text-xs empty:m-0 empty:p-0",
 				className,
 			)}
 			data-slot="combobox-status"

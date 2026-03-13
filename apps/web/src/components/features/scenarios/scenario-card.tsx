@@ -179,14 +179,14 @@ export function MetricRow({
 	return (
 		<div className="grid grid-cols-2 gap-4">
 			<div className="flex items-center justify-between">
-				<span className="text-muted-foreground text-xs">{label}</span>
+				<span className="text-text-soft-400 text-xs">{label}</span>
 				<span className="font-medium text-sm tabular-nums">
 					{baseValue}
 					{suffix}
 				</span>
 			</div>
 			<div className="flex items-center justify-between gap-1.5">
-				<span className="text-muted-foreground text-xs">{label}</span>
+				<span className="text-text-soft-400 text-xs">{label}</span>
 				<span className="flex items-center gap-1.5">
 					<span className="font-medium text-sm tabular-nums">
 						{revisedValue}
@@ -300,7 +300,7 @@ export function ScenarioCard({
 					)}
 				</div>
 				{sc.description && (
-					<p className="text-muted-foreground text-xs">{sc.description}</p>
+					<p className="text-text-soft-400 text-xs">{sc.description}</p>
 				)}
 			</CardHeader>
 
@@ -308,11 +308,11 @@ export function ScenarioCard({
 				{/* Split-Panel Comparison */}
 				<div className="rounded-md border ">
 					{/* Column Headers */}
-					<div className="grid grid-cols-2 gap-4  border-b bg-muted/30 px-3 py-1.5">
-						<span className="font-medium text-muted-foreground text-xs uppercase tracking-wider">
+					<div className="grid grid-cols-2 gap-4  border-b bg-bg-weak-50/30 px-3 py-1.5">
+						<span className="font-medium text-text-soft-400 text-xs uppercase tracking-wider">
 							Current State
 						</span>
-						<span className="font-medium text-muted-foreground text-xs uppercase tracking-wider">
+						<span className="font-medium text-text-soft-400 text-xs uppercase tracking-wider">
 							With Scenario
 						</span>
 					</div>
@@ -362,7 +362,7 @@ export function ScenarioCard({
 								}
 								showLabels={false}
 							/>
-							<div className="mt-1 flex items-center gap-2 text-[10px] text-muted-foreground">
+							<div className="mt-1 flex items-center gap-2 text-[10px] text-text-soft-400">
 								<span className="flex items-center gap-1">
 									<span className="inline-block size-1.5 rounded-full bg-emerald-500" />
 									Payroll
@@ -383,7 +383,7 @@ export function ScenarioCard({
 								}
 								showLabels={false}
 							/>
-							<div className="mt-1 flex items-center gap-2 text-[10px] text-muted-foreground">
+							<div className="mt-1 flex items-center gap-2 text-[10px] text-text-soft-400">
 								<span className="flex items-center gap-1">
 									<span className="inline-block size-1.5 rounded-full bg-emerald-500" />
 									Base
@@ -416,7 +416,7 @@ export function ScenarioCard({
 							{sc.roles.map((role) => (
 								<TableRow key={role.id}>
 									<TableCell className="text-sm">{role.roleTitle}</TableCell>
-									<TableCell className="text-muted-foreground text-sm">
+									<TableCell className="text-text-soft-400 text-sm">
 										{role.sl || "\u2014"}
 									</TableCell>
 									<TableCell className="text-right text-sm tabular-nums">
@@ -433,15 +433,15 @@ export function ScenarioCard({
 
 				{/* Summary footer */}
 				<div className="flex items-center gap-4 text-xs">
-					<span className="text-muted-foreground">
+					<span className="text-text-soft-400">
 						Payroll:{" "}
-						<span className="font-medium text-foreground tabular-nums">
+						<span className="font-medium text-text-strong-950 tabular-nums">
 							+{fmtDollar(impact.newPayroll)}
 						</span>
 					</span>
-					<span className="text-muted-foreground">
+					<span className="text-text-soft-400">
 						Headcount:{" "}
-						<span className="font-medium text-foreground tabular-nums">
+						<span className="font-medium text-text-strong-950 tabular-nums">
 							+{impact.headcount}
 						</span>
 					</span>

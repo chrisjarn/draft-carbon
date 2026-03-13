@@ -81,7 +81,7 @@ export function ScenarioKpiSection({
 									className="size-2.5 shrink-0 rounded-sm bg-emerald-500"
 									aria-hidden="true"
 								/>
-								<span className="text-muted-foreground text-sm">Actual</span>
+								<span className="text-text-soft-400 text-sm">Actual</span>
 							</div>
 							<span className="mt-0.5 block font-semibold text-xl tabular-nums">
 								{fmtDollar(revenueActual)}
@@ -93,7 +93,7 @@ export function ScenarioKpiSection({
 									className="size-2.5 shrink-0 rounded-sm bg-blue-500"
 									aria-hidden="true"
 								/>
-								<span className="text-muted-foreground text-sm">Target</span>
+								<span className="text-text-soft-400 text-sm">Target</span>
 							</div>
 							<span className="mt-0.5 block font-semibold text-xl tabular-nums">
 								{fmtDollar(revenueTarget)}
@@ -128,7 +128,7 @@ export function ScenarioKpiSection({
 				<div className="space-y-3">
 					<div>
 						<div className="flex items-center justify-between text-sm">
-							<span className="text-muted-foreground">Revenue Gap</span>
+							<span className="text-text-soft-400">Revenue Gap</span>
 							<span
 								className={
 									baseRevGap > 0
@@ -167,7 +167,7 @@ export function ScenarioKpiSection({
 						/>
 					</div>
 					<div className="flex items-center justify-between text-sm">
-						<span className="text-muted-foreground">Scenarios</span>
+						<span className="text-text-soft-400">Scenarios</span>
 						<span className="font-semibold tabular-nums">{scenarioCount}</span>
 					</div>
 				</div>

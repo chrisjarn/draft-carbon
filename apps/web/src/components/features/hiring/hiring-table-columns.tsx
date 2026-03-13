@@ -40,8 +40,8 @@ export const PRIORITY_STYLES: Record<string, string> = {
 	urgent: "border-red-500/40 bg-red-500/10 text-red-400",
 	high: "border-orange-500/40 bg-orange-500/10 text-orange-400",
 	medium: "border-yellow-500/40 bg-yellow-500/10 text-yellow-400",
-	low: " bg-muted/40 text-muted-foreground",
-	planned: " bg-muted/40 text-muted-foreground",
+	low: " bg-bg-weak-50/40 text-text-soft-400",
+	planned: " bg-bg-weak-50/40 text-text-soft-400",
 };
 
 export function PriorityBadge({ priority }: { priority: string | null }) {
@@ -65,7 +65,7 @@ export const STATUS_STYLES: Record<string, string> = {
 	open: "border-sky-500/40 bg-sky-500/10 text-sky-400",
 	active: "border-blue-500/40 bg-blue-500/10 text-blue-400",
 	offer: "border-violet-500/40 bg-violet-500/10 text-violet-400",
-	closed: " bg-muted/40 text-muted-foreground",
+	closed: " bg-bg-weak-50/40 text-text-soft-400",
 };
 
 export function HiringStatusBadge({ status }: { status: string | null }) {
@@ -103,7 +103,7 @@ export const EXPECTED_DAYS = 42;
 export function daysOpenColor(days: number): string {
 	if (days > EXPECTED_DAYS) return "text-red-500";
 	if (days > EXPECTED_DAYS * 0.75) return "text-amber-500";
-	return "text-muted-foreground";
+	return "text-text-soft-400";
 }
 
 // ── Stats hook ────────────────────────────────────────────────────────────────

@@ -57,7 +57,7 @@ export function EntityStaffSection({
 	}
 
 	function attainmentColor(pctVal: number | null): string {
-		if (pctVal === null) return "text-muted-foreground";
+		if (pctVal === null) return "text-text-soft-400";
 		if (pctVal >= 100) return "text-green-400";
 		if (pctVal >= 80) return "text-amber-400";
 		return "text-red-400";
@@ -65,8 +65,8 @@ export function EntityStaffSection({
 
 	return (
 		<Collapsible open={open} onOpenChange={setOpen}>
-			<CollapsibleTrigger className="flex w-full items-center justify-between rounded-sm px-1 py-1.5 hover:bg-muted/30">
-				<h4 className="flex items-center gap-1.5 font-medium text-muted-foreground text-sm">
+			<CollapsibleTrigger className="flex w-full items-center justify-between rounded-sm px-1 py-1.5 hover:bg-bg-weak-50/30">
+				<h4 className="flex items-center gap-1.5 font-medium text-text-soft-400 text-sm">
 					<HugeiconsIcon icon={UserGroupIcon} className="size-3.5" />
 					Staff Billing
 					<Badge variant="outline" size="sm" className="ml-1">
@@ -75,13 +75,13 @@ export function EntityStaffSection({
 				</h4>
 				<HugeiconsIcon
 					icon={open ? ArrowUp01Icon : ArrowDown01Icon}
-					className="size-3.5 text-muted-foreground"
+					className="size-3.5 text-text-soft-400"
 				/>
 			</CollapsibleTrigger>
 
 			<CollapsiblePanel>
 				{staff.length === 0 ? (
-					<p className="py-4 text-center text-muted-foreground text-sm">
+					<p className="py-4 text-center text-text-soft-400 text-sm">
 						No staff in this entity
 					</p>
 				) : (
@@ -112,7 +112,7 @@ export function EntityStaffSection({
 										<TableCell>
 											<PersonNameCell name={s.name} />
 										</TableCell>
-										<TableCell className="text-muted-foreground text-sm">
+										<TableCell className="text-text-soft-400 text-sm">
 											{s.role ?? "\u2014"}
 										</TableCell>
 										<TableCell className="text-right text-sm">
@@ -122,18 +122,18 @@ export function EntityStaffSection({
 														"tabular-nums",
 														hasOverride
 															? "font-semibold"
-															: "text-muted-foreground",
+															: "text-text-soft-400",
 													)}
 												>
 													{fmtDollar(target)}
 													{!hasOverride && (
-														<span className="ml-1 text-muted-foreground/70 text-xs">
+														<span className="ml-1 text-text-soft-400/70 text-xs">
 															Auto
 														</span>
 													)}
 												</span>
 											) : (
-												<span className="text-muted-foreground">
+												<span className="text-text-soft-400">
 													{"\u2014"}
 												</span>
 											)}

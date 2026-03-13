@@ -143,7 +143,7 @@ function Toasts({ position = "bottom-right" }: { position: ToastPosition }) {
 											data-slot="toast-title"
 										/>
 										<Toast.Description
-											className="text-muted-foreground"
+											className="text-text-soft-400"
 											data-slot="toast-description"
 										/>
 									</div>
@@ -235,7 +235,7 @@ function AnchoredToasts() {
 													data-slot="toast-title"
 												/>
 												<Toast.Description
-													className="text-muted-foreground"
+													className="text-text-soft-400"
 													data-slot="toast-description"
 												/>
 											</div>

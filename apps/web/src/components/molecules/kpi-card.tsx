@@ -40,11 +40,11 @@ export function KpiCard({
 	return (
 		<div
 			className={cn(
-				"relative w-full overflow-hidden rounded-lg bg-card p-5 text-left",
+				"relative w-full overflow-hidden bg-bg-white-0 shadow-custom-input rounded-20 p-5 hover:bg-bg-weak-50 hover:shadow-none transition-all duration-200 text-left",
 				className,
 			)}
 		>
-			<dt className="font-medium text-muted-foreground text-xs uppercase tracking-widest">
+			<dt className="font-medium text-text-soft-400 text-xs uppercase">
 				{title}
 			</dt>
 			{loading ? (
@@ -60,7 +60,7 @@ export function KpiCard({
 				</dd>
 			)}
 			{children && (
-				<div className="mt-4 border-t border-border/60 pt-3">{children}</div>
+				<div className="mt-4 border-t border-stroke-soft-200/60 pt-3">{children}</div>
 			)}
 		</div>
 	);
@@ -92,7 +92,7 @@ export function KpiLegendItem({ color, label, value }: KpiLegendItemProps) {
 					className={cn("size-2 shrink-0 rounded-sm", color)}
 					aria-hidden="true"
 				/>
-				<span className="text-muted-foreground text-xs">{label}</span>
+				<span className="text-text-soft-400 text-xs">{label}</span>
 			</div>
 		</li>
 	);

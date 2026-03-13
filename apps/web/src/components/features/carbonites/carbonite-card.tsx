@@ -14,14 +14,14 @@ export function CarboniteCard({
 		<button
 			type="button"
 			onClick={onClick}
-			className="flex items-start gap-3 rounded-lg border  bg-card p-3 text-left transition-colors hover:bg-muted/40"
+			className="flex items-start gap-3 rounded-lg border  bg-bg-white-0 p-3 text-left transition-colors hover:bg-bg-weak-50/40"
 		>
-			<div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary font-bold text-primary-foreground text-xs">
+			<div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-green-600 font-bold text-primary-foreground text-xs">
 				{initials(carbonite.name)}
 			</div>
 			<div className="min-w-0 flex-1">
 				<div className="truncate font-semibold text-sm">{carbonite.name}</div>
-				<div className="mt-0.5 truncate text-muted-foreground text-xs">
+				<div className="mt-0.5 truncate text-text-soft-400 text-xs">
 					{carbonite.role ?? "—"}
 				</div>
 				<div className="mt-1.5 flex flex-wrap gap-1">
@@ -51,7 +51,7 @@ export function CarboniteCard({
 					</Badge>
 				</div>
 				{carbonite.salary != null && (
-					<div className="mt-1.5 text-muted-foreground text-xs tabular-nums">
+					<div className="mt-1.5 text-text-soft-400 text-xs tabular-nums">
 						${carbonite.salary.toLocaleString()}
 					</div>
 				)}

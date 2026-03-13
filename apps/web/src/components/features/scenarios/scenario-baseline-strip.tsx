@@ -24,7 +24,7 @@ export function ScenarioBaselineStrip({
 	return (
 		<div
 			className={cn(
-				"flex items-center gap-6 rounded-md border  bg-muted/20 px-4 py-2.5",
+				"flex items-center gap-6 rounded-md border  bg-bg-weak-50/20 px-4 py-2.5",
 				className,
 			)}
 		>
@@ -69,7 +69,7 @@ function BaselineStat({
 }) {
 	return (
 		<div className="flex flex-col gap-0.5">
-			<span className="text-muted-foreground text-xs">{label}</span>
+			<span className="text-text-soft-400 text-xs">{label}</span>
 			<span
 				className={cn(
 					"font-semibold text-sm tabular-nums leading-tight",
@@ -78,7 +78,7 @@ function BaselineStat({
 			>
 				{value}
 				{suffix && (
-					<span className="font-normal text-muted-foreground text-xs">
+					<span className="font-normal text-text-soft-400 text-xs">
 						{suffix}
 					</span>
 				)}

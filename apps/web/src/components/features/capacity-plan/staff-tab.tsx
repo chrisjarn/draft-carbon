@@ -60,7 +60,7 @@ function MetaDialog({
 			<AppDialogContent size="sm">
 				<AppDialogHeader>
 					<AppDialogTitle className="text-base">{staff.name}</AppDialogTitle>
-					<p className="text-muted-foreground text-sm">
+					<p className="text-text-soft-400 text-sm">
 						{staff.role} &middot; {staff.office}
 					</p>
 				</AppDialogHeader>
@@ -252,7 +252,7 @@ export function StaffTab({
 	if (query.isPending) {
 		return (
 			<div className="flex h-full flex-col">
-				<div className="bg-background px-6 py-4">
+				<div className="bg-bg-white-0 px-6 py-4">
 					<DataTableSkeleton
 						columnCount={12}
 						rowCount={10}
@@ -267,7 +267,7 @@ export function StaffTab({
 	return (
 		<div className="flex h-full flex-col">
 			{/* DataTable — filters are rendered in PageToolbar above */}
-			<div className="flex-1 overflow-auto bg-muted">
+			<div className="flex-1 overflow-auto bg-bg-weak-50">
 				<DataTable table={table} />
 			</div>
 

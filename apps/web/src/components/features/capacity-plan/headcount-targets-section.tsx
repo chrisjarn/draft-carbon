@@ -103,7 +103,7 @@ export function HeadcountTargetsSection({
 	return (
 		<div>
 			<div className="mb-2 flex items-center justify-between">
-				<h4 className="flex items-center gap-1.5 font-medium text-muted-foreground text-sm">
+				<h4 className="flex items-center gap-1.5 font-medium text-text-soft-400 text-sm">
 					<HugeiconsIcon icon={Target01Icon} className="size-3.5" />
 					Headcount Targets
 				</h4>
@@ -130,7 +130,7 @@ export function HeadcountTargetsSection({
 									/>
 									<span className="text-sm">{sl.short}</span>
 								</div>
-								<span className="text-muted-foreground text-xs tabular-nums">
+								<span className="text-text-soft-400 text-xs tabular-nums">
 									{current} / {target || "--"}
 									{target > 0 && ` (${pctVal}%)`}
 								</span>
