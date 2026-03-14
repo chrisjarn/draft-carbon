@@ -1,0 +1,78 @@
+@import "tailwindcss";
+
+:root {
+  /* Backgrounds */
+  --background: 0 0% 100%;
+  --foreground: 240 10% 3.9%;
+  --bg-white-0: 0 0% 100%;
+  --bg-weak-50: 240 5% 96%;
+  
+  /* Text */
+  --text-strong-950: 240 10% 3.9%;
+  --text-sub-600: 240 5% 34%;
+  --text-soft-400: 240 4% 46%;
+  
+  /* Strokes */
+  --stroke-soft-200: 240 6% 90%;
+  
+  /* Primary */
+  --primary: 142.1 76.2% 36.3%;
+  --primary-foreground: 355.7 100% 97.3%;
+  
+  /* Cards */
+  --card: 0 0% 100%;
+  --card-foreground: 240 10% 3.9%;
+  
+  /* Muted */
+  --muted: 240 4.8% 95.9%;
+  --muted-foreground: 240 3.8% 46.1%;
+  
+  /* Border */
+  --border: 240 5.9% 90%;
+  
+  /* Radius */
+  --radius: 0.75rem;
+}
+
+.dark {
+  /* Backgrounds */
+  --background: 240 10% 3.9%;
+  --foreground: 0 0% 98%;
+  --bg-white-0: 240 6% 10%;
+  --bg-weak-50: 240 5% 15%;
+  
+  /* Text */
+  --text-strong-950: 0 0% 98%;
+  --text-sub-600: 240 5% 65%;
+  --text-soft-400: 240 4% 55%;
+  
+  /* Strokes */
+  --stroke-soft-200: 240 4% 20%;
+  
+  /* Primary */
+  --primary: 142.1 70.6% 45.3%;
+  --primary-foreground: 144.9 80.4% 10%;
+  
+  /* Cards */
+  --card: 240 6% 10%;
+  --card-foreground: 0 0% 98%;
+  
+  /* Muted */
+  --muted: 240 3.7% 15.9%;
+  --muted-foreground: 240 5% 64.9%;
+  
+  /* Border */
+  --border: 240 3.7% 15.9%;
+}
+
+* {
+  border-color: hsl(var(--border));
+}
+
+body {
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-feature-settings: "rlig" 1, "calt" 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
