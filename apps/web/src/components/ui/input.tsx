@@ -42,7 +42,7 @@ function Input({
 			className={
 				cn(
 					!unstyled &&
-						"relative inline-flex w-full items-center rounded-lg border border-stroke-sub-300 bg-bg-white-0 text-base text-text-strong-950 transition-[border-color,background-color] duration-200 ease-out has-aria-invalid:has-focus:border-error-base has-disabled:cursor-not-allowed has-aria-invalid:border-error-base has-focus:border-primary-base has-[:hover:not(:focus)]:bg-bg-weak-50 has-focus:bg-bg-white-0 has-disabled:opacity-64 has-focus:shadow-[var(--shadow-block-custom-input-active)] sm:text-sm",
+						"relative inline-flex w-full items-center rounded-lg border border-transparent bg-bg-weak-50 text-base text-text-strong-950 transition-[border-color,background-color] duration-200 ease-out has-aria-invalid:has-focus:border-error-base has-disabled:cursor-not-allowed has-aria-invalid:border-error-base has-focus:border-primary-base has-focus:bg-bg-white-0 has-disabled:opacity-64 has-focus:shadow-[var(--shadow-block-custom-input-active)] sm:text-sm",
 					className,
 				) || undefined
 			}

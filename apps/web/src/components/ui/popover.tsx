@@ -53,7 +53,7 @@ function PopoverPopup({
 			>
 				<PopoverPrimitive.Popup
 					className={cn(
-						"w-72 rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-4 text-text-strong-950 shadow-gray-shadow outline-none transition-[scale,opacity] data-starting-style:scale-98 data-starting-style:opacity-0",
+						"w-72 rounded-lg bg-bg-weak-50 p-4 text-text-strong-950 shadow-gray-shadow outline-none transition-[scale,opacity] data-starting-style:scale-98 data-starting-style:opacity-0",
 						className,
 					)}
 					data-slot="popover-popup"

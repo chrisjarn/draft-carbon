@@ -423,29 +423,31 @@ export const wfpExtendedRouter = router({
 				sl: ent.sl,
 			});
 			const id = `sc-${crypto.randomUUID()}`;
-			const [scenario] = await db
-				.insert(scenarios)
-				.values({
-					id,
-					entityId: input.entityId,
-					fy: input.fy,
-					name: input.name,
-					description: input.description,
-					color: input.color,
-				})
-				.returning();
+			return db.transaction(async (tx) => {
+				const [scenario] = await tx
+					.insert(scenarios)
+					.values({
+						id,
+						entityId: input.entityId,
+						fy: input.fy,
+						name: input.name,
+						description: input.description,
+						color: input.color,
+					})
+					.returning();
 
-			if (input.roles?.length) {
-				await db.insert(scenarioRoles).values(
-					input.roles.map((r) => ({
-						id: `sr-${crypto.randomUUID()}`,
-						scenarioId: id,
-						...r,
-					})),
-				);
-			}
+				if (input.roles?.length) {
+					await tx.insert(scenarioRoles).values(
+						input.roles.map((r) => ({
+							id: `sr-${crypto.randomUUID()}`,
+							scenarioId: id,
+							...r,
+						})),
+					);
+				}
 
-			return scenario;
+				return scenario;
+			});
 		}),
 
 	deleteScenario: protectedProcedure
@@ -539,31 +541,35 @@ export const wfpExtendedRouter = router({
 				});
 			}
 			const { id, roles, ...fields } = input;
-			if (Object.keys(fields).length > 0) {
-				await db.update(scenarios).set(fields).where(eq(scenarios.id, id));
-			}
-			if (roles !== undefined) {
-				await db.delete(scenarioRoles).where(eq(scenarioRoles.scenarioId, id));
-				if (roles.length > 0) {
-					await db.insert(scenarioRoles).values(
-						roles.map((r) => ({
-							id: `sr-${crypto.randomUUID()}`,
-							scenarioId: id,
-							...r,
-						})),
-					);
+			return db.transaction(async (tx) => {
+				if (Object.keys(fields).length > 0) {
+					await tx.update(scenarios).set(fields).where(eq(scenarios.id, id));
 				}
-			}
-			const [updated] = await db
-				.select()
-				.from(scenarios)
-				.where(eq(scenarios.id, id));
-			const updatedRoles = await db
-				.select()
-				.from(scenarioRoles)
-				.where(eq(scenarioRoles.scenarioId, id))
-				.orderBy(asc(scenarioRoles.roleTitle));
-			return { ...updated, roles: updatedRoles };
+				if (roles !== undefined) {
+					await tx
+						.delete(scenarioRoles)
+						.where(eq(scenarioRoles.scenarioId, id));
+					if (roles.length > 0) {
+						await tx.insert(scenarioRoles).values(
+							roles.map((r) => ({
+								id: `sr-${crypto.randomUUID()}`,
+								scenarioId: id,
+								...r,
+							})),
+						);
+					}
+				}
+				const [updated] = await tx
+					.select()
+					.from(scenarios)
+					.where(eq(scenarios.id, id));
+				const updatedRoles = await tx
+					.select()
+					.from(scenarioRoles)
+					.where(eq(scenarioRoles.scenarioId, id))
+					.orderBy(asc(scenarioRoles.roleTitle));
+				return { ...updated, roles: updatedRoles };
+			});
 		}),
 
 	// ── Auto-detect attrition risks ─────────────────────────────────────────────

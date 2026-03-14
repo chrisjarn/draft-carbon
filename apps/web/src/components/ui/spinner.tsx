@@ -1,14 +1,14 @@
-import { Loading03Icon } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
 import { cn } from "@/lib/utils";
 
 function Spinner({ className }: { className?: string }) {
 	return (
-		<HugeiconsIcon
-			icon={Loading03Icon}
-			aria-label="Loading"
+		<div
 			role="status"
-			className={cn("animate-spin", className)}
+			aria-label="Loading"
+			className={cn(
+				"animate-spin rounded-full border-2 border-current border-t-transparent",
+				className ?? "size-4",
+			)}
 		/>
 	);
 }

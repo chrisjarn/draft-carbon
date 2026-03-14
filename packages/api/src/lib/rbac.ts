@@ -6,6 +6,9 @@ import { hiringNeeds } from "@carbon-wfp/db/schema/hiring-needs";
 import { TRPCError } from "@trpc/server";
 import { eq, type SQL, sql } from "drizzle-orm";
 
+/** SQL predicate that always evaluates to false — used as a deny-all filter. */
+const SQL_DENY_ALL = sql`1 = 0`;
+
 type State = (typeof STATE_VALUES)[number];
 type ServiceLine = (typeof SL_VALUES)[number];
 
@@ -64,6 +67,8 @@ export function assertAdmin(
 export type RoleFilter = {
 	state?: string;
 	serviceLine?: string;
+	/** When true, all role-where helpers return a SQL deny-all predicate. */
+	denyAll?: boolean;
 };
 
 /**
@@ -76,10 +81,17 @@ export type RoleFilter = {
 export function getRoleFilter(user: SessionUser): RoleFilter {
 	const role = user.role ?? "read_only";
 	if (role === "admin" || role === "practice_manager") return {};
-	if (role === "state_manager" && user.assignedState) {
+	if (role === "state_manager") {
+		if (!user.assignedState) {
+			// Scoped role without assignment — fail closed with deny-all predicate
+			return { denyAll: true };
+		}
 		return { state: user.assignedState };
 	}
-	if (role === "service_line_lead" && user.assignedServiceLine) {
+	if (role === "service_line_lead") {
+		if (!user.assignedServiceLine) {
+			return { denyAll: true };
+		}
 		return { serviceLine: user.assignedServiceLine };
 	}
 	return {};
@@ -90,6 +102,7 @@ export function getRoleFilter(user: SessionUser): RoleFilter {
  * Returns `undefined` when no filtering is needed (can be spread into `and()`).
  */
 export function carboniteRoleWhere(filter: RoleFilter): SQL | undefined {
+	if (filter.denyAll) return SQL_DENY_ALL;
 	if (filter.state) return eq(carbonites.state, filter.state as State);
 	if (filter.serviceLine)
 		return eq(carbonites.sl, filter.serviceLine as ServiceLine);
@@ -102,6 +115,7 @@ export function carboniteRoleWhere(filter: RoleFilter): SQL | undefined {
  * For service line filtering, checks if the JSON `sl` array contains the value.
  */
 export function entityRoleWhere(filter: RoleFilter): SQL | undefined {
+	if (filter.denyAll) return SQL_DENY_ALL;
 	if (filter.state) return eq(entities.state, filter.state as State);
 	if (filter.serviceLine) {
 		// entities.sl is a JSON array — use SQL containment check
@@ -131,7 +145,13 @@ export function assertResourceScope(
 ): void {
 	const role = user.role ?? "read_only";
 	if (role === "admin" || role === "practice_manager") return;
-	if (role === "state_manager" && user.assignedState) {
+	if (role === "state_manager") {
+		if (!user.assignedState) {
+			throw new TRPCError({
+				code: "FORBIDDEN",
+				message: "State manager has no assigned state",
+			});
+		}
 		if (resource.state && resource.state !== user.assignedState) {
 			throw new TRPCError({
 				code: "FORBIDDEN",
@@ -140,7 +160,13 @@ export function assertResourceScope(
 		}
 		return;
 	}
-	if (role === "service_line_lead" && user.assignedServiceLine) {
+	if (role === "service_line_lead") {
+		if (!user.assignedServiceLine) {
+			throw new TRPCError({
+				code: "FORBIDDEN",
+				message: "Service line lead has no assigned service line",
+			});
+		}
 		if (resource.sl && resource.sl !== user.assignedServiceLine) {
 			throw new TRPCError({
 				code: "FORBIDDEN",
@@ -160,7 +186,13 @@ export function assertEntityScope(
 ): void {
 	const role = user.role ?? "read_only";
 	if (role === "admin" || role === "practice_manager") return;
-	if (role === "state_manager" && user.assignedState) {
+	if (role === "state_manager") {
+		if (!user.assignedState) {
+			throw new TRPCError({
+				code: "FORBIDDEN",
+				message: "State manager has no assigned state",
+			});
+		}
 		if (entity.state && entity.state !== user.assignedState) {
 			throw new TRPCError({
 				code: "FORBIDDEN",
@@ -169,7 +201,13 @@ export function assertEntityScope(
 		}
 		return;
 	}
-	if (role === "service_line_lead" && user.assignedServiceLine) {
+	if (role === "service_line_lead") {
+		if (!user.assignedServiceLine) {
+			throw new TRPCError({
+				code: "FORBIDDEN",
+				message: "Service line lead has no assigned service line",
+			});
+		}
 		const sls = Array.isArray(entity.sl) ? entity.sl : [];
 		if (sls.length > 0 && !sls.includes(user.assignedServiceLine)) {
 			throw new TRPCError({

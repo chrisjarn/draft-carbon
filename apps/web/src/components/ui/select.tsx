@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils";
 const Select = SelectPrimitive.Root;
 
 const selectTriggerVariants = cva(
-	"relative inline-flex min-h-9 w-full min-w-36 max-w-xs select-none items-center justify-between gap-2 rounded-lg border border-stroke-sub-300 bg-bg-white-0 px-[calc(--spacing(3)-1px)] text-left text-base text-text-strong-950 outline-none transition-[box-shadow,border-color,background-color] duration-200 ease-out pointer-coarse:after:absolute pointer-coarse:after:size-full pointer-coarse:after:min-h-10 hover:bg-bg-weak-50 focus:border-primary-base focus:bg-bg-white-0 focus:shadow-[var(--shadow-block-custom-input-active)] aria-invalid:border-error-base data-[disabled]:pointer-events-none data-[state=open]:border-primary-base data-[state=open]:bg-bg-white-0 data-[disabled]:opacity-64 data-[state=open]:shadow-[var(--shadow-block-custom-input-active)] sm:min-h-10 sm:text-sm [&_svg:not([class*='opacity-'])]:opacity-80 [&_svg:not([class*='size-'])]:size-4.5 sm:[&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+	"relative inline-flex min-h-9 w-full min-w-36 max-w-xs select-none items-center justify-between gap-2 rounded-lg border border-transparent bg-bg-weak-50 px-[calc(--spacing(3)-1px)] text-left text-base text-text-strong-950 outline-none transition-[box-shadow,border-color,background-color] duration-200 ease-out pointer-coarse:after:absolute pointer-coarse:after:size-full pointer-coarse:after:min-h-10 focus:border-primary-base focus:bg-bg-white-0 focus:shadow-[var(--shadow-block-custom-input-active)] aria-invalid:border-error-base data-[disabled]:pointer-events-none data-[state=open]:border-primary-base data-[state=open]:bg-bg-white-0 data-[disabled]:opacity-64 data-[state=open]:shadow-[var(--shadow-block-custom-input-active)] sm:min-h-10 sm:text-sm [&_svg:not([class*='opacity-'])]:opacity-80 [&_svg:not([class*='size-'])]:size-4.5 sm:[&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
 	{
 		defaultVariants: {
 			size: "default",
@@ -110,7 +110,7 @@ function SelectPopup({
 		<SelectPrimitive.Portal>
 			<SelectPrimitive.Content
 				className={cn(
-					"data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 z-50 max-h-[var(--radix-select-content-available-height)] min-w-[var(--radix-select-trigger-width)] max-w-xs overflow-hidden rounded-lg border border-stroke-sub-300 bg-bg-white-0 shadow-gray-shadow data-[state=closed]:animate-out data-[state=open]:animate-in",
+					"data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 z-50 max-h-[var(--radix-select-content-available-height)] min-w-[var(--radix-select-trigger-width)] max-w-xs overflow-hidden rounded-lg bg-bg-weak-50 shadow-gray-shadow data-[state=closed]:animate-out data-[state=open]:animate-in",
 					className,
 				)}
 				data-slot="select-popup"

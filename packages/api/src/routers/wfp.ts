@@ -20,6 +20,7 @@ import {
 	calcRevenueGap,
 } from "../lib/calculations";
 import {
+	ADMIN_WRITE_ROLES,
 	assertEntityScope,
 	assertResourceScope,
 	assertWriter,
@@ -27,6 +28,13 @@ import {
 	entityRoleWhere,
 	getRoleFilter,
 } from "../lib/rbac";
+
+/** Zod refinement: string must represent a finite number */
+const numericString = z
+	.string()
+	.refine((v) => v === "" || (!Number.isNaN(Number(v)) && Number.isFinite(Number(v))), {
+		message: "Must be a valid numeric value",
+	});
 
 export const wfpRouter = router({
 	// ── Firm-wide KPIs ──────────────────────────────────────────────────────────
@@ -290,8 +298,8 @@ export const wfpRouter = router({
 		.input(
 			z.object({
 				cbId: z.string(),
-				billingTarget: z.string().optional(),
-				billingActual: z.string().optional(),
+				billingTarget: numericString.optional(),
+				billingActual: numericString.optional(),
 				perfRating: z.string().optional(),
 				promoFlag: z.enum(["yes", "maybe", "no"]).optional(),
 				promoEta: z.string().optional(),
@@ -361,12 +369,12 @@ export const wfpRouter = router({
 		.input(
 			z.object({
 				entId: z.string(),
-				billingMultiplier: z.string().optional(),
+				billingMultiplier: numericString.optional(),
 				fy: z.string().optional(),
 			}),
 		)
 		.mutation(async ({ ctx, input }) => {
-			assertWriter(ctx.session.user);
+			assertWriter(ctx.session.user, ADMIN_WRITE_ROLES);
 			// Verify entity exists and is in scope
 			const [ent] = await db
 				.select()
@@ -434,12 +442,12 @@ export const wfpRouter = router({
 			z.object({
 				entId: z.string(),
 				fy: z.string(),
-				target: z.string().optional(),
-				actual: z.string().optional(),
+				target: numericString.optional(),
+				actual: numericString.optional(),
 			}),
 		)
 		.mutation(async ({ ctx, input }) => {
-			assertWriter(ctx.session.user);
+			assertWriter(ctx.session.user, ADMIN_WRITE_ROLES);
 			// Verify entity exists and is in scope
 			const [ent] = await db
 				.select()

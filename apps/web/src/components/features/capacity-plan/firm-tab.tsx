@@ -273,11 +273,8 @@ function EntityDetailPanel({
 				defaultValue="overview"
 				className="flex min-h-0 flex-1 flex-col gap-0"
 			>
-				<div className="shrink-0 border-stroke-soft-200 border-b px-6">
-					<TabsList
-						variant="underline"
-						className="-mb-px w-full justify-start border-b-0"
-					>
+				<div className="shrink-0 px-6 pt-2">
+					<TabsList>
 						<TabsTab value="overview">Overview</TabsTab>
 						<TabsTab value="staff">
 							Staff

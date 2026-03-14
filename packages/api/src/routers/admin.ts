@@ -42,6 +42,24 @@ export const adminRouter = router({
 					message: "Cannot change your own role",
 				});
 			}
+			// Require assignment fields for scoped roles
+			if (input.role === "state_manager" && !input.assignedState) {
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message:
+						"state_manager role requires an assignedState",
+				});
+			}
+			if (
+				input.role === "service_line_lead" &&
+				!input.assignedServiceLine
+			) {
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message:
+						"service_line_lead role requires an assignedServiceLine",
+				});
+			}
 			// Clear assignment fields when role doesn't need them
 			const assignedState =
 				input.role === "state_manager" ? (input.assignedState ?? null) : null;

@@ -3,9 +3,9 @@ import {
 	CancelCircleIcon,
 	CheckmarkCircle01Icon,
 	InformationCircleIcon,
-	Loading01Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import { Spinner } from "@/components/ui/spinner";
 import { useTheme } from "next-themes";
 import { Toaster as Sonner, type ToasterProps } from "sonner";
 
@@ -23,9 +23,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
 				info: <HugeiconsIcon icon={InformationCircleIcon} className="size-4" />,
 				warning: <HugeiconsIcon icon={Alert02Icon} className="size-4" />,
 				error: <HugeiconsIcon icon={CancelCircleIcon} className="size-4" />,
-				loading: (
-					<HugeiconsIcon icon={Loading01Icon} className="size-4 animate-spin" />
-				),
+				loading: <Spinner className="size-4" />,
 			}}
 			style={
 				{

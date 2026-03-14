@@ -1,9 +1,9 @@
 import {
 	CheckmarkBadge02Icon,
 	Delete02Icon,
-	Loading01Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import { Spinner } from "@/components/ui/spinner";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
@@ -97,11 +97,7 @@ function TodosPage() {
 								disabled={createMutation.isPending || !newTodoText.trim()}
 							>
 								{createMutation.isPending ? (
-									<HugeiconsIcon
-										icon={Loading01Icon}
-										className="size-4 animate-spin"
-										aria-hidden="true"
-									/>
+									<Spinner className="size-4" />
 								) : (
 									"Add"
 								)}
@@ -110,11 +106,7 @@ function TodosPage() {
 
 						{todos.isLoading ? (
 							<div className="flex justify-center py-4">
-								<HugeiconsIcon
-									icon={Loading01Icon}
-									className="size-6 animate-spin"
-									aria-hidden="true"
-								/>
+								<Spinner className="size-6" />
 							</div>
 						) : todos.data?.length === 0 ? (
 							<Empty className="py-6 md:py-6">

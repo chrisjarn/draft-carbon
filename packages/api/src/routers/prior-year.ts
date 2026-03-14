@@ -4,7 +4,7 @@ import { asc, eq, sql } from "drizzle-orm";
 import z from "zod";
 
 import { protectedProcedure, router } from "../index";
-import { assertWriter } from "../lib/rbac";
+import { ADMIN_WRITE_ROLES, assertWriter } from "../lib/rbac";
 
 export const priorYearRouter = router({
 	getByYear: protectedProcedure
@@ -37,7 +37,7 @@ export const priorYearRouter = router({
 			}),
 		)
 		.mutation(async ({ ctx, input }) => {
-			assertWriter(ctx.session.user);
+			assertWriter(ctx.session.user, ADMIN_WRITE_ROLES);
 
 			if (input.rows.length === 0) return [];
 
