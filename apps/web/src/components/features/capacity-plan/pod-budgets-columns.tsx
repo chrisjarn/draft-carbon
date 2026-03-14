@@ -49,7 +49,7 @@ function VarianceCell({
 		return <span className="text-sm text-text-soft-400">—</span>;
 	if (variance === 0)
 		return <span className="text-sm text-text-soft-400">—</span>;
-	const cls = variance > 0 ? "text-green-400" : "text-red-400";
+	const cls = variance > 0 ? "text-emerald-400" : "text-red-400";
 	return (
 		<span className={`font-medium text-sm tabular-nums ${cls}`}>
 			{variance > 0 ? `+${fmtDollar(variance)}` : fmtDollar(variance)}
@@ -68,7 +68,7 @@ function AggregateVariance({
 		return <span className="text-sm text-text-soft-400">—</span>;
 	const v = budget - salary;
 	if (v === 0) return <span className="text-sm text-text-soft-400">—</span>;
-	const cls = v > 0 ? "text-green-400" : "text-red-400";
+	const cls = v > 0 ? "text-emerald-400" : "text-red-400";
 	return (
 		<span className={`font-medium text-sm tabular-nums ${cls}`}>
 			{v > 0 ? `+${fmtDollar(v)}` : fmtDollar(v)}
@@ -79,11 +79,11 @@ function AggregateVariance({
 // ── Column widths ────────────────────────────────────────────────────────────
 
 const COL_WIDTHS = {
-	location: { minSize: 150, size: 9999 }, // flexible: fills remaining space (like 1fr)
-	budget: 100,
-	staffCost: 100,
-	variance: 100,
-	utilisation: 140,
+	location: { minSize: 150, size: 300 },
+	budget: 110,
+	staffCost: 110,
+	variance: 110,
+	utilisation: 160,
 	status: 120,
 } as const;
 

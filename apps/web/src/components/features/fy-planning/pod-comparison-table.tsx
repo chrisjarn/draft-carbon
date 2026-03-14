@@ -297,7 +297,7 @@ export function PodComparisonTable({ priorFy }: { priorFy: string }) {
 										{fmtDollar(staff.staffCost)}
 									</TableCell>
 									<TableCell
-										className={`text-right tabular-nums ${remaining >= 0 ? "text-green-400" : "text-red-400"}`}
+										className={`text-right tabular-nums ${remaining >= 0 ? "text-emerald-400" : "text-red-400"}`}
 									>
 										{fmtDollar(remaining)}
 									</TableCell>
@@ -318,7 +318,7 @@ export function PodComparisonTable({ priorFy }: { priorFy: string }) {
 													r.yoyChange === null
 														? "text-text-soft-400"
 														: r.yoyChange >= 0
-															? "text-green-400"
+															? "text-emerald-400"
 															: "text-red-400"
 												}`}
 											>

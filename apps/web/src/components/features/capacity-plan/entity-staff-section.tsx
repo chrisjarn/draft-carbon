@@ -52,7 +52,7 @@ export function EntityStaffSection({
 
 	function attainmentColor(pctVal: number | null): string {
 		if (pctVal === null) return "text-text-soft-400";
-		if (pctVal >= 100) return "text-green-400";
+		if (pctVal >= 100) return "text-emerald-400";
 		if (pctVal >= 80) return "text-amber-400";
 		return "text-red-400";
 	}

@@ -12,7 +12,7 @@ import type { StaffWithMeta } from "./types";
 // ── Perf rating badge ─────────────────────────────────────────────────────────
 
 const PERF_STYLES: Record<string, string> = {
-	Exceeds: "border-green-500/40 bg-green-500/10 text-green-400",
+	Exceeds: "border-emerald-500/40 bg-emerald-500/10 text-emerald-400",
 	Meets: "border-blue-500/40 bg-blue-500/10 text-blue-400",
 	Below: "border-red-500/40 bg-red-500/10 text-red-400",
 	"N/A": " bg-bg-weak-50/40 text-text-soft-400",
@@ -87,7 +87,7 @@ export function EditableCell({
 						onSave(val);
 						setEditing(false);
 					}}
-					className="text-green-400 hover:text-green-300"
+					className="text-emerald-400 hover:text-emerald-300"
 				>
 					<HugeiconsIcon icon={Tick01Icon} className="size-3.5" />
 				</button>

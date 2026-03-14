@@ -5,6 +5,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { stateLabel } from "@/components/features/carbonites/types";
 import { ConfirmDialog } from "@/components/molecules/confirm-dialog";
+import { LoadingState } from "@/components/molecules/loading-state";
 import { Button } from "@/components/ui/button";
 import {
 	Table,
@@ -46,13 +47,9 @@ export function EntitiesTable() {
 	return (
 		<>
 			{entitiesQuery.isPending ? (
-				<div className="flex h-40 items-center justify-center text-sm text-text-soft-400">
-					Loading…
-				</div>
+				<LoadingState />
 			) : entitiesData.length === 0 ? (
-				<div className="flex h-40 items-center justify-center text-sm text-text-soft-400">
-					No entities. Add one to get started.
-				</div>
+				<LoadingState>No entities. Add one to get started.</LoadingState>
 			) : (
 				<Table>
 					<TableHeader>

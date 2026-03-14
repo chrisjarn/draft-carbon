@@ -56,7 +56,7 @@ function AdminPage() {
 					value={tab}
 					onValueChange={(v) => setTab(v as AdminTab)}
 				>
-					<TabsList variant="underline">
+					<TabsList >
 						<TabsTrigger value="users">Users</TabsTrigger>
 						<TabsTrigger value="entities">Entities</TabsTrigger>
 					</TabsList>

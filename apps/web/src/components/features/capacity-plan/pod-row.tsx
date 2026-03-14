@@ -30,7 +30,7 @@ export function StatusBadge({
 	const map: Record<Status, { label: string; className: string }> = {
 		under: {
 			label: "Under",
-			className: "border-green-500/40 bg-green-500/10 text-green-400",
+			className: "border-emerald-500/40 bg-emerald-500/10 text-emerald-400",
 		},
 		at: {
 			label: "At capacity",
@@ -70,7 +70,7 @@ export function CapacityBar({
 		? "bg-red-500"
 		: actual / budget >= 0.9
 			? "bg-amber-500"
-			: "bg-green-500";
+			: "bg-emerald-500";
 
 	const hasProjection = projectedYearEnd != null && projectedYearEnd > actual;
 
@@ -97,7 +97,7 @@ export function CapacityBar({
 		? "bg-red-500/40"
 		: actual / budget >= 0.9
 			? "bg-amber-500/40"
-			: "bg-green-500/40";
+			: "bg-emerald-500/40";
 
 	return (
 		<div className="relative h-1.5 w-full overflow-hidden rounded-full bg-bg-weak-50">
@@ -179,7 +179,7 @@ export function BudgetCell({
 					type="button"
 					onClick={save}
 					disabled={upsert.isPending}
-					className="text-green-400 hover:text-green-300"
+					className="text-emerald-400 hover:text-emerald-300"
 				>
 					<HugeiconsIcon icon={Tick01Icon} className="size-3.5" />
 				</button>

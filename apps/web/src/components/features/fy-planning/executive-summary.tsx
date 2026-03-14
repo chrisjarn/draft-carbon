@@ -35,7 +35,7 @@ export function ExecutiveSummary({ data }: { data: FYSummaryData }) {
 		attainmentPct === null
 			? "text-text-soft-400"
 			: attainmentPct >= 90
-				? "text-green-600"
+				? "text-emerald-600"
 				: attainmentPct >= 75
 					? "text-yellow-600"
 					: "text-red-600";

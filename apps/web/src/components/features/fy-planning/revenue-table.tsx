@@ -79,7 +79,7 @@ export function RevenueCell({
 						onSave(val);
 						setEditing(false);
 					}}
-					className="rounded-sm text-green-400 hover:text-green-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stroke-strong-950"
+					className="rounded-sm text-emerald-400 hover:text-emerald-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stroke-strong-950"
 				>
 					<HugeiconsIcon
 						icon={Tick01Icon}
@@ -188,7 +188,7 @@ export function makeRevenueColumns(
 				const v = variance(target, actual);
 				return (
 					<span
-						className={`font-medium text-sm tabular-nums ${v.positive === null ? "text-text-soft-400" : v.positive ? "text-green-400" : "text-red-400"}`}
+						className={`font-medium text-sm tabular-nums ${v.positive === null ? "text-text-soft-400" : v.positive ? "text-emerald-400" : "text-red-400"}`}
 					>
 						{v.val}
 					</span>
@@ -217,7 +217,7 @@ export function makeRevenueColumns(
 				);
 				return (
 					<span
-						className={`font-medium text-sm tabular-nums ${pct === null ? "text-text-soft-400" : pct >= 100 ? "text-green-400" : pct >= 80 ? "text-amber-400" : "text-red-400"}`}
+						className={`font-medium text-sm tabular-nums ${pct === null ? "text-text-soft-400" : pct >= 100 ? "text-emerald-400" : pct >= 80 ? "text-amber-400" : "text-red-400"}`}
 					>
 						{pct !== null ? `${pct}%` : "\u2014"}
 					</span>
@@ -245,7 +245,7 @@ export function makeRevenueColumns(
 				const isPositive = delta >= 0;
 				return (
 					<span
-						className={`text-sm tabular-nums ${isPositive ? "text-green-400" : "text-red-400"}`}
+						className={`text-sm tabular-nums ${isPositive ? "text-emerald-400" : "text-red-400"}`}
 					>
 						{isPositive ? "\u2191" : "\u2193"}
 						{isPositive ? "+" : ""}
@@ -314,7 +314,7 @@ export function buildGroupCells(
 		),
 		variance: (
 			<span
-				className={`font-medium text-sm tabular-nums ${v.positive === null ? "text-text-soft-400" : v.positive ? "text-green-400" : "text-red-400"}`}
+				className={`font-medium text-sm tabular-nums ${v.positive === null ? "text-text-soft-400" : v.positive ? "text-emerald-400" : "text-red-400"}`}
 			>
 				{v.val}
 			</span>
@@ -324,7 +324,7 @@ export function buildGroupCells(
 		),
 		attainment: (
 			<span
-				className={`font-medium text-sm tabular-nums ${pct === null ? "text-text-soft-400" : pct >= 100 ? "text-green-400" : pct >= 80 ? "text-amber-400" : "text-red-400"}`}
+				className={`font-medium text-sm tabular-nums ${pct === null ? "text-text-soft-400" : pct >= 100 ? "text-emerald-400" : pct >= 80 ? "text-amber-400" : "text-red-400"}`}
 			>
 				{pct !== null ? `${pct}%` : "\u2014"}
 			</span>
@@ -359,7 +359,7 @@ export function TotalsFooter({
 				</TableCell>
 				<TableCell>
 					<span
-						className={`text-sm tabular-nums ${v.positive === null ? "text-text-soft-400" : v.positive ? "text-green-400" : "text-red-400"}`}
+						className={`text-sm tabular-nums ${v.positive === null ? "text-text-soft-400" : v.positive ? "text-emerald-400" : "text-red-400"}`}
 					>
 						{v.val}
 					</span>
@@ -376,7 +376,7 @@ export function TotalsFooter({
 							pct === null
 								? "text-text-soft-400"
 								: pct >= 100
-									? "text-green-400"
+									? "text-emerald-400"
 									: pct >= 80
 										? "text-amber-400"
 										: "text-red-400"
