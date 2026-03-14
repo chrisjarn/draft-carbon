@@ -37,7 +37,11 @@
 	},
 	"dependencies": {
 		"@carbon-wfp/env": "workspace:*",
+		"@hugeicons/core-free-icons": "^4.0.0",
+		"@hugeicons/react": "^1.1.6",
+		"@tanstack/react-router": "^1.166.8",
 		"dotenv": "catalog:",
+		"react": "^19.2.4",
 		"react-doctor": "^0.0.29",
 		"zod": "catalog:"
 	},

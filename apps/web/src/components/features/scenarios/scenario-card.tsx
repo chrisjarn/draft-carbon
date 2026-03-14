@@ -23,6 +23,7 @@ import { DEFAULT_BILLING_MULT } from "@/lib/constants";
 import { fmtDollar } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
+
 // ── Types ───────────────────────────────────────────────────────────────────
 
 export type ScenarioRole = {
@@ -283,16 +284,22 @@ export function ScenarioCard({
 	}
 
 	return (
-		<Card className="relative overflow-hidden">
+		<Card
+			className={cn(
+				"relative overflow-hidden rounded-xl border border-stroke-soft-200/80 transition-all duration-150",
+				"hover:border-stroke-soft-200 hover:shadow-[0_2px_8px_rgba(0,0,0,0.04)]",
+				"dark:border-neutral-800 dark:bg-neutral-900/50 dark:hover:border-neutral-700",
+			)}
+		>
 			<div
 				className="absolute top-0 left-0 h-full w-1"
 				style={{ backgroundColor: sc.color ?? "#666" }}
 			/>
 
 			{/* Header */}
-			<CardHeader className="pb-2 pl-4">
+			<CardHeader className="pb-2 pl-5">
 				<div className="flex items-center justify-between">
-					<CardTitle className="text-base">{sc.name}</CardTitle>
+					<CardTitle className="text-sm font-semibold">{sc.name}</CardTitle>
 					<div className="flex items-center gap-1">
 						{onEdit && (
 							<Button variant="ghost" size="icon-xs" onClick={onEdit}>
@@ -316,15 +323,15 @@ export function ScenarioCard({
 				)}
 			</CardHeader>
 
-			<CardContent className="space-y-3 pl-4">
+			<CardContent className="space-y-3 pl-5">
 				{/* Split-Panel Comparison */}
-				<div className="rounded-md border">
+				<div className="rounded-lg border border-stroke-soft-200/60 dark:border-neutral-800">
 					{/* Column Headers */}
-					<div className="grid grid-cols-2 gap-4 border-b bg-bg-weak-50/30 px-3 py-1.5">
-						<span className="font-medium text-text-soft-400 text-xs uppercase tracking-wider">
+					<div className="grid grid-cols-2 gap-4 border-b border-stroke-soft-200/60 bg-neutral-50/50 px-3 py-1.5 dark:border-neutral-800 dark:bg-neutral-800/30">
+						<span className="font-medium text-[10px] text-text-soft-400 uppercase tracking-wider">
 							Current State
 						</span>
-						<span className="font-medium text-text-soft-400 text-xs uppercase tracking-wider">
+						<span className="font-medium text-[10px] text-text-soft-400 uppercase tracking-wider">
 							With Scenario
 						</span>
 					</div>
@@ -363,7 +370,7 @@ export function ScenarioCard({
 					</div>
 
 					{/* CategoryBar comparison */}
-					<div className="grid grid-cols-2 gap-4 border-t px-3 py-2.5">
+					<div className="grid grid-cols-2 gap-4 border-t border-stroke-soft-200/60 px-3 py-2.5 dark:border-neutral-800">
 						<div>
 							<CategoryBar
 								values={currentBarValues}

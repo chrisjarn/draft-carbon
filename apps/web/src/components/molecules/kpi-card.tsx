@@ -1,18 +1,15 @@
 /**
- * KpiCard — Tremor-style stat card.
+ * KpiCard — Linear-style stat card.
  *
- * Renders a bordered card with:
- *   - Title (dt, text-sm font-medium)
- *   - Value (dd, text-3xl font-semibold) — or loading skeleton
+ * Renders a clean bordered card with:
+ *   - Title (dt, text-xs font-medium uppercase)
+ *   - Value (dd, text-xl font-semibold) — or loading skeleton
  *   - Optional `children` below the value (CategoryBar, ProgressCircle, legend, etc.)
  *
  * Usage:
  *   <KpiCard title="Current Tickets" value="247">
  *     <CategoryBar values={[82, 13, 5]} ... />
  *   </KpiCard>
- *
- * Follows the Tremor Support Dashboard pattern:
- *   dl > Card > dt (title) + dd (value) + children
  */
 
 import type { ReactNode } from "react";
@@ -27,6 +24,8 @@ interface KpiCardProps {
 	loading?: boolean;
 	children?: ReactNode;
 	className?: string;
+	/** Icon component to display */
+	icon?: React.ComponentType<{ className?: string }>;
 }
 
 export function KpiCard({
@@ -36,31 +35,46 @@ export function KpiCard({
 	loading = false,
 	children,
 	className,
+	icon: Icon,
 }: KpiCardProps) {
 	return (
 		<div
 			className={cn(
-				"relative w-full overflow-hidden rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-4 text-left transition-colors hover:bg-bg-weak-50",
+				"group relative w-full overflow-hidden rounded-xl border border-stroke-soft-200/80 bg-bg-white-0 p-4 text-left transition-all duration-150",
+				"hover:border-stroke-soft-200 hover:shadow-[0_1px_3px_rgba(0,0,0,0.04)]",
+				"dark:border-neutral-800 dark:bg-neutral-900/50 dark:hover:border-neutral-700",
 				className,
 			)}
 		>
-			<dt className="font-medium text-text-soft-400 text-xs uppercase tracking-widest">
-				{title}
-			</dt>
+			{/* Header */}
+			<div className="flex items-center justify-between gap-2">
+				<dt className="font-medium text-[11px] text-text-soft-400 uppercase tracking-wider">
+					{title}
+				</dt>
+				{Icon && (
+					<span className="text-text-soft-400/60">
+						<Icon className="size-4" />
+					</span>
+				)}
+			</div>
+
+			{/* Value */}
 			{loading ? (
-				<Skeleton className="mt-3 h-8 w-24" />
+				<Skeleton className="mt-2 h-7 w-24" />
 			) : (
 				<dd
 					className={cn(
-						"mt-1.5 font-semibold text-text-strong-950 text-xl tabular-nums tracking-tight",
-						valueClass,
+						"mt-2 font-semibold text-xl tabular-nums tracking-tight",
+						valueClass ?? "text-text-strong-950",
 					)}
 				>
 					{value}
 				</dd>
 			)}
+
+			{/* Children content */}
 			{children && (
-				<div className="mt-4 border-stroke-soft-200/60 border-t pt-3">
+				<div className="mt-3 border-stroke-soft-200/60 border-t pt-3 dark:border-neutral-800">
 					{children}
 				</div>
 			)}

@@ -39,7 +39,7 @@ function getIndicatorCategory(value: number): IndicatorCategory {
 
 const INDICATOR_ACTIVE: Record<IndicatorCategory, string> = {
 	red: "bg-red-500",
-	orange: "bg-orange-500",
+	orange: "bg-amber-500",
 	emerald: "bg-emerald-500",
 };
 
@@ -60,8 +60,8 @@ function StatIndicator({ value }: { value: number }) {
 				<div
 					key={i}
 					className={cn(
-						"h-3.5 w-1 rounded-sm",
-						i < activeBars ? activeClass : "bg-stroke-soft-200",
+						"h-3 w-1 rounded-sm transition-colors",
+						i < activeBars ? activeClass : "bg-neutral-200 dark:bg-neutral-700",
 					)}
 				/>
 			))}
@@ -70,8 +70,8 @@ function StatIndicator({ value }: { value: number }) {
 }
 
 /**
- * Planner-style horizontal stat strip.
- * Always shows exactly 3 stats on the left.
+ * Linear-style horizontal stat strip.
+ * Always shows exactly 3-4 stats on the left.
  * Pass tab controls as `children` — they render flush-right.
  *
  * Each stat optionally accepts:
@@ -88,18 +88,19 @@ export function PageStatsBar({
 	return (
 		<div
 			className={cn(
-				"flex items-center justify-between gap-6 border-stroke-soft-200 border-b bg-bg-white-0 px-6 py-2.5",
+				"flex items-center justify-between gap-6 border-stroke-soft-200/60 border-b bg-bg-white-0 px-6 py-2.5",
+				"dark:border-neutral-800 dark:bg-neutral-900/50",
 				className,
 			)}
 		>
 			{/* Stats — left side */}
-			<div className="flex items-center divide-x">
+			<div className="flex items-center divide-x divide-stroke-soft-200/60 dark:divide-neutral-800">
 				{stats.map((stat, i) => (
 					<div
 						key={`${stat.label}-${i}`}
-						className="flex flex-col gap-0.5 pr-10 pl-10 first:pl-0"
+						className="flex flex-col gap-0.5 pr-8 pl-8 first:pl-0"
 					>
-						<span className="font-medium text-[10px] text-text-soft-400 uppercase tracking-widest">
+						<span className="font-medium text-[10px] text-text-soft-400 uppercase tracking-wider">
 							{stat.label}
 						</span>
 						{stat.loading ? (
@@ -111,8 +112,8 @@ export function PageStatsBar({
 								)}
 								<span
 									className={cn(
-										"font-semibold text-base tabular-nums tracking-tight",
-										stat.valueClass,
+										"font-semibold text-sm tabular-nums tracking-tight",
+										stat.valueClass ?? "text-text-strong-950",
 									)}
 								>
 									{stat.value}
