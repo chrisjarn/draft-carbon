@@ -1,6 +1,7 @@
 import {
 	ArrowReloadHorizontalIcon,
 	BarChartIcon,
+	FilterHorizontalIcon,
 	WifiOff01Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -67,6 +68,32 @@ export function DashboardEmptyState({ onRetry }: { onRetry: () => void }) {
 					className="mr-2 size-4"
 				/>
 				Try Again
+			</Button>
+		</Empty>
+	);
+}
+
+/* ─── Filtered Empty State ─────────────────────────────────────────────── */
+
+export function DashboardFilteredEmptyState({
+	onClear,
+}: {
+	onClear: () => void;
+}) {
+	return (
+		<Empty className="min-h-[40vh]">
+			<EmptyHeader>
+				<EmptyMedia variant="icon">
+					<HugeiconsIcon icon={FilterHorizontalIcon} />
+				</EmptyMedia>
+				<EmptyTitle>No results</EmptyTitle>
+				<EmptyDescription>
+					No carbonites match the current filter. Try a different combination or
+					clear the filter to see all data.
+				</EmptyDescription>
+			</EmptyHeader>
+			<Button variant="outline" onClick={onClear}>
+				Clear filter
 			</Button>
 		</Empty>
 	);

@@ -389,7 +389,7 @@ export function getStaffTableColumns(
 				const attainmentPct = (actual / target) * 100;
 				const badgeCls =
 					attainmentPct >= 100
-						? "border-green-500/40 bg-green-500/10 text-green-400"
+						? "border-emerald-500/40 bg-emerald-500/10 text-emerald-400"
 						: attainmentPct >= 80
 							? "border-stroke-soft-200 bg-bg-weak-50 text-text-soft-400"
 							: "border-red-500/40 bg-red-500/10 text-red-400";

@@ -38,7 +38,7 @@ export function StatCard({
 					</span>
 					{trend && (
 						<span
-							className={`inline-flex items-center gap-0.5 text-xs ${trend.positive ? "text-green-500" : "text-red-500"}`}
+							className={`inline-flex items-center gap-0.5 text-xs ${trend.positive ? "text-emerald-500" : "text-red-500"}`}
 						>
 							<HugeiconsIcon
 								icon={trend.positive ? ArrowUp02Icon : ArrowDown02Icon}

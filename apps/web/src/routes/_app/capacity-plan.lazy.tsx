@@ -424,7 +424,7 @@ function CapacityPlanPage() {
 					value={tab}
 					onValueChange={(v) => setTab(v as TabValue)}
 				>
-					<TabsList variant="underline">
+					<TabsList >
 						<TabsTrigger value="firm">Firm</TabsTrigger>
 						<TabsTrigger value="staff">Staff</TabsTrigger>
 						<TabsTrigger value="pod-budgets">Pod Budgets</TabsTrigger>

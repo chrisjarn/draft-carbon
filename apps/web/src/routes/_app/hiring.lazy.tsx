@@ -28,6 +28,7 @@ import {
 	useHiringStats,
 } from "@/components/features/hiring";
 import { ConfirmDialog } from "@/components/molecules/confirm-dialog";
+import { LoadingState } from "@/components/molecules/loading-state";
 import { DataTable } from "@/components/organisms/data-table/data-table";
 import { PageHeader } from "@/components/organisms/page-header";
 import { PageStatsBar } from "@/components/organisms/page-stats-bar";
@@ -227,7 +228,7 @@ function HiringPage() {
 						setSelected(null);
 					}}
 				>
-					<TabsList variant="pill">
+					<TabsList >
 						<TabsTrigger value="open" className="gap-1.5">
 							Open
 							{counts.open > 0 && (
@@ -292,9 +293,7 @@ function HiringPage() {
 
 			<PageBody>
 				{query.isPending ? (
-					<div className="flex h-40 items-center justify-center text-sm text-text-soft-400">
-						Loading\u2026
-					</div>
+					<LoadingState />
 				) : rows.length === 0 ? (
 					<Empty className="min-h-[10rem]">
 						<EmptyHeader>

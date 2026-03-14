@@ -29,6 +29,7 @@ import {
 	SalaryMarketChart,
 	TotalsFooter,
 } from "@/components/features/fy-planning";
+import { LoadingState } from "@/components/molecules/loading-state";
 import { SearchInput } from "@/components/molecules/search-input";
 import { DataTable } from "@/components/organisms/data-table/data-table";
 import { PageHeader } from "@/components/organisms/page-header";
@@ -322,9 +323,7 @@ function FyPlanningPage() {
 					</div>
 				)}
 				{query.isPending ? (
-					<div className="flex h-40 items-center justify-center text-sm text-text-soft-400">
-						Loading...
-					</div>
+					<LoadingState />
 				) : rawRows.length === 0 ? (
 					<Empty className="min-h-[10rem]">
 						<EmptyHeader>

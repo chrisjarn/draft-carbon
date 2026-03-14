@@ -67,7 +67,7 @@ function getStatus(
 			textColor: "text-emerald-500",
 			dotClass: "bg-emerald-500",
 			label: "In Range",
-			badgeClass: "border-green-500/40 bg-green-500/10 text-green-400",
+			badgeClass: "border-emerald-500/40 bg-emerald-500/10 text-emerald-400",
 		};
 	return {
 		textColor: "text-blue-400",

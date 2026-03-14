@@ -38,7 +38,7 @@ export function BudgetSummary({
 							variance < 0
 								? "text-red-400"
 								: variance > 0
-									? "text-green-400"
+									? "text-emerald-400"
 									: "text-text-soft-400"
 						}`}
 					>
@@ -61,7 +61,7 @@ export function BudgetSummary({
 								? "text-red-400"
 								: utilisation >= 90
 									? "text-amber-400"
-									: "text-green-400"
+									: "text-emerald-400"
 						}`}
 					>
 						{totalBudget > 0 ? `${utilisation}%` : "—"}

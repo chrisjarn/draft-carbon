@@ -26,7 +26,7 @@ function AppLayout() {
 
 	return (
 		<TooltipProvider>
-			<div className="relative flex h-dvh overflow-hidden lg:h-screen">
+			<div className="relative flex h-dvh overflow-hidden">
 				<AppSidebar
 					isCollapsed={isCollapsed}
 					toggle={toggle}

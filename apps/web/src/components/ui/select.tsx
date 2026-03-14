@@ -126,7 +126,7 @@ function SelectPopup({
 						className="relative size-4.5 sm:size-4"
 					/>
 				</SelectPrimitive.ScrollUpButton>
-				<SelectPrimitive.Viewport className={cn("p-1", className)}>
+				<SelectPrimitive.Viewport className="p-1">
 					{children}
 				</SelectPrimitive.Viewport>
 				<SelectPrimitive.ScrollDownButton className="flex h-6 w-full cursor-default items-center justify-center">
@@ -151,7 +151,7 @@ function SelectItem({
 	return (
 		<SelectPrimitive.Item
 			className={cn(
-				"grid min-h-10 cursor-default grid-cols-[1rem_1fr] items-center gap-2 overflow-hidden rounded-sm py-1 ps-2 pe-4 text-base outline-none data-[disabled]:pointer-events-none data-[highlighted]:bg-bg-weak-50 data-[highlighted]:text-text-sub-600 data-[disabled]:opacity-64 sm:min-h-7 sm:text-sm [&_svg:not([class*='size-'])]:size-4.5 sm:[&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+				"grid min-h-10 w-full cursor-default grid-cols-[1rem_1fr] items-center gap-2 overflow-hidden rounded-sm py-1 ps-2 pe-4 text-base outline-none data-[disabled]:pointer-events-none data-[highlighted]:bg-bg-weak-50 data-[highlighted]:text-text-sub-600 data-[disabled]:opacity-64 sm:min-h-7 sm:text-sm [&_svg:not([class*='size-'])]:size-4.5 sm:[&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
 				className,
 			)}
 			data-slot="select-item"

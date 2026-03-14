@@ -38,7 +38,7 @@ export function PageHeader({
 					</div>
 				)}
 				<div className="flex flex-col gap-0.5">
-					<h1 className="font-medium text-lg/snug text-text-strong-950 tracking-tight">
+					<h1 className="text-balance font-medium text-lg/snug text-text-strong-950 tracking-tight">
 						{titleOverride ?? config.title}
 					</h1>
 					<p className="text-sm">{config.description}</p>

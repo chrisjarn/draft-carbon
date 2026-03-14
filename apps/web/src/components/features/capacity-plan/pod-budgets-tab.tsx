@@ -10,6 +10,7 @@ import {
 } from "@tanstack/react-table";
 import { useCallback, useMemo, useState } from "react";
 
+import { LoadingState } from "@/components/molecules/loading-state";
 import { DataTable } from "@/components/organisms/data-table/data-table";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,7 +25,6 @@ import { canWrite, getUserRole } from "@/lib/rbac";
 import { trpc } from "@/utils/trpc";
 
 import { AddPodDialog } from "./add-pod-dialog";
-import { BudgetSummary } from "./budget-summary";
 import {
 	buildPodGroupCells,
 	makePodBudgetColumns,
@@ -305,11 +305,7 @@ export function PodBudgetsTab({ fy: _fy }: { fy?: string }) {
 	// ── Render ────────────────────────────────────────────────────────────────
 
 	if (isLoading) {
-		return (
-			<div className="flex h-40 items-center justify-center text-sm text-text-soft-400">
-				Loading...
-			</div>
-		);
+		return <LoadingState />;
 	}
 
 	if (groups.length === 0) {
@@ -345,11 +341,7 @@ export function PodBudgetsTab({ fy: _fy }: { fy?: string }) {
 
 	return (
 		<div className="flex h-full flex-col">
-			<div className="p-6 pb-2">
-				<BudgetSummary totalBudget={totalBudget} totalActual={totalSalary} />
-			</div>
-
-			<div className="flex-1 overflow-auto px-6 pb-6">
+			<div className="flex-1 overflow-auto bg-bg-weak-50">
 				<DataTable
 					table={table}
 					fixedLayout

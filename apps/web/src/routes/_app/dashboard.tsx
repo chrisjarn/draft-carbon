@@ -8,6 +8,7 @@ import {
 	BudgetPayrollChart,
 	DashboardEmptyState,
 	DashboardErrorState,
+	DashboardFilteredEmptyState,
 	EntityCardGrid,
 	HealthBanner,
 	KpiSection,
@@ -189,11 +190,20 @@ function DashboardPage() {
 	}, [filteredEntities, filteredStats]);
 
 	const isError = stats.isError || health.isError;
+	// Only show the empty-DB state when there are truly no carbonites and no filter
+	// is masking results. If a filter is active and returns 0, show the filtered-empty
+	// UI instead so we don't falsely tell the user "the database is empty".
 	const isEmpty =
 		!stats.isLoading &&
 		!stats.isError &&
 		(filteredStats?.totalCarbonites ?? 0) === 0 &&
-		!stateFilter;
+		!stateFilter &&
+		!slFilter;
+	const isFilteredEmpty =
+		!stats.isLoading &&
+		!stats.isError &&
+		(filteredStats?.totalCarbonites ?? 0) === 0 &&
+		(!!stateFilter || !!slFilter);
 	const handleRetry = () => queryClient.invalidateQueries();
 
 	const greetingTitle = firstName ? `Hi, ${firstName}` : "Hi";
@@ -221,7 +231,7 @@ function DashboardPage() {
 					value={stateFilter ?? "all"}
 					onValueChange={(val) => setStateFilter(val === "all" ? null : val)}
 				>
-					<TabsList variant="pill">
+					<TabsList >
 						<TabsTrigger value="all">All States</TabsTrigger>
 						{STATES.map((s) => (
 							<TabsTrigger key={s.id} value={s.id}>
@@ -237,6 +247,13 @@ function DashboardPage() {
 					<DashboardErrorState onRetry={handleRetry} />
 				) : isEmpty ? (
 					<DashboardEmptyState onRetry={handleRetry} />
+				) : isFilteredEmpty ? (
+					<DashboardFilteredEmptyState
+						onClear={() => {
+							setStateFilter(null);
+							setSlFilter(null);
+						}}
+					/>
 				) : (
 					<div className="flex flex-col gap-5">
 						<div className="overflow-hidden rounded-20 bg-zinc-900">
@@ -306,10 +323,13 @@ function DashboardPage() {
 								</div>
 							)}
 						</div>
-						<HealthBanner
-							data={filteredRevenue}
-							loading={revenueByEntity.isLoading}
-						/>
+						{/* HealthBanner groups by state — not meaningful when a SL filter is active */}
+				{!slFilter && (
+					<HealthBanner
+						data={filteredRevenue}
+						loading={revenueByEntity.isLoading}
+					/>
+				)}
 						<KpiSection
 							stats={filteredStats}
 							entities={filteredEntities}

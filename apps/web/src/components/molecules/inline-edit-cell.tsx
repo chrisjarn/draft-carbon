@@ -70,7 +70,7 @@ export function InlineEditCell({
 						onSave(val);
 						setEditing(false);
 					}}
-					className="rounded-sm text-green-400 hover:text-green-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stroke-strong-950"
+					className="rounded-sm text-emerald-400 hover:text-emerald-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stroke-strong-950"
 				>
 					<HugeiconsIcon
 						icon={Tick01Icon}

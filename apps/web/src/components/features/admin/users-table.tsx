@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { ConfirmDialog } from "@/components/molecules/confirm-dialog";
+import { LoadingState } from "@/components/molecules/loading-state";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -104,9 +105,7 @@ export function UsersTable({ currentUserId }: { currentUserId?: string }) {
 	return (
 		<>
 			{query.isPending ? (
-				<div className="flex h-40 items-center justify-center text-sm text-text-soft-400">
-					Loading…
-				</div>
+				<LoadingState />
 			) : (
 				<Table>
 					<TableHeader>
