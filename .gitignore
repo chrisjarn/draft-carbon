@@ -52,6 +52,11 @@ coverage
 tmp
 temp
 
+# AI tooling (internal developer scaffolding — not for client)
+.agents/
+.claude/
+openspec/
+
 # Legacy
 /db/
 *.db

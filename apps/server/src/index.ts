@@ -8,6 +8,7 @@ import { Hono } from "hono";
 import { serveStatic } from "hono/bun";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
+import { chatRoute } from "./routes/chat";
 
 const app = new Hono();
 
@@ -40,6 +41,8 @@ app.use(
 		},
 	}),
 );
+
+app.route("/", chatRoute);
 
 // Serve frontend static files
 const distPath = path.resolve(import.meta.dir, "../../web/dist");

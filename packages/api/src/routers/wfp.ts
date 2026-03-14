@@ -1,6 +1,7 @@
 import { db } from "@carbon-wfp/db";
 import { carbonites } from "@carbon-wfp/db/schema/carbonites";
 import { entities } from "@carbon-wfp/db/schema/entities";
+import type { STATE_VALUES } from "@carbon-wfp/db/schema/enums";
 import { hiringNeeds } from "@carbon-wfp/db/schema/hiring-needs";
 import {
 	wfpEntitySettings,
@@ -9,11 +10,18 @@ import {
 } from "@carbon-wfp/db/schema/wfp";
 import { attritionRisks } from "@carbon-wfp/db/schema/wfp-extended";
 import { TRPCError } from "@trpc/server";
-import { and, asc, avg, count, eq, ne, sql, sum } from "drizzle-orm";
+import { and, asc, avg, count, eq, inArray, ne, sql, sum } from "drizzle-orm";
 import z from "zod";
 
 import { protectedProcedure, router } from "../index";
 import {
+	type BillingTargetInput,
+	calcEntityBillingCapacity,
+	calcRevenueGap,
+} from "../lib/calculations";
+import {
+	assertEntityScope,
+	assertResourceScope,
 	assertWriter,
 	carboniteRoleWhere,
 	entityRoleWhere,
@@ -26,6 +34,14 @@ export const wfpRouter = router({
 	firmKPIs: protectedProcedure.query(async ({ ctx }) => {
 		const rf = getRoleFilter(ctx.session.user);
 		const cbWhere = carboniteRoleWhere(rf);
+		// Scope attrition risk count to visible carbonites
+		const visibleStaffIds = cbWhere
+			? db
+					.select({ id: carbonites.id })
+					.from(carbonites)
+					.where(and(eq(carbonites.isActive, true), cbWhere))
+			: null;
+
 		const [[row], [riskRow]] = await Promise.all([
 			db
 				.select({
@@ -35,7 +51,12 @@ export const wfpRouter = router({
 				})
 				.from(carbonites)
 				.where(and(eq(carbonites.isActive, true), cbWhere)),
-			db.select({ value: count() }).from(attritionRisks),
+			visibleStaffIds
+				? db
+						.select({ value: count() })
+						.from(attritionRisks)
+						.where(inArray(attritionRisks.carboniteId, visibleStaffIds))
+				: db.select({ value: count() }).from(attritionRisks),
 		]);
 		return {
 			headcount: row?.headcount ?? 0,
@@ -116,7 +137,8 @@ export const wfpRouter = router({
 			const fy = settings?.fy ?? "FY25-26";
 			const revenue = revenueRows.find((r) => r.fy === fy) ?? null;
 
-			// All active carbonites in this entity
+			// All active carbonites in this entity (role-scoped)
+			const cbWhere = carboniteRoleWhere(rf);
 			const staff = await db
 				.select()
 				.from(carbonites)
@@ -124,11 +146,12 @@ export const wfpRouter = router({
 					and(
 						eq(carbonites.entity, input.entityId),
 						eq(carbonites.isActive, true),
+						cbWhere,
 					),
 				)
 				.orderBy(asc(carbonites.pod), asc(carbonites.name));
 
-			// Staff meta
+			// Staff meta — only fetch rows for staff in this entity
 			const staffIds = staff.map((s) => s.id);
 			let metaMap = new Map<
 				string,
@@ -144,11 +167,11 @@ export const wfpRouter = router({
 				}
 			>();
 			if (staffIds.length > 0) {
-				const meta = await db.select().from(wfpStaffMeta);
-				const idSet = new Set(staffIds);
-				metaMap = new Map(
-					meta.filter((m) => idSet.has(m.cbId)).map((m) => [m.cbId, m]),
-				);
+				const meta = await db
+					.select()
+					.from(wfpStaffMeta)
+					.where(inArray(wfpStaffMeta.cbId, staffIds));
+				metaMap = new Map(meta.map((m) => [m.cbId, m]));
 			}
 
 			// Pods grouping
@@ -180,18 +203,49 @@ export const wfpRouter = router({
 				.from(hiringNeeds)
 				.where(
 					and(
-						eq(hiringNeeds.state, entity.state ?? ""),
+						eq(
+							hiringNeeds.state,
+							(entity.state ?? "") as (typeof STATE_VALUES)[number],
+						),
 						ne(hiringNeeds.status, "closed"),
 					),
 				);
 
 			const totalPayroll = staff.reduce((acc, s) => acc + (s.salary ?? 0), 0);
 
+			// Compute billing capacity and revenue gap
+			const entityMultiplier = settings?.billingMultiplier ?? null;
+			const billingStaff: BillingTargetInput[] = staff.map((s) => {
+				const meta = metaMap.get(s.id);
+				return {
+					salary: s.salary ?? 0,
+					hoursPerWeek: s.hours,
+					type: s.type,
+					stateId: s.state,
+					entityId: s.entity,
+					roleTag: meta?.roleTag ?? null,
+					manualBillingTarget: meta?.billingTarget ?? null,
+				};
+			});
+			const billingCapacity = calcEntityBillingCapacity(
+				billingStaff,
+				entityMultiplier,
+			);
+			const revenueTarget = Number(revenue?.target) || 0;
+			const revenueActual = Number(revenue?.actual) || 0;
+			const revenueGap = calcRevenueGap(
+				revenueTarget,
+				revenueActual,
+				billingCapacity,
+			);
+
 			return {
 				entity,
 				settings: settings ?? null,
 				revenue,
 				totalPayroll,
+				billingCapacity,
+				revenueGap,
 				pods,
 				staff: staff.map((s) => ({
 					...s,
@@ -220,7 +274,14 @@ export const wfpRouter = router({
 					asc(carbonites.office),
 					asc(carbonites.name),
 				);
-			const meta = await db.select().from(wfpStaffMeta);
+			const staffIds = staff.map((s) => s.id);
+			const meta =
+				staffIds.length > 0
+					? await db
+							.select()
+							.from(wfpStaffMeta)
+							.where(inArray(wfpStaffMeta.cbId, staffIds))
+					: [];
 			const metaMap = new Map(meta.map((m) => [m.cbId, m]));
 			return staff.map((s) => ({ ...s, meta: metaMap.get(s.id) ?? null }));
 		}),
@@ -240,6 +301,24 @@ export const wfpRouter = router({
 		)
 		.mutation(async ({ ctx, input }) => {
 			assertWriter(ctx.session.user);
+			// Verify carbonite exists and is in scope
+			const [cb] = await db
+				.select({
+					id: carbonites.id,
+					state: carbonites.state,
+					sl: carbonites.sl,
+				})
+				.from(carbonites)
+				.where(eq(carbonites.id, input.cbId));
+			if (!cb)
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message: `Carbonite not found: ${input.cbId}`,
+				});
+			assertResourceScope(ctx.session.user, {
+				state: cb.state,
+				sl: cb.sl,
+			});
 			const existing = await db
 				.select()
 				.from(wfpStaffMeta)
@@ -252,28 +331,28 @@ export const wfpRouter = router({
 					.returning();
 				return row;
 			}
-			// Verify carbonite exists before first insert
-			const [cb] = await db
-				.select({ id: carbonites.id })
-				.from(carbonites)
-				.where(eq(carbonites.id, input.cbId));
-			if (!cb)
-				throw new TRPCError({
-					code: "BAD_REQUEST",
-					message: `Carbonite not found: ${input.cbId}`,
-				});
 			const [row] = await db.insert(wfpStaffMeta).values(input).returning();
 			return row;
 		}),
 
 	// ── Entity settings ─────────────────────────────────────────────────────────
 
-	getEntitySettings: protectedProcedure.query(async () => {
+	getEntitySettings: protectedProcedure.query(async ({ ctx }) => {
+		const rf = getRoleFilter(ctx.session.user);
+		const entWhere = entityRoleWhere(rf);
 		const ents = await db
 			.select()
 			.from(entities)
+			.where(entWhere)
 			.orderBy(asc(entities.state), asc(entities.biz));
-		const settings = await db.select().from(wfpEntitySettings);
+		const entIds = ents.map((e) => e.id);
+		const settings =
+			entIds.length > 0
+				? await db
+						.select()
+						.from(wfpEntitySettings)
+						.where(inArray(wfpEntitySettings.entId, entIds))
+				: [];
 		const settingsMap = new Map(settings.map((s) => [s.entId, s]));
 		return ents.map((e) => ({ ...e, settings: settingsMap.get(e.id) ?? null }));
 	}),
@@ -288,6 +367,20 @@ export const wfpRouter = router({
 		)
 		.mutation(async ({ ctx, input }) => {
 			assertWriter(ctx.session.user);
+			// Verify entity exists and is in scope
+			const [ent] = await db
+				.select()
+				.from(entities)
+				.where(eq(entities.id, input.entId));
+			if (!ent)
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message: `Entity not found: ${input.entId}`,
+				});
+			assertEntityScope(ctx.session.user, {
+				state: ent.state,
+				sl: ent.sl,
+			});
 			const existing = await db
 				.select()
 				.from(wfpEntitySettings)
@@ -300,16 +393,6 @@ export const wfpRouter = router({
 					.returning();
 				return row;
 			}
-			// Verify entity exists before first insert
-			const [ent] = await db
-				.select({ id: entities.id })
-				.from(entities)
-				.where(eq(entities.id, input.entId));
-			if (!ent)
-				throw new TRPCError({
-					code: "BAD_REQUEST",
-					message: `Entity not found: ${input.entId}`,
-				});
 			const [row] = await db
 				.insert(wfpEntitySettings)
 				.values(input)
@@ -321,15 +404,27 @@ export const wfpRouter = router({
 
 	getRevenue: protectedProcedure
 		.input(z.object({ fy: z.string() }))
-		.query(async ({ input }) => {
+		.query(async ({ ctx, input }) => {
+			const rf = getRoleFilter(ctx.session.user);
+			const entWhere = entityRoleWhere(rf);
 			const ents = await db
 				.select()
 				.from(entities)
+				.where(entWhere)
 				.orderBy(asc(entities.state), asc(entities.biz));
-			const revenue = await db
-				.select()
-				.from(wfpRevenue)
-				.where(eq(wfpRevenue.fy, input.fy));
+			const entIds = ents.map((e) => e.id);
+			const revenue =
+				entIds.length > 0
+					? await db
+							.select()
+							.from(wfpRevenue)
+							.where(
+								and(
+									eq(wfpRevenue.fy, input.fy),
+									inArray(wfpRevenue.entId, entIds),
+								),
+							)
+					: [];
 			const revenueMap = new Map(revenue.map((r) => [r.entId, r]));
 			return ents.map((e) => ({ ...e, revenue: revenueMap.get(e.id) ?? null }));
 		}),
@@ -345,6 +440,20 @@ export const wfpRouter = router({
 		)
 		.mutation(async ({ ctx, input }) => {
 			assertWriter(ctx.session.user);
+			// Verify entity exists and is in scope
+			const [ent] = await db
+				.select()
+				.from(entities)
+				.where(eq(entities.id, input.entId));
+			if (!ent)
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message: `Entity not found: ${input.entId}`,
+				});
+			assertEntityScope(ctx.session.user, {
+				state: ent.state,
+				sl: ent.sl,
+			});
 			const existing = await db
 				.select()
 				.from(wfpRevenue)
@@ -361,16 +470,6 @@ export const wfpRouter = router({
 					.returning();
 				return row;
 			}
-			// Verify entity exists before first insert
-			const [ent] = await db
-				.select({ id: entities.id })
-				.from(entities)
-				.where(eq(entities.id, input.entId));
-			if (!ent)
-				throw new TRPCError({
-					code: "BAD_REQUEST",
-					message: `Entity not found: ${input.entId}`,
-				});
 			const [row] = await db.insert(wfpRevenue).values(input).returning();
 			return row;
 		}),

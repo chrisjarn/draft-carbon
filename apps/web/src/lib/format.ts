@@ -1,3 +1,42 @@
+/* ── Intl-based formatters (Planner-style) ─────────────────────────────── */
+
+/** Full Intl currency string, e.g. "$1,234.56" */
+export function fmtCurrency(
+	n: number,
+	opts?: { maxFractionDigits?: number; currency?: string },
+): string {
+	return new Intl.NumberFormat("en-AU", {
+		style: "currency",
+		currency: opts?.currency ?? "AUD",
+		maximumFractionDigits: opts?.maxFractionDigits ?? 2,
+	}).format(n);
+}
+
+/** Locale-formatted decimal, e.g. "1,234" */
+export function fmtUnit(n: number): string {
+	return new Intl.NumberFormat("en-AU", { style: "decimal" }).format(n);
+}
+
+/** Percentage from a 0–1 ratio, e.g. "85.1%" */
+export function fmtPercent(n: number, decimals = 1): string {
+	return new Intl.NumberFormat("en-AU", {
+		style: "percent",
+		minimumFractionDigits: decimals,
+		maximumFractionDigits: decimals,
+	}).format(n);
+}
+
+/** Millions shorthand, e.g. "1.5M" */
+export function fmtMillion(n: number, decimals = 1): string {
+	return `${new Intl.NumberFormat("en-AU", {
+		style: "decimal",
+		minimumFractionDigits: decimals,
+		maximumFractionDigits: decimals,
+	}).format(n)}M`;
+}
+
+/* ── Short formatters (existing) ───────────────────────────────────────── */
+
 export function fmtDollar(v: string | number | null | undefined): string {
 	const n = typeof v === "number" ? v : Number(v);
 	if (v == null || v === "" || Number.isNaN(n) || n === 0) return "—";

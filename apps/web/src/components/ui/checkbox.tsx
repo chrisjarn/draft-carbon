@@ -1,28 +1,68 @@
 "use client";
 
-import { Checkbox as CheckboxPrimitive } from "@base-ui/react/checkbox";
-import { Tick01Icon } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
+import * as CheckboxPrimitive from "@radix-ui/react-checkbox";
+import * as React from "react";
+
 import { cn } from "@/lib/utils";
 
-function Checkbox({ className, ...props }: CheckboxPrimitive.Root.Props) {
+const Checkbox = React.forwardRef<
+	React.ComponentRef<typeof CheckboxPrimitive.Root>,
+	React.ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root> & {
+		indeterminate?: boolean;
+	}
+>(({ className, checked, indeterminate, ...props }, ref) => {
+	// Map Base UI's `indeterminate` prop to Radix's `checked="indeterminate"`
+	const resolvedChecked = indeterminate ? "indeterminate" : checked;
+
 	return (
 		<CheckboxPrimitive.Root
-			data-slot="checkbox"
+			ref={ref}
 			className={cn(
-				"peer relative flex size-4 shrink-0 items-center justify-center rounded-none border border-input outline-none transition-colors after:absolute after:-inset-x-3 after:-inset-y-2 focus-visible:border-ring focus-visible:ring-1 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 group-has-disabled/field:opacity-50 aria-invalid:border-destructive aria-invalid:ring-1 aria-invalid:ring-destructive/20 aria-invalid:aria-checked:border-primary data-checked:border-primary data-checked:bg-primary data-checked:text-primary-foreground dark:bg-input/30 dark:data-checked:bg-primary dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40",
+				"group relative inline-flex size-4.5 shrink-0 items-center justify-center rounded-[.25rem] border border-stroke-soft-200 bg-bg-white-0 shadow-xs/5 outline-none transition-shadow focus-visible:ring-2 focus-visible:ring-green-600/20 focus-visible:ring-offset-1 aria-invalid:border-destructive/36 data-[disabled]:pointer-events-none data-[state=checked]:border-green-600 data-[state=indeterminate]:border-green-600 data-[state=checked]:bg-green-600 data-[state=indeterminate]:bg-green-600 data-[disabled]:opacity-64 sm:size-4",
 				className,
 			)}
+			data-slot="checkbox"
+			checked={resolvedChecked}
 			{...props}
 		>
 			<CheckboxPrimitive.Indicator
+				className="flex items-center justify-center text-text-white-0"
 				data-slot="checkbox-indicator"
-				className="grid place-content-center text-current transition-none [&>svg]:size-3.5"
 			>
-				<HugeiconsIcon icon={Tick01Icon} />
+				{/* Dash icon — shown when indeterminate */}
+				<svg
+					className="hidden size-3.5 group-data-[state=indeterminate]:block sm:size-3"
+					fill="none"
+					height="24"
+					stroke="currentColor"
+					strokeLinecap="round"
+					strokeLinejoin="round"
+					strokeWidth="3"
+					viewBox="0 0 24 24"
+					width="24"
+					xmlns="http://www.w3.org/2000/svg"
+				>
+					<path d="M5.252 12h13.496" />
+				</svg>
+				{/* Check icon — shown when checked */}
+				<svg
+					className="block size-3.5 group-data-[state=indeterminate]:hidden sm:size-3"
+					fill="none"
+					height="24"
+					stroke="currentColor"
+					strokeLinecap="round"
+					strokeLinejoin="round"
+					strokeWidth="3"
+					viewBox="0 0 24 24"
+					width="24"
+					xmlns="http://www.w3.org/2000/svg"
+				>
+					<path d="M5.252 12.7 10.2 18.63 18.748 5.37" />
+				</svg>
 			</CheckboxPrimitive.Indicator>
 		</CheckboxPrimitive.Root>
 	);
-}
+});
+Checkbox.displayName = "Checkbox";
 
-export { Checkbox };
+export { Checkbox, CheckboxPrimitive };

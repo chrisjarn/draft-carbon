@@ -1,6 +1,6 @@
 import { db } from "@carbon-wfp/db";
 import { priorYearData } from "@carbon-wfp/db/schema/wfp-extended";
-import { and, asc, eq } from "drizzle-orm";
+import { asc, eq, sql } from "drizzle-orm";
 import z from "zod";
 
 import { protectedProcedure, router } from "../index";
@@ -39,55 +39,33 @@ export const priorYearRouter = router({
 		.mutation(async ({ ctx, input }) => {
 			assertWriter(ctx.session.user);
 
-			const results: (typeof priorYearData.$inferSelect)[] = [];
+			if (input.rows.length === 0) return [];
 
-			for (const row of input.rows) {
-				const existing = await db
-					.select()
-					.from(priorYearData)
-					.where(
-						and(
-							eq(priorYearData.state, row.state),
-							eq(priorYearData.office, row.office),
-							eq(priorYearData.podName, row.podName),
-							eq(priorYearData.year, input.year),
-						),
-					);
+			const values = input.rows.map((row) => ({
+				state: row.state,
+				office: row.office,
+				podName: row.podName,
+				year: input.year,
+				budget: row.budget ?? 0,
+				headcount: row.headcount ?? 0,
+			}));
 
-				if (existing.length > 0) {
-					const current = existing[0];
-					const [updated] = await db
-						.update(priorYearData)
-						.set({
-							budget: row.budget ?? current?.budget ?? 0,
-							headcount: row.headcount ?? current?.headcount ?? 0,
-						})
-						.where(
-							and(
-								eq(priorYearData.state, row.state),
-								eq(priorYearData.office, row.office),
-								eq(priorYearData.podName, row.podName),
-								eq(priorYearData.year, input.year),
-							),
-						)
-						.returning();
-					if (updated) results.push(updated);
-				} else {
-					const [inserted] = await db
-						.insert(priorYearData)
-						.values({
-							state: row.state,
-							office: row.office,
-							podName: row.podName,
-							year: input.year,
-							budget: row.budget ?? 0,
-							headcount: row.headcount ?? 0,
-						})
-						.returning();
-					if (inserted) results.push(inserted);
-				}
-			}
-
-			return results;
+			// Bulk upsert using ON CONFLICT DO UPDATE
+			return db
+				.insert(priorYearData)
+				.values(values)
+				.onConflictDoUpdate({
+					target: [
+						priorYearData.state,
+						priorYearData.office,
+						priorYearData.podName,
+						priorYearData.year,
+					],
+					set: {
+						budget: sql`coalesce(excluded.budget, ${priorYearData.budget})`,
+						headcount: sql`coalesce(excluded.headcount, ${priorYearData.headcount})`,
+					},
+				})
+				.returning();
 		}),
 });

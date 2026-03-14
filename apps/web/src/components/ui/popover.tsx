@@ -1,65 +1,80 @@
+"use client";
+
 import { Popover as PopoverPrimitive } from "@base-ui/react/popover";
-import type * as React from "react";
 
 import { cn } from "@/lib/utils";
 
-function Popover({ ...props }: PopoverPrimitive.Root.Props) {
-	return <PopoverPrimitive.Root data-slot="popover" {...props} />;
-}
+const PopoverCreateHandle = PopoverPrimitive.createHandle;
 
-function PopoverTrigger({ ...props }: PopoverPrimitive.Trigger.Props) {
-	return <PopoverPrimitive.Trigger data-slot="popover-trigger" {...props} />;
-}
+const Popover = PopoverPrimitive.Root;
 
-function PopoverContent({
+function PopoverTrigger({
 	className,
-	align = "center",
-	alignOffset = 0,
-	side = "bottom",
-	sideOffset = 4,
+	children,
 	...props
-}: PopoverPrimitive.Popup.Props &
-	Pick<
-		PopoverPrimitive.Positioner.Props,
-		"align" | "alignOffset" | "side" | "sideOffset"
-	>) {
+}: PopoverPrimitive.Trigger.Props) {
+	return (
+		<PopoverPrimitive.Trigger
+			className={className}
+			data-slot="popover-trigger"
+			{...props}
+		>
+			{children}
+		</PopoverPrimitive.Trigger>
+	);
+}
+
+function PopoverPopup({
+	children,
+	className,
+	side = "bottom",
+	align = "center",
+	sideOffset = 4,
+	alignOffset = 0,
+	anchor,
+	...props
+}: PopoverPrimitive.Popup.Props & {
+	side?: PopoverPrimitive.Positioner.Props["side"];
+	align?: PopoverPrimitive.Positioner.Props["align"];
+	sideOffset?: PopoverPrimitive.Positioner.Props["sideOffset"];
+	alignOffset?: PopoverPrimitive.Positioner.Props["alignOffset"];
+	anchor?: PopoverPrimitive.Positioner.Props["anchor"];
+}) {
 	return (
 		<PopoverPrimitive.Portal>
 			<PopoverPrimitive.Positioner
 				align={align}
 				alignOffset={alignOffset}
+				anchor={anchor}
+				className="z-50"
+				data-slot="popover-positioner"
 				side={side}
 				sideOffset={sideOffset}
-				className="isolate z-50"
 			>
 				<PopoverPrimitive.Popup
-					data-slot="popover-content"
 					className={cn(
-						"data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[side=inline-start]:slide-in-from-right-2 data-[side=inline-end]:slide-in-from-left-2 z-50 flex w-72 origin-(--transform-origin) flex-col gap-2.5 rounded-md bg-popover p-2.5 text-popover-foreground text-sm shadow-md outline-hidden ring-1 ring-foreground/10 duration-100 data-closed:animate-out data-open:animate-in",
+						"w-72 rounded-lg border border-stroke-soft-200 bg-bg-white-0 p-4 text-text-strong-950 shadow-gray-shadow outline-none transition-[scale,opacity] data-starting-style:scale-98 data-starting-style:opacity-0",
 						className,
 					)}
+					data-slot="popover-popup"
 					{...props}
-				/>
+				>
+					{children}
+				</PopoverPrimitive.Popup>
 			</PopoverPrimitive.Positioner>
 		</PopoverPrimitive.Portal>
 	);
 }
 
-function PopoverHeader({ className, ...props }: React.ComponentProps<"div">) {
-	return (
-		<div
-			data-slot="popover-header"
-			className={cn("flex flex-col gap-1 text-sm", className)}
-			{...props}
-		/>
-	);
+function PopoverClose({ ...props }: PopoverPrimitive.Close.Props) {
+	return <PopoverPrimitive.Close data-slot="popover-close" {...props} />;
 }
 
 function PopoverTitle({ className, ...props }: PopoverPrimitive.Title.Props) {
 	return (
 		<PopoverPrimitive.Title
+			className={cn("font-semibold text-lg leading-none", className)}
 			data-slot="popover-title"
-			className={cn("font-medium text-base", className)}
 			{...props}
 		/>
 	);
@@ -71,18 +86,21 @@ function PopoverDescription({
 }: PopoverPrimitive.Description.Props) {
 	return (
 		<PopoverPrimitive.Description
+			className={cn("text-sm text-text-soft-400", className)}
 			data-slot="popover-description"
-			className={cn("text-muted-foreground text-sm/relaxed", className)}
 			{...props}
 		/>
 	);
 }
 
 export {
+	PopoverCreateHandle,
 	Popover,
-	PopoverContent,
-	PopoverDescription,
-	PopoverHeader,
-	PopoverTitle,
 	PopoverTrigger,
+	PopoverPopup,
+	PopoverPopup as PopoverContent,
+	PopoverTitle,
+	PopoverDescription,
+	PopoverClose,
+	PopoverPrimitive,
 };

@@ -1,20 +1,62 @@
-import { Input as InputPrimitive } from "@base-ui/react/input";
-import type * as React from "react";
+"use client";
+
+import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
-function Input({ className, type, ...props }: React.ComponentProps<"input">) {
+const InputPrimitive = React.forwardRef<
+	HTMLInputElement,
+	React.ComponentPropsWithoutRef<"input">
+>((props, ref) => <input ref={ref} {...props} />);
+InputPrimitive.displayName = "InputPrimitive";
+
+type InputProps = Omit<
+	React.ComponentPropsWithoutRef<"input"> &
+		React.RefAttributes<HTMLInputElement>,
+	"size"
+> & {
+	size?: "sm" | "default" | "lg" | number;
+	unstyled?: boolean;
+	nativeInput?: boolean;
+};
+
+function Input({
+	className,
+	size = "default",
+	unstyled = false,
+	nativeInput = false,
+	...props
+}: InputProps) {
+	const inputClassName = cn(
+		"h-10 w-full min-w-0 rounded-[inherit] px-[calc(--spacing(3)-1px)] caret-primary-base outline-none [transition:background-color_5000000s_ease-in-out_0s] placeholder:text-text-disabled-300",
+		size === "sm" && "h-8 px-[calc(--spacing(2.5)-1px)]",
+		size === "lg" && "h-12",
+		props.type === "search" &&
+			"[&::-webkit-search-cancel-button]:appearance-none [&::-webkit-search-decoration]:appearance-none [&::-webkit-search-results-button]:appearance-none [&::-webkit-search-results-decoration]:appearance-none",
+		props.type === "file" &&
+			"text-text-soft-400 file:me-3 file:bg-transparent file:font-medium file:text-sm file:text-text-strong-950",
+	);
+
 	return (
-		<InputPrimitive
-			type={type}
-			data-slot="input"
-			className={cn(
-				"h-10 w-full min-w-0 rounded-md bg-white px-2.5 py-1 text-sm shadow-card outline-none transition-colors file:inline-flex file:h-6 file:border-0 file:bg-transparent file:font-medium file:text-foreground file:text-sm placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-1 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-input/50 disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-1 aria-invalid:ring-destructive/20 md:text-sm dark:bg-input/30 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 dark:disabled:bg-input/80",
-				className,
-			)}
-			{...props}
-		/>
+		<span
+			className={
+				cn(
+					!unstyled &&
+						"relative inline-flex w-full items-center rounded-lg border border-stroke-sub-300 bg-bg-white-0 text-base text-text-strong-950 transition-[border-color,background-color] duration-200 ease-out has-aria-invalid:has-focus:border-error-base has-disabled:cursor-not-allowed has-aria-invalid:border-error-base has-focus:border-primary-base has-[:hover:not(:focus)]:bg-bg-weak-50 has-focus:bg-bg-white-0 has-disabled:opacity-64 has-focus:shadow-[var(--shadow-block-custom-input-active)] sm:text-sm",
+					className,
+				) || undefined
+			}
+			data-size={size}
+			data-slot="input-control"
+		>
+			<input
+				className={inputClassName}
+				data-slot="input"
+				size={typeof size === "number" ? size : undefined}
+				{...props}
+			/>
+		</span>
 	);
 }
 
-export { Input };
+export { Input, type InputProps, InputPrimitive };

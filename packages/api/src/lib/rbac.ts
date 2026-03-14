@@ -1,8 +1,13 @@
 import type { auth } from "@carbon-wfp/auth";
 import { carbonites } from "@carbon-wfp/db/schema/carbonites";
 import { entities } from "@carbon-wfp/db/schema/entities";
+import type { SL_VALUES, STATE_VALUES } from "@carbon-wfp/db/schema/enums";
+import { hiringNeeds } from "@carbon-wfp/db/schema/hiring-needs";
 import { TRPCError } from "@trpc/server";
 import { eq, type SQL, sql } from "drizzle-orm";
+
+type State = (typeof STATE_VALUES)[number];
+type ServiceLine = (typeof SL_VALUES)[number];
 
 type SessionUser = typeof auth.$Infer.Session.user;
 
@@ -85,8 +90,9 @@ export function getRoleFilter(user: SessionUser): RoleFilter {
  * Returns `undefined` when no filtering is needed (can be spread into `and()`).
  */
 export function carboniteRoleWhere(filter: RoleFilter): SQL | undefined {
-	if (filter.state) return eq(carbonites.state, filter.state);
-	if (filter.serviceLine) return eq(carbonites.sl, filter.serviceLine);
+	if (filter.state) return eq(carbonites.state, filter.state as State);
+	if (filter.serviceLine)
+		return eq(carbonites.sl, filter.serviceLine as ServiceLine);
 	return undefined;
 }
 
@@ -96,10 +102,81 @@ export function carboniteRoleWhere(filter: RoleFilter): SQL | undefined {
  * For service line filtering, checks if the JSON `sl` array contains the value.
  */
 export function entityRoleWhere(filter: RoleFilter): SQL | undefined {
-	if (filter.state) return eq(entities.state, filter.state);
+	if (filter.state) return eq(entities.state, filter.state as State);
 	if (filter.serviceLine) {
 		// entities.sl is a JSON array — use SQL containment check
 		return sql`${entities.sl}::jsonb @> ${JSON.stringify([filter.serviceLine])}::jsonb`;
 	}
 	return undefined;
+}
+
+/**
+ * Returns a Drizzle WHERE condition to filter the `hiring_needs` table by role.
+ */
+export function hiringRoleWhere(filter: RoleFilter): SQL | undefined {
+	if (filter.state) return eq(hiringNeeds.state, filter.state as State);
+	if (filter.serviceLine)
+		return eq(hiringNeeds.sl, filter.serviceLine as ServiceLine);
+	return undefined;
+}
+
+/**
+ * Asserts that a resource (carbonite, hiring need, etc.) is within the caller's
+ * role scope. Pass the relevant scoping fields from the resource row.
+ * Throws FORBIDDEN if the resource is out of scope.
+ */
+export function assertResourceScope(
+	user: SessionUser,
+	resource: { state?: string | null; sl?: string | null },
+): void {
+	const role = user.role ?? "read_only";
+	if (role === "admin" || role === "practice_manager") return;
+	if (role === "state_manager" && user.assignedState) {
+		if (resource.state && resource.state !== user.assignedState) {
+			throw new TRPCError({
+				code: "FORBIDDEN",
+				message: "Resource is outside your assigned state",
+			});
+		}
+		return;
+	}
+	if (role === "service_line_lead" && user.assignedServiceLine) {
+		if (resource.sl && resource.sl !== user.assignedServiceLine) {
+			throw new TRPCError({
+				code: "FORBIDDEN",
+				message: "Resource is outside your assigned service line",
+			});
+		}
+		return;
+	}
+}
+
+/**
+ * Asserts that an entity (with JSON array `sl` field) is within the caller's role scope.
+ */
+export function assertEntityScope(
+	user: SessionUser,
+	entity: { state?: string | null; sl?: unknown },
+): void {
+	const role = user.role ?? "read_only";
+	if (role === "admin" || role === "practice_manager") return;
+	if (role === "state_manager" && user.assignedState) {
+		if (entity.state && entity.state !== user.assignedState) {
+			throw new TRPCError({
+				code: "FORBIDDEN",
+				message: "Entity is outside your assigned state",
+			});
+		}
+		return;
+	}
+	if (role === "service_line_lead" && user.assignedServiceLine) {
+		const sls = Array.isArray(entity.sl) ? entity.sl : [];
+		if (sls.length > 0 && !sls.includes(user.assignedServiceLine)) {
+			throw new TRPCError({
+				code: "FORBIDDEN",
+				message: "Entity is outside your assigned service line",
+			});
+		}
+		return;
+	}
 }

@@ -6,18 +6,30 @@ import {
 	entities,
 	hiringNeeds,
 	salaryBrackets,
+	wfpEntitySettings,
 	wfpRevenue,
+	wfpStaffMeta,
 } from "./src/schema/index.js";
 import type { NewSalaryBracket } from "./src/schema/salary-brackets.js";
+import { attritionRisks, headcountTargets } from "./src/schema/wfp-extended.js";
 
-// ── Password hashing (matches Better Auth's scrypt format) ──────────────────
+// ── Password hashing (matches Better Auth's scrypt config exactly) ──────────
+// Better Auth uses: N=16384, r=16, p=1, dkLen=64
+// Node crypto.scrypt defaults to r=8, so we must pass explicit options.
 function hashPassword(password: string): Promise<string> {
 	return new Promise((resolve, reject) => {
 		const salt = crypto.randomBytes(16).toString("hex");
-		crypto.scrypt(password, salt, 64, (err, derivedKey) => {
-			if (err) reject(err);
-			resolve(`${salt}:${derivedKey.toString("hex")}`);
-		});
+		const normalized = password.normalize("NFKC");
+		crypto.scrypt(
+			normalized,
+			salt,
+			64,
+			{ N: 16384, r: 16, p: 1, maxmem: 128 * 16384 * 16 * 2 },
+			(err, derivedKey) => {
+				if (err) reject(err);
+				resolve(`${salt}:${derivedKey.toString("hex")}`);
+			},
+		);
 	});
 }
 
@@ -35,6 +47,13 @@ function generateId(length = 32): string {
 // ── Test Users (for RBAC testing) ───────────────────────────────────────────
 // Password for all test users: Test1234!
 const TEST_USERS = [
+	{
+		name: "Chris Admin",
+		email: "chris@carbon.test",
+		role: "admin" as const,
+		assignedState: null,
+		assignedServiceLine: null,
+	},
 	{
 		name: "WA State Manager",
 		email: "wa-manager@carbon.test",
@@ -354,7 +373,7 @@ const CARBONITES = [
 		seniority: 7,
 		state: "nsw",
 		office: "parramatta",
-		location: null,
+		location: "Hybrid — Parramatta",
 		sl: "bkcfo",
 		sg: "bkcfo-cfo",
 		type: "FT" as const,
@@ -363,7 +382,7 @@ const CARBONITES = [
 		entity: "ent-par",
 		isPartner: true,
 		reportsTo: null,
-		hours: null,
+		hours: 38,
 	},
 	{
 		id: "c02",
@@ -381,7 +400,7 @@ const CARBONITES = [
 		entity: "ent-par",
 		isPartner: false,
 		reportsTo: "c01",
-		hours: null,
+		hours: 38,
 	},
 	{
 		id: "c03",
@@ -390,7 +409,7 @@ const CARBONITES = [
 		seniority: 2,
 		state: "nsw",
 		office: "parramatta",
-		location: null,
+		location: "Parramatta Office",
 		sl: "bkcfo",
 		sg: "bkcfo-bk",
 		type: "PT" as const,
@@ -408,7 +427,7 @@ const CARBONITES = [
 		seniority: 3,
 		state: "nsw",
 		office: "parramatta",
-		location: null,
+		location: "Parramatta Office",
 		sl: "bkcfo",
 		sg: "bkcfo-bk",
 		type: "FT" as const,
@@ -417,7 +436,7 @@ const CARBONITES = [
 		entity: "ent-par",
 		isPartner: false,
 		reportsTo: null,
-		hours: null,
+		hours: 38,
 	},
 	{
 		id: "c05",
@@ -426,7 +445,7 @@ const CARBONITES = [
 		seniority: 2,
 		state: "nsw",
 		office: "st-leonards",
-		location: null,
+		location: "St Leonards Office",
 		sl: "bkcfo",
 		sg: "bkcfo-pay",
 		type: "FT" as const,
@@ -435,7 +454,7 @@ const CARBONITES = [
 		entity: "ent-stl",
 		isPartner: false,
 		reportsTo: null,
-		hours: null,
+		hours: 38,
 	},
 	// VIC - Elsternwick
 	{
@@ -445,7 +464,7 @@ const CARBONITES = [
 		seniority: 8,
 		state: "vic",
 		office: "elsternwick",
-		location: null,
+		location: "Elsternwick Office",
 		sl: "acc",
 		sg: "acc-main",
 		type: "FT" as const,
@@ -454,7 +473,7 @@ const CARBONITES = [
 		entity: "ent-els",
 		isPartner: true,
 		reportsTo: null,
-		hours: null,
+		hours: 38,
 	},
 	{
 		id: "c11",
@@ -463,7 +482,7 @@ const CARBONITES = [
 		seniority: 4,
 		state: "vic",
 		office: "elsternwick",
-		location: null,
+		location: "Elsternwick Office",
 		sl: "acc",
 		sg: "acc-main",
 		type: "FT" as const,
@@ -472,7 +491,7 @@ const CARBONITES = [
 		entity: "ent-els",
 		isPartner: false,
 		reportsTo: "c10",
-		hours: null,
+		hours: 38,
 	},
 	{
 		id: "c12",
@@ -481,7 +500,7 @@ const CARBONITES = [
 		seniority: 3,
 		state: "vic",
 		office: "elsternwick",
-		location: null,
+		location: "Elsternwick Office",
 		sl: "acc",
 		sg: "acc-main",
 		type: "FT" as const,
@@ -490,7 +509,7 @@ const CARBONITES = [
 		entity: "ent-els",
 		isPartner: false,
 		reportsTo: "c10",
-		hours: null,
+		hours: 38,
 	},
 	{
 		id: "c13",
@@ -499,7 +518,7 @@ const CARBONITES = [
 		seniority: 4,
 		state: "vic",
 		office: "elsternwick",
-		location: null,
+		location: "Hybrid — Elsternwick",
 		sl: "wm",
 		sg: null,
 		type: "FT" as const,
@@ -508,7 +527,7 @@ const CARBONITES = [
 		entity: "ent-els",
 		isPartner: true,
 		reportsTo: null,
-		hours: null,
+		hours: 38,
 	},
 	{
 		id: "c14",
@@ -517,7 +536,7 @@ const CARBONITES = [
 		seniority: 2,
 		state: "vic",
 		office: "elsternwick",
-		location: null,
+		location: "Elsternwick Office",
 		sl: "wm",
 		sg: null,
 		type: "FT" as const,
@@ -526,7 +545,7 @@ const CARBONITES = [
 		entity: "ent-els",
 		isPartner: false,
 		reportsTo: "c13",
-		hours: null,
+		hours: 38,
 	},
 	// VIC - Monash
 	{
@@ -536,7 +555,7 @@ const CARBONITES = [
 		seniority: 6,
 		state: "vic",
 		office: "monash",
-		location: null,
+		location: "Mt Waverley Office",
 		sl: "bkcfo",
 		sg: "bkcfo-bk",
 		type: "PT" as const,
@@ -554,7 +573,7 @@ const CARBONITES = [
 		seniority: 3,
 		state: "vic",
 		office: "monash",
-		location: null,
+		location: "Mt Waverley Office",
 		sl: "bkcfo",
 		sg: "bkcfo-bk",
 		type: "FT" as const,
@@ -563,7 +582,7 @@ const CARBONITES = [
 		entity: "ent-mon",
 		isPartner: false,
 		reportsTo: "c20",
-		hours: null,
+		hours: 38,
 	},
 	{
 		id: "c22",
@@ -572,7 +591,7 @@ const CARBONITES = [
 		seniority: 4,
 		state: "vic",
 		office: "monash",
-		location: null,
+		location: "Mt Waverley Office",
 		sl: "bkcfo",
 		sg: "bkcfo-pay",
 		type: "FT" as const,
@@ -581,7 +600,7 @@ const CARBONITES = [
 		entity: "ent-mon",
 		isPartner: false,
 		reportsTo: null,
-		hours: null,
+		hours: 38,
 	},
 	// VIC - Mornington
 	{
@@ -600,7 +619,7 @@ const CARBONITES = [
 		entity: "ent-morn",
 		isPartner: false,
 		reportsTo: null,
-		hours: null,
+		hours: 38,
 	},
 	{
 		id: "c26",
@@ -609,7 +628,7 @@ const CARBONITES = [
 		seniority: 2,
 		state: "vic",
 		office: "mornington",
-		location: null,
+		location: "Mornington Office",
 		sl: "bkcfo",
 		sg: "bkcfo-bk",
 		type: "PT" as const,
@@ -628,7 +647,7 @@ const CARBONITES = [
 		seniority: 5,
 		state: "vic",
 		office: "mount-waverley",
-		location: null,
+		location: "Mount Waverley Office",
 		sl: "acc",
 		sg: "acc-main",
 		type: "FT" as const,
@@ -637,7 +656,7 @@ const CARBONITES = [
 		entity: "ent-mtwav",
 		isPartner: false,
 		reportsTo: null,
-		hours: null,
+		hours: 38,
 	},
 	{
 		id: "c31",
@@ -646,7 +665,7 @@ const CARBONITES = [
 		seniority: 4,
 		state: "vic",
 		office: "mount-waverley",
-		location: null,
+		location: "Mount Waverley Office",
 		sl: "acc",
 		sg: "acc-main",
 		type: "FT" as const,
@@ -655,7 +674,7 @@ const CARBONITES = [
 		entity: "ent-mtwav",
 		isPartner: false,
 		reportsTo: "c30",
-		hours: null,
+		hours: 38,
 	},
 	// QLD - Brisbane
 	{
@@ -665,7 +684,7 @@ const CARBONITES = [
 		seniority: 8,
 		state: "qld",
 		office: "brisbane",
-		location: null,
+		location: "Brisbane Office",
 		sl: "acc",
 		sg: "acc-main",
 		type: "FT" as const,
@@ -674,7 +693,7 @@ const CARBONITES = [
 		entity: "ent-bne",
 		isPartner: true,
 		reportsTo: null,
-		hours: null,
+		hours: 38,
 	},
 	{
 		id: "c41",
@@ -683,7 +702,7 @@ const CARBONITES = [
 		seniority: 4,
 		state: "qld",
 		office: "brisbane",
-		location: null,
+		location: "Brisbane Office",
 		sl: "acc",
 		sg: "acc-main",
 		type: "FT" as const,
@@ -692,7 +711,7 @@ const CARBONITES = [
 		entity: "ent-bne",
 		isPartner: false,
 		reportsTo: "c40",
-		hours: null,
+		hours: 38,
 	},
 	{
 		id: "c42",
@@ -701,7 +720,7 @@ const CARBONITES = [
 		seniority: 3,
 		state: "qld",
 		office: "brisbane",
-		location: null,
+		location: "Brisbane Office",
 		sl: "acc",
 		sg: "acc-main",
 		type: "FT" as const,
@@ -710,7 +729,7 @@ const CARBONITES = [
 		entity: "ent-bne",
 		isPartner: false,
 		reportsTo: "c40",
-		hours: null,
+		hours: 38,
 	},
 	{
 		id: "c43",
@@ -719,7 +738,7 @@ const CARBONITES = [
 		seniority: 4,
 		state: "qld",
 		office: "brisbane",
-		location: null,
+		location: "Hybrid — Brisbane",
 		sl: "wm",
 		sg: null,
 		type: "FT" as const,
@@ -728,7 +747,7 @@ const CARBONITES = [
 		entity: "ent-bne",
 		isPartner: true,
 		reportsTo: null,
-		hours: null,
+		hours: 38,
 	},
 	{
 		id: "c44",
@@ -737,7 +756,7 @@ const CARBONITES = [
 		seniority: 3,
 		state: "qld",
 		office: "brisbane",
-		location: null,
+		location: "Brisbane Office",
 		sl: "bkcfo",
 		sg: "bkcfo-bk",
 		type: "FT" as const,
@@ -746,7 +765,7 @@ const CARBONITES = [
 		entity: "ent-bne",
 		isPartner: false,
 		reportsTo: "c45",
-		hours: null,
+		hours: 38,
 	},
 	{
 		id: "c45",
@@ -755,7 +774,7 @@ const CARBONITES = [
 		seniority: 6,
 		state: "qld",
 		office: "brisbane",
-		location: null,
+		location: "Brisbane Office",
 		sl: "bkcfo",
 		sg: "bkcfo-bk",
 		type: "FT" as const,
@@ -764,7 +783,7 @@ const CARBONITES = [
 		entity: "ent-bne",
 		isPartner: false,
 		reportsTo: null,
-		hours: null,
+		hours: 38,
 	},
 	// QLD - Toowoomba / Bundaberg
 	{
@@ -774,7 +793,7 @@ const CARBONITES = [
 		seniority: 7,
 		state: "qld",
 		office: "toowoomba",
-		location: null,
+		location: "Hybrid — Toowoomba",
 		sl: "acc",
 		sg: "acc-main",
 		type: "FT" as const,
@@ -783,7 +802,7 @@ const CARBONITES = [
 		entity: "ent-too",
 		isPartner: false,
 		reportsTo: null,
-		hours: null,
+		hours: 38,
 	},
 	{
 		id: "c51",
@@ -792,7 +811,7 @@ const CARBONITES = [
 		seniority: 3,
 		state: "qld",
 		office: "toowoomba",
-		location: null,
+		location: "Toowoomba Office",
 		sl: "acc",
 		sg: "acc-main",
 		type: "PT" as const,
@@ -829,7 +848,7 @@ const CARBONITES = [
 		seniority: 8,
 		state: "wa",
 		office: "osborne-park",
-		location: null,
+		location: "Hybrid — Osborne Park",
 		sl: "acc",
 		sg: "acc-main",
 		type: "FT" as const,
@@ -838,7 +857,7 @@ const CARBONITES = [
 		entity: "ent-op1",
 		isPartner: true,
 		reportsTo: null,
-		hours: null,
+		hours: 38,
 	},
 	{
 		id: "c61",
@@ -847,7 +866,7 @@ const CARBONITES = [
 		seniority: 4,
 		state: "wa",
 		office: "osborne-park",
-		location: null,
+		location: "Osborne Park Office",
 		sl: "acc",
 		sg: "acc-main",
 		type: "FT" as const,
@@ -856,7 +875,7 @@ const CARBONITES = [
 		entity: "ent-op1",
 		isPartner: false,
 		reportsTo: "c60",
-		hours: null,
+		hours: 38,
 	},
 	{
 		id: "c62",
@@ -865,7 +884,7 @@ const CARBONITES = [
 		seniority: 1,
 		state: "wa",
 		office: "osborne-park",
-		location: null,
+		location: "Osborne Park Office",
 		sl: "acc",
 		sg: "acc-smsf",
 		type: "FT" as const,
@@ -874,7 +893,7 @@ const CARBONITES = [
 		entity: "ent-op1",
 		isPartner: false,
 		reportsTo: null,
-		hours: null,
+		hours: 38,
 	},
 	{
 		id: "c63",
@@ -892,7 +911,7 @@ const CARBONITES = [
 		entity: "ent-op1",
 		isPartner: false,
 		reportsTo: "c62",
-		hours: null,
+		hours: 38,
 	},
 	{
 		id: "c64",
@@ -901,7 +920,7 @@ const CARBONITES = [
 		seniority: 3,
 		state: "wa",
 		office: "osborne-park",
-		location: null,
+		location: "Osborne Park Office",
 		sl: "bkcfo",
 		sg: "bkcfo-bk",
 		type: "PT" as const,
@@ -919,7 +938,7 @@ const CARBONITES = [
 		seniority: 6,
 		state: "wa",
 		office: "osborne-park",
-		location: null,
+		location: "Osborne Park Office",
 		sl: "rd",
 		sg: null,
 		type: "FT" as const,
@@ -928,7 +947,7 @@ const CARBONITES = [
 		entity: "ent-op1",
 		isPartner: false,
 		reportsTo: null,
-		hours: null,
+		hours: 38,
 	},
 	{
 		id: "c66",
@@ -937,7 +956,7 @@ const CARBONITES = [
 		seniority: 1,
 		state: "wa",
 		office: "osborne-park",
-		location: null,
+		location: "Osborne Park Office",
 		sl: "fin",
 		sg: null,
 		type: "FT" as const,
@@ -946,7 +965,7 @@ const CARBONITES = [
 		entity: "ent-cbk",
 		isPartner: false,
 		reportsTo: "c67",
-		hours: null,
+		hours: 38,
 	},
 	{
 		id: "c67",
@@ -955,7 +974,7 @@ const CARBONITES = [
 		seniority: 2,
 		state: "wa",
 		office: "osborne-park",
-		location: null,
+		location: "Osborne Park Office",
 		sl: "fin",
 		sg: null,
 		type: "FT" as const,
@@ -964,7 +983,7 @@ const CARBONITES = [
 		entity: "ent-cbk",
 		isPartner: false,
 		reportsTo: null,
-		hours: null,
+		hours: 38,
 	},
 	{
 		id: "c68",
@@ -973,7 +992,7 @@ const CARBONITES = [
 		seniority: 1,
 		state: "wa",
 		office: "osborne-park",
-		location: null,
+		location: "Osborne Park Office",
 		sl: "wm",
 		sg: null,
 		type: "FT" as const,
@@ -982,7 +1001,7 @@ const CARBONITES = [
 		entity: "ent-cbk",
 		isPartner: false,
 		reportsTo: null,
-		hours: null,
+		hours: 38,
 	},
 	{
 		id: "c69",
@@ -991,7 +1010,7 @@ const CARBONITES = [
 		seniority: 3,
 		state: "wa",
 		office: "osborne-park",
-		location: null,
+		location: "Osborne Park Office",
 		sl: "ins",
 		sg: null,
 		type: "FT" as const,
@@ -1000,7 +1019,7 @@ const CARBONITES = [
 		entity: "ent-op1",
 		isPartner: false,
 		reportsTo: null,
-		hours: null,
+		hours: 38,
 	},
 	{
 		id: "c70",
@@ -1009,7 +1028,7 @@ const CARBONITES = [
 		seniority: 1,
 		state: "wa",
 		office: "osborne-park",
-		location: null,
+		location: "Osborne Park Office",
 		sl: "ins",
 		sg: null,
 		type: "PT" as const,
@@ -1028,7 +1047,7 @@ const CARBONITES = [
 		seniority: 8,
 		state: "sa",
 		office: "adelaide",
-		location: null,
+		location: "Adelaide Office",
 		sl: "acc",
 		sg: "acc-main",
 		type: "FT" as const,
@@ -1037,7 +1056,7 @@ const CARBONITES = [
 		entity: "ent-adl",
 		isPartner: true,
 		reportsTo: null,
-		hours: null,
+		hours: 38,
 	},
 	{
 		id: "c81",
@@ -1055,7 +1074,7 @@ const CARBONITES = [
 		entity: "ent-adl",
 		isPartner: false,
 		reportsTo: "c80",
-		hours: null,
+		hours: 38,
 	},
 	{
 		id: "c82",
@@ -1064,7 +1083,7 @@ const CARBONITES = [
 		seniority: 4,
 		state: "sa",
 		office: "adelaide",
-		location: null,
+		location: "Adelaide Office",
 		sl: "acc",
 		sg: "acc-main",
 		type: "FT" as const,
@@ -1073,7 +1092,7 @@ const CARBONITES = [
 		entity: "ent-adl",
 		isPartner: false,
 		reportsTo: "c81",
-		hours: null,
+		hours: 38,
 	},
 	{
 		id: "c83",
@@ -1082,7 +1101,7 @@ const CARBONITES = [
 		seniority: 3,
 		state: "sa",
 		office: "adelaide",
-		location: null,
+		location: "Adelaide Office",
 		sl: "wm",
 		sg: null,
 		type: "FT" as const,
@@ -1091,7 +1110,7 @@ const CARBONITES = [
 		entity: "ent-adl",
 		isPartner: false,
 		reportsTo: null,
-		hours: null,
+		hours: 38,
 	},
 	{
 		id: "c84",
@@ -1100,7 +1119,7 @@ const CARBONITES = [
 		seniority: 2,
 		state: "sa",
 		office: "adelaide",
-		location: null,
+		location: "Adelaide Office",
 		sl: "wm",
 		sg: null,
 		type: "PT" as const,
@@ -1109,7 +1128,7 @@ const CARBONITES = [
 		entity: "ent-adl",
 		isPartner: false,
 		reportsTo: "c83",
-		hours: null,
+		hours: 22,
 	},
 ] satisfies (typeof carbonites.$inferInsert)[];
 
@@ -1530,7 +1549,7 @@ const SALARY_BRACKETS_RAW = [
 			{
 				perf: "4 & 5",
 				label: "Mid-High",
-				nsw: { m: null, r: [85, -3] },
+				nsw: { m: null, r: [85, 95] },
 				qld: { m: [68, 71], r: [81, 85] },
 				sa: { m: [88, 95], r: [87, 93] },
 				vic: { m: [87, 93], r: [86, 93] },
@@ -1611,7 +1630,7 @@ const SALARY_BRACKETS_RAW = [
 				perf: "4 & 5",
 				label: "Mid-High",
 				nsw: null,
-				qld: { m: null, r: [93, 5] },
+				qld: { m: null, r: [93, 105] },
 				sa: null,
 				vic: null,
 				wa: { m: null, r: [83, 95] },
@@ -3151,6 +3170,760 @@ const SALARY_BRACKETS: NewSalaryBracket[] = SALARY_BRACKETS_RAW.map((b, i) => ({
 	bands: b.bands ?? [],
 })) as NewSalaryBracket[];
 
+// ── WFP Entity Settings (24 rows) ─────────────────────────────────────────
+// billingMultiplier varies by entity type:
+//   Mid-tier regional: 3.0–3.3 | Standard metro: 3.5 | Premium: 3.8–4.0
+
+const WFP_ENTITY_SETTINGS = [
+	// WA
+	{ entId: "ent-op1", billingMultiplier: "3.8", fy: "FY25-26" },
+	{ entId: "ent-op2", billingMultiplier: "3.5", fy: "FY25-26" },
+	{ entId: "ent-cbk", billingMultiplier: "3.5", fy: "FY25-26" },
+	{ entId: "ent-fda", billingMultiplier: "3.0", fy: "FY25-26" },
+	{ entId: "ent-sv", billingMultiplier: "3.3", fy: "FY25-26" },
+	{ entId: "ent-way", billingMultiplier: "3.5", fy: "FY25-26" },
+	// NSW
+	{ entId: "ent-syd", billingMultiplier: "3.5", fy: "FY25-26" },
+	{ entId: "ent-stl", billingMultiplier: "3.5", fy: "FY25-26" },
+	{ entId: "ent-par", billingMultiplier: "4.0", fy: "FY25-26" },
+	// VIC
+	{ entId: "ent-morn", billingMultiplier: "3.0", fy: "FY25-26" },
+	{ entId: "ent-mtwav", billingMultiplier: "3.5", fy: "FY25-26" },
+	{ entId: "ent-mon", billingMultiplier: "3.3", fy: "FY25-26" },
+	{ entId: "ent-els", billingMultiplier: "3.8", fy: "FY25-26" },
+	// QLD
+	{ entId: "ent-bne", billingMultiplier: "3.8", fy: "FY25-26" },
+	{ entId: "ent-bun", billingMultiplier: "3.2", fy: "FY25-26" },
+	{ entId: "ent-gym", billingMultiplier: "3.0", fy: "FY25-26" },
+	{ entId: "ent-frc", billingMultiplier: "3.0", fy: "FY25-26" },
+	{ entId: "ent-ips", billingMultiplier: "3.3", fy: "FY25-26" },
+	{ entId: "ent-too", billingMultiplier: "3.3", fy: "FY25-26" },
+	// SA
+	{ entId: "ent-adl", billingMultiplier: "3.8", fy: "FY25-26" },
+	{ entId: "ent-gaw", billingMultiplier: "3.0", fy: "FY25-26" },
+	{ entId: "ent-pfd", billingMultiplier: "3.3", fy: "FY25-26" },
+	{ entId: "ent-bar", billingMultiplier: "3.0", fy: "FY25-26" },
+] satisfies (typeof wfpEntitySettings.$inferInsert)[];
+
+// ── WFP Staff Meta (40 rows) ─────────────────────────────────────────────
+// perfRating: "exceeds" | "meets" | "below"
+// promoFlag: "yes" | "maybe" | "no"
+// roleTag: "doer" | "reviewer" | "bd"
+
+const WFP_STAFF_META = [
+	// NSW - Parramatta / St Leonards
+	// c01 - Lena M. - Director, $185k
+	{
+		cbId: "c01",
+		billingTarget: "620000",
+		billingActual: "590000",
+		perfRating: "exceeds",
+		promoFlag: "no" as const,
+		promoEta: null,
+		staffRole: "Practice Director",
+		roleTag: "bd" as const,
+	},
+	// c02 - David K. - Senior Client Manager, $112k
+	{
+		cbId: "c02",
+		billingTarget: null,
+		billingActual: "310000",
+		perfRating: "meets",
+		promoFlag: "maybe" as const,
+		promoEta: "2027-01-01",
+		staffRole: null,
+		roleTag: "reviewer" as const,
+	},
+	// c03 - Ryan C. - Bookkeeper (PT), $68k
+	{
+		cbId: "c03",
+		billingTarget: null,
+		billingActual: "125000",
+		perfRating: "meets",
+		promoFlag: "no" as const,
+		promoEta: null,
+		staffRole: null,
+		roleTag: "doer" as const,
+	},
+	// c04 - Jessica T. - Senior Bookkeeper, $82k
+	{
+		cbId: "c04",
+		billingTarget: null,
+		billingActual: "245000",
+		perfRating: "meets",
+		promoFlag: "no" as const,
+		promoEta: null,
+		staffRole: null,
+		roleTag: "doer" as const,
+	},
+	// c05 - Wei L. - Payroll Specialist, $72k
+	{
+		cbId: "c05",
+		billingTarget: null,
+		billingActual: "180000",
+		perfRating: "meets",
+		promoFlag: "no" as const,
+		promoEta: null,
+		staffRole: null,
+		roleTag: "doer" as const,
+	},
+	// VIC - Elsternwick
+	// c10 - Michelle M. - Associate Director, $165k
+	{
+		cbId: "c10",
+		billingTarget: "550000",
+		billingActual: "610000",
+		perfRating: "exceeds",
+		promoFlag: "no" as const,
+		promoEta: null,
+		staffRole: null,
+		roleTag: "bd" as const,
+	},
+	// c11 - James M. - Senior Accountant, $95k
+	{
+		cbId: "c11",
+		billingTarget: null,
+		billingActual: "290000",
+		perfRating: "meets",
+		promoFlag: "maybe" as const,
+		promoEta: "2027-03-01",
+		staffRole: null,
+		roleTag: "doer" as const,
+	},
+	// c12 - Sophie R. - Accountant, $72k
+	{
+		cbId: "c12",
+		billingTarget: null,
+		billingActual: "175000",
+		perfRating: "below",
+		promoFlag: "no" as const,
+		promoEta: null,
+		staffRole: null,
+		roleTag: "doer" as const,
+	},
+	// c13 - Marc W. - Director (WEA), $185k
+	{
+		cbId: "c13",
+		billingTarget: "600000",
+		billingActual: "680000",
+		perfRating: "exceeds",
+		promoFlag: "no" as const,
+		promoEta: null,
+		staffRole: null,
+		roleTag: "bd" as const,
+	},
+	// c14 - Priya M. - Senior Financial Planner, $110k
+	{
+		cbId: "c14",
+		billingTarget: null,
+		billingActual: "340000",
+		perfRating: "exceeds",
+		promoFlag: "yes" as const,
+		promoEta: "2026-09-01",
+		staffRole: null,
+		roleTag: "reviewer" as const,
+	},
+	// VIC - Monash
+	// c20 - Allison G. - Senior Manager (BKK) PT, $125k
+	{
+		cbId: "c20",
+		billingTarget: "400000",
+		billingActual: "365000",
+		perfRating: "meets",
+		promoFlag: "no" as const,
+		promoEta: null,
+		staffRole: null,
+		roleTag: "reviewer" as const,
+	},
+	// c21 - Tom K. - Senior Bookkeeper, $82k
+	{
+		cbId: "c21",
+		billingTarget: null,
+		billingActual: "240000",
+		perfRating: "meets",
+		promoFlag: "maybe" as const,
+		promoEta: "2027-07-01",
+		staffRole: null,
+		roleTag: "doer" as const,
+	},
+	// c22 - Anika P. - Payroll Manager, $95k
+	{
+		cbId: "c22",
+		billingTarget: null,
+		billingActual: "280000",
+		perfRating: "meets",
+		promoFlag: "no" as const,
+		promoEta: null,
+		staffRole: null,
+		roleTag: "reviewer" as const,
+	},
+	// VIC - Mornington
+	// c25 - Sam P. - Client Manager (BKK), $92k
+	{
+		cbId: "c25",
+		billingTarget: null,
+		billingActual: "260000",
+		perfRating: "meets",
+		promoFlag: "no" as const,
+		promoEta: null,
+		staffRole: null,
+		roleTag: "reviewer" as const,
+	},
+	// c26 - Grace H. - Bookkeeper (PT), $64k
+	{
+		cbId: "c26",
+		billingTarget: null,
+		billingActual: "110000",
+		perfRating: "below",
+		promoFlag: "no" as const,
+		promoEta: null,
+		staffRole: null,
+		roleTag: "doer" as const,
+	},
+	// VIC - Mount Waverley
+	// c30 - David L. - Client Manager (ACC), $108k
+	{
+		cbId: "c30",
+		billingTarget: null,
+		billingActual: "350000",
+		perfRating: "exceeds",
+		promoFlag: "yes" as const,
+		promoEta: "2026-07-01",
+		staffRole: null,
+		roleTag: "reviewer" as const,
+	},
+	// c31 - Kelly B. - Senior Accountant, $92k
+	{
+		cbId: "c31",
+		billingTarget: null,
+		billingActual: "275000",
+		perfRating: "meets",
+		promoFlag: "maybe" as const,
+		promoEta: "2027-07-01",
+		staffRole: null,
+		roleTag: "doer" as const,
+	},
+	// QLD - Brisbane
+	// c40 - Hayden R. - Associate Director, $158k
+	{
+		cbId: "c40",
+		billingTarget: "500000",
+		billingActual: "475000",
+		perfRating: "meets",
+		promoFlag: "no" as const,
+		promoEta: null,
+		staffRole: null,
+		roleTag: "bd" as const,
+	},
+	// c41 - Sarah M. - Senior Accountant, $94k
+	{
+		cbId: "c41",
+		billingTarget: null,
+		billingActual: "310000",
+		perfRating: "exceeds",
+		promoFlag: "yes" as const,
+		promoEta: "2026-07-01",
+		staffRole: null,
+		roleTag: "doer" as const,
+	},
+	// c42 - James T. - Accountant, $70k
+	{
+		cbId: "c42",
+		billingTarget: null,
+		billingActual: "155000",
+		perfRating: "below",
+		promoFlag: "no" as const,
+		promoEta: null,
+		staffRole: null,
+		roleTag: "doer" as const,
+	},
+	// c43 - Crystal V. - Director (WEA), $175k
+	{
+		cbId: "c43",
+		billingTarget: "550000",
+		billingActual: "520000",
+		perfRating: "meets",
+		promoFlag: "no" as const,
+		promoEta: null,
+		staffRole: null,
+		roleTag: "bd" as const,
+	},
+	// c44 - Amy K. - Senior Bookkeeper, $82k
+	{
+		cbId: "c44",
+		billingTarget: null,
+		billingActual: "235000",
+		perfRating: "meets",
+		promoFlag: "no" as const,
+		promoEta: null,
+		staffRole: null,
+		roleTag: "doer" as const,
+	},
+	// c45 - Scott D. - Senior Manager (BKK), $135k
+	{
+		cbId: "c45",
+		billingTarget: "450000",
+		billingActual: "490000",
+		perfRating: "exceeds",
+		promoFlag: "maybe" as const,
+		promoEta: "2027-01-01",
+		staffRole: "BKK Practice Lead",
+		roleTag: "reviewer" as const,
+	},
+	// QLD - Toowoomba / Bundaberg
+	// c50 - Bob N. - Senior Manager (ACC), $128k
+	{
+		cbId: "c50",
+		billingTarget: "420000",
+		billingActual: "380000",
+		perfRating: "meets",
+		promoFlag: "no" as const,
+		promoEta: null,
+		staffRole: null,
+		roleTag: "reviewer" as const,
+	},
+	// c51 - Kate J. - Accountant (PT), $65k
+	{
+		cbId: "c51",
+		billingTarget: null,
+		billingActual: "95000",
+		perfRating: "meets",
+		promoFlag: "no" as const,
+		promoEta: null,
+		staffRole: null,
+		roleTag: "doer" as const,
+	},
+	// c52 - Amy L. - Bookkeeper (PT), $64k
+	{
+		cbId: "c52",
+		billingTarget: null,
+		billingActual: null,
+		perfRating: "below",
+		promoFlag: "no" as const,
+		promoEta: null,
+		staffRole: null,
+		roleTag: "doer" as const,
+	},
+	// WA - Osborne Park
+	// c60 - Todd Z. - Associate Director, $155k
+	{
+		cbId: "c60",
+		billingTarget: "520000",
+		billingActual: "545000",
+		perfRating: "exceeds",
+		promoFlag: "no" as const,
+		promoEta: null,
+		staffRole: null,
+		roleTag: "bd" as const,
+	},
+	// c61 - Chris W. - Senior Accountant, $92k
+	{
+		cbId: "c61",
+		billingTarget: null,
+		billingActual: "270000",
+		perfRating: "meets",
+		promoFlag: "maybe" as const,
+		promoEta: "2027-01-01",
+		staffRole: null,
+		roleTag: "doer" as const,
+	},
+	// c62 - Priya S. - SMSF Manager, $102k
+	{
+		cbId: "c62",
+		billingTarget: null,
+		billingActual: "320000",
+		perfRating: "exceeds",
+		promoFlag: "maybe" as const,
+		promoEta: "2026-07-01",
+		staffRole: null,
+		roleTag: "reviewer" as const,
+	},
+	// c63 - Luke M. - SMSF Manager, $98k
+	{
+		cbId: "c63",
+		billingTarget: null,
+		billingActual: "290000",
+		perfRating: "meets",
+		promoFlag: "no" as const,
+		promoEta: null,
+		staffRole: null,
+		roleTag: "doer" as const,
+	},
+	// c64 - Kristen K. - Senior Bookkeeper (PT), $78k
+	{
+		cbId: "c64",
+		billingTarget: null,
+		billingActual: "185000",
+		perfRating: "meets",
+		promoFlag: "no" as const,
+		promoEta: null,
+		staffRole: null,
+		roleTag: "doer" as const,
+	},
+	// c65 - Grant T. - Senior Manager (BKK), $145k
+	{
+		cbId: "c65",
+		billingTarget: "480000",
+		billingActual: "510000",
+		perfRating: "exceeds",
+		promoFlag: "maybe" as const,
+		promoEta: "2027-01-01",
+		staffRole: "R&D Practice Lead",
+		roleTag: "reviewer" as const,
+	},
+	// c66 - Ben A. - Loan Administrator, $65k
+	{
+		cbId: "c66",
+		billingTarget: null,
+		billingActual: "150000",
+		perfRating: "below",
+		promoFlag: "no" as const,
+		promoEta: null,
+		staffRole: null,
+		roleTag: "doer" as const,
+	},
+	// c67 - Luke F. - Senior Financial Planner, $110k
+	{
+		cbId: "c67",
+		billingTarget: null,
+		billingActual: "340000",
+		perfRating: "meets",
+		promoFlag: "maybe" as const,
+		promoEta: "2027-07-01",
+		staffRole: null,
+		roleTag: "reviewer" as const,
+	},
+	// c68 - Nicole B. - Financial Planner, $118k
+	{
+		cbId: "c68",
+		billingTarget: null,
+		billingActual: "290000",
+		perfRating: "meets",
+		promoFlag: "no" as const,
+		promoEta: null,
+		staffRole: null,
+		roleTag: "doer" as const,
+	},
+	// c69 - Dan R. - Account Manager (INS), $92k
+	{
+		cbId: "c69",
+		billingTarget: null,
+		billingActual: "275000",
+		perfRating: "meets",
+		promoFlag: "no" as const,
+		promoEta: null,
+		staffRole: null,
+		roleTag: "reviewer" as const,
+	},
+	// c70 - Mei C. - Broker Assistant (INS) PT, $58k
+	{
+		cbId: "c70",
+		billingTarget: null,
+		billingActual: "85000",
+		perfRating: "below",
+		promoFlag: "no" as const,
+		promoEta: null,
+		staffRole: null,
+		roleTag: "doer" as const,
+	},
+	// SA - Adelaide
+	// c80 - David W. - Associate Director, $165k
+	{
+		cbId: "c80",
+		billingTarget: "560000",
+		billingActual: "620000",
+		perfRating: "exceeds",
+		promoFlag: "no" as const,
+		promoEta: null,
+		staffRole: "SA Practice Director",
+		roleTag: "bd" as const,
+	},
+	// c81 - Don B. - Senior Manager (ACC), $138k
+	{
+		cbId: "c81",
+		billingTarget: "450000",
+		billingActual: "410000",
+		perfRating: "meets",
+		promoFlag: "maybe" as const,
+		promoEta: "2027-01-01",
+		staffRole: null,
+		roleTag: "reviewer" as const,
+	},
+	// c82 - Zara K. - Senior Accountant, $92k
+	{
+		cbId: "c82",
+		billingTarget: null,
+		billingActual: "285000",
+		perfRating: "meets",
+		promoFlag: "yes" as const,
+		promoEta: "2026-07-01",
+		staffRole: null,
+		roleTag: "doer" as const,
+	},
+	// c83 - Gail R. - Financial Planning Manager, $128k
+	{
+		cbId: "c83",
+		billingTarget: null,
+		billingActual: "380000",
+		perfRating: "meets",
+		promoFlag: "no" as const,
+		promoEta: null,
+		staffRole: "Wealth Advisory Lead",
+		roleTag: "reviewer" as const,
+	},
+	// c84 - Nia J. - Client Services Officer (PT), $68k
+	{
+		cbId: "c84",
+		billingTarget: null,
+		billingActual: "130000",
+		perfRating: "below",
+		promoFlag: "no" as const,
+		promoEta: null,
+		staffRole: null,
+		roleTag: "doer" as const,
+	},
+] satisfies (typeof wfpStaffMeta.$inferInsert)[];
+
+// ── Headcount Targets ─────────────────────────────────────────────────────
+// One row per entity × service_line combo where staff exist (or planned growth)
+
+const HEADCOUNT_TARGETS = [
+	// WA
+	{
+		entityId: "ent-op1",
+		slId: "acc",
+		fy: "FY25-26",
+		target: 6,
+		notes: "Includes 2 SMSF specialists",
+	},
+	{ entityId: "ent-op1", slId: "rd", fy: "FY25-26", target: 2, notes: null },
+	{ entityId: "ent-op1", slId: "ins", fy: "FY25-26", target: 3, notes: null },
+	{
+		entityId: "ent-op2",
+		slId: "acc",
+		fy: "FY25-26",
+		target: 1,
+		notes: "Planned growth",
+	},
+	{ entityId: "ent-cbk", slId: "bkcfo", fy: "FY25-26", target: 2, notes: null },
+	{ entityId: "ent-cbk", slId: "fin", fy: "FY25-26", target: 3, notes: null },
+	{ entityId: "ent-cbk", slId: "wm", fy: "FY25-26", target: 2, notes: null },
+	{
+		entityId: "ent-fda",
+		slId: "bkcfo",
+		fy: "FY25-26",
+		target: 1,
+		notes: "Planned growth",
+	},
+	{
+		entityId: "ent-sv",
+		slId: "acc",
+		fy: "FY25-26",
+		target: 1,
+		notes: "Planned growth",
+	},
+	{
+		entityId: "ent-way",
+		slId: "bkcfo",
+		fy: "FY25-26",
+		target: 1,
+		notes: "Planned growth",
+	},
+	// NSW
+	{
+		entityId: "ent-syd",
+		slId: "bkcfo",
+		fy: "FY25-26",
+		target: 1,
+		notes: "Planned growth",
+	},
+	{ entityId: "ent-stl", slId: "bkcfo", fy: "FY25-26", target: 2, notes: null },
+	{
+		entityId: "ent-par",
+		slId: "bkcfo",
+		fy: "FY25-26",
+		target: 5,
+		notes: "Largest NSW BKK pod",
+	},
+	// VIC
+	{
+		entityId: "ent-morn",
+		slId: "bkcfo",
+		fy: "FY25-26",
+		target: 3,
+		notes: null,
+	},
+	{ entityId: "ent-mtwav", slId: "acc", fy: "FY25-26", target: 3, notes: null },
+	{
+		entityId: "ent-mon",
+		slId: "bkcfo",
+		fy: "FY25-26",
+		target: 4,
+		notes: "Includes payroll sub-team",
+	},
+	{ entityId: "ent-els", slId: "acc", fy: "FY25-26", target: 4, notes: null },
+	{ entityId: "ent-els", slId: "wm", fy: "FY25-26", target: 3, notes: null },
+	// QLD
+	{ entityId: "ent-bne", slId: "acc", fy: "FY25-26", target: 4, notes: null },
+	{ entityId: "ent-bne", slId: "bkcfo", fy: "FY25-26", target: 3, notes: null },
+	{ entityId: "ent-bne", slId: "wm", fy: "FY25-26", target: 2, notes: null },
+	{
+		entityId: "ent-bun",
+		slId: "acc",
+		fy: "FY25-26",
+		target: 1,
+		notes: "Planned growth",
+	},
+	{ entityId: "ent-bun", slId: "bkcfo", fy: "FY25-26", target: 2, notes: null },
+	{
+		entityId: "ent-gym",
+		slId: "acc",
+		fy: "FY25-26",
+		target: 1,
+		notes: "Planned growth",
+	},
+	{
+		entityId: "ent-frc",
+		slId: "acc",
+		fy: "FY25-26",
+		target: 1,
+		notes: "Planned growth",
+	},
+	{
+		entityId: "ent-ips",
+		slId: "acc",
+		fy: "FY25-26",
+		target: 2,
+		notes: "Post-acquisition expansion",
+	},
+	{ entityId: "ent-too", slId: "acc", fy: "FY25-26", target: 3, notes: null },
+	{
+		entityId: "ent-too",
+		slId: "bkcfo",
+		fy: "FY25-26",
+		target: 1,
+		notes: "Planned growth",
+	},
+	// SA
+	{ entityId: "ent-adl", slId: "acc", fy: "FY25-26", target: 4, notes: null },
+	{ entityId: "ent-adl", slId: "wm", fy: "FY25-26", target: 3, notes: null },
+	{ entityId: "ent-gaw", slId: "acc", fy: "FY25-26", target: 2, notes: null },
+	{ entityId: "ent-pfd", slId: "acc", fy: "FY25-26", target: 2, notes: null },
+	{
+		entityId: "ent-bar",
+		slId: "acc",
+		fy: "FY25-26",
+		target: 1,
+		notes: "Planned growth",
+	},
+] satisfies (typeof headcountTargets.$inferInsert)[];
+
+// ── Attrition Risks (11 rows) ────────────────────────────────────────────
+
+const ATTRITION_RISKS = [
+	// HIGH RISK
+	{
+		id: "ar-01",
+		carboniteId: "c11",
+		riskLevel: "high",
+		reason:
+			"2 years in role, no promotion path visible. Market salary gap of ~$12k based on latest benchmarks.",
+		action:
+			"Schedule career development meeting. Prepare counter-offer framework with $10-15k adjustment.",
+	},
+	{
+		id: "ar-02",
+		carboniteId: "c41",
+		riskLevel: "high",
+		reason:
+			"Top performer consistently exceeding targets. Known to be interviewing externally for senior manager roles.",
+		action:
+			"Accelerate promotion timeline to July 2026. Discuss retention bonus tied to 12-month commitment.",
+	},
+	{
+		id: "ar-03",
+		carboniteId: "c61",
+		riskLevel: "high",
+		reason:
+			"Recently completed CPA qualification. Salary $15k below market for newly qualified seniors in Perth.",
+		action:
+			"Immediate salary review to market rate. Consider R&D project lead role to broaden experience.",
+	},
+	// MEDIUM RISK
+	{
+		id: "ar-04",
+		carboniteId: "c14",
+		riskLevel: "medium",
+		reason:
+			"Strong performer on promotion track. Competitor firms actively recruiting financial planners in VIC.",
+		action:
+			"Confirm promotion timeline. Offer professional development budget and conference attendance.",
+	},
+	{
+		id: "ar-05",
+		carboniteId: "c30",
+		riskLevel: "medium",
+		reason:
+			"Performing well above expectations. Has expressed interest in more client-facing BD responsibilities.",
+		action:
+			"Create BD pathway with mentor from partner group. Review compensation at next cycle.",
+	},
+	{
+		id: "ar-06",
+		carboniteId: "c67",
+		riskLevel: "medium",
+		reason:
+			"Strong technical skills in demand. Finance broking market is competitive in WA currently.",
+		action:
+			"Discuss team lead opportunity. Ensure comp is competitive vs external lending market.",
+	},
+	{
+		id: "ar-07",
+		carboniteId: "c22",
+		riskLevel: "medium",
+		reason:
+			"Payroll specialists are in high demand post-STP Phase 2. Monash team is small — flight risk if feeling isolated.",
+		action:
+			"Connect with broader Carbon payroll community. Consider hybrid arrangement with Melbourne CBD office.",
+	},
+	{
+		id: "ar-08",
+		carboniteId: "c45",
+		riskLevel: "medium",
+		reason:
+			"Senior manager exceeding targets. May seek director-level role externally if promotion timeline unclear.",
+		action:
+			"Outline clear pathway to director. Include in leadership development programme.",
+	},
+	// LOW RISK
+	{
+		id: "ar-09",
+		carboniteId: "c82",
+		riskLevel: "low",
+		reason:
+			"On active promotion track for July 2026. Recently received salary adjustment aligned with benchmarks.",
+		action:
+			"Maintain current engagement. Continue mentoring programme with Don B.",
+	},
+	{
+		id: "ar-10",
+		carboniteId: "c62",
+		riskLevel: "low",
+		reason:
+			"Engaged and performing well. Recently given SMSF team lead responsibilities — satisfied with growth.",
+		action: "No immediate action needed. Review at next cycle.",
+	},
+	{
+		id: "ar-11",
+		carboniteId: "c65",
+		riskLevel: "low",
+		reason:
+			"R&D practice lead role is unique and fulfilling. Compensation is competitive for niche specialist.",
+		action:
+			"Maintain engagement through conference speaking opportunities and industry involvement.",
+	},
+] satisfies (typeof attritionRisks.$inferInsert)[];
+
 // ── Seed ────────────────────────────────────────────────────────────────────
 
 async function seed() {
@@ -3201,7 +3974,43 @@ async function seed() {
 		`  wfp_revenue: ${revResult.count} inserted (${REVENUE_DATA.length} total)`,
 	);
 
-	// 6. Test users (for RBAC testing)
+	// 6. WFP Entity Settings
+	const wesResult = await db
+		.insert(wfpEntitySettings)
+		.values(WFP_ENTITY_SETTINGS)
+		.onConflictDoNothing();
+	console.log(
+		`  wfp_entity_settings: ${wesResult.count} inserted (${WFP_ENTITY_SETTINGS.length} total)`,
+	);
+
+	// 7. WFP Staff Meta
+	const wsmResult = await db
+		.insert(wfpStaffMeta)
+		.values(WFP_STAFF_META)
+		.onConflictDoNothing();
+	console.log(
+		`  wfp_staff_meta: ${wsmResult.count} inserted (${WFP_STAFF_META.length} total)`,
+	);
+
+	// 8. Headcount Targets
+	const htResult = await db
+		.insert(headcountTargets)
+		.values(HEADCOUNT_TARGETS)
+		.onConflictDoNothing();
+	console.log(
+		`  headcount_targets: ${htResult.count} inserted (${HEADCOUNT_TARGETS.length} total)`,
+	);
+
+	// 9. Attrition Risks
+	const arResult = await db
+		.insert(attritionRisks)
+		.values(ATTRITION_RISKS)
+		.onConflictDoNothing();
+	console.log(
+		`  attrition_risks: ${arResult.count} inserted (${ATTRITION_RISKS.length} total)`,
+	);
+
+	// 10. Test users (for RBAC testing)
 	const passwordHash = await hashPassword("Test1234!");
 	let usersInserted = 0;
 	for (const u of TEST_USERS) {

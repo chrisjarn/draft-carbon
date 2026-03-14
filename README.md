@@ -2,13 +2,7 @@
 
 Internal workforce planning tool for Carbon Group. Manages staff (Carbonites), entities/offices, pod budgets, hiring pipeline, salary brackets, and workforce/FY planning across Australian states.
 
-## What happened here
-
-The original app was a monolithic vanilla JS/Node.js app (single 7200-line HTML file, raw `pg` queries, no TypeScript). It's been moved to `legacy/` for reference.
-
-This branch (`refactor/modern-stack`) has a fresh scaffold using [Better-T-Stack](https://github.com/AmanVarshney01/create-better-t-stack) ready for migration. The production app on Railway is **untouched** - it runs from `main`.
-
-## New Stack
+## Stack
 
 | Layer | Technology |
 |-------|-----------|
@@ -23,12 +17,11 @@ This branch (`refactor/modern-stack`) has a fresh scaffold using [Better-T-Stack
 
 ## Getting Started
 
-### 1. Clone and checkout
+### 1. Clone
 
 ```bash
-git clone https://github.com/jonteoneil-cloud/carbon-wfp-deploy.git
+git clone <your-repo-url>
 cd carbon-wfp-deploy
-git checkout refactor/modern-stack
 ```
 
 ### 2. Install dependencies
@@ -103,41 +96,6 @@ packages/
 legacy/             # Original vanilla JS app (reference only)
 ```
 
-## Using Claude Code
-
-This repo includes a `CLAUDE.md` with full context: domain model, RBAC roles, migration priorities, and conventions. Claude will pick it up automatically.
-
-### Recommended skills to install
-
-```bash
-# shadcn/ui component patterns
-npx skills add google-labs-code/stitch-skills --skill shadcn-ui --global
-
-# Better Auth integration guides (6 skills)
-npx skills add better-auth/skills --global
-
-# React best practices + composition patterns (Vercel)
-npx skills add vercel-labs/agent-skills --global
-
-# UI polish and accessibility fixes
-npx skills add ibelick/ui-skills --global
-
-# Postgres optimization patterns
-npx skills add supabase/agent-skills --global
-```
-
-### How to work on the migration
-
-Each page should be migrated independently. The priority order is in `CLAUDE.md`. The general approach for each page:
-
-1. Read the relevant section in `legacy/public/index.html` to understand the UI and business logic
-2. Define the Drizzle schema in `packages/db/src/schema/` (reference `legacy/database.js` for table structures)
-3. Create the tRPC router in `packages/api/src/routers/`
-4. Build the React page with shadcn/ui components in `apps/web/src/routes/`
-5. Wire up data fetching with TanStack Query via the tRPC client
-
-The `legacy/seed.js` and `legacy/seed-salary.js` files contain real seed data that should be converted to work with Drizzle.
-
 ## Legacy Reference
 
 The original app is in `legacy/` for reference:
@@ -153,9 +111,3 @@ The original app is in `legacy/` for reference:
 | `legacy/seed-salary.js` | Seed data for 50+ salary bracket rows |
 | `legacy/wfp.js` | WFP routes (staff meta, entity settings, revenue, app settings) |
 
-## Branches
-
-| Branch | Purpose |
-|--------|---------|
-| `main` | Production - deployed on Railway (DO NOT push breaking changes) |
-| `refactor/modern-stack` | Migration work - new stack scaffold + legacy reference |

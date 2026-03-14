@@ -59,10 +59,7 @@ function RootComponent() {
 				<Toaster richColors />
 			</ThemeProvider>
 			{import.meta.env.DEV && <Agentation />}
-			<Suspense fallback={null}>
-				<TanStackRouterDevtools position="bottom-left" />
-				<ReactQueryDevtools position="bottom" buttonPosition="bottom-right" />
-			</Suspense>
+			<Suspense fallback={null} />
 		</>
 	);
 }

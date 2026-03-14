@@ -3,10 +3,10 @@ import { todo } from "@carbon-wfp/db/schema/todo";
 import { eq } from "drizzle-orm";
 import z from "zod";
 
-import { protectedProcedure, publicProcedure, router } from "../index";
+import { protectedProcedure, router } from "../index";
 
 export const todoRouter = router({
-	getAll: publicProcedure.query(async () => {
+	getAll: protectedProcedure.query(async () => {
 		return await db.select().from(todo);
 	}),
 

@@ -60,7 +60,7 @@ All under `/_app/` use `.lazy.tsx` code-splitting: `/dashboard`, `/carbonites`, 
 ## Design System
 - **Theme**: zinc + emerald, shadcn base-maia style, dark sidebar (`inverted` menu)
 - **Icons**: Hugeicons only — `<HugeiconsIcon icon={IconNameIcon} />`. Never use lucide-react.
-- **Font**: Outfit (variable weight), imported in `src/index.css`
+- **Font**: Inter, loaded via Google Fonts in `index.html`, mapped to `--font-sans` in `src/index.css`
 - **Adding components**: `bunx --bun shadcn@latest add <name>` from `apps/web/`, then replace any lucide imports with Hugeicons
 
 ## Conventions
@@ -77,5 +77,38 @@ All under `/_app/` use `.lazy.tsx` code-splitting: `/dashboard`, `/carbonites`, 
 ## Known Gotchas
 - `drizzle-kit push` cannot handle `text → typed column` casts (no `USING` clause support). For any `text → date`, `text → enum`, or similar type conversions, generate the migration file and run the `ALTER` manually via the Neon SQL editor or `psql` with the Neon connection string, then verify with `db:push` that no diff remains.
 
-## TODO — Post-P1 Cleanup
-- **Pre-existing frontend type errors**: Files `staff-tab.tsx`, `wfp.lazy.tsx`, `capacity.lazy.tsx`, `chart.tsx` (shadcn chart component, Recharts 3.x incompatibility) have type errors unrelated to P0/P1 work. These should be fixed in a dedicated cleanup pass after P1 is complete to avoid scope creep during feature work.
+## Form System (TanStack Form + Zod)
+
+All form dialogs use TanStack Form. The canonical molecules are:
+
+| Molecule | Path | Purpose |
+|----------|------|---------|
+| `FormField` | `molecules/form-field.tsx` | TanStack Form adapter — Label + error + hint |
+| `CheckboxField` | `molecules/form-field.tsx` | Inline Checkbox + Label for boolean fields |
+| `FormGrid` | `molecules/form-grid.tsx` | `grid gap-4` with `columns={1\|2}` |
+| `DatePicker` | `molecules/date-picker.tsx` | Popover + Calendar, ISO string API |
+| `AppDialog` | `molecules/app-dialog.tsx` | Dialog wrapper with `size` prop (sm/md/lg) |
+| `ConfirmDialog` | `molecules/confirm-dialog.tsx` | Destructive action confirmation |
+
+### Form Conventions
+- **Library**: TanStack Form + Zod for every form — no raw `useState` for form values
+- **Reset strategy**: `key=` prop remounting in parents. No `useEffect` resets, no `prevInitial` patterns, no `handleOpenChange` reset wrappers
+- **Subscribe selectors**: Tuple selectors must use `as const` — e.g. `selector={(s) => [s.values.a, s.values.b] as const}`
+- **Select placeholders**: Use `value || undefined` for showing placeholder when empty string. No `__none__` sentinel values in form fields
+- **Typing**: Keep form logic inline so `useForm` infers types automatically. When sub-components must receive the form, spell out `ReactFormExtendedApi` with all 12 params (see `wizard-types.ts` pattern)
+- **Skip**: `csv-import-dialog.tsx` is not a form — it's a paste-and-preview tool
+
+### Dialog/Sheet Sizing
+- **Dialogs**: Always use `AppDialog` + `AppDialogContent size="sm|md|lg"`
+- **Sheets**: Use the `size` prop on `SheetContent` (`sm|md|lg|xl`). No raw `className="max-w-*"` overrides
+- **Scroll body**: Use `SheetPanel` (wraps `ScrollArea`) — never raw `<div className="overflow-auto">`
+
+### Button Icon Sizes
+Use semantic `size` variants instead of `h-* w-* p-0`:
+- `size="icon"` — 36px/32px (default)
+- `size="icon-sm"` — 32px/28px (table row actions)
+- `size="icon-xs"` — 28px/24px (compact inline actions)
+
+## TODO — Remaining Cleanup
+- **Low-priority UI consistency**: `h-8` input overrides in `step-roles.tsx` inline repeater. Raw `<Label>` in `step-roles.tsx`/`step-details.tsx` for array fields and color pickers (edge cases).
+- **`template-overview-main/`**: Reference template directory — excluded from TypeScript compilation via `tsconfig.json`.

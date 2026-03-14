@@ -4,11 +4,19 @@ import { and, eq } from "drizzle-orm";
 import z from "zod";
 
 import { protectedProcedure, router } from "../index";
-import { assertWriter } from "../lib/rbac";
+import { assertResourceScope, assertWriter, getRoleFilter } from "../lib/rbac";
 
 export const podBudgetsRouter = router({
-	getAll: protectedProcedure.query(async () => {
-		return await db.select().from(podBudgets);
+	getAll: protectedProcedure.query(async ({ ctx }) => {
+		const rf = getRoleFilter(ctx.session.user);
+		const conditions = [];
+		if (rf.state) {
+			conditions.push(eq(podBudgets.state, rf.state));
+		}
+		return await db
+			.select()
+			.from(podBudgets)
+			.where(conditions.length > 0 ? and(...conditions) : undefined);
 	}),
 
 	upsert: protectedProcedure
@@ -22,6 +30,9 @@ export const podBudgetsRouter = router({
 		)
 		.mutation(async ({ ctx, input }) => {
 			assertWriter(ctx.session.user);
+			assertResourceScope(ctx.session.user, {
+				state: input.state,
+			});
 			const existing = await db
 				.select()
 				.from(podBudgets)

@@ -9,6 +9,9 @@ import { queryClient, trpc } from "./utils/trpc";
 const router = createRouter({
 	routeTree,
 	defaultPreload: "intent",
+	defaultPreloadDelay: 50,
+	defaultPendingMs: 0, // Navigate immediately — don't wait to show pending state
+	defaultPendingMinMs: 0, // Don't hold the pending state artificially
 	defaultPendingComponent: () => <Loader />,
 	context: { trpc, queryClient },
 	Wrap: function WrapComponent({ children }: { children: React.ReactNode }) {

@@ -1,19 +1,29 @@
 import { db } from "@carbon-wfp/db";
 import { carbonites } from "@carbon-wfp/db/schema/carbonites";
+import {
+	OFFICE_VALUES,
+	SL_VALUES,
+	STATE_VALUES,
+} from "@carbon-wfp/db/schema/enums";
 import { hiringNeeds } from "@carbon-wfp/db/schema/hiring-needs";
 import { TRPCError } from "@trpc/server";
-import { asc, eq } from "drizzle-orm";
+import { and, asc, eq } from "drizzle-orm";
 import z from "zod";
 
 import { protectedProcedure, router } from "../index";
-import { assertWriter } from "../lib/rbac";
+import {
+	assertResourceScope,
+	assertWriter,
+	getRoleFilter,
+	hiringRoleWhere,
+} from "../lib/rbac";
 
 const hiringInput = z.object({
 	role: z.string().min(1),
-	sl: z.string().optional(),
+	sl: z.enum(SL_VALUES, { message: "Invalid service line" }).optional(),
 	sg: z.string().optional(),
-	state: z.string().optional(),
-	office: z.string().optional(),
+	state: z.enum(STATE_VALUES, { message: "Invalid state" }).optional(),
+	office: z.enum(OFFICE_VALUES, { message: "Invalid office" }).optional(),
 	location: z.string().optional(),
 	positions: z.number().int().min(1).optional(),
 	type: z
@@ -49,24 +59,31 @@ export const hiringRouter = router({
 				})
 				.optional(),
 		)
-		.query(async ({ input }) => {
-			const rows = await db
+		.query(async ({ ctx, input }) => {
+			const rf = getRoleFilter(ctx.session.user);
+			const rbacWhere = hiringRoleWhere(rf);
+			const status = input?.status ?? "open";
+
+			const filters = [];
+			if (rbacWhere) filters.push(rbacWhere);
+			if (status !== "all") filters.push(eq(hiringNeeds.status, status));
+
+			return db
 				.select()
 				.from(hiringNeeds)
+				.where(filters.length > 0 ? and(...filters) : undefined)
 				.orderBy(asc(hiringNeeds.priority), asc(hiringNeeds.targetStart));
-
-			const status = input?.status ?? "open";
-			if (status === "all") return rows;
-			// "open" tab includes active/offer/open (anything not closed)
-			if (status === "open") return rows.filter((r) => r.status !== "closed");
-			return rows.filter((r) => r.status === status);
 		}),
 
 	create: protectedProcedure
 		.input(hiringInput)
 		.mutation(async ({ ctx, input }) => {
 			assertWriter(ctx.session.user);
-			const id = `h${Date.now()}`;
+			assertResourceScope(ctx.session.user, {
+				state: input.state,
+				sl: input.sl,
+			});
+			const id = `h-${crypto.randomUUID()}`;
 			const [row] = await db
 				.insert(hiringNeeds)
 				.values({ id, ...input, status: "open" })
@@ -78,6 +95,21 @@ export const hiringRouter = router({
 		.input(z.object({ id: z.string() }).merge(hiringInput.partial()))
 		.mutation(async ({ ctx, input }) => {
 			assertWriter(ctx.session.user);
+			// Fetch existing row and verify scope before mutating
+			const [existing] = await db
+				.select()
+				.from(hiringNeeds)
+				.where(eq(hiringNeeds.id, input.id));
+			if (!existing) throw new TRPCError({ code: "NOT_FOUND" });
+			assertResourceScope(ctx.session.user, {
+				state: existing.state,
+				sl: existing.sl,
+			});
+			// Validate post-update scope: reject reassignment outside caller's scope
+			assertResourceScope(ctx.session.user, {
+				state: input.state ?? existing.state,
+				sl: input.sl ?? existing.sl,
+			});
 			const { id, ...fields } = input;
 			const [row] = await db
 				.update(hiringNeeds)
@@ -106,6 +138,16 @@ export const hiringRouter = router({
 		)
 		.mutation(async ({ ctx, input }) => {
 			assertWriter(ctx.session.user);
+			// Verify scope before closing
+			const [existing] = await db
+				.select()
+				.from(hiringNeeds)
+				.where(eq(hiringNeeds.id, input.id));
+			if (!existing) throw new TRPCError({ code: "NOT_FOUND" });
+			assertResourceScope(ctx.session.user, {
+				state: existing.state,
+				sl: existing.sl,
+			});
 			// Verify carbonite exists before linking
 			if (input.hiredCarboniteId) {
 				const [cb] = await db
@@ -132,6 +174,16 @@ export const hiringRouter = router({
 		.input(z.object({ id: z.string() }))
 		.mutation(async ({ ctx, input }) => {
 			assertWriter(ctx.session.user);
+			// Verify scope before reopening
+			const [existing] = await db
+				.select()
+				.from(hiringNeeds)
+				.where(eq(hiringNeeds.id, input.id));
+			if (!existing) throw new TRPCError({ code: "NOT_FOUND" });
+			assertResourceScope(ctx.session.user, {
+				state: existing.state,
+				sl: existing.sl,
+			});
 			const [row] = await db
 				.update(hiringNeeds)
 				.set({
@@ -151,6 +203,16 @@ export const hiringRouter = router({
 		.input(z.object({ id: z.string() }))
 		.mutation(async ({ ctx, input }) => {
 			assertWriter(ctx.session.user);
+			// Verify scope before deleting
+			const [existing] = await db
+				.select()
+				.from(hiringNeeds)
+				.where(eq(hiringNeeds.id, input.id));
+			if (!existing) throw new TRPCError({ code: "NOT_FOUND" });
+			assertResourceScope(ctx.session.user, {
+				state: existing.state,
+				sl: existing.sl,
+			});
 			await db.delete(hiringNeeds).where(eq(hiringNeeds.id, input.id));
 			return { deleted: input.id };
 		}),

@@ -4,17 +4,20 @@ import type * as React from "react";
 import { cn } from "@/lib/utils";
 
 const alertVariants = cva(
-	"group/alert relative grid w-full gap-0.5 rounded-md border px-2.5 py-2 text-left text-sm has-data-[slot=alert-action]:relative has-[>svg]:grid-cols-[auto_1fr] has-[>svg]:gap-x-2 has-data-[slot=alert-action]:pr-18 *:[svg:not([class*='size-'])]:size-4 *:[svg]:row-span-2 *:[svg]:translate-y-0 *:[svg]:text-current",
+	"relative grid w-full items-start gap-x-2 gap-y-0.5 rounded-xl border px-3.5 py-3 text-card-foreground text-sm has-[>svg]:has-data-[slot=alert-action]:grid-cols-[calc(var(--spacing)*4)_1fr_auto] has-[>svg]:grid-cols-[calc(var(--spacing)*4)_1fr] has-data-[slot=alert-action]:grid-cols-[1fr_auto] has-[>svg]:gap-x-2 [&>svg]:h-lh [&>svg]:w-4",
 	{
-		variants: {
-			variant: {
-				default: "bg-card text-card-foreground",
-				destructive:
-					"bg-card text-destructive *:data-[slot=alert-description]:text-destructive/90 *:[svg]:text-current",
-			},
-		},
 		defaultVariants: {
 			variant: "default",
+		},
+		variants: {
+			variant: {
+				default: "bg-transparent dark:bg-input/32 [&>svg]:text-text-soft-400",
+				error:
+					"border-destructive/32 bg-destructive/4 [&>svg]:text-destructive",
+				info: "border-info/32 bg-info/4 [&>svg]:text-info",
+				success: "border-success/32 bg-success/4 [&>svg]:text-success",
+				warning: "border-warning/32 bg-warning/4 [&>svg]:text-warning",
+			},
 		},
 	},
 );
@@ -26,9 +29,9 @@ function Alert({
 }: React.ComponentProps<"div"> & VariantProps<typeof alertVariants>) {
 	return (
 		<div
+			className={cn(alertVariants({ variant }), className)}
 			data-slot="alert"
 			role="alert"
-			className={cn(alertVariants({ variant }), className)}
 			{...props}
 		/>
 	);
@@ -37,11 +40,8 @@ function Alert({
 function AlertTitle({ className, ...props }: React.ComponentProps<"div">) {
 	return (
 		<div
+			className={cn("font-medium [svg~&]:col-start-2", className)}
 			data-slot="alert-title"
-			className={cn(
-				"font-medium group-has-[>svg]/alert:col-start-2 [&_a]:underline [&_a]:underline-offset-3 [&_a]:hover:text-foreground",
-				className,
-			)}
 			{...props}
 		/>
 	);
@@ -53,11 +53,11 @@ function AlertDescription({
 }: React.ComponentProps<"div">) {
 	return (
 		<div
-			data-slot="alert-description"
 			className={cn(
-				"text-balance text-muted-foreground text-sm/relaxed md:text-pretty [&_a]:underline [&_a]:underline-offset-3 [&_a]:hover:text-foreground [&_p:not(:last-child)]:mb-2",
+				"flex flex-col gap-2.5 text-text-soft-400 [svg~&]:col-start-2",
 				className,
 			)}
+			data-slot="alert-description"
 			{...props}
 		/>
 	);
@@ -66,11 +66,11 @@ function AlertDescription({
 function AlertAction({ className, ...props }: React.ComponentProps<"div">) {
 	return (
 		<div
-			data-slot="alert-action"
 			className={cn(
-				"absolute top-[calc(--spacing(1.25))] right-[calc(--spacing(1.25))]",
+				"flex gap-1 max-sm:col-start-2 max-sm:mt-2 sm:row-start-1 sm:row-end-3 sm:self-center sm:[[data-slot=alert-description]~&]:col-start-2 sm:[[data-slot=alert-title]~&]:col-start-2 sm:[svg~&]:col-start-2 sm:[svg~[data-slot=alert-description]~&]:col-start-3 sm:[svg~[data-slot=alert-title]~&]:col-start-3",
 				className,
 			)}
+			data-slot="alert-action"
 			{...props}
 		/>
 	);

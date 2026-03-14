@@ -8,21 +8,23 @@ import {
 } from "drizzle-orm/pg-core";
 
 import { entities } from "./entities";
+import { officeEnum, slEnum, stateEnum } from "./enums";
 
 export const carbonites = pgTable("carbonites", {
 	id: text("id").primaryKey(),
 	name: text("name").notNull(),
 	role: text("role"),
-	sl: text("sl"),
+	sl: slEnum("sl"),
 	sg: text("sg"),
-	state: text("state"),
-	office: text("office"),
+	state: stateEnum("state"),
+	office: officeEnum("office"),
 	pod: text("pod"),
 	salary: integer("salary").default(0),
 	type: text("type").default("FT"), // FT | PT
 	seniority: integer("seniority").default(5),
 	location: text("location"),
 	hours: integer("hours"),
+	startDate: text("start_date"),
 	isPartner: boolean("is_partner").default(false),
 	entity: text("entity").references(() => entities.id, {
 		onDelete: "set null",

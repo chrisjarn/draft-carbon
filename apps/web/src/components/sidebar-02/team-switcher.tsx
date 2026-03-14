@@ -35,22 +35,26 @@ export function UserDropdown({ name, role }: { name: string; role: string }) {
 
 	async function handleSignOut() {
 		await authClient.signOut();
-		navigate({ to: "/login" });
+		// Force full page reload to clear all in-memory state (TanStack Query cache,
+		// route context, etc.) so the next login starts fresh
+		window.location.href = "/login";
 	}
 
 	return (
 		<SidebarMenu>
 			<SidebarMenuItem>
 				<DropdownMenu>
-					<DropdownMenuTrigger render={<SidebarMenuButton />}>
-						{initials}
-						<div className="grid flex-1 text-left text-base leading-tight">
-							<span className="truncate font-semibold">{name}</span>
-							<span className="truncate text-sidebar-foreground/50 text-sm">
-								{ROLE_LABELS[role] ?? role}
-							</span>
-						</div>
-						<HugeiconsIcon icon={ArrowUpDownIcon} />
+					<DropdownMenuTrigger asChild>
+						<SidebarMenuButton>
+							{initials}
+							<div className="grid flex-1 text-left text-base leading-tight">
+								<span className="truncate font-semibold">{name}</span>
+								<span className="truncate text-sidebar-foreground/50 text-sm">
+									{ROLE_LABELS[role] ?? role}
+								</span>
+							</div>
+							<HugeiconsIcon icon={ArrowUpDownIcon} />
+						</SidebarMenuButton>
 					</DropdownMenuTrigger>
 					<DropdownMenuContent
 						className="min-w-56 rounded-lg"
